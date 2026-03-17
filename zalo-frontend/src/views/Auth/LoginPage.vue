@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import FormInput from "@/components/Input/FormInput.vue"
+import LoadingSpinner from "@/components/Loading/LoadingSpinner.vue"
+import { useTranslate } from "@/composables/useTranslate"
 import { LoginFormType, loginSchema } from "@/schema/auth.schema"
 import { useAuthStore } from "@/stores/auth"
 import { ROUTE } from "@/utils/constant"
 import { useForm } from "vee-validate"
 
 const authStorage = useAuthStore()
+const { t } = useTranslate()
 
 const { values, errors, handleSubmit, setFieldValue } = useForm<LoginFormType>({
     validationSchema: loginSchema,
@@ -46,7 +49,7 @@ const onSubmit = handleSubmit((values) => {
              hover:opacity-90 transition" :disabled="authStorage.isLoading">
                 <LoadingSpinner v-if="authStorage.isLoading" />
 
-                <span v-else>Login</span>
+                <span v-else>{{ t("login") }}</span>
             </button>
         </form>
         <!-- DIVIDER -->

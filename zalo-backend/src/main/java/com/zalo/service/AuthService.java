@@ -5,8 +5,10 @@ import com.zalo.dto.request.Auth.RegisterRequest;
 import com.zalo.model.User;
 import com.zalo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -35,13 +37,13 @@ public class AuthService {
     public String login(LoginRequest request) {
 
         User user = userRepository.findByPhone(request.getPhone())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
 
         if (!passwordEncoder.matches(
                 request.getPassword(),
                 user.getPassword()
         )) {
-            throw new RuntimeException("Invalid password");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "invalidPassword");
         }
 
         return jwtService.generateToken(user);

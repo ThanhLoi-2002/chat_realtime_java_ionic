@@ -1,9 +1,9 @@
 <template>
-  <div :class="[
-      'fa-solid fa-spinner fa-spin text-gray-700 dark:text-white',
+  <i :class="[
+      'fa-solid fa-spinner fa-spin text-white',
       customClass
     ]"
-     :style="{ fontSize: size || '20px' }"></div>
+     :style="{ fontSize: size || '20px' }"></i>
 </template>
 
 <script setup lang="ts">

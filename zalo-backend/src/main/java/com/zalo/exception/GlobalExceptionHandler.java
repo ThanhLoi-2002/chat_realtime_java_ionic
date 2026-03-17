@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -24,14 +25,27 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ResponseEntity<ApiResponse<?>> handleException(Exception ex) {
 
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        String message = "";
+
+        if (ex instanceof ResponseStatusException e) {
+            status = HttpStatus.valueOf(e.getStatusCode().value());
+            message = e.getReason();
+        }
+
+        if (message == null || message.isBlank()) {
+            message = ex.getMessage(); // fallback
+        }
+
         String lang = LangUtil.getLang();
 
+        System.out.println("message = " + ex.getMessage());
         ApiResponse<?> response = ApiResponse.builder()
-                .message(langService.t(ex.getMessage(), lang))
+                .message(langService.t(message, lang))
                 .result(null)
                 .build();
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        return ResponseEntity.status(status)
                 .body(response);
     }
 

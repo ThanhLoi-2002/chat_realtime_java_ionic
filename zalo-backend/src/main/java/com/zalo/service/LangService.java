@@ -12,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -82,7 +84,7 @@ public class LangService {
 
     public LangResponse getById(Long id) {
         return LangMapper.toResponse(langRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("notFound")));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound")));
     }
 
     public LangResponse create(LangCreationRequest lang) {
