@@ -1,0 +1,65 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px white inset;
+  -webkit-text-fill-color: #111827;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+.dark input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #374151 inset;
+  -webkit-text-fill-color: white;
+}
+
+/* style toast */
+.app-toast {
+  --border-radius: 14px;
+  --box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  --background: rgba(30, 30, 30, 0.9);
+  --color: #fff;
+  /* backdrop-filter: blur(10px); */
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.app-toast::part(message) {
+  font-size: 14px;
+}
+
+.app-toast::part(button) {
+  color: #fff;
+}
+
+ion-content {
+  --padding-top: env(safe-area-inset-top);
+}
+
+/* slide animation */
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.25s ease;
+}
+
+.slide-enter-from {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.slide-leave-to {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+/* Change mode for ion modal */
+.dark ion-content {
+  --background: #1e293b;
+}
+
+.dark ion-toolbar {
+  --background: #1e293b;
+  --color: white;
+}
