@@ -87,29 +87,30 @@ public class LangService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound")));
     }
 
-    public LangResponse create(LangCreationRequest lang) {
+    public LangResponse create(LangCreationRequest lang, Long userId) {
 
         if (langRepository.existsByCode(lang.getCode())) {
-            throw new RuntimeException("Code already exists");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Code already exists");
         }
 
-        LangResponse langResponse = LangMapper.toResponse(langRepository.save(LangMapper.toEntity(lang)));
+        LangResponse langResponse = LangMapper.toResponse(langRepository.save(LangMapper.createEntityFromDto(lang, userId)));
 
         loadLang();
 
         return langResponse;
     }
 
-    public LangResponse update(Long id, LangUpdateRequest request) {
+    public LangResponse update(Long id, LangUpdateRequest request, Long userId) {
 
         Lang lang = langRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Lang not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
 
-        lang.setCode(request.getCode());
-        lang.setVi(request.getVi());
-        lang.setEn(request.getEn());
-        lang.setCn(request.getCn());
-        lang.setTw(request.getTw());
+        LangMapper.updateEntityFromDto(request, lang, userId);
+//        lang.setCode(request.getCode());
+//        lang.setVi(request.getVi());
+//        lang.setEn(request.getEn());
+//        lang.setCn(request.getCn());
+//        lang.setTw(request.getTw());
 
         LangResponse langResponse = LangMapper.toResponse(langRepository.save(lang));
         loadLang();

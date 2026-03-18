@@ -8,12 +8,13 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BaseResponse {
     Long id;
     int stt;
 
+    Long cu;
     LocalDateTime ct;
+    Long eu;
     LocalDateTime et;
 }

@@ -11,5 +11,7 @@ public abstract class BaseMapper {
         r.setStt(e.getStt());
         r.setCt(e.getCt());
         r.setEt(e.getEt());
+        r.setCu(e.getCu());
+        r.setEu(e.getEu());
     }
 }

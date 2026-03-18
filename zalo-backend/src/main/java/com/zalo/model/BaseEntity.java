@@ -19,9 +19,13 @@ public abstract class BaseEntity {
     @Column(nullable = false)
     Integer stt = 1;   // default 1
 
+    Long cu;
+
     @CreationTimestamp
     @Column(updatable = false)
     LocalDateTime ct;
+
+    Long eu;
 
     @UpdateTimestamp
     LocalDateTime et;

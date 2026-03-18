@@ -121,7 +121,7 @@ onMounted(() => {
           bg-white dark:bg-gray-900">
 
         <div class="flex gap-3">
-          <input :placeholder="t('typeMessage')" class="flex-1 px-4 py-1.5 rounded-xl
+          <input :placeholder="t('typeMessage')" class="flex-1 px-4 py-1.5 rounded-lg
                 bg-gray-100 dark:bg-gray-800 dark:text-slate-200" />
 
           <base-button icon="fa-solid fa-paper-plane text-blue-500" />

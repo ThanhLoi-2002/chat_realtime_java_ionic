@@ -28,7 +28,7 @@ public class LangMapper extends BaseMapper {
     }
 
     // Map từ creation DTO -> entity (tạo mới)
-    public static Lang toEntity(LangCreationRequest req) {
+    public static Lang createEntityFromDto(LangCreationRequest req, Long userId) {
         if (req == null) return null;
         Lang e = new Lang();
         // Note: id left null (auto-generated)
@@ -38,18 +38,20 @@ public class LangMapper extends BaseMapper {
         e.setVi(req.getVi());
         e.setTw(req.getTw());
         e.setCn(req.getCn());
+        e.setCu(userId);
         return e;
     }
 
     // Update existing entity from update DTO (partial update)
     // Only non-null fields in req will overwrite entity fields.
-    public static void updateEntityFromDto(LangUpdateRequest req, Lang e) {
+    public static void updateEntityFromDto(LangUpdateRequest req, Lang e, Long userId) {
         if (req == null || e == null) return;
         if (req.getCode() != null) e.setCode(req.getCode());
         if (req.getEn() != null) e.setEn(req.getEn());
         if (req.getVi() != null) e.setVi(req.getVi());
         if (req.getTw() != null) e.setTw(req.getTw());
         if (req.getCn() != null) e.setCn(req.getCn());
+        e.setEu(userId);
     }
 
     // Optional: map list of entities to list of responses

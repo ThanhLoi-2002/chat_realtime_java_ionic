@@ -1,10 +1,12 @@
 package com.zalo.controller;
 
+import com.zalo.configuration.anotation.CurrentUser;
 import com.zalo.configuration.anotation.ResponseMessage;
 import com.zalo.dto.request.Lang.LangCreationRequest;
 import com.zalo.dto.request.Lang.LangUpdateRequest;
 import com.zalo.dto.response.Lang.LangResponse;
 import com.zalo.model.Lang;
+import com.zalo.model.User;
 import com.zalo.service.LangService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,17 +39,17 @@ public class LangController {
 
     @PostMapping
     @ResponseMessage("success")
-    public LangResponse create(@RequestBody @Valid LangCreationRequest lang) {
-        return langService.create(lang);
+    public LangResponse create(@RequestBody @Valid LangCreationRequest lang, @CurrentUser User user) {
+        return langService.create(lang, user.getId());
     }
 
     @PutMapping("/{id}")
     @ResponseMessage("success")
     public LangResponse update(
             @PathVariable Long id,
-            @RequestBody @Valid LangUpdateRequest lang
+            @RequestBody @Valid LangUpdateRequest lang, @CurrentUser User user
     ) {
-        return langService.update(id, lang);
+        return langService.update(id, lang, user.getId());
     }
 
     @DeleteMapping("/{id}")

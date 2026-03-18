@@ -51,5 +51,11 @@ public class UserController {
 
         return UserMapper.toResponse(user);
     }
+
+//    @GetMapping("/users/search")
+//    public User searchByPhone(@RequestParam String phone) {
+//        return userService.findByPhone(phone)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//    }
 }
 
