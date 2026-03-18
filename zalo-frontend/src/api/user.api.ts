@@ -10,6 +10,10 @@ const getDetail = async (id: number) => {
     return await axios.get<IResponse<UserType>>(`/users/${id}`);
 }
 
+const getList = async (phone: string) => {
+    return await axios.get<IResponse<UserType>>(`/users?page=0&limit=2&phone=${phone}`);
+}
+
 const deleteOne = async (id: number) => {
     return await axios.delete<IResponse>(`/users/${id}`);
 }
@@ -31,5 +35,5 @@ const uploadCover = async (file: File) => {
 }
 
 export const userApi = {
-    getDetail, deleteOne, getMe, uploadAvatar, uploadCover
+    getDetail, deleteOne, getMe, uploadAvatar, uploadCover, getList
 }

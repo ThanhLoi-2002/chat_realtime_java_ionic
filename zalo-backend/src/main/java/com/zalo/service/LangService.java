@@ -27,6 +27,7 @@ import java.util.Map;
 public class LangService {
 
     LangRepository langRepository;
+    LangMapper langMapper;
 
     Map<String, Map<String, String>> cache = new HashMap<>();
 
@@ -79,11 +80,11 @@ public class LangService {
     public List<LangResponse> getAll() {
         List<Lang> list = langRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
 //        System.out.println("list: " + G.toJson(list));
-        return LangMapper.toResponseList(list);
+        return langMapper.toListResponses(list);
     }
 
     public LangResponse getById(Long id) {
-        return LangMapper.toResponse(langRepository.findById(id)
+        return langMapper.toResponse(langRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound")));
     }
 
@@ -93,7 +94,10 @@ public class LangService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Code already exists");
         }
 
-        LangResponse langResponse = LangMapper.toResponse(langRepository.save(LangMapper.createEntityFromDto(lang, userId)));
+        Lang e = langMapper.toEnity(lang);
+        e.setCu(userId);
+
+        LangResponse langResponse = langMapper.toResponse(langRepository.save(e));
 
         loadLang();
 
@@ -105,14 +109,10 @@ public class LangService {
         Lang lang = langRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
 
-        LangMapper.updateEntityFromDto(request, lang, userId);
-//        lang.setCode(request.getCode());
-//        lang.setVi(request.getVi());
-//        lang.setEn(request.getEn());
-//        lang.setCn(request.getCn());
-//        lang.setTw(request.getTw());
+        langMapper.updateDtoToEntity(lang, request);
+        lang.setEu(userId);
 
-        LangResponse langResponse = LangMapper.toResponse(langRepository.save(lang));
+        LangResponse langResponse = langMapper.toResponse(langRepository.save(lang));
         loadLang();
         return langResponse;
     }

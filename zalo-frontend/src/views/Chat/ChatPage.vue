@@ -6,6 +6,8 @@ import { RANDOM_AVATAR } from '@/utils/constant';
 import { connectSocket } from '@/utils/websocket';
 import { onMounted, ref } from 'vue';
 import ConversationUI from './component/ConversationUI.vue';
+import { userApi } from '@/api/user.api';
+import { UserType } from '@/types/entities';
 
 type Conversation = {
   id: number
@@ -29,9 +31,29 @@ const selectConversation = (item: any) => {
   selectedConversation.value = item
 }
 
-onMounted(() => {
+onMounted(async () => {
   connectSocket()
 })
+
+const showModal = ref(false)
+const phone = ref("")
+const user = ref<UserType | null>(null)
+
+const searchUser = async () => {
+  try {
+    const data: any = await userApi.getList(phone.value);
+    console.log(data)
+    user.value = data.result.content[0] ?? null
+  } catch (e) {
+    user.value = null
+    alert("Không tìm thấy user")
+  }
+}
+
+const goToProfile = (id?: number) => {
+  showModal.value = false
+  // router.push(`/user/${id}`)
+}
 </script>
 
 <template>
@@ -44,9 +66,50 @@ onMounted(() => {
     ]">
 
       <div class="p-4 dark:text-white flex flex-col gap-3">
-        <span class="text-xl font-light">
-          {{ t('message') }}
-        </span>
+        <div class="flex justify-between gap-2">
+          <span class="text-xl font-light">
+            {{ t('message') }}
+          </span>
+          <ion-button @click="showModal = true">
+            Thêm bạn
+          </ion-button>
+          <ion-button @click="showModal = true">
+            Thêm bạn
+          </ion-button>
+        </div>
+
+        <ion-modal :is-open="showModal">
+          <div class="p-4 bg-white dark:bg-gray-800 h-full flex flex-col">
+
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-lg font-semibold">Thêm bạn</h2>
+              <button @click="showModal = false">✕</button>
+            </div>
+
+            <!-- Input -->
+            <input v-model="phone" placeholder="Số điện thoại" class="border-b p-2 outline-none bg-transparent" />
+
+            <!-- Result -->
+            <div v-if="user" class="mt-4 flex items-center gap-3 cursor-pointer" @click="goToProfile(user?.id)">
+              <img :src="user?.avatar?.url" class="w-12 h-12 rounded-full" />
+              <div>
+                <p>{{ user.username }}</p>
+                <p class="text-sm text-gray-500">{{ user.phone }}</p>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="mt-auto flex justify-end gap-2">
+              <button @click="showModal = false">Huỷ</button>
+              <button @click="searchUser" class="bg-blue-500 text-white px-4 py-2 rounded">
+                Tìm kiếm
+              </button>
+            </div>
+
+          </div>
+        </ion-modal>
+
 
         <input :placeholder="t('search') + '...'" class="w-full px-4 py-2 rounded-lg
          bg-white text-gray-800

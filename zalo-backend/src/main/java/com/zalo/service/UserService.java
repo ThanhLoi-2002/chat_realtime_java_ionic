@@ -1,16 +1,23 @@
 package com.zalo.service;
 
 import com.cloudinary.api.exceptions.NotFound;
+import com.zalo.dto.filter.UserFilter;
 import com.zalo.model.File;
 import com.zalo.model.User;
 import com.zalo.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.NonUniqueResultException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -50,5 +57,34 @@ public class UserService {
         user.setCover(cover);
 
         return userRepository.save(user);
+    }
+
+    // Tìm phân trang
+    public Page<User> findAll(UserFilter filter) {
+        Specification<User> spec = filter.toSpecification();
+        Pageable pageable = filter.toPageable();
+        return userRepository.findAll(spec, pageable);
+    }
+
+    // Tìm một bản ghi (thường dùng khi filter unique như email, phone)
+    public Optional<User> findOne(UserFilter filter) {
+        Specification<User> spec = filter.toSpecification();
+        try {
+            return userRepository.findOne(spec);
+        } catch (NonUniqueResultException e) {
+            return Optional.empty(); // hoặc throw exception tùy nghiệp vụ
+        }
+    }
+
+    public Optional<User> findByPhone(String phone) {
+        UserFilter filter = new UserFilter();
+        filter.setPhone(phone);
+        return findOne(filter);
+    }
+
+    // Tìm tất cả không phân trang (nếu cần export, dropdown nhỏ...)
+    public List<User> findAllNoPage(UserFilter filter) {
+        Specification<User> spec = filter.toSpecification();
+        return userRepository.findAll(spec);
     }
 }
