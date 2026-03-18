@@ -18,3 +18,6 @@ export type FileType = {
 }
 
 export type SettingPageType = "setting" | "profile"
+export enum ConversationEnum {
+  PRIVATE, GROUP
+}

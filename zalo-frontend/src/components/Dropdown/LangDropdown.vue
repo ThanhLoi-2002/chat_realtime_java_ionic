@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { useLangStore } from "@/stores/lang"
+import { useLangStore } from "@/stores/lang.storage"
 import { ref, watch } from "vue"
 
 const props = defineProps<{

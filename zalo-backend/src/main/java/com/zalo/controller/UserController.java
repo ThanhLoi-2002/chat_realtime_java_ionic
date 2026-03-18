@@ -57,14 +57,8 @@ public class UserController {
 
     @GetMapping
     public Page<UserResponse> searchUsers(
-            @ModelAttribute UserFilter filter  // tự bind các field
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "20") int limit
+            @ModelAttribute UserFilter filter
     ) {
-        // override nếu cần (vì @ModelAttribute bind từ query param)
-//        filter.setPage(page);
-//        filter.setLimit(limit);
-        System.out.println(G.toJson(filter));
         Page<User> users = userService.findAll(filter);
         return users.map(userMapper::toResponse);
     }

@@ -69,7 +69,7 @@
 import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
 import LoadingSpinner from '@/components/Loading/LoadingSpinner.vue';
 import { useTranslate } from '@/composables/useTranslate'
-import { useUserStore } from '@/stores/user';
+import { useUserStore } from '@/stores/user.storage';
 import { SettingPageType } from '@/types/common';
 import { RANDOM_AVATAR } from '@/utils/constant';
 import { inject, reactive, ref } from 'vue';

@@ -4,7 +4,7 @@ import { ACCESS_TOKEN } from '@/utils/constant'
 import { setKey } from '@/utils/local'
 import { toast } from '@/utils/toast'
 import { defineStore } from 'pinia'
-import { useUserStore } from './user'
+import { useUserStore } from './user.storage'
 
 interface LangState {
     isLoading: boolean

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { LangFormType, langSchema } from "@/schema/lang.schema";
-import { useLangStore } from "@/stores/lang"
+import { useLangStore } from "@/stores/lang.storage"
 import { LANG_LABELS } from "@/utils/constant"
 import { onMounted } from "vue"
 import { useRoute, useRouter } from "vue-router";

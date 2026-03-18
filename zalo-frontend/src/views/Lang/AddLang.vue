@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useTranslate } from "@/composables/useTranslate";
 import { LangFormType, langSchema } from "@/schema/lang.schema";
-import { useLangStore } from "@/stores/lang";
+import { useLangStore } from "@/stores/lang.storage";
 import { LANG_LABELS } from "@/utils/constant";
 import { useForm } from "vee-validate";
 import { useRouter } from "vue-router";

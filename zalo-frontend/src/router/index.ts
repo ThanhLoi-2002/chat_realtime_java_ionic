@@ -1,4 +1,4 @@
-import { useUserStore } from '@/stores/user';
+import { useUserStore } from '@/stores/user.storage';
 import { ACCESS_TOKEN, ROUTE } from '@/utils/constant';
 import { getKey } from '@/utils/local';
 import ChatPage from '@/views/Chat/ChatPage.vue';

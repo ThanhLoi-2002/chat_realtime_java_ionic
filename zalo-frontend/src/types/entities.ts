@@ -1,4 +1,4 @@
-import { FileType } from "./common"
+import { ConversationEnum, FileType } from "./common"
 
 export type BaseType = {
     id?: number
@@ -22,4 +22,9 @@ export type UserType = BaseType & {
     phone: string
     avatar: FileType
     cover: FileType
+}
+
+export type ConversationType = BaseType & {
+  type: ConversationEnum
+  title?: string
 }

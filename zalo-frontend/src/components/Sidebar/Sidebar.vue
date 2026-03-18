@@ -71,7 +71,7 @@ import SettingsUI from './components/SettingsUI.vue';
 import { useTranslate } from '@/composables/useTranslate';
 import { SettingPageType } from '@/types/common';
 import ProfileUI from './components/ProfileUI.vue';
-import { useUserStore } from '@/stores/user';
+import { useUserStore } from '@/stores/user.storage';
 
 const { isMobile } = useDevice()
 const route = useRoute()

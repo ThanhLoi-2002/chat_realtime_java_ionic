@@ -56,7 +56,7 @@ import LangDropdown from '@/components/Dropdown/LangDropdown.vue';
 import ConfirmModal from '@/components/Modal/ConfirmModal.vue';
 import ThemeToggle from '@/components/Toggle/ThemeToggle.vue';
 import { useTranslate } from '@/composables/useTranslate'
-import { useUserStore } from '@/stores/user';
+import { useUserStore } from '@/stores/user.storage';
 import { SettingPageType } from '@/types/common';
 import { RANDOM_AVATAR } from '@/utils/constant'
 import { computed, inject, ref } from 'vue';

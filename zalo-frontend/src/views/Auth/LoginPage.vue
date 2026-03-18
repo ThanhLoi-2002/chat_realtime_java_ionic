@@ -3,7 +3,7 @@ import FormInput from "@/components/Input/FormInput.vue"
 import LoadingSpinner from "@/components/Loading/LoadingSpinner.vue"
 import { useTranslate } from "@/composables/useTranslate"
 import { LoginFormType, loginSchema } from "@/schema/auth.schema"
-import { useAuthStore } from "@/stores/auth"
+import { useAuthStore } from "@/stores/auth.storage"
 import { ROUTE } from "@/utils/constant"
 import { useForm } from "vee-validate"
 
