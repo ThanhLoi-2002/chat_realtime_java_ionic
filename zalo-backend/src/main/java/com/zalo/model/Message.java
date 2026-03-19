@@ -1,8 +1,8 @@
 package com.zalo.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.zalo.model.covert.FileConverter;
+import com.zalo.model.enums.MessageType;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -15,8 +15,17 @@ import lombok.experimental.FieldDefaults;
 @Entity
 @Table(name = "message")
 public class Message extends BaseEntity{
-    private int roomId = 1;
-    private int senderId;
-    @Column(length = 2000)
-    private String content;
+    Long conversationId;
+    Long senderId;
+    @Column(columnDefinition = "TEXT")
+    String content;
+
+    @Enumerated(EnumType.STRING)
+    MessageType contentType = MessageType.TEXT;
+
+    @Convert(converter = FileConverter.class)
+    @Column(columnDefinition = "LONGTEXT")
+    File file;
+
+    Long replyToMessageId;
 }

@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
-    List<Message> findByRoomId(int roomId);
+    List<Message> findByConversationIdOrderByCtDesc(Long conversationId, Pageable pageable);
 }

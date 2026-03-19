@@ -2,8 +2,7 @@ package com.zalo.dto.filter;
 
 import com.zalo.dto.common.BaseFilter;
 import com.zalo.model.User;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
@@ -12,9 +11,13 @@ import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserFilter extends BaseFilter {
     private String phone;
     private String username;
+    private Long id;
 
     @Override
     public Specification<User> toSpecification() {
@@ -36,6 +39,11 @@ public class UserFilter extends BaseFilter {
         if (StringUtils.hasText(username)) {
             specs.add((root, query, cb) ->
                     cb.like(cb.lower(root.get("username")), "%" + username.trim().toLowerCase() + "%"));
+        }
+
+        if (StringUtils.hasText(String.valueOf(id))) {
+            specs.add((root, query, cb) ->
+                    cb.equal(root.get("id"), id));
         }
 
         // Kết hợp tất cả bằng AND
