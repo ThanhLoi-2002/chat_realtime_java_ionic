@@ -65,6 +65,18 @@ export const useUserStore = defineStore('user', {
                 })
             }
         },
+        async searchByPhone(phone: string): Promise<UserType | undefined>{
+            try {
+                const result: any = await userApi.searchByPhone(phone);
+                return result.result
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return undefined
+            }
+        },
         logout() {
             this.user = undefined
             deleteKey(ACCESS_TOKEN)

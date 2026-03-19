@@ -1,6 +1,7 @@
 <template>
-    <ion-modal ref="modal" :trigger="triggerId" :enter-animation="enterAnimation" :leave-animation="leaveAnimation">
-        <ion-content class="">
+    <ion-modal ref="modal" :trigger="triggerId" :enter-animation="enterAnimation" :leave-animation="leaveAnimation"
+        class="custom-modal">
+        <ion-content class="" :scroll-y="false">
             <ion-toolbar class="px-4">
                 <!-- BACK BUTTON -->
                 <ion-buttons slot="start" v-if="isShowBackButton">
@@ -16,13 +17,8 @@
             </ion-toolbar>
 
             <!-- body slot: nội dung truyền từ bên ngoài -->
-            <div class="p-4">
+            <div class="px-4 h-full">
                 <slot />
-            </div>
-
-            <!-- optional footer -->
-            <div class="p-4" v-if="$slots.footer">
-                <slot name="footer" />
             </div>
 
         </ion-content>
@@ -56,7 +52,7 @@ const dismiss = () => modal.value?.$el.dismiss()
 provide("modalDismiss", dismiss)
 
 const titlesNotDisplayBackButton = computed(() => [
-    t("setting")
+    t("setting"), t("addFriend"), t("createGroup")
 ])
 
 const enterAnimation = (baseEl: any) => {
@@ -92,3 +88,12 @@ watch(() => props.title, () => {
     }
 })
 </script>
+
+<style>
+.custom-modal {
+    --height: 85vh;
+    /* 👈 chỉnh ở đây */
+    --width: 500px;
+    --border-radius: 12px;
+}
+</style>

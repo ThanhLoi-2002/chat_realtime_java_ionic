@@ -11,9 +11,11 @@ import org.hibernate.NonUniqueResultException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.List;
@@ -76,10 +78,23 @@ public class UserService {
         }
     }
 
-    public Optional<User> findByPhone(String phone) {
+    public User findByPhone(String phone) {
         UserFilter filter = new UserFilter();
         filter.setPhone(phone);
-        return findOne(filter);
+        Optional<User> userExisted =  findOne(filter);
+
+        if(userExisted.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound");
+        }
+
+        return userExisted.get();
+    }
+
+    public boolean existedPhone(String phone){
+        UserFilter filter = new UserFilter();
+        filter.setPhone(phone);
+        Optional<User> userExisted =  findOne(filter);
+        return userExisted.isPresent();
     }
 
     // Tìm tất cả không phân trang (nếu cần export, dropdown nhỏ...)

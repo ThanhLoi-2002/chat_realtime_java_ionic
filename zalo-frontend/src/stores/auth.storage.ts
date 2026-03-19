@@ -57,6 +57,7 @@ export const useAuthStore = defineStore('auth', {
                     color: 'danger',
                     message: e.message
                 })
+                this.isLoading = false
             }
         },
     }

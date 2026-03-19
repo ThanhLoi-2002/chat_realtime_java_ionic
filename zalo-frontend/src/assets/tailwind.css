@@ -63,3 +63,27 @@ ion-content {
   --background: #1e293b;
   --color: white;
 }
+
+/* Tùy chỉnh thanh cuộn cho toàn bộ trang */
+::-webkit-scrollbar {
+  width: 5px; /* Chiều rộng của thanh cuộn dọc */
+  height: 5px; /* Chiều cao của thanh cuộn ngang */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Màu nền của thanh cuộn */
+  border-radius: 5px; /* Góc bo cho track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(128, 180, 248); /* Màu của thanh cuộn */
+  border-radius: 5px; /* Góc bo cho thanh cuộn */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(128, 180, 248, 0.5); /* Màu thanh cuộn khi hover */
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+  height: 4px; /* Chiều cao cho thanh cuộn ngang */
+}

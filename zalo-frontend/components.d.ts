@@ -14,6 +14,7 @@ declare module 'vue' {
     BaseButton: typeof import('./src/components/Button/BaseButton.vue')['default']
     CircleAvatar: typeof import('./src/components/Avatar/CircleAvatar.vue')['default']
     ConfirmModal: typeof import('./src/components/Modal/ConfirmModal.vue')['default']
+    CoverAvatar: typeof import('./src/components/Profile/CoverAvatar.vue')['default']
     FormInput: typeof import('./src/components/Input/FormInput.vue')['default']
     IonAlert: typeof import('@ionic/vue')['IonAlert']
     IonAvatar: typeof import('@ionic/vue')['IonAvatar']

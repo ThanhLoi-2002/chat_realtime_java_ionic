@@ -1,23 +1,17 @@
 package com.zalo.controller;
 
 import com.cloudinary.api.exceptions.NotFound;
-import com.zalo.configuration.G;
 import com.zalo.configuration.anotation.CurrentUser;
 import com.zalo.configuration.anotation.ResponseMessage;
 import com.zalo.dto.filter.UserFilter;
 import com.zalo.dto.response.User.UserResponse;
 import com.zalo.mapper.UserMapper;
-import com.zalo.model.File;
 import com.zalo.model.User;
 import com.zalo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -63,11 +57,9 @@ public class UserController {
         return users.map(userMapper::toResponse);
     }
 
-//    @GetMapping("/one")
-//    public ResponseEntity<User> getOne(@ModelAttribute UserFilter filter) {
-//        return userService.findOne(filter)
-//                .map(ResponseEntity::ok)
-//                .orElseGet(() -> ResponseEntity.notFound().build());
-//    }
+    @GetMapping("/search-phone")
+    public UserResponse getOneByPhone(@ModelAttribute UserFilter filter) {
+        return userMapper.toResponse(userService.findByPhone(filter.getPhone()));
+    }
 }
 

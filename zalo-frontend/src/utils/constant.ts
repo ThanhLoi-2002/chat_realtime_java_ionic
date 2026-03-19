@@ -3,6 +3,7 @@ export const LANG = "lang"
 export const THEME = "theme"
 export const ACCESS_TOKEN = "access_token"
 export const REFRESH_TOKEN = "refresh_token"
+export const SEARCH_USERS_RECENT = "search_users_recent"
 export const LANG_LABELS: Record<string, string> = {
     code: "Mã",
     vi: "Tiếng Việt",

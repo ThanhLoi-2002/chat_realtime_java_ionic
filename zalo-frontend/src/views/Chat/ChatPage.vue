@@ -3,18 +3,12 @@ import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
 import BaseButton from '@/components/Button/BaseButton.vue';
 import { useTranslate } from '@/composables/useTranslate';
 import { RANDOM_AVATAR } from '@/utils/constant';
-import { connectSocket } from '@/utils/websocket';
-import { onMounted, ref } from 'vue';
 import ConversationSection from './ConversationSection.vue';
 import { useConversationStore } from '@/stores/conversation.storage';
 
 const { t } = useTranslate()
 
 const conversationStorage = useConversationStore()
-
-onMounted(async () => {
-  connectSocket()
-})
 </script>
 
 <template>

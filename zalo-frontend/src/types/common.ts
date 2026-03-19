@@ -18,6 +18,8 @@ export type FileType = {
 }
 
 export type SettingPageType = "setting" | "profile"
+export type SearchFriendPageType = "addFriend" | "friendProfile"
+
 export enum ConversationEnum {
   PRIVATE, GROUP
 }

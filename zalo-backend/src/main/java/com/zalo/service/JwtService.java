@@ -33,7 +33,6 @@ public class JwtService {
     }
 
     public Claims extractAllClaims(String token) {
-
         return Jwts.parserBuilder()
                 .setSigningKey(getKey())
                 .build()

@@ -14,6 +14,10 @@ const getList = async (phone: string) => {
     return await axios.get<IResponse<UserType>>(`/users?page=0&limit=2&phone=${phone}`);
 }
 
+const searchByPhone = async (phone: string) => {
+    return await axios.get<IResponse<UserType>>(`/users/search-phone?phone=${phone}`);
+}
+
 const deleteOne = async (id: number) => {
     return await axios.delete<IResponse>(`/users/${id}`);
 }
@@ -35,5 +39,5 @@ const uploadCover = async (file: File) => {
 }
 
 export const userApi = {
-    getDetail, deleteOne, getMe, uploadAvatar, uploadCover, getList
+    getDetail, deleteOne, getMe, uploadAvatar, uploadCover, getList, searchByPhone
 }

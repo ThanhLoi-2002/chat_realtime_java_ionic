@@ -23,10 +23,10 @@ public class AuthService {
     private final JwtService jwtService;
 
     public String register(RegisterRequest request) {
-        Optional<User> userExisted = userService.findByPhone(request.getPhone());
+         boolean existed = userService.existedPhone(request.getPhone());
 
-        if(userExisted.isPresent()){
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "phoneExisted");
+        if(existed){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "existed");
         }
 
         User user = new User();
@@ -40,20 +40,16 @@ public class AuthService {
     }
 
     public String login(LoginRequest request) {
-        Optional<User> user = userService.findByPhone(request.getPhone());
-
-        if(user.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "phoneNotFound");
-        }
+        User user = userService.findByPhone(request.getPhone());
 
         if (!passwordEncoder.matches(
                 request.getPassword(),
-                user.get().getPassword()
+                user.getPassword()
         )) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "invalidPassword");
         }
 
-        return jwtService.generateToken(user.get());
+        return jwtService.generateToken(user);
     }
 
 }
