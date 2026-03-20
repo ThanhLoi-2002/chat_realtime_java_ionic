@@ -1,5 +1,5 @@
 <template>
-    <ProfileUI v-if="userStorage.user?.id == user?.id" :go-page="() => goPage('addFriend')" />
+    <ProfileUI v-if="userStorage.user?.id == user?.id" :go-page="() => goPage?.('addFriend')" />
     <div v-else class="h-full">
         <div class="relative">
             <div class="h-36 cursor-pointer">
@@ -75,8 +75,8 @@ import { RANDOM_AVATAR } from '@/utils/constant';
 import { ref } from 'vue';
 
 const props = defineProps<{
-    user: UserType | null,
-    goPage: (page: SearchFriendPageType) => void
+    user?: UserType | null,
+    goPage?: (page: SearchFriendPageType) => void
 }>()
 
 const { t } = useTranslate()

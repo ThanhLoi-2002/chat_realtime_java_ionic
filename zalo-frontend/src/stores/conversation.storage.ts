@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
-import { ConversationType } from '@/types/entities'
+import { ConversationType, UserType } from '@/types/entities'
 
 interface ConversationState {
     isLoading: boolean,
     conversations: ConversationType[],
-    conversation?: ConversationType
+    conversation?: ConversationType,
+    friend?: UserType
 }
 
 export const useConversationStore = defineStore('conversation', {
@@ -18,7 +19,8 @@ export const useConversationStore = defineStore('conversation', {
                 id: 2,
             }
         ] as any,
-        conversation: undefined
+        conversation: undefined,
+        friend: undefined
     }),
     actions: {
         async selectConversation(data?: ConversationType) {

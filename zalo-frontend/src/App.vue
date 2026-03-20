@@ -1,13 +1,15 @@
 <template>
-  <component :is="layouts[route.meta.layout] || 'div'">
-    <div class="loading-container" v-if="userStorage.isAuthLoading">
-      <div class="text-center">
-        <loading-spinner size="40px" />
-        <p>Loading....</p>
+  <ion-app>
+    <component :is="layouts[route.meta.layout] || 'div'">
+      <div class="loading-container" v-if="userStorage.isAuthLoading">
+        <div class="text-center">
+          <loading-spinner size="40px" />
+          <p>Loading....</p>
+        </div>
       </div>
-    </div>
-    <router-view v-else />
-  </component>
+      <router-view v-else />
+    </component>
+  </ion-app>
 </template>
 
 <script setup lang="ts">

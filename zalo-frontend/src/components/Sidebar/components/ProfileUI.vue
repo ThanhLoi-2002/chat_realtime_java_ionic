@@ -75,7 +75,7 @@ import { RANDOM_AVATAR } from '@/utils/constant';
 import { inject, reactive, ref } from 'vue';
 
 const props = defineProps<{
-  goPage: (value: SettingPageType | SearchFriendPageType) => void
+  goPage?: (value: SettingPageType | SearchFriendPageType) => void
 }>()
 
 const dismiss = inject<() => void>("modalDismiss")

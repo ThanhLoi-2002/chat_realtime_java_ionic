@@ -4,7 +4,7 @@
         <ion-content class="" :scroll-y="false">
             <ion-toolbar class="px-4">
                 <!-- BACK BUTTON -->
-                <ion-buttons slot="start" v-if="isShowBackButton">
+                <ion-buttons slot="start" v-if="isDisplayBackButton && isShowBackButton">
                     <ion-button @click="goBack">
                         <i class="fa fa-arrow-left"></i>
                     </ion-button>
@@ -43,6 +43,7 @@ const props = defineProps<{
     triggerId: string
     title: string,
     goBack?: () => void
+    isDisplayBackButton?: boolean
 }>()
 
 const { t } = useTranslate()
