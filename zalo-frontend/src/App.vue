@@ -24,10 +24,14 @@ import { useUserStore } from './stores/user.storage';
 import { getKey } from './utils/local';
 import { THEME } from './utils/constant';
 import { connectSocket, disconnectSocket } from './utils/websocket';
+import { useDevice } from './composables/useDevice';
+import { useSystemStore } from './stores/system.storage';
 
 const route: any = useRoute();
 const langStore = useLangStore()
 const userStorage = useUserStore()
+const systemStorage = useSystemStore()
+const { isMobile } = useDevice()
 
 const layouts: any = {
   main: MainLayout,
@@ -46,6 +50,8 @@ onMounted(() => {
   }
 
   langStore.getListByLang();
+
+  isMobile && systemStorage.setShowBottomMenu(true)
 })
 
 // Optional: theo dõi system thay đổi

@@ -11,12 +11,14 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    BackButton: typeof import('./src/components/Button/BackButton.vue')['default']
     BaseButton: typeof import('./src/components/Button/BaseButton.vue')['default']
     CircleAvatar: typeof import('./src/components/Avatar/CircleAvatar.vue')['default']
     ConfirmModal: typeof import('./src/components/Modal/ConfirmModal.vue')['default']
     CoverAvatar: typeof import('./src/components/Profile/CoverAvatar.vue')['default']
     FormInput: typeof import('./src/components/Input/FormInput.vue')['default']
     IonAlert: typeof import('@ionic/vue')['IonAlert']
+    IonApp: typeof import('@ionic/vue')['IonApp']
     IonAvatar: typeof import('@ionic/vue')['IonAvatar']
     IonBackButton: typeof import('@ionic/vue')['IonBackButton']
     IonButton: typeof import('@ionic/vue')['IonButton']
@@ -42,6 +44,7 @@ declare module 'vue' {
     IonToolbar: typeof import('@ionic/vue')['IonToolbar']
     LangDropdown: typeof import('./src/components/Dropdown/LangDropdown.vue')['default']
     LoadingSpinner: typeof import('./src/components/Loading/LoadingSpinner.vue')['default']
+    MobileBackButton: typeof import('./src/components/Button/MobileBackButton.vue')['default']
     Modal: typeof import('./src/components/Modal/Modal.vue')['default']
     PaginationTable: typeof import('./src/components/Table/PaginationTable.vue')['default']
     ProfileUI: typeof import('./src/components/Sidebar/components/ProfileUI.vue')['default']

@@ -5,7 +5,8 @@
         bg-white dark:bg-gray-800 gap-2
         sticky top-0 h-screen">
 
-        <CircleAvatar :url="userStorage.user?.avatar?.url ?? RANDOM_AVATAR" size="size-10" id="openModal" :onClick="() => goPage('setting')" />
+        <CircleAvatar :url="userStorage.user?.avatar?.url ?? RANDOM_AVATAR" size="size-10" id="openModal"
+            :onClick="() => openModal()" />
 
         <nav class="flex flex-col gap-2 flex-1">
 
@@ -18,16 +19,12 @@
                         : 'hover:bg-gray-200 dark:hover:bg-gray-600'
                 ]" />
             </router-link>
-
         </nav>
-
-        <!-- <ThemeToggle /> -->
-
     </aside>
 
 
     <!-- MOBILE BOTTOM MENU -->
-    <nav v-else class="fixed bottom-0 left-0 right-0
+    <nav v-if="systemStorage.isShowBottomMenu && isMobile" class="fixed bottom-0 left-0 right-0
         h-12 flex items-center justify-around
         border-t border-slate-200 dark:border-slate-500
         bg-white dark:bg-gray-800 z-10
@@ -45,12 +42,12 @@
             ]" />
 
         </router-link>
-        <CircleAvatar :url="userStorage.user?.avatar?.url ?? RANDOM_AVATAR" size="size-8" id="openModal" :onClick="() => goPage('setting')" />
-        <!-- <ThemeToggle /> -->
-
+        <CircleAvatar :url="userStorage.user?.avatar?.url ?? RANDOM_AVATAR" size="size-8" id="openModal"
+            :onClick="() => openModal()" />
     </nav>
 
-    <Modal trigger-id="openModal" :title="t(pageModal)" :go-back="() => goPage('setting')">
+    <Modal ref="modalRef" :title="t(pageModal)" :go-back="() => goPage('setting')"
+        :isDisplayBackButton="pageModal != Object.keys(pages)[0]">
         <transition name="slide" mode="out-in">
             <KeepAlive>
                 <component :is="pages[pageModal]" :key="pageModal" :goPage="goPage" />
@@ -72,13 +69,16 @@ import { useTranslate } from '@/composables/useTranslate';
 import { SettingPageType } from '@/types/common';
 import ProfileUI from './components/ProfileUI.vue';
 import { useUserStore } from '@/stores/user.storage';
+import { useSystemStore } from '@/stores/system.storage';
 
 const { isMobile } = useDevice()
+const systemStorage = useSystemStore()
 const route = useRoute()
 const { t } = useTranslate()
 
 const userStorage = useUserStore()
 const pageModal = ref<SettingPageType>("setting")
+const modalRef = ref()
 
 const pages = {
     setting: SettingsUI,
@@ -103,5 +103,10 @@ const visibleItems = computed(() =>
 
 const goPage = (page: SettingPageType) => {
     pageModal.value = page
+}
+
+const openModal = () => {
+    goPage('setting')
+    modalRef?.value.present()
 }
 </script>

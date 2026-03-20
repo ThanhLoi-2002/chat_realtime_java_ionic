@@ -1,12 +1,12 @@
 <template>
-    <ion-modal ref="modal" :trigger="triggerId" :enter-animation="enterAnimation" :leave-animation="leaveAnimation"
+    <ion-modal ref="modal" :enter-animation="enterAnimation" :leave-animation="leaveAnimation"
         class="custom-modal">
         <ion-content class="" :scroll-y="false">
             <ion-toolbar class="px-4">
                 <!-- BACK BUTTON -->
                 <ion-buttons slot="start" v-if="isDisplayBackButton && isShowBackButton">
                     <ion-button @click="goBack">
-                        <i class="fa fa-arrow-left"></i>
+                        <i class="fas fa-arrow-circle-left"></i>
                     </ion-button>
                 </ion-buttons>
 
@@ -40,7 +40,6 @@ import { provide } from "vue"
 import { useTranslate } from '@/composables/useTranslate';
 
 const props = defineProps<{
-    triggerId: string
     title: string,
     goBack?: () => void
     isDisplayBackButton?: boolean
@@ -49,7 +48,16 @@ const props = defineProps<{
 const { t } = useTranslate()
 const modal = ref<InstanceType<typeof IonModal> | null>(null)
 const isShowBackButton = ref(false)
+
+// 👇 expose control
+const present = () => modal.value?.$el.present()
 const dismiss = () => modal.value?.$el.dismiss()
+
+defineExpose({
+    present,
+    dismiss
+})
+
 provide("modalDismiss", dismiss)
 
 const titlesNotDisplayBackButton = computed(() => [

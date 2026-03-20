@@ -5,27 +5,17 @@
         {{ t('message') }}
       </span>
       <div class="flex gap-2">
-        <ion-button id="addFriend" :onClick="() => goPage('addFriend')">
+        <ion-button :onClick="() => openModal('addFriend')">
           <i class="fas fa-user-plus"></i>
         </ion-button>
-        <ion-button id="createGroup" :onClick="() => goPage('createGroup')">
+        <ion-button :onClick="() => openModal('createGroup')">
           <i class="fa-solid fa-users-line"></i>
         </ion-button>
       </div>
     </div>
 
-    <modal trigger-id="addFriend" :title="t((pageModal == 'friendProfile') ? 'profile' : pageModal)"
-      :go-back="() => goPage('addFriend')">
-      <transition name="slide" mode="out-in">
-        <!-- <KeepAlive> -->
-        <component :is="pages[pageModal]" :key="pageModal" :goPage="goPage" :setUser="(u: UserType) => selectedUser = u"
-          :user="selectedUser" />
-        <!-- </KeepAlive> -->
-      </transition>
-    </modal>
-
-    <modal trigger-id="createGroup" :title="t(pageModal)"
-      :go-back="() => goPage('createGroup')">
+    <modal ref="modalRef" :title="t((pageModal == 'friendProfile') ? 'profile' : pageModal)"
+      :go-back="() => goPage('addFriend')" :isDisplayBackButton="pageModal != Object.keys(pages)[0]">
       <transition name="slide" mode="out-in">
         <!-- <KeepAlive> -->
         <component :is="pages[pageModal]" :key="pageModal" :goPage="goPage" :setUser="(u: UserType) => selectedUser = u"
@@ -43,9 +33,8 @@
   </div>
 
   <div class="flex-1 overflow-y-auto">
-    <conversation-u-i v-for="item in conversationStorage.conversations" :key="item.id"
-      @click="conversationStorage.selectConversation(item)" :conversation="item"
-      :selectedConversation="conversationStorage.conversation" />
+    <conversation-u-i v-for="item in conversationStorage.conversations" :key="item.id" @click="selectConversation(item)"
+      :conversation="item" :selectedConversation="conversationStorage.conversation" />
   </div>
 </template>
 <script setup lang="ts">
@@ -57,13 +46,16 @@ import { SearchFriendPageType } from '@/types/common';
 import AddFriendUI from './component/AddFriendUI.vue';
 import FriendProfileUI from './component/FriendProfileUI.vue';
 import Modal from '@/components/Modal/Modal.vue';
-import { UserType } from '@/types/entities';
+import { ConversationType, UserType } from '@/types/entities';
 import CreateGroupUI from './component/CreateGroupUI.vue';
+import { useSystemStore } from '@/stores/system.storage';
 
 const { t } = useTranslate()
 
 const conversationStorage = useConversationStore()
+const systemStorage = useSystemStore()
 const selectedUser = ref<UserType | null>(null)
+const modalRef = ref()
 
 const pageModal = ref<SearchFriendPageType | "createGroup">("addFriend")
 const pages = {
@@ -74,5 +66,15 @@ const pages = {
 
 const goPage = (page: SearchFriendPageType | "createGroup") => {
   pageModal.value = page
+}
+
+const selectConversation = (item: ConversationType) => {
+  conversationStorage.selectConversation(item)
+  systemStorage.setShowBottomMenu(false)
+}
+
+const openModal = (page: SearchFriendPageType | "createGroup") => {
+  goPage(page)
+  modalRef?.value.present()
 }
 </script>
