@@ -1,14 +1,15 @@
-import { number } from "yup"
 import { FileType } from "./common"
 import { ConversationEnum, DeliveryStatusEnum, MemberRoleEnum, MessageEnum } from "./enum"
 
 export type BaseType = {
-    id?: number
+    id: number
     stt: number
     cu?: number
-    ct?: Date
+    createdBy?: UserType
+    ct: Date
     eu?: number
-    et?: Date
+    updatedBy?: UserType
+    et: Date
 }
 
 export type LangType = BaseType & {
@@ -31,11 +32,14 @@ export type ConversationType = BaseType & {
   name?: string
   avatar: FileType
   lastMessageId?: number
+  lastMessage?: MessageType
+  recipient?: UserType
 }
 
 export type MessageType = BaseType & {
   conversationId: number
   senderId: number
+  sender: UserType
   content: string
   contentType: MessageEnum
   file: FileType

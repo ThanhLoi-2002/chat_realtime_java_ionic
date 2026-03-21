@@ -1,6 +1,7 @@
 package com.zalo.dto.filter;
 
 import com.zalo.dto.common.BaseFilter;
+import com.zalo.model.Conversation;
 import com.zalo.model.User;
 import lombok.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -14,14 +15,14 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserFilter extends BaseFilter {
-    private String phone;
-    private String username;
+public class ConversationFilter extends BaseFilter {
     private Long id;
+    private List<Long> ids;
+    private String name;
 
     @Override
-    public Specification<User> toSpecification() {
-        List<Specification<User>> specs = new ArrayList<>();
+    public Specification<Conversation> toSpecification() {
+        List<Specification<Conversation>> specs = new ArrayList<>();
 
         // search chung (tìm trên phone, username)
 //        if (StringUtils.hasText(getSearch())) {
@@ -33,12 +34,9 @@ public class UserFilter extends BaseFilter {
 //        }
 
         // filter riêng
-        if (StringUtils.hasText(phone)) {
-            specs.add((root, query, cb) -> cb.equal(root.get("phone"), phone.trim()));
-        }
-        if (StringUtils.hasText(username)) {
+        if (StringUtils.hasText(name)) {
             specs.add((root, query, cb) ->
-                    cb.like(cb.lower(root.get("username")), "%" + username.trim().toLowerCase() + "%"));
+                    cb.like(cb.lower(root.get("name")), "%" + name.trim().toLowerCase() + "%"));
         }
 
         if (id != null) {
@@ -46,9 +44,24 @@ public class UserFilter extends BaseFilter {
                     cb.equal(root.get("id"), id));
         }
 
-        // Kết hợp tất cả bằng AND
-        return specs.stream()
+        // ✅ filter theo list ids
+        if (ids != null && !ids.isEmpty()) {
+            specs.add((root, query, cb) ->
+                    root.get("id").in(ids));
+        }
+
+        // ✅ mặc định: lastMessageId != null
+        specs.add((root, query, cb) ->
+                cb.isNotNull(root.get("lastMessageId")));
+
+        Specification<Conversation> result = specs.stream()
                 .reduce(Specification::and)
-                .orElse((root, query, cb) -> cb.conjunction()); // nếu không có filter → true
+                .orElse((root, query, cb) -> cb.conjunction());
+
+        // ✅ thêm sort tại đây
+        return (root, query, cb) -> {
+            query.orderBy(cb.desc(root.get("et")));
+            return result.toPredicate(root, query, cb);
+        };
     }
 }

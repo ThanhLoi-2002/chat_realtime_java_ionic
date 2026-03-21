@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -16,7 +18,10 @@ import lombok.experimental.FieldDefaults;
 @Table(name = "message")
 public class Message extends BaseEntity{
     Long conversationId;
+
+    @Column(name = "senderId")
     Long senderId;
+
     @Column(columnDefinition = "TEXT")
     String content;
 
@@ -28,4 +33,23 @@ public class Message extends BaseEntity{
     File file;
 
     Long replyToMessageId;
+
+    // ✅ conversation
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "conversationId", insertable = false, updatable = false)
+//    private Conversation conversation;
+
+    // ✅ sender
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "senderId", insertable = false, updatable = false)
+    private User sender;
+
+    // ✅ reply message
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "replyToMessageId", insertable = false, updatable = false)
+    private Message replyToMessage;
+
+    // ✅ message status list
+    @OneToMany(mappedBy = "message", fetch = FetchType.LAZY)
+    private List<MessageStatus> statuses;
 }

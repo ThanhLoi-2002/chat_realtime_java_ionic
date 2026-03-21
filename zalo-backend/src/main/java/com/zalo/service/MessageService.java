@@ -1,22 +1,25 @@
 package com.zalo.service;
 
+import com.zalo.configuration.G;
+import com.zalo.dto.filter.MessageFilter;
 import com.zalo.dto.request.Message.CreateMessageRequest;
+import com.zalo.dto.response.Message.MessageResponse;
+import com.zalo.model.Conversation;
 import com.zalo.model.ConversationMember;
 import com.zalo.model.Message;
 import com.zalo.model.MessageStatus;
 import com.zalo.model.enums.DeliveryStatus;
-import com.zalo.model.enums.MessageType;
-import com.zalo.repository.ConversationMemberRepository;
-import com.zalo.repository.MessageRepository;
-import com.zalo.repository.MessageStatusRepository;
-import com.zalo.repository.UserRepository;
+import com.zalo.repository.*;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.awt.print.Pageable;
 import java.util.*;
 
 @Service
@@ -27,7 +30,9 @@ public class MessageService {
     private final MessageStatusRepository statusRepo;
     private final ConversationMemberRepository memberRepo;
     private final UserRepository userRepo;
-    private final SimpMessagingTemplate messagingTemplate;
+    private final ConversationRepository conversationRepository;
+    private final ConversationService conversationService;
+    private final EntityManager em;
 
     public Message sendMessage(Long conversationId, Long senderId, CreateMessageRequest dto) {
         // check sender is member
@@ -45,6 +50,18 @@ public class MessageService {
                 .replyToMessageId(dto.replyToId)
                 .build();
         m = messageRepo.save(m);
+        // clear persistence context
+        em.flush();
+        em.refresh(m);
+
+        m = findByIdWithRelationShip(m.getId(), conversationId);
+
+        System.out.println(G.toJson(m.getSender()));
+
+        // update lastMessage for conversation
+        Conversation conv = conversationService.findById(conversationId);
+        conv.setLastMessageId(m.getId());
+        conversationRepository.save(conv);
 
         // create statuses for each member in conversation
         List<ConversationMember> members = memberRepo.findByConversationId(conversationId);
@@ -60,25 +77,33 @@ public class MessageService {
         statusRepo.saveAll(statuses);
 
         // Build a DTO-like payload including sender info for websocket clients
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("id", m.getId());
-        payload.put("conversationId", m.getConversationId());
-        payload.put("senderId", m.getSenderId());
-        userRepo.findById(m.getSenderId()).ifPresent(u -> {
-            payload.put("senderUsername", u.getUsername());
-        });
-        payload.put("content", m.getContent());
-        payload.put("contentType", m.getContentType());
-        payload.put("createdAt", m.getCt());
-        payload.put("replyToMessageId", m.getReplyToMessageId());
+//        Map<String, Object> payload = new HashMap<>();
+//        payload.put("id", m.getId());
+//        payload.put("conversationId", m.getConversationId());
+//        payload.put("senderId", m.getSenderId());
+//        userRepo.findById(m.getSenderId()).ifPresent(u -> {
+//            payload.put("senderUsername", u.getUsername());
+//        });
+//        payload.put("content", m.getContent());
+//        payload.put("contentType", m.getContentType());
+//        payload.put("createdAt", m.getCt());
+//        payload.put("replyToMessageId", m.getReplyToMessageId());
 
-        messagingTemplate.convertAndSend("/topic/conversations." + conversationId, (Object) payload);
+
 
         return m;
     }
 
-    public List<Message> fetchMessages(Long conversationId, int limit) {
-        return messageRepo.findByConversationIdOrderByCtDesc(conversationId, (Pageable) PageRequest.of(0, limit));
+    public Page<MessageResponse> fetchMessages(Long conversationId, MessageFilter filter) {
+        Pageable pageable = filter.toPageable();
+
+        Page<Message> page = messageRepo.findAllWithRelationShip(conversationId, pageable);
+
+        return page.map(MessageResponse::new);
+    }
+
+    public Message findByIdWithRelationShip(Long id, Long conversationId) {
+        return messageRepo.findOneWithRelationShip(id, conversationId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
     }
 
     public void markRead(Long conversationId, Long userId, Long messageId) {

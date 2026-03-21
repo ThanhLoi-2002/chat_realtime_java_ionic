@@ -1,8 +1,10 @@
 package com.zalo.service;
 
+import com.zalo.dto.filter.ConversationFilter;
 import com.zalo.dto.filter.UserFilter;
 import com.zalo.dto.request.Conversation.CreateGroupRequest;
-import com.zalo.mapper.ConversationMapper;
+import com.zalo.dto.response.conversation.ConversationResponse;
+import com.zalo.dto.response.conversation.ConversationViewResponse;
 import com.zalo.model.Conversation;
 import com.zalo.model.ConversationMember;
 import com.zalo.model.Message;
@@ -15,6 +17,9 @@ import com.zalo.repository.ConversationRepository;
 import com.zalo.repository.MessageRepository;
 import com.zalo.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +36,6 @@ public class ConversationService {
     private final ConversationMemberRepository memberRepo;
     private final UserRepository userRepo;
     private final UserService userService;
-    private final ConversationMapper conversationMapper;
 
     public Conversation createPrivateConversation(Long creatorId, Long otherUserId) {
         // try find existing
@@ -47,6 +51,7 @@ public class ConversationService {
 
         Conversation conv = new Conversation();
         conv.setType(ConversationType.PRIVATE);
+        conv.setRecipientId(otherUserId);
         conv.setCu(creatorId);
         conv = conversationRepo.save(conv);
 
@@ -62,7 +67,7 @@ public class ConversationService {
 
         memberRepo.saveAll(Arrays.asList(m1, m2));
 
-        return conv;
+        return findByIdWithRelationShip(conv.getId());
     }
 
     public Conversation createGroupConversation(Long creatorId, CreateGroupRequest dto) {
@@ -98,9 +103,34 @@ public class ConversationService {
         return conv;
     }
 
-    public Optional<Conversation> findById(Long id) { return conversationRepo.findById(id); }
+    public Conversation findByIdWithRelationShip(Long id) {
+        return conversationRepo.findOneWithRelationShipById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
+    }
+
+    public Conversation findById(Long id) {
+        return conversationRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
+    }
 
     public List<ConversationMember> getMembers(Long conversationId) {
         return memberRepo.findByConversationId(conversationId);
     }
+
+    public Page<ConversationResponse> findAll(Long userId, ConversationFilter filter) {
+        List<Long> conversationIds = memberRepo.findConversationIdsByUserId(userId);
+
+        filter.setIds(conversationIds);
+
+//        Specification<Conversation> spec = filter.toSpecification();
+        Pageable pageable = filter.toPageable();
+
+        Page<Conversation> page = conversationRepo.findAllWithRelationShip(conversationIds, filter.getName(), pageable);
+
+        return page.map(ConversationResponse::new);
+    }
+
+//    public Conversation update(Long id) {
+//        Conversation conv = findById(id);
+//        conversationRepo.save(conv);
+//        return conversationRepo.save(conv);
+//    }
 }

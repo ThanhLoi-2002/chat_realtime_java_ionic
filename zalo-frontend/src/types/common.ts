@@ -1,3 +1,5 @@
+import { MessageEnum } from "./enum";
+
 export type IResponse<T = any> = {
   // status: boolean;
   message?: string;
@@ -19,3 +21,10 @@ export type FileType = {
 
 export type SettingPageType = "setting" | "profile"
 export type SearchFriendPageType = "addFriend" | "friendProfile"
+
+export type SendMessageType = {
+  content?: string
+  conversationId?: number
+  replyToId?: number
+  contentType: MessageEnum
+}

@@ -39,7 +39,7 @@
 </template>
 <script setup lang="ts">
 import { useTranslate } from '@/composables/useTranslate';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import ConversationUI from './component/ConversationUI.vue';
 import { useConversationStore } from '@/stores/conversation.storage';
 import { SearchFriendPageType } from '@/types/common';
@@ -77,4 +77,8 @@ const openModal = (page: SearchFriendPageType | "createGroup") => {
   goPage(page)
   modalRef?.value.present()
 }
+
+onMounted(() => {
+  conversationStorage.getConversations()
+})
 </script>

@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -22,4 +24,24 @@ public class Conversation extends BaseEntity{
     File avatar;
 
     Long lastMessageId;
+
+    // ✅ relation tới lastMessage (read-only)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lastMessageId", insertable = false, updatable = false)
+    private Message lastMessage;
+
+    Long recipientId;
+
+    // ✅ relation tới recipient (read-only)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recipientId", insertable = false, updatable = false)
+    private User recipient;
+
+    // ✅ members
+//    @OneToMany(mappedBy = "conversation", fetch = FetchType.LAZY)
+//    private List<ConversationMember> members;
+
+    // ✅ messages (optional)
+//    @OneToMany(mappedBy = "conversation", fetch = FetchType.LAZY)
+//    private List<Message> messages;
 }

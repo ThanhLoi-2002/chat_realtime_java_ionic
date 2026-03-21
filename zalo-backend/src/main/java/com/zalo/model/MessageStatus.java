@@ -1,10 +1,7 @@
 package com.zalo.model;
 
 import com.zalo.model.enums.DeliveryStatus;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @EqualsAndHashCode(callSuper = true)
@@ -21,4 +18,8 @@ public class MessageStatus extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private DeliveryStatus status = DeliveryStatus.SENT;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "messageId", insertable = false, updatable = false)
+    private Message message;
 }

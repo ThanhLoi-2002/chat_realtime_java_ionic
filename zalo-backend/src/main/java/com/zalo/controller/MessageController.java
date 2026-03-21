@@ -1,13 +1,17 @@
 package com.zalo.controller;
 
 import com.zalo.configuration.anotation.CurrentUser;
+import com.zalo.dto.filter.MessageFilter;
 import com.zalo.dto.request.Message.CreateMessageRequest;
+import com.zalo.dto.response.Message.MessageResponse;
 import com.zalo.model.Message;
 import com.zalo.model.User;
 import com.zalo.model.enums.MessageType;
 import com.zalo.service.MessageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,19 +21,22 @@ import java.util.List;
 @RequestMapping("/conversations/{conversationId}/messages")
 public class MessageController {
     private final MessageService messageService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @PostMapping
-    public ResponseEntity<Message> send(@PathVariable Long conversationId,
+    public MessageResponse send(@PathVariable Long conversationId,
                                         @CurrentUser User user,
-                                        @RequestParam CreateMessageRequest dto) {
+                                        @RequestBody CreateMessageRequest dto) {
         Message m = messageService.sendMessage(conversationId, user.getId(), dto);
-        return ResponseEntity.ok(m);
+        MessageResponse messageResponse = new MessageResponse(m);
+        messagingTemplate.convertAndSend("/topic/conversations." + conversationId, messageResponse);
+        return messageResponse;
     }
 
     @GetMapping
-    public ResponseEntity<List<Message>> list(@PathVariable Long conversationId,
-                                              @RequestParam(defaultValue = "50") int limit) {
-        return ResponseEntity.ok(messageService.fetchMessages(conversationId, limit));
+    public Page<MessageResponse> fetchMessages(@PathVariable Long conversationId,
+                                     @ModelAttribute MessageFilter filter) {
+        return messageService.fetchMessages(conversationId, filter);
     }
 
     @PostMapping("/{messageId}/read")

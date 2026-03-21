@@ -1,6 +1,7 @@
 <template>
     <div class="p-4 font-semibold dark:text-white flex gap-2">
-        <mobile-back-button :onClick="() => emit('update:isShowInfoSection', !isShowInfoSection)" />
+        <div class="sm:hidden"><mobile-back-button :onClick="() => emit('update:isShowInfoSection', !isShowInfoSection)" /></div>
+        
         <span class="">Info</span>
     </div>
 
@@ -9,7 +10,7 @@
         <circle-avatar :url="RANDOM_AVATAR" size="size-16" :onClick="() => { }" />
 
         <div class="mt-3 dark:text-slate-200">
-            {{ conversationStorage.friend?.username }}
+            {{ conversationStorage.recipient?.username }}
         </div>
     </div>
 </template>

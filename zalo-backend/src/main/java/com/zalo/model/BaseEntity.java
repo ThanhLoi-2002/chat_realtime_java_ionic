@@ -21,11 +21,19 @@ public abstract class BaseEntity {
 
     Long cu;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cu", insertable=false, updatable=false)
+    User createdBy;
+
     @CreationTimestamp
     @Column(updatable = false)
     LocalDateTime ct;
 
     Long eu;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "eu", insertable=false, updatable=false)
+    User updatedBy;
 
     @UpdateTimestamp
     LocalDateTime et;

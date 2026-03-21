@@ -1,13 +1,16 @@
 package com.zalo.service;
 
 import com.cloudinary.api.exceptions.NotFound;
+import com.zalo.configuration.G;
 import com.zalo.dto.filter.UserFilter;
+import com.zalo.dto.response.User.UserResponse;
 import com.zalo.model.File;
 import com.zalo.model.User;
 import com.zalo.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.NonUniqueResultException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -101,5 +104,11 @@ public class UserService {
     public List<User> findAllNoPage(UserFilter filter) {
         Specification<User> spec = filter.toSpecification();
         return userRepository.findAll(spec);
+    }
+
+    public UserResponse toResponse(User user) {
+        UserResponse userResponse = new UserResponse();
+        BeanUtils.copyProperties(user, userResponse, "password");
+        return userResponse;
     }
 }

@@ -10,12 +10,12 @@ import org.mapstruct.NullValueMappingStrategy;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
-public interface ConversationMapper {
-
-    ConversationResponse toResponse(Conversation e);
-
-    @IterableMapping(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
-    List<ConversationResponse> toListResponses(List<Conversation> entities);
-}
+//@Mapper(componentModel = "spring")
+//public interface ConversationMapper {
+//
+//    ConversationResponse toResponse(Conversation e);
+//
+//    @IterableMapping(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
+//    List<ConversationResponse> toListResponses(List<Conversation> entities);
+//}
 
