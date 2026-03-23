@@ -2,16 +2,34 @@
 import { useTranslate } from '@/composables/useTranslate';
 import ConversationSection from './ConversationSection.vue';
 import { useConversationStore } from '@/stores/conversation.storage';
-import { ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import ChatContainer from './ChatContainer.vue';
 import InfoSection from './InfoSection.vue';
 import { useDevice } from '@/composables/useDevice';
+import { StompSubscription } from '@stomp/stompjs';
+import { socketSubscribe } from '@/utils/websocket';
+import { useMessageStore } from '@/stores/message.storage';
 
 const { t } = useTranslate()
 const { isMobile } = useDevice()
 
 const conversationStorage = useConversationStore()
+const messageStorage = useMessageStore()
 const isShowInfoSection = ref(false)
+
+let subNewMessage: StompSubscription | undefined
+
+onMounted(() => {
+  subNewMessage = socketSubscribe(`/topic/chat.newMessages`, (msg: any) => {
+    console.log("new message:", JSON.parse(msg.body))
+    messageStorage.addNewMessage(JSON.parse(msg.body).message)
+    conversationStorage.updateConversation(JSON.parse(msg.body).conversation)
+  })
+})
+
+onUnmounted(() => {
+  subNewMessage?.unsubscribe()
+})
 </script>
 
 <template>

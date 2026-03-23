@@ -47,7 +47,40 @@ export function useDateTime() {
         })
     }
 
+    const getTime = (t: any) => new Date(t).getTime()
+
+    const formatSeparatorTime = (time: any) => {
+        const date = new Date(time)
+        const now = new Date()
+
+        const isSameDay =
+            date.getDate() === now.getDate() &&
+            date.getMonth() === now.getMonth() &&
+            date.getFullYear() === now.getFullYear()
+
+        const yesterday = new Date()
+        yesterday.setDate(now.getDate() - 1)
+
+        const isYesterday =
+            date.getDate() === yesterday.getDate() &&
+            date.getMonth() === yesterday.getMonth() &&
+            date.getFullYear() === yesterday.getFullYear()
+
+        const hh = String(date.getHours()).padStart(2, '0')
+        const mm = String(date.getMinutes()).padStart(2, '0')
+
+        if (isSameDay) return `${hh}:${mm}`
+
+        if (isYesterday) return `Hôm qua ${hh}:${mm}`
+
+        const dd = String(date.getDate()).padStart(2, '0')
+        const MM = String(date.getMonth() + 1).padStart(2, '0')
+        const yyyy = date.getFullYear()
+
+        return `${dd}/${MM}/${yyyy} ${hh}:${mm}`
+    }
+
     return {
-        timeAgo, formatTime
+        timeAgo, formatTime, getTime, formatSeparatorTime
     }
 }

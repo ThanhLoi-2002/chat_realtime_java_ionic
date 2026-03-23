@@ -8,8 +8,12 @@ export const stompClient: Client = new Client({
   reconnectDelay: 5000
 })
 
-export const connectSocket = () => {
+export const connectSocket = (token: string) => {
   if (!stompClient.active) {
+    stompClient.connectHeaders = {
+      Authorization: `Bearer ${token}`
+    }
+
     stompClient.activate()
     console.log('connectSocket')
   }
@@ -32,16 +36,16 @@ export const sockJSSendMessage = (data: any, destination: string) => {
 }
 
 export const socketSubscribe = (destination: string, callback: any) => {
-  console.log(`/topic/${destination}`)
+  console.log(`${destination}`)
   if (stompClient.connected) {
-    return stompClient.subscribe(`/topic/${destination}`, callback)
+    return stompClient.subscribe(`${destination}`, callback)
   }
 
   const interval = setInterval(() => {
 
     if (stompClient.connected) {
       clearInterval(interval)
-      stompClient.subscribe(`/topic/${destination}`, callback)
+      stompClient.subscribe(`${destination}`, callback)
     }
 
   }, 100)

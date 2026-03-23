@@ -24,13 +24,10 @@ public class MessageController {
     private final SimpMessagingTemplate messagingTemplate;
 
     @PostMapping
-    public MessageResponse send(@PathVariable Long conversationId,
+    public void send(@PathVariable Long conversationId,
                                         @CurrentUser User user,
                                         @RequestBody CreateMessageRequest dto) {
-        Message m = messageService.sendMessage(conversationId, user.getId(), dto);
-        MessageResponse messageResponse = new MessageResponse(m);
-        messagingTemplate.convertAndSend("/topic/conversations." + conversationId, messageResponse);
-        return messageResponse;
+        messageService.sendMessage(conversationId, user.getId(), dto);
     }
 
     @GetMapping

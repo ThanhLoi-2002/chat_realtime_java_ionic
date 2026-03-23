@@ -68,6 +68,19 @@ export const useConversationStore = defineStore('conversation', {
                 const t2 = new Date(a.lastMessage?.ct || 0).getTime()
                 return t1 - t2
             })
+        },
+
+        updateConversation(conv: ConversationType) {
+            const index = this.conversations.findIndex(c => c.id === conv.id);
+
+            if (index !== -1) {
+                // 🔥 đã tồn tại → update + move lên đầu
+                this.conversations.splice(index, 1); // xóa vị trí cũ
+                console.log('xóa')
+            }
+
+            this.conversations.unshift(conv); // thêm lên đầu
         }
+
     }
 })

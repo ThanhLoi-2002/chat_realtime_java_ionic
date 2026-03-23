@@ -17,6 +17,7 @@ import org.springframework.beans.BeanUtils;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MessageResponse extends BaseResponse {
+    Long conversationId;
     String content;
     MessageType contentType;
     File file;

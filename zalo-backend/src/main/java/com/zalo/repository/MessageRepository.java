@@ -20,7 +20,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     LEFT JOIN FETCH m.sender
     LEFT JOIN FETCH m.replyToMessage
     WHERE m.conversationId = :conversationId AND m.stt = 1
-    ORDER BY m.ct ASC
+    ORDER BY m.ct DESC
 """)
     Page<Message> findAllWithRelationShip(
             @Param("conversationId") Long conversationId,

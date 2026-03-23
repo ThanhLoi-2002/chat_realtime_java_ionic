@@ -22,7 +22,7 @@ import { useLangStore } from './stores/lang.storage';
 import { onMounted, watch } from 'vue';
 import { useUserStore } from './stores/user.storage';
 import { getKey } from './utils/local';
-import { THEME } from './utils/constant';
+import { ACCESS_TOKEN, THEME } from './utils/constant';
 import { connectSocket, disconnectSocket } from './utils/websocket';
 import { useDevice } from './composables/useDevice';
 import { useSystemStore } from './stores/system.storage';
@@ -67,7 +67,7 @@ watch(() => window.matchMedia('(prefers-color-scheme: dark)').matches, (prefersD
 
 watch(() => userStorage.user, () => {
   if (userStorage.user) {
-    connectSocket()
+    connectSocket(getKey(ACCESS_TOKEN) || '')
   } else {
     disconnectSocket()
   }

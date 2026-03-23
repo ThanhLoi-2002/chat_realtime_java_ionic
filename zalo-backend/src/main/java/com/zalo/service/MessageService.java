@@ -4,6 +4,7 @@ import com.zalo.configuration.G;
 import com.zalo.dto.filter.MessageFilter;
 import com.zalo.dto.request.Message.CreateMessageRequest;
 import com.zalo.dto.response.Message.MessageResponse;
+import com.zalo.dto.response.conversation.ConversationResponse;
 import com.zalo.model.Conversation;
 import com.zalo.model.ConversationMember;
 import com.zalo.model.Message;
@@ -29,10 +30,10 @@ public class MessageService {
     private final MessageRepository messageRepo;
     private final MessageStatusRepository statusRepo;
     private final ConversationMemberRepository memberRepo;
-    private final UserRepository userRepo;
     private final ConversationRepository conversationRepository;
     private final ConversationService conversationService;
     private final EntityManager em;
+    private final WebsocketService websocketService;
 
     public Message sendMessage(Long conversationId, Long senderId, CreateMessageRequest dto) {
         // check sender is member
@@ -56,10 +57,8 @@ public class MessageService {
 
         m = findByIdWithRelationShip(m.getId(), conversationId);
 
-        System.out.println(G.toJson(m.getSender()));
-
         // update lastMessage for conversation
-        Conversation conv = conversationService.findById(conversationId);
+        Conversation conv = conversationService.findByIdWithRelationShip(conversationId);
         conv.setLastMessageId(m.getId());
         conversationRepository.save(conv);
 
@@ -76,20 +75,7 @@ public class MessageService {
         }
         statusRepo.saveAll(statuses);
 
-        // Build a DTO-like payload including sender info for websocket clients
-//        Map<String, Object> payload = new HashMap<>();
-//        payload.put("id", m.getId());
-//        payload.put("conversationId", m.getConversationId());
-//        payload.put("senderId", m.getSenderId());
-//        userRepo.findById(m.getSenderId()).ifPresent(u -> {
-//            payload.put("senderUsername", u.getUsername());
-//        });
-//        payload.put("content", m.getContent());
-//        payload.put("contentType", m.getContentType());
-//        payload.put("createdAt", m.getCt());
-//        payload.put("replyToMessageId", m.getReplyToMessageId());
-
-
+        websocketService.sendMessage(new MessageResponse(m), new ConversationResponse(conv));
 
         return m;
     }

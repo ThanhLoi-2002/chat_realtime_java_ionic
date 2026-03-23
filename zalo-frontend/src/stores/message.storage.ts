@@ -22,7 +22,7 @@ export const useMessageStore = defineStore('message', {
         async sendMessage(data: SendMessageType) {
             try {
                 const result: any = await messageApi.sendMessage(data);
-                this.messages.push(result.result)
+                // this.messages.push(result.result)
                 return true
                 // this.page = result.result.number;
                 // if (result.result.totalPages == this.page) this.isOutOfMessage = true
@@ -38,6 +38,7 @@ export const useMessageStore = defineStore('message', {
             try {
                 const result: any = await messageApi.getMessages({ conversationId });
                 this.messages.unshift(...result.result.content)
+                this.sort()
                 // this.page = result.result.number;
                 // if (result.result.totalPages == this.page) this.isOutOfMessage = true
             } catch (e: any) {
@@ -46,6 +47,18 @@ export const useMessageStore = defineStore('message', {
                     message: e.message
                 })
             }
-        }
+        },
+
+        addNewMessage(data: MessageType) {
+            this.messages.push(data)
+        },
+
+        sort() {
+            this.messages = this.messages.sort((a, b) => {
+                const t1 = new Date(b.ct || 0).getTime()
+                const t2 = new Date(a.ct || 0).getTime()
+                return t2 - t1
+            })
+        },
     }
 })
