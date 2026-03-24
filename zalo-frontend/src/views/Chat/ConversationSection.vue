@@ -32,7 +32,7 @@
          focus:outline-none focus:ring-1 focus:ring-blue-400" />
   </div>
 
-  <div class="flex-1 overflow-y-auto">
+  <div ref="conversationRef" class="flex-1 overflow-y-auto max-h-[73%] sm:max-h-full" @scroll="scrollMore">
     <conversation-u-i v-for="item in conversationStorage.conversations" :key="item.id" @click="selectConversation(item)"
       :conversation="item" :selectedConversation="conversationStorage.conversation" />
   </div>
@@ -48,9 +48,10 @@ import FriendProfileUI from './component/FriendProfileUI.vue';
 import Modal from '@/components/Modal/Modal.vue';
 import { ConversationType, UserType } from '@/types/entities';
 import CreateGroupUI from './component/CreateGroupUI.vue';
-import { useMessageStore } from '@/stores/message.storage';
+import { useScroll } from '@/composables/useScroll';
 
 const { t } = useTranslate()
+const { onScroll } = useScroll()
 
 const conversationStorage = useConversationStore()
 const selectedUser = ref<UserType | null>(null)
@@ -63,16 +64,21 @@ const pages = {
   createGroup: CreateGroupUI
 }
 
+const conversationRef = ref<HTMLElement | null>(null)
+
+const scrollMore = () => {
+  if (conversationStorage.isLoading || !conversationStorage.hasMore) return
+  onScroll(conversationRef.value, () =>
+    conversationStorage.getConversations()
+  )
+}
+
 const goPage = (page: SearchFriendPageType | "createGroup") => {
   pageModal.value = page
 }
 
 const selectConversation = (item: ConversationType) => {
-  conversationStorage.selectConversation(undefined)
-
-  setTimeout(() => {
-    conversationStorage.selectConversation(item)
-  }, 1)
+  conversationStorage.selectConversation(item)
 }
 
 const openModal = (page: SearchFriendPageType | "createGroup") => {

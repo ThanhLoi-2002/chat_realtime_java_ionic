@@ -39,3 +39,5 @@ export type BaseFilter = {
 export type MessageFilter = BaseFilter & {
   conversationId: number
 }
+
+export type ConversationFilter = BaseFilter

@@ -32,10 +32,26 @@
 </template>
 <script setup lang="ts">
 import { useDebounce } from '@/composables/useDebounce';
+import { useScroll } from '@/composables/useScroll';
+import { useTranslate } from '@/composables/useTranslate';
+import { useConversationStore } from '@/stores/conversation.storage';
+import { useMessageStore } from '@/stores/message.storage';
+import { useUserStore } from '@/stores/user.storage';
 import { SendMessageType } from '@/types/common';
+import { MessageEnum } from '@/types/enum';
 import { socketSubscribe, sockJSSendMessage } from '@/utils/websocket';
 import { StompSubscription } from '@stomp/stompjs';
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
+
+const props = defineProps<{
+    scrollContainer: HTMLElement | null
+}>()
+
+const { t } = useTranslate()
+const conversationStorage = useConversationStore()
+const userStorage = useUserStore()
+const messageStorage = useMessageStore()
+const { scrollToBottom } = useScroll()
 
 const message = ref('')
 const typingUsers = ref<Map<number, any>>(new Map())
@@ -46,7 +62,7 @@ const { debounced: sendTyping } = useDebounce(() => {
         username: userStorage.user?.username,
         userId: userStorage.user?.id,
     }, "chat.typing")
-}, 500)
+}, 300)
 
 const sendMessage = async () => {
     if (!message.value.trim()) return
@@ -61,13 +77,26 @@ const sendMessage = async () => {
 
     if (success) {
         message.value = ''
-        scrollToBottom(scrollContainer, true)
+        scrollToBottom(props.scrollContainer, true)
     }
 }
 
 let subTyping: StompSubscription | undefined
 
 onMounted(() => {
+    resetSubscribe()
+})
+
+onUnmounted(() => {
+    subTyping?.unsubscribe()
+})
+
+watch(() => conversationStorage.conversation, async () => {
+    subTyping?.unsubscribe()
+    resetSubscribe()
+})
+
+const resetSubscribe = () => {
     subTyping = socketSubscribe(`/user/queue/chat.typing.${conversationStorage.conversation?.id}`, (msg: any) => {
         const data = JSON.parse(msg.body)
 
@@ -77,11 +106,7 @@ onMounted(() => {
         handleTyping(data)
         console.log(typingUsers.value.values())
     })
-})
-
-onUnmounted(() => {
-    subTyping?.unsubscribe()
-})
+}
 
 const handleTyping = (data: any) => {
     const userId = data.userId

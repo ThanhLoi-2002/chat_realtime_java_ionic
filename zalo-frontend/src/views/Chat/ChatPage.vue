@@ -21,7 +21,6 @@ let subNewMessage: StompSubscription | undefined
 
 onMounted(() => {
   subNewMessage = socketSubscribe(`/user/queue/chat.newMessages`, (msg: any) => {
-    console.log("new message:", JSON.parse(msg.body))
     messageStorage.addNewMessage(JSON.parse(msg.body).message)
     conversationStorage.updateConversation(JSON.parse(msg.body).conversation)
   })

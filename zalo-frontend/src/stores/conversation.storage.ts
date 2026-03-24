@@ -43,10 +43,10 @@ export const useConversationStore = defineStore('conversation', {
 
                 this.page += 1
 
-                const result: any = await conversationApi.getList();
+                const result: any = await conversationApi.getList({ page: this.page });
 
                 const { content, page } = result.result
-
+                console.log(result.result)
                 const newList = content || []
 
                 // Map để loại trùng theo id
@@ -73,6 +73,8 @@ export const useConversationStore = defineStore('conversation', {
                     color: "danger",
                     message: e.message
                 })
+            } finally {
+                this.isLoading = false
             }
         },
         sortConversation() {
