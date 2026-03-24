@@ -58,9 +58,14 @@ public class MessageService {
         m = findByIdWithRelationShip(m.getId(), conversationId);
 
         // update lastMessage for conversation
-        Conversation conv = conversationService.findByIdWithRelationShip(conversationId);
+        Conversation conv = conversationService.findById(conversationId);
         conv.setLastMessageId(m.getId());
         conversationRepository.save(conv);
+
+        em.flush();
+        em.refresh(conv);
+
+        conv = conversationService.findByIdWithRelationShip(conversationId);
 
         // create statuses for each member in conversation
         List<ConversationMember> members = memberRepo.findByConversationId(conversationId);

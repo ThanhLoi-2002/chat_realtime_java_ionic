@@ -52,7 +52,7 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
                 sessionAttributes.put("user", principal);
             }
 
-            System.out.println("👤 CONNECT USER: " + accessor.getUser().getName());
+            System.out.println("👤 CONNECT USER: " + Objects.requireNonNull(accessor.getUser()).getName());
         }
 
         if (StompCommand.SUBSCRIBE.equals(accessor.getCommand())) {

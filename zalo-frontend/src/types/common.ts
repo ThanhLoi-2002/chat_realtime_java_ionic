@@ -1,3 +1,4 @@
+import { MessageType } from "./entities";
 import { MessageEnum } from "./enum";
 
 export type IResponse<T = any> = {
@@ -27,4 +28,14 @@ export type SendMessageType = {
   conversationId?: number
   replyToId?: number
   contentType: MessageEnum
+}
+
+export type BaseFilter = {
+  page: number
+  limit?: number
+  lastId?: number
+}
+
+export type MessageFilter = BaseFilter & {
+  conversationId: number
 }

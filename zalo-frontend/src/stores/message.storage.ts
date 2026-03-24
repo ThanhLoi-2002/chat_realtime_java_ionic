@@ -8,24 +8,21 @@ interface ConversationState {
     isLoading: boolean,
     messages: MessageType[],
     page: number,
-    isOutOfMessage: boolean
+    hasMore: boolean
 }
 
 export const useMessageStore = defineStore('message', {
     state: (): ConversationState => ({
         isLoading: false,
         messages: [],
-        page: 0,
-        isOutOfMessage: false
+        page: -1,
+        hasMore: true
     }),
     actions: {
         async sendMessage(data: SendMessageType) {
             try {
-                const result: any = await messageApi.sendMessage(data);
-                // this.messages.push(result.result)
+                await messageApi.sendMessage(data);
                 return true
-                // this.page = result.result.number;
-                // if (result.result.totalPages == this.page) this.isOutOfMessage = true
             } catch (e: any) {
                 toast({
                     color: "danger",
@@ -36,16 +33,24 @@ export const useMessageStore = defineStore('message', {
         },
         async getMessages(conversationId: number) {
             try {
-                const result: any = await messageApi.getMessages({ conversationId });
-                this.messages.unshift(...result.result.content)
+                this.isLoading = true
+
+                this.page += 1
+
+                const result: any = await messageApi.getMessages({ conversationId, page: this.page });
+                const { content, page } = result.result
+
+                this.messages.unshift(...content)
                 this.sort()
-                // this.page = result.result.number;
-                // if (result.result.totalPages == this.page) this.isOutOfMessage = true
+
+                if ((page.totalPages - 1) == this.page) this.hasMore = false
             } catch (e: any) {
                 toast({
                     color: "danger",
                     message: e.message
                 })
+            } finally {
+                this.isLoading = false
             }
         },
 
@@ -60,5 +65,11 @@ export const useMessageStore = defineStore('message', {
                 return t2 - t1
             })
         },
+
+        resetPagination() {
+            this.page = -1
+            this.hasMore = true
+            this.messages = []
+        }
     }
 })

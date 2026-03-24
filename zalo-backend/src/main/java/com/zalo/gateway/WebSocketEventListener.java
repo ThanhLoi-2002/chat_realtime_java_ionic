@@ -17,16 +17,13 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Controller
 @RequiredArgsConstructor
 public class WebSocketEventListener {
     private final SimpMessagingTemplate messagingTemplate;
-    private final UserOnlineStorage storage;
+    private final UserOnlineStorage userOnlineStorage;
     private final ConversationMemberRepository memberRepository;
     private final ConversationService conversationService;
 
@@ -55,9 +52,10 @@ public class WebSocketEventListener {
         String sessionId = accessor.getSessionId();
         Long userId = Long.parseLong(user.getName());
 
-        storage.addSession(userId, sessionId);
+        userOnlineStorage.addSession(userId, sessionId);
 
-        System.out.println("User ONLINE: " + userId);
+        System.out.println("User ONLINE userId: " + userId);
+        System.out.println("User ONLINE sessionId: " + sessionId);
     }
 
     @EventListener
@@ -66,43 +64,13 @@ public class WebSocketEventListener {
 
         String sessionId = accessor.getSessionId();
 
-        Long userId = storage.getUserIdBySessionId(sessionId); // 🔥 chuẩn nhất
+        Long userId = userOnlineStorage.getUserIdBySessionId(sessionId); // 🔥 chuẩn nhất
 
         System.out.println("User DISCONNECT: " + userId + " session=" + sessionId);
 
         if (userId != null) {
-            storage.removeSession(userId, sessionId);
+            userOnlineStorage.removeSession(userId, sessionId);
         }
-    }
-
-    @MessageMapping("/chat.sendMessage")
-    public void sendMessage(MessageResponse message) {
-        System.out.println("Receive: " + G.toJson(message));
-
-        List<ConversationMember> members = memberRepository.findByConversationId(
-                message.getConversationId()
-        );
-
-        Conversation conv = conversationService.findByIdWithRelationShip(message.getConversationId());
-
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("message", message);
-        payload.put("conversation", conv);
-        System.out.println("length: " + members.size());
-        for (ConversationMember member : members) {
-            System.out.println("Send to userId: " + member.getUserId().toString());
-            messagingTemplate.convertAndSendToUser(
-                    member.getUserId().toString(),
-                    "/queue/messages",
-                    payload
-            );
-        }
-
-        // send to user who opening this conversation
-//        messagingTemplate.convertAndSend(
-//                "/topic/chat.conversation." + message.getConversationId() + ".newMessage",
-//                message
-//        );
     }
 
     @MessageMapping("/chat.typing")
@@ -114,12 +82,18 @@ public class WebSocketEventListener {
         );
 
         for (ConversationMember member : members) {
-            messagingTemplate.convertAndSendToUser(
-                    member.getUserId().toString(),
-                    "/topic/chat.typing." + conversationId,
-                    (Object) payload
-            );
+            Set<String> sessions = userOnlineStorage.getSessions(member.getUserId());
+
+            for (String sessionId : sessions) {
+
+                messagingTemplate.convertAndSendToUser(
+                        sessionId,
+                        "/queue/chat.typing." + conversationId,
+                        payload,
+                        userOnlineStorage.createHeaders(sessionId)
+                );
+            }
         }
-        System.out.println("Send topic: /topic/chat.typing." + conversationId);
+        System.out.println("Send queue: /queue/chat.typing." + conversationId);
     }
 }

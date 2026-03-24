@@ -20,7 +20,7 @@ const isShowInfoSection = ref(false)
 let subNewMessage: StompSubscription | undefined
 
 onMounted(() => {
-  subNewMessage = socketSubscribe(`/topic/chat.newMessages`, (msg: any) => {
+  subNewMessage = socketSubscribe(`/user/queue/chat.newMessages`, (msg: any) => {
     console.log("new message:", JSON.parse(msg.body))
     messageStorage.addNewMessage(JSON.parse(msg.body).message)
     conversationStorage.updateConversation(JSON.parse(msg.body).conversation)

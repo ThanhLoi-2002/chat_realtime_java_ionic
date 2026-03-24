@@ -76,10 +76,12 @@ export const useConversationStore = defineStore('conversation', {
             if (index !== -1) {
                 // 🔥 đã tồn tại → update + move lên đầu
                 this.conversations.splice(index, 1); // xóa vị trí cũ
-                console.log('xóa')
             }
 
             this.conversations.unshift(conv); // thêm lên đầu
+
+            this.sortConversation()
+            console.log(this.conversations[0].lastMessage)
         }
 
     }

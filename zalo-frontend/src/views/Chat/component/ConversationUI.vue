@@ -44,13 +44,14 @@ import { useConversation } from '@/composables/useConversation';
 import { useDateTime } from '@/composables/useDateTime';
 import { ConversationType } from '@/types/entities';
 import { RANDOM_AVATAR } from '@/utils/constant';
+import { computed } from 'vue';
 const props = defineProps<{
   conversation: ConversationType
   selectedConversation?: ConversationType
 }>()
 
-const { isGroup, getRecipient, getUserNameFromLastMessage, conversationAvatar, conversationName } = useConversation()
+const { getUserNameFromLastMessage, conversationAvatar, conversationName } = useConversation()
 const { timeAgo } = useDateTime()
 
-const lastMessageContent = `${getUserNameFromLastMessage(props.conversation.lastMessage)}: ${props.conversation.lastMessage?.content}`
+const lastMessageContent = computed(() => `${getUserNameFromLastMessage(props.conversation.lastMessage)}: ${props.conversation.lastMessage?.content}`)
 </script>

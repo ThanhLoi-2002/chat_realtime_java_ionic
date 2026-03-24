@@ -1,5 +1,8 @@
 package com.zalo.gateway;
 
+import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -55,5 +58,15 @@ public class UserOnlineStorage {
 
     public Set<Long> getOnlineUsers() {
         return userSessions.keySet();
+    }
+
+    public MessageHeaders createHeaders(String sessionId) {
+        SimpMessageHeaderAccessor headerAccessor =
+                SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+
+        headerAccessor.setSessionId(sessionId);   // 🔥 QUAN TRỌNG
+        headerAccessor.setLeaveMutable(true);
+
+        return headerAccessor.getMessageHeaders();
     }
 }

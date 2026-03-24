@@ -2,6 +2,7 @@ package com.zalo.service;
 
 import com.zalo.dto.response.Message.MessageResponse;
 import com.zalo.dto.response.conversation.ConversationResponse;
+import com.zalo.gateway.UserOnlineStorage;
 import com.zalo.model.ConversationMember;
 import com.zalo.repository.ConversationMemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -20,6 +22,7 @@ public class WebsocketService {
     private final ConversationMemberRepository memberRepo;
     private final SimpMessagingTemplate messagingTemplate;
     private final ConversationService conversationService;
+    private  final UserOnlineStorage userOnlineStorage;
 
     public void sendMessage(MessageResponse message, ConversationResponse conv) {
         List<ConversationMember> members = memberRepo.findByConversationId(
@@ -31,18 +34,17 @@ public class WebsocketService {
         payload.put("conversation", conv);
 
         for (ConversationMember member : members) {
-            System.out.println("Send to userId: " + member.getUserId().toString());
-            messagingTemplate.convertAndSend(
-//                    member.getUserId().toString(),
-                    "/topic/chat.newMessages",
-                    (Object) payload
-            );
-        }
+            Set<String> sessions = userOnlineStorage.getSessions(member.getUserId());
 
-        // send to user who opening this conversation
-//        messagingTemplate.convertAndSend(
-//                "/topic/chat.conversation." + message.getConversationId() + ".newMessage",
-//                message
-//        );
+            for (String sessionId : sessions) {
+
+                messagingTemplate.convertAndSendToUser(
+                        sessionId,
+                        "/queue/chat.newMessages",
+                        payload,
+                        userOnlineStorage.createHeaders(sessionId)
+                );
+            }
+        }
     }
 }

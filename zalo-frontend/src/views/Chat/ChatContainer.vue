@@ -4,7 +4,11 @@
         @update:isShowInfoSection="val => emit('update:isShowInfoSection', val)" />
 
     <!-- MESSAGES -->
-    <div class="flex-1 overflow-y-auto p-6 space-y-4">
+    <div ref="scrollContainer" class="flex-1 overflow-y-auto p-6 space-y-4" @scroll="scrollMore">
+        <div v-if="messageStorage.isLoading" class="text-center text-gray-400 text-sm">
+            <LoadingSpinner />
+        </div>
+
         <div v-for="msg in messagesWithMeta" :key="msg.id">
             <!-- TIME SEPARATOR -->
             <div v-if="msg.showTimeSeparator" class="text-center text-xs text-gray-400 my-3">
@@ -24,9 +28,26 @@
           border-gray-200 dark:border-slate-500
           bg-white dark:bg-gray-900">
 
+        <div v-if="typingUsers.size > 0" class="text-sm text-gray-400 px-4 pb-2 flex items-center gap-1">
+            <span>
+                <span v-for="([id, user], index) in typingUsers" :key="id">
+                    <span v-if="index > 0">, </span>{{ user.username }}
+                </span>
+                {{ t("typing") }}
+            </span>
+
+            <!-- DOTS -->
+            <span class="flex gap-1 ml-1">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </span>
+        </div>
+
         <div class="flex gap-3">
             <input :placeholder="t('typeMessage')" class="flex-1 px-4 py-1.5 rounded-lg
-                bg-gray-100 dark:bg-gray-800 dark:text-slate-200" v-model="message" @keyup.enter="sendMessage" @input="typing"/>
+                bg-gray-100 dark:bg-gray-800 dark:text-slate-200" v-model="message" @keyup.enter="sendMessage"
+                @input="typing" />
 
             <base-button icon="fa-solid fa-paper-plane text-blue-500 cursor-pointer" @click="sendMessage" />
         </div>
@@ -48,19 +69,30 @@ import Modal from '@/components/Modal/Modal.vue';
 import { useDateTime } from '@/composables/useDateTime';
 import { socketSubscribe, sockJSSendMessage } from '@/utils/websocket';
 import { StompSubscription } from '@stomp/stompjs';
+import LoadingSpinner from '@/components/Loading/LoadingSpinner.vue';
+import { useUserStore } from '@/stores/user.storage';
+import { useScroll } from '@/composables/useScroll';
 
 const props = defineProps<{
     isShowInfoSection: boolean
 }>()
 
 const conversationStorage = useConversationStore()
+const userStorage = useUserStore()
 const messageStorage = useMessageStore()
 const { t } = useTranslate()
 const { getRecipient } = useConversation()
 const { getTime, formatSeparatorTime } = useDateTime()
+const { onScroll, scrollToBottom } = useScroll()
 
 const friendProfileModal = ref()
 const message = ref('')
+
+// let typingTimeout: any = null
+let lastSent = 0
+const typingUsers = ref<Map<number, any>>(new Map())
+
+const scrollContainer = ref<HTMLElement | null>(null)
 
 const emit = defineEmits(['update:isShowInfoSection'])
 
@@ -77,6 +109,7 @@ const sendMessage = async () => {
 
     if (success) {
         message.value = ''
+        scrollToBottom(scrollContainer, true)
     }
 }
 
@@ -114,7 +147,7 @@ const messagesWithMeta = computed(() => {
             ...msg,
 
             // group theo sender (UI bo góc)
-            isFirst: !isSamePrev,
+            isFirst: isStartGroup,
             isLast: !isSameNext,
 
             // ✅ avatar ở đầu group
@@ -132,27 +165,104 @@ const messagesWithMeta = computed(() => {
     })
 })
 
-onMounted(() => {
-    messageStorage.getMessages(conversationStorage.conversation!.id)
+const scrollMore = () => {
+    onScroll(scrollContainer, () => messageStorage.getMessages(conversationStorage.conversation!.id))
+}
+
+onMounted(async () => {
+    subTyping = socketSubscribe(`/user/queue/chat.typing.${conversationStorage.conversation?.id}`, (msg: any) => {
+        const data = JSON.parse(msg.body)
+
+        // bỏ qua chính mình
+        // if (data.userId === userStorage.user?.id) return
+
+        handleTyping(data)
+        console.log(typingUsers.value.values())
+    })
+
+    messageStorage.resetPagination()
+
+    await messageStorage.getMessages(conversationStorage.conversation!.id)
+
+    scrollToBottom(scrollContainer, false)
 })
 
 let subTyping: StompSubscription | undefined
 
-onMounted(() => {
-  subTyping = socketSubscribe(`/topic/chat.typing.${conversationStorage.conversation?.id}`, (msg: any) => {
-    console.log("typing:", JSON.parse(msg.body))
-  })
-
-})
-
 onUnmounted(() => {
-  subTyping?.unsubscribe()
+    subTyping?.unsubscribe()
 })
 
 const typing = () => {
-  sockJSSendMessage({
-    conversationId: conversationStorage.conversation?.id,
-    content: 'Lợi đang nhập'
-  }, "chat.typing")
+    const now = Date.now()
+
+    // chỉ gửi mỗi 1s
+    if (now - lastSent < 1000) return
+
+    lastSent = now
+
+    sockJSSendMessage({
+        conversationId: conversationStorage.conversation?.id,
+        username: userStorage.user?.username,
+        userId: userStorage.user?.id,
+    }, "chat.typing")
+}
+
+const handleTyping = (data: any) => {
+    const userId = data.userId
+
+    // nếu đã có thì clear timeout cũ
+    if (typingUsers.value.has(userId)) {
+        clearTimeout(typingUsers.value.get(userId).timeout)
+    }
+
+    // set timeout mới (2s)
+    const timeout = setTimeout(() => {
+        typingUsers.value.delete(userId)
+    }, 2000)
+
+    // update map
+    typingUsers.value.set(userId, {
+        ...data,
+        timeout
+    })
 }
 </script>
+
+<style>
+.dot {
+    width: 4px;
+    height: 4px;
+    background-color: currentColor;
+    border-radius: 50%;
+    animation: bounce 1.4s infinite;
+}
+
+/* delay từng dot */
+.dot:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0);
+        opacity: 0.3;
+    }
+
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+</style>
