@@ -8,13 +8,17 @@ interface ConversationState {
     conversations: ConversationType[],
     conversation?: ConversationType,
     recipient?: UserType
+    page: number
+    hasMore: boolean
 }
 
 export const useConversationStore = defineStore('conversation', {
     state: (): ConversationState => ({
         isLoading: false,
         conversations: [],
-        conversation: undefined
+        conversation: undefined,
+        page: -1,
+        hasMore: true
     }),
     actions: {
         selectConversation(data?: ConversationType) {
@@ -35,8 +39,15 @@ export const useConversationStore = defineStore('conversation', {
         },
         async getConversations() {
             try {
+                this.isLoading = true
+
+                this.page += 1
+
                 const result: any = await conversationApi.getList();
-                const newList = result.result.content || []
+
+                const { content, page } = result.result
+
+                const newList = content || []
 
                 // Map để loại trùng theo id
                 const map = new Map<number, ConversationType>()
@@ -55,6 +66,8 @@ export const useConversationStore = defineStore('conversation', {
 
                 // 3. Convert lại array + sort
                 this.sortConversation()
+
+                if ((page.totalPages - 1) == this.page) this.hasMore = false
             } catch (e: any) {
                 toast({
                     color: "danger",
@@ -82,6 +95,14 @@ export const useConversationStore = defineStore('conversation', {
 
             this.sortConversation()
             console.log(this.conversations[0].lastMessage)
+        },
+
+        reset() {
+            this.conversations = []
+            this.conversation = undefined
+            this.recipient = undefined
+            this.page = -1
+            this.hasMore = true
         }
 
     }

@@ -11,7 +11,7 @@
                     <img v-if="userStorage.user?.avatar?.url" :src="userStorage.user?.avatar?.url ?? RANDOM_AVATAR" alt="avatar" class="w-full h-full object-cover" />
                     <div v-else
                         class="w-full h-full flex items-center justify-center text-xl text-gray-600 dark:text-gray-300">
-                        {{ user.name }}
+                        {{ userStorage.user?.username }}
                     </div>
                 </div>
             </div>
@@ -20,7 +20,7 @@
         <!-- User info -->
         <div class="flex pt-2 px-6 pb-8 border-b border-gray-100 dark:border-gray-800">
             <div class="ml-20 flex-1">
-                <div class="text-lg font-semibold leading-5 truncate text-gray-600 dark:text-gray-300">{{ user.name }}</div>
+                <div class="text-lg font-semibold leading-5 truncate text-gray-600 dark:text-gray-300">{{ userStorage.user?.username }}</div>
                 <!-- <div class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ user.phone }}</div> -->
             </div>
             <ThemeToggle custom-class="p-2" />
@@ -56,6 +56,8 @@ import LangDropdown from '@/components/Dropdown/LangDropdown.vue';
 import ConfirmModal from '@/components/Modal/ConfirmModal.vue';
 import ThemeToggle from '@/components/Toggle/ThemeToggle.vue';
 import { useTranslate } from '@/composables/useTranslate'
+import { useConversationStore } from '@/stores/conversation.storage';
+import { useMessageStore } from '@/stores/message.storage';
 import { useUserStore } from '@/stores/user.storage';
 import { SettingPageType } from '@/types/common';
 import { RANDOM_AVATAR } from '@/utils/constant'
@@ -69,14 +71,10 @@ const dismiss = inject<() => void>("modalDismiss")
 
 const { t } = useTranslate();
 const userStorage = useUserStore()
+const convStorage = useConversationStore()
+const messStorage = useMessageStore()
 
 const showConfirm = ref(false)
-
-const user = {
-    avatar: RANDOM_AVATAR,
-    cover: RANDOM_AVATAR,
-    name: "Lợi",
-}
 
 const menuItems = computed(() =>[
     {
@@ -88,6 +86,8 @@ const menuItems = computed(() =>[
 
 function onLogout() {
     userStorage.logout()
+    messStorage.resetPagination()
+    convStorage.reset()
     dismiss?.()
 }
 </script>

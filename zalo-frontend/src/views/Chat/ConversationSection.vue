@@ -48,12 +48,11 @@ import FriendProfileUI from './component/FriendProfileUI.vue';
 import Modal from '@/components/Modal/Modal.vue';
 import { ConversationType, UserType } from '@/types/entities';
 import CreateGroupUI from './component/CreateGroupUI.vue';
-import { useSystemStore } from '@/stores/system.storage';
+import { useMessageStore } from '@/stores/message.storage';
 
 const { t } = useTranslate()
 
 const conversationStorage = useConversationStore()
-const systemStorage = useSystemStore()
 const selectedUser = ref<UserType | null>(null)
 const modalRef = ref()
 
@@ -69,8 +68,11 @@ const goPage = (page: SearchFriendPageType | "createGroup") => {
 }
 
 const selectConversation = (item: ConversationType) => {
-  conversationStorage.selectConversation(item)
-  systemStorage.setShowBottomMenu(false)
+  conversationStorage.selectConversation(undefined)
+
+  setTimeout(() => {
+    conversationStorage.selectConversation(item)
+  }, 1)
 }
 
 const openModal = (page: SearchFriendPageType | "createGroup") => {

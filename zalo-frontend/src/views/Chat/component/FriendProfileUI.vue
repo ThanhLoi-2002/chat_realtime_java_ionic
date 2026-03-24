@@ -3,7 +3,7 @@
     <div v-else class="h-[85%]">
         <div class="relative">
             <div class="h-36 cursor-pointer">
-                <img :src="user?.cover?.url ?? RANDOM_AVATAR" class="w-full h-full object-cover rounded-lg" />
+                <img :src="user?.cover?.url ?? RANDOM_AVATAR" class="w-full h-full rounded-lg" />
             </div>
 
             <!-- Avatar center -->
@@ -19,7 +19,6 @@
 
         <!-- BODY -->
         <div class="pt-10 pb-4 px-2 dark:bg-gray-800 overflow-auto h-[75%]">
-
             <!-- Name -->
             <div class="flex items-center justify-center gap-2">
                 <h2 class="text-lg font-semibold dark:text-slate-300">

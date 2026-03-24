@@ -5,8 +5,8 @@
     <div class="relative">
       <div class="h-36 cursor-pointer" @click="() => triggerFile('cover')">
         <img v-if="!isCoverLoading" :src="userStorage.user?.cover?.url ?? RANDOM_AVATAR"
-          class="w-full h-full object-cover rounded-lg" />
-        <div v-else class="w-full h-full object-cover rounded-lg bg-gray-500 flex items-center justify-center">
+          class="w-full h-full rounded-lg" />
+        <div v-else class="w-full h-full rounded-lg bg-gray-500 flex items-center justify-center">
           <LoadingSpinner size="30px" />
         </div>
 

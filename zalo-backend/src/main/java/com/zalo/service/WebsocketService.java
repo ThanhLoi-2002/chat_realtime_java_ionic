@@ -47,4 +47,24 @@ public class WebsocketService {
             }
         }
     }
+
+    public void newConversation(ConversationResponse conv) {
+        List<ConversationMember> members = memberRepo.findByConversationId(
+                conv.getId()
+        );
+
+        for (ConversationMember member : members) {
+            Set<String> sessions = userOnlineStorage.getSessions(member.getUserId());
+
+            for (String sessionId : sessions) {
+
+                messagingTemplate.convertAndSendToUser(
+                        sessionId,
+                        "/queue/chat.newConversations",
+                        conv,
+                        userOnlineStorage.createHeaders(sessionId)
+                );
+            }
+        }
+    }
 }

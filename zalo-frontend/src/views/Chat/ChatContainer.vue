@@ -4,7 +4,7 @@
         @update:isShowInfoSection="val => emit('update:isShowInfoSection', val)" />
 
     <!-- MESSAGES -->
-    <div ref="scrollContainer" class="flex-1 overflow-y-auto p-6 space-y-4" @scroll="scrollMore">
+    <div ref="scrollContainer" class="flex-1 overflow-y-auto p-6 space-y-2" @scroll="scrollMore">
         <div v-if="messageStorage.isLoading" class="text-center text-gray-400 text-sm">
             <LoadingSpinner />
         </div>
@@ -23,36 +23,36 @@
         <friend-profile-u-i :user="getRecipient(conversationStorage.conversation!)" />
     </Modal>
 
+    <div v-if="typingUsers.size > 0" class="text-sm text-gray-600 dark:text-gray-400 px-4 pb-2 flex items-center gap-1">
+        <span>
+            <span v-for="([id, user], index) in typingUsers" :key="id">
+                <span v-if="index > 0">, </span>{{ user.username }}
+            </span>
+            {{ t("typing") }}
+        </span>
+
+        <!-- DOTS -->
+        <span class="flex gap-1 ml-1">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </span>
+    </div>
+
     <!-- INPUT -->
-    <footer class="p-4 border-t
+    <div class="p-4 border-t
           border-gray-200 dark:border-slate-500
           bg-white dark:bg-gray-900">
-
-        <div v-if="typingUsers.size > 0" class="text-sm text-gray-400 px-4 pb-2 flex items-center gap-1">
-            <span>
-                <span v-for="([id, user], index) in typingUsers" :key="id">
-                    <span v-if="index > 0">, </span>{{ user.username }}
-                </span>
-                {{ t("typing") }}
-            </span>
-
-            <!-- DOTS -->
-            <span class="flex gap-1 ml-1">
-                <span class="dot"></span>
-                <span class="dot"></span>
-                <span class="dot"></span>
-            </span>
-        </div>
 
         <div class="flex gap-3">
             <input :placeholder="t('typeMessage')" class="flex-1 px-4 py-1.5 rounded-lg
                 bg-gray-100 dark:bg-gray-800 dark:text-slate-200" v-model="message" @keyup.enter="sendMessage"
-                @input="typing" />
+                @input="sendTyping" />
 
             <base-button icon="fa-solid fa-paper-plane text-blue-500 cursor-pointer" @click="sendMessage" />
         </div>
 
-    </footer>
+    </div>
 </template>
 <script setup lang="ts">
 import { useTranslate } from '@/composables/useTranslate';
@@ -72,12 +72,15 @@ import { StompSubscription } from '@stomp/stompjs';
 import LoadingSpinner from '@/components/Loading/LoadingSpinner.vue';
 import { useUserStore } from '@/stores/user.storage';
 import { useScroll } from '@/composables/useScroll';
+import { useSystemStore } from '@/stores/system.storage';
+import { useDebounce } from '@/composables/useDebounce';
 
 const props = defineProps<{
     isShowInfoSection: boolean
 }>()
 
 const conversationStorage = useConversationStore()
+const systemStorage = useSystemStore()
 const userStorage = useUserStore()
 const messageStorage = useMessageStore()
 const { t } = useTranslate()
@@ -88,8 +91,6 @@ const { onScroll, scrollToBottom } = useScroll()
 const friendProfileModal = ref()
 const message = ref('')
 
-// let typingTimeout: any = null
-let lastSent = 0
 const typingUsers = ref<Map<number, any>>(new Map())
 
 const scrollContainer = ref<HTMLElement | null>(null)
@@ -165,16 +166,25 @@ const messagesWithMeta = computed(() => {
     })
 })
 
+const { debounced: sendTyping } = useDebounce(() => {
+    sockJSSendMessage({
+        conversationId: conversationStorage.conversation?.id,
+        username: userStorage.user?.username,
+        userId: userStorage.user?.id,
+    }, "chat.typing")
+}, 500)
+
 const scrollMore = () => {
     onScroll(scrollContainer, () => messageStorage.getMessages(conversationStorage.conversation!.id))
 }
 
 onMounted(async () => {
+    systemStorage.setShowBottomMenu(false)
     subTyping = socketSubscribe(`/user/queue/chat.typing.${conversationStorage.conversation?.id}`, (msg: any) => {
         const data = JSON.parse(msg.body)
 
         // bỏ qua chính mình
-        // if (data.userId === userStorage.user?.id) return
+        if (data.userId === userStorage.user?.id) return
 
         handleTyping(data)
         console.log(typingUsers.value.values())
@@ -192,21 +202,6 @@ let subTyping: StompSubscription | undefined
 onUnmounted(() => {
     subTyping?.unsubscribe()
 })
-
-const typing = () => {
-    const now = Date.now()
-
-    // chỉ gửi mỗi 1s
-    if (now - lastSent < 1000) return
-
-    lastSent = now
-
-    sockJSSendMessage({
-        conversationId: conversationStorage.conversation?.id,
-        username: userStorage.user?.username,
-        userId: userStorage.user?.id,
-    }, "chat.typing")
-}
 
 const handleTyping = (data: any) => {
     const userId = data.userId

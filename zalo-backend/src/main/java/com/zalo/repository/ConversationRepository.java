@@ -42,7 +42,7 @@ public interface ConversationRepository extends JpaRepository<Conversation, Long
     LEFT JOIN FETCH c.createdBy cr
     WHERE (:ids IS NULL OR c.id IN :ids)
     AND (:name IS NULL OR LOWER(c.name) LIKE LOWER(CONCAT('%', :name, '%')))
-    AND c.stt = 1
+    AND c.stt = 1 AND c.lastMessageId IS NOT NULL
     ORDER BY m.ct DESC
 """)
     Page<Conversation> findAllWithRelationShip(
