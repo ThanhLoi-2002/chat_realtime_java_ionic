@@ -13,6 +13,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     BaseButton: typeof import('./src/components/Button/BaseButton.vue')['default']
     CircleAvatar: typeof import('./src/components/Avatar/CircleAvatar.vue')['default']
+    Collapse: typeof import('./src/components/collapse/Collapse.vue')['default']
     ConfirmModal: typeof import('./src/components/Modal/ConfirmModal.vue')['default']
     FormInput: typeof import('./src/components/Input/FormInput.vue')['default']
     IonAlert: typeof import('@ionic/vue')['IonAlert']

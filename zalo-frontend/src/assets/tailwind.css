@@ -66,12 +66,12 @@ ion-content {
 
 /* Tùy chỉnh thanh cuộn cho toàn bộ trang */
 ::-webkit-scrollbar {
-  width: 5px; /* Chiều rộng của thanh cuộn dọc */
-  height: 5px; /* Chiều cao của thanh cuộn ngang */
+  width: 4px; /* Chiều rộng của thanh cuộn dọc */
+  height: 4px; /* Chiều cao của thanh cuộn ngang */
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Màu nền của thanh cuộn */
+  background: transparent; /* Màu nền của thanh cuộn */
   border-radius: 5px; /* Góc bo cho track */
 }
 

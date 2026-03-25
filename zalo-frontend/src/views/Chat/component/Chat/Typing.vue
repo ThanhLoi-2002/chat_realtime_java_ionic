@@ -128,6 +128,7 @@ const handleTyping = (data: any) => {
     })
 }
 </script>
+
 <style>
 .dot {
     width: 4px;

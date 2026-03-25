@@ -7,8 +7,8 @@ export function useConversation() {
     const userStorage = useUserStore()
     const { t } = useTranslate()
 
-    const isGroup = (conversation: ConversationType) => {
-        return conversation.type == ConversationEnum.GROUP
+    const isGroup = (conversation?: ConversationType) => {
+        return conversation?.type == ConversationEnum.GROUP
     }
 
     const getRecipient = (conversation?: ConversationType) => {
@@ -25,8 +25,8 @@ export function useConversation() {
         else return lastMessage.sender.username
     }
 
-    const conversationName = (conversation: ConversationType) => isGroup(conversation!) ? conversation?.name : getRecipient(conversation!)?.username
-    const conversationAvatar = (conversation: ConversationType) => isGroup(conversation!) ? conversation?.avatar?.url : getRecipient(conversation!)?.avatar?.url
+    const conversationName = (conversation?: ConversationType) => isGroup(conversation) ? conversation?.name : getRecipient(conversation!)?.username
+    const conversationAvatar = (conversation?: ConversationType) => isGroup(conversation) ? conversation?.avatar?.url : getRecipient(conversation!)?.avatar?.url
 
     return {
         isGroup, getRecipient, getUserNameFromLastMessage, conversationName, conversationAvatar

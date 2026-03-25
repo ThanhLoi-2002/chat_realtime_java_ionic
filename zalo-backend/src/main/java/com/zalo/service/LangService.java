@@ -60,10 +60,6 @@ public class LangService {
     }
 
     public Map<String,String> getByLang(String lang) {
-//        List<LangDto> list = langRepository.findByLang(lang);
-//        return list.stream()
-//                .collect(Collectors.toMap(LangDto::getCode, LangDto::getValue));
-//        System.out.println("list: " + G.toJson(cache));
         Map<String, String> result = new HashMap<>();
 
         for (Map.Entry<String, Map<String, String>> entry : cache.entrySet()) {
