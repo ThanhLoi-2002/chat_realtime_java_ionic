@@ -4,19 +4,31 @@
         @update:isShowInfoSection="val => emit('update:isShowInfoSection', val)" />
 
     <!-- MESSAGES -->
-    <div ref="scrollContainer" class="flex-1 overflow-y-auto p-6 space-y-2" @scroll="scrollMore">
-        <div v-if="messageStorage.isLoading" class="text-center text-gray-400 text-sm">
-            <LoadingSpinner />
-        </div>
-
-        <div v-for="msg in messagesWithMeta" :key="msg.id">
-            <!-- TIME SEPARATOR -->
-            <div v-if="msg.showTimeSeparator" class="text-center text-xs text-gray-400 my-3">
-                {{ formatSeparatorTime(msg.ct) }}
+    <div class="flex-1 relative overflow-hidden">
+        <!-- Phần cuộn tin nhắn -->
+        <div ref="scrollContainer" class="h-full overflow-y-auto p-6 space-y-2" @scroll="scrollMore">
+            <div v-if="messageStorage.isLoading" class="text-center text-gray-400 text-sm py-4">
+                <LoadingSpinner />
             </div>
 
-            <MessageContainer :message="msg" :friendProfileModal="friendProfileModal" />
+            <div v-for="msg in messagesWithMeta" :key="msg.id">
+                <div v-if="msg.showTimeSeparator" class="text-center text-xs text-gray-400 my-6">
+                    {{ formatSeparatorTime(msg.ct) }}
+                </div>
+
+                <MessageContainer :message="msg" :friendProfileModal="friendProfileModal" />
+            </div>
         </div>
+
+        <!-- NÚT SCROLL TO BOTTOM - CỐ ĐỊNH BÊN TRONG KHUNG CHAT -->
+        <button v-if="showScrollButton" @click="handleScrollBottom(true)" class="absolute bottom-6 right-6 z-30 
+             w-11 h-11 flex items-center justify-center 
+             bg-white dark:bg-gray-800 shadow-2xl rounded-2xl 
+             border border-gray-200 dark:border-gray-600
+             hover:bg-gray-50 dark:hover:bg-gray-700 
+             active:scale-95 transition-all duration-200">
+            <i class="fa-solid fa-arrow-down text-xl text-gray-600 dark:text-gray-300"></i>
+        </button>
     </div>
 
     <Modal ref="friendProfileModal" :title="t('profile')">
@@ -56,6 +68,7 @@ const { onScroll, scrollToBottom } = useScroll()
 const friendProfileModal = ref()
 
 const scrollContainer = ref<HTMLElement | null>(null)
+const showScrollButton = ref(false)
 
 const emit = defineEmits(['update:isShowInfoSection'])
 
@@ -112,15 +125,47 @@ const messagesWithMeta = computed(() => {
 })
 
 const scrollMore = () => {
-    if (messageStorage.isLoading || !messageStorage.hasMore) return
-    onScroll(scrollContainer.value, () => messageStorage.getMessages(conversationStorage.conversation!.id))
+    // if (messageStorage.isLoading || !messageStorage.hasMore) return
+
+    // checkScrollAtBottom()
+
+    // onScroll(scrollContainer.value, () => messageStorage.getMessages(conversationStorage.conversation!.id))
+
+    checkScrollAtBottom()
+
+    // Chỉ gọi load more khi gần đầu trang và còn dữ liệu
+    if (messageStorage.hasMore && !messageStorage.isLoading) {
+        const { scrollTop } = scrollContainer.value!
+        if (scrollTop < 300) {   // gần đầu
+            onScroll(scrollContainer.value, () =>
+                messageStorage.getMessages(conversationStorage.conversation!.id)
+            )
+        }
+    }
+}
+
+const checkScrollAtBottom = () => {
+    if (!scrollContainer.value) return
+    const { scrollTop, scrollHeight, clientHeight } = scrollContainer.value
+    const distanceFromBottom = scrollHeight - scrollTop - clientHeight
+
+    showScrollButton.value = distanceFromBottom > 200
+    console.log(distanceFromBottom > 200)
+}
+
+const handleScrollBottom = (smooth: boolean) => {
+    scrollToBottom(scrollContainer.value!, smooth)
+    // Đợi scroll hoàn tất rồi mới ẩn nút
+    setTimeout(() => {
+        showScrollButton.value = false
+    }, smooth ? 800 : 100)
 }
 
 const reset = async () => {
     sysStorage.setShowBottomMenu(false)
     messageStorage.resetPagination()
     await messageStorage.getMessages(conversationStorage.conversation!.id)
-    scrollToBottom(scrollContainer.value, false)
+    handleScrollBottom(false)
 }
 
 onMounted(async () => {

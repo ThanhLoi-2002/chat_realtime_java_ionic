@@ -44,8 +44,8 @@
                     </button>
 
                     <!-- REACTIONS: ẩn mặc định, hiện khi hover vào nút like -->
-                    <div class="absolute bottom-full -mb-1 left-1/2 -translate-x-1/2 hidden group-hover/like:flex gap-1
-                            bg-white dark:bg-gray-800 shadow-lg rounded-full px-2 py-1">
+                    <div class="absolute bottom-full -mb-1 -translate-x-1/2 hidden group-hover/like:flex gap-1
+                            bg-white dark:bg-gray-800 shadow-lg rounded-full px-2 py-1" :class="[isOwner ? '-right-20' : 'left-1/2']">
                         <span class="cursor-pointer hover:scale-125 transition">👍</span>
                         <span class="cursor-pointer hover:scale-125 transition">❤️</span>
                         <span class="cursor-pointer hover:scale-125 transition">😂</span>
