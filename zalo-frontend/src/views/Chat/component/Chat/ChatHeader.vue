@@ -39,7 +39,7 @@ import { useTranslate } from '@/composables/useTranslate';
 import { useConversationStore } from '@/stores/conversation.storage';
 import { useSystemStore } from '@/stores/system.storage';
 import { RANDOM_AVATAR } from '@/utils/constant';
-import { ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import FriendProfileUI from '../FriendProfileUI.vue';
 import Modal from '@/components/Modal/Modal.vue';
 
@@ -60,4 +60,22 @@ const onBack = () => {
     conversationStorage.selectConversation()
     systemStorage.setShowBottomMenu(true)
 }
+
+// const isRecipientOnline = computed(() => {
+//   const conversation = conversationStorage.conversation
+//   if (!conversation || isGroup(conversation)) return false
+
+//   const user = getRecipient(conversation)
+//   if (!user) return false
+
+//   return systemStorage.onlineUsers.has(user.id)
+// })
+
+onMounted(() => {
+
+})
+
+watch(() => conversationStorage.conversation, () => {
+    
+})
 </script>

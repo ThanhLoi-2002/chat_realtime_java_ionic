@@ -1,29 +1,226 @@
 <template>
-    <div class="p-4 font-semibold dark:text-white flex gap-2">
-        <div class="sm:hidden"><mobile-back-button :onClick="() => emit('update:isShowInfoSection', !isShowInfoSection)" /></div>
-        
-        <span class="">Info</span>
-    </div>
+    <div class="h-full flex flex-col bg-white dark:bg-[#0f172a] text-sm">
 
-    <div class="p-4">
-        <!-- ví dụ -->
-        <circle-avatar :url="RANDOM_AVATAR" size="size-16" :onClick="() => { }" />
+        <!-- HEADER -->
+        <div class="p-4 flex items-center gap-2 font-semibold 
+                border-b border-gray-200 dark:border-slate-700">
+            <div class="sm:hidden">
+                <mobile-back-button :onClick="() => emit('update:isShowInfoSection', false)" />
+            </div>
+            <span :class="['text-center w-full', style.text.secondary]">
+                {{ t("conversationInfo") }}
+            </span>
+        </div>
 
-        <div class="mt-3 dark:text-slate-200">
-            {{ conversationStorage.recipient?.username }}
+        <!-- USER INFO -->
+        <div :class="['py-4 border-b overflow-y-auto', style.border.primary]">
+
+            <div class="flex flex-col items-center justify-center">
+                <circle-avatar :url="RANDOM_AVATAR" size="size-20" />
+
+                <div class="mt-3 font-medium dark:text-white gap-2">
+                    {{ getRecipient(conversationStorage.conversation)?.username }}
+
+                    <!-- EDIT -->
+                    <i class="i-heroicons-pencil-square text-gray-400 hover:text-blue-500 cursor-pointer transition"
+                        @click="onEditName"></i>
+                </div>
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="flex justify-center gap-8 mt-4 text-xs text-center">
+
+                <div class="group cursor-pointer flex flex-col items-center gap-1" @click="toggleMute">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full
+                      bg-gray-200 dark:bg-slate-700
+                      group-hover:bg-gray-300 dark:group-hover:bg-slate-600 transition">
+                        🔔
+                    </div>
+                    <span :class="['group-hover:text-black dark:group-hover:text-white', style.text.secondary]">
+                        Tắt thông báo
+                    </span>
+                </div>
+
+                <div class="group cursor-pointer flex flex-col items-center gap-1" @click="togglePin">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full
+                      bg-gray-200 dark:bg-slate-700
+                      group-hover:bg-gray-300 dark:group-hover:bg-slate-600 transition">
+                        📌
+                    </div>
+                    <span :class="['group-hover:text-black dark:group-hover:text-white', style.text.secondary]">
+                        Ghim hội thoại
+                    </span>
+                </div>
+
+                <div class="group cursor-pointer flex flex-col items-center gap-1" @click="createGroup">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full
+                      bg-gray-200 dark:bg-slate-700
+                      group-hover:bg-gray-300 dark:group-hover:bg-slate-600 transition">
+                        👥
+                    </div>
+                    <span :class="['group-hover:text-black dark:group-hover:text-white', style.text.secondary]">
+                        {{ t("createGroup") }}
+                    </span>
+                </div>
+            </div>
+
+
+            <!-- CONTENT -->
+            <div class="flex-1 mt-2">
+                <!-- REMINDER -->
+                <section
+                    :class="['p-4 border-b hover:bg-gray-50 dark:hover:bg-slate-800 cursor-pointer', style.border.primary, style.text.secondary]">
+                    Danh sách nhắc hẹn
+                </section>
+
+                <!-- COMMON GROUP -->
+                <section
+                    :class="['p-4 border-b hover:bg-gray-50 dark:hover:bg-slate-800 cursor-pointer', style.border.primary, style.text.secondary]">
+                    👥 3 nhóm chung
+                </section>
+
+                <!-- MEDIA -->
+                <section class="p-4 border-b border-gray-200 dark:border-slate-700">
+                    <div class="flex justify-between items-center mb-3 cursor-pointer"
+                        @click="open.media = !open.media">
+                        <span class="font-medium dark:text-white">Ảnh/Video</span>
+                        <span :class="[open.media ? 'rotate-180' : '', style.text.primary]" class="transition">▼</span>
+                    </div>
+
+                    <div v-show="open.media" class="flex flex-col gap-4">
+                        <div class="grid grid-cols-3 gap-2">
+                            <div v-for="i in 6" :key="i" class="aspect-square rounded bg-gray-200 dark:bg-slate-700
+                     hover:scale-105 transition cursor-pointer" />
+                        </div>
+
+                        <ion-button class="btn mx-auto w-full normal-case">{{ t("seeAll") }}</ion-button>
+                    </div>
+                </section>
+
+                <!-- FILE -->
+                <section class="p-4 border-b border-gray-200 dark:border-slate-700">
+                    <div class="flex justify-between items-center mb-3 cursor-pointer" @click="open.file = !open.file">
+                        <span class="font-medium dark:text-white">File</span>
+                        <span :class="[open.file ? 'rotate-180' : '', , style.text.primary]" class="transition">▼</span>
+                    </div>
+
+                    <div v-show="open.file" class="flex flex-col gap-4">
+                        <div class="flex items-center gap-3 p-2 rounded
+                   bg-gray-100 dark:bg-slate-800
+                   hover:bg-gray-200 dark:hover:bg-slate-700
+                   cursor-pointer transition" @click="openFile">
+                            <div class="w-10 h-10 bg-purple-500 rounded flex items-center justify-center text-white">
+                                ▶
+                            </div>
+
+                            <div class="flex-1">
+                                <div class="truncate dark:text-white">Record_2025.mp4</div>
+                                <div class="text-xs text-gray-400">3.78 MB</div>
+                            </div>
+
+                            <div class="text-xs text-gray-400">26/12/2025</div>
+                        </div>
+
+                        <ion-button class="btn mx-auto w-full normal-case">{{ t("seeAll") }}</ion-button>
+                    </div>
+                </section>
+
+                <!-- LINK -->
+                <section class="p-4 border-b border-gray-200 dark:border-slate-700">
+                    <div class="font-medium mb-2 dark:text-white">Link</div>
+                    <div class="text-gray-400 text-sm">
+                        Chưa có link được chia sẻ
+                    </div>
+                </section>
+
+                <!-- SECURITY -->
+                <section class="p-4">
+                    <div class="flex justify-between items-center mb-3 cursor-pointer"
+                        @click="open.security = !open.security">
+                        <span class="font-medium dark:text-white">Thiết lập bảo mật</span>
+                        <span :class="[open.security ? 'rotate-180' : '', , style.text.primary]"
+                            class="transition">▼</span>
+                    </div>
+
+                    <div v-show="open.security" class="space-y-4">
+
+                        <div>
+                            <div class="dark:text-white">Tin nhắn tự xóa</div>
+                            <div class="text-xs text-gray-400">Không bao giờ</div>
+                        </div>
+
+                        <!-- SWITCH -->
+                        <div class="flex justify-between items-center">
+                            <span class="dark:text-white">Ẩn trò chuyện</span>
+
+                            <button @click="isHidden = !isHidden"
+                                class="w-10 h-6 flex items-center rounded-full p-1 transition"
+                                :class="isHidden ? 'bg-blue-500' : 'bg-gray-300 dark:bg-slate-600'">
+                                <div class="w-4 h-4 bg-white rounded-full shadow transition"
+                                    :class="isHidden ? 'translate-x-4' : ''" />
+                            </button>
+                        </div>
+
+                        <div class="text-red-500 hover:text-red-600 cursor-pointer transition"
+                            @click="deleteConversation">
+                            Xóa lịch sử trò chuyện
+                        </div>
+
+                    </div>
+                </section>
+
+            </div>
         </div>
     </div>
 </template>
+
 <script setup lang="ts">
-import { useConversationStore } from '@/stores/conversation.storage';
-import { RANDOM_AVATAR } from '@/utils/constant';
-import MobileBackButton from '@/components/Button/MobileBackButton.vue';
-
-const props = defineProps<{
-    isShowInfoSection: boolean
-}>()
-
-const conversationStorage = useConversationStore()
+import { reactive, ref } from 'vue'
+import { useConversationStore } from '@/stores/conversation.storage'
+import { RANDOM_AVATAR } from '@/utils/constant'
+import MobileBackButton from '@/components/Button/MobileBackButton.vue'
+import { useConversation } from '@/composables/useConversation'
+import { useTranslate } from '@/composables/useTranslate'
+import { style } from '@/assets/tailwindcss'
 
 const emit = defineEmits(['update:isShowInfoSection'])
+
+const conversationStorage = useConversationStore()
+const { t } = useTranslate()
+const { getRecipient } = useConversation()
+
+/* STATE */
+const isHidden = ref(false)
+
+const open = reactive({
+    media: true,
+    file: true,
+    security: true
+})
+
+/* ACTION */
+const toggleMute = () => console.log('mute')
+const togglePin = () => console.log('pin')
+const createGroup = () => console.log('create group')
+const onEditName = () => console.log('edit name')
+const openFile = () => console.log('open file')
+const deleteConversation = () => console.log('delete')
+
+const actions = [
+    {
+        icon: '',
+        title: 'Tắt thông báo',
+        onClick: () => {}
+    },
+    {
+        icon: '',
+        title: 'Ghim hội thoại',
+        onClick: () => {}
+    },
+    {
+        icon: '',
+        title: 'createGroup',
+        onClick: () => {}
+    }
+]
 </script>

@@ -1,11 +1,9 @@
 package com.zalo.gateway;
 
-import com.zalo.configuration.G;
-import com.zalo.dto.response.Message.MessageResponse;
-import com.zalo.model.Conversation;
 import com.zalo.model.ConversationMember;
 import com.zalo.repository.ConversationMemberRepository;
 import com.zalo.service.ConversationService;
+import com.zalo.service.WebsocketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -25,7 +23,7 @@ public class WebSocketEventListener {
     private final SimpMessagingTemplate messagingTemplate;
     private final UserOnlineStorage userOnlineStorage;
     private final ConversationMemberRepository memberRepository;
-    private final ConversationService conversationService;
+    private final WebsocketService websocketService;
 
     public Long getUserIdFromSession(SessionSubscribeEvent event) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
@@ -54,8 +52,9 @@ public class WebSocketEventListener {
 
         userOnlineStorage.addSession(userId, sessionId);
 
-        System.out.println("User ONLINE userId: " + userId);
-        System.out.println("User ONLINE sessionId: " + sessionId);
+        websocketService.broadcastStatus(userId, true);
+
+        System.out.println("User CONNECT: " + userId + " session=" + sessionId);
     }
 
     @EventListener
@@ -66,10 +65,10 @@ public class WebSocketEventListener {
 
         Long userId = userOnlineStorage.getUserIdBySessionId(sessionId); // 🔥 chuẩn nhất
 
-        System.out.println("User DISCONNECT: " + userId + " session=" + sessionId);
-
         if (userId != null) {
             userOnlineStorage.removeSession(userId, sessionId);
+            websocketService.broadcastStatus(userId, false);
+            System.out.println("User DISCONNECT: " + userId + " session=" + sessionId);
         }
     }
 

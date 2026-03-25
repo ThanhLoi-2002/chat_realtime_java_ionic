@@ -63,7 +63,7 @@ onUnmounted(() => {
 
     <!-- INFO SECTION -->
     <aside :class="[
-      'sm:w-80 border-l border-slate-200 dark:border-slate-500 bg-white dark:bg-gray-900 flex flex-col transition-all duration-300',
+      'sm:w-96 border-l border-slate-200 dark:border-slate-500 bg-white dark:bg-gray-900 flex flex-col transition-all duration-300',
       isShowInfoSection ? 'flex' : 'hidden',
       isMobile ? 'fixed top-0 right-0 z-50 h-full w-full' : ''
     ]">

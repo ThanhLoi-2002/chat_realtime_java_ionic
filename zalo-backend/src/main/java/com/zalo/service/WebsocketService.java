@@ -21,7 +21,6 @@ import java.util.Set;
 public class WebsocketService {
     private final ConversationMemberRepository memberRepo;
     private final SimpMessagingTemplate messagingTemplate;
-    private final ConversationService conversationService;
     private  final UserOnlineStorage userOnlineStorage;
 
     public void sendMessage(MessageResponse message, ConversationResponse conv) {
@@ -48,23 +47,13 @@ public class WebsocketService {
         }
     }
 
-    public void newConversation(ConversationResponse conv) {
-        List<ConversationMember> members = memberRepo.findByConversationId(
-                conv.getId()
+    public void broadcastStatus(Long userId, boolean online) {
+        messagingTemplate.convertAndSend(
+                "/topic/user.status",
+                (Object) Map.of(
+                        "userId", userId,
+                        "online", online
+                )
         );
-
-        for (ConversationMember member : members) {
-            Set<String> sessions = userOnlineStorage.getSessions(member.getUserId());
-
-            for (String sessionId : sessions) {
-
-                messagingTemplate.convertAndSendToUser(
-                        sessionId,
-                        "/queue/chat.newConversations",
-                        conv,
-                        userOnlineStorage.createHeaders(sessionId)
-                );
-            }
-        }
     }
 }

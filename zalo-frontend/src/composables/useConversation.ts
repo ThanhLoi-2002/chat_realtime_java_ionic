@@ -11,10 +11,10 @@ export function useConversation() {
         return conversation.type == ConversationEnum.GROUP
     }
 
-    const getRecipient = (conversation: ConversationType) => {
-        if (userStorage.user?.id == conversation.recipient?.id)
-            return conversation.createdBy
-        else return conversation.recipient
+    const getRecipient = (conversation?: ConversationType) => {
+        if (userStorage.user?.id == conversation?.recipient?.id)
+            return conversation?.createdBy
+        else return conversation?.recipient
     }
 
     const getUserNameFromLastMessage = (lastMessage?: MessageType) => {
