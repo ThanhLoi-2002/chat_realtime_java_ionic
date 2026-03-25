@@ -3,6 +3,7 @@ package com.zalo.dto.request.Message;
 import com.zalo.model.enums.MessageType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @NoArgsConstructor
@@ -11,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PUBLIC)
 public class CreateMessageRequest {
     String content;
-    MessageType type = MessageType.TEXT;
+    MessageType contentType = MessageType.TEXT;
     Long replyToId;
+    MultipartFile file;
 }

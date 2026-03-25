@@ -1,107 +1,73 @@
 <template>
-  <div>
-    <!-- Typing indicator (giữ nguyên) -->
-    <div v-if="typingUsers.size > 0" class="text-sm text-gray-600 dark:text-gray-400 px-4 pb-2 flex items-center gap-1">
-      <span>
-        <span v-for="([id, user], index) in typingUsers" :key="id">
-          <span v-if="index > 0">, </span>{{ user.username }}
-        </span>
-        {{ t("typing") }}
-      </span>
-      <span class="flex gap-1 ml-1">
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-      </span>
+    <div>
+        <!-- Typing indicator (giữ nguyên) -->
+        <div v-if="typingUsers.size > 0"
+            class="text-sm text-gray-600 dark:text-gray-400 px-4 pb-2 flex items-center gap-1">
+            <span>
+                <span v-for="([id, user], index) in typingUsers" :key="id">
+                    <span v-if="index > 0">, </span>{{ user.username }}
+                </span>
+                {{ t("typing") }}
+            </span>
+            <span class="flex gap-1 ml-1">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </span>
+        </div>
+
+        <div ref="emojiWrapper">
+            <EmojiPicker v-show="showEmoji" class="fixed bottom-30" @select="handleSelectEmoji" />
+        </div>
+
+        <div v-if="previewImages.length > 0" class="flex gap-2 p-2 overflow-x-auto">
+
+            <div v-for="(img, index) in previewImages" :key="index"
+                class="relative w-20 h-20 rounded-xl overflow-hidden">
+                <img :src="img" class="w-full h-full object-cover" />
+
+                <!-- nút xoá -->
+                <button @click="removeImage(index)"
+                    class="absolute top-1 right-1 bg-black/50 text-white rounded-full px-1 text-xs">
+                    ✕
+                </button>
+            </div>
+        </div>
+
+        <!-- INPUT BAR -->
+        <div class="p-3 border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-gray-900">
+            <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-800 rounded-2xl px-4 py-1.5">
+                <!-- Left icons -->
+                <div class="flex gap-2 border-b pb-1" :class="[style.border.primary]">
+                    <button @click.stop="toggleEmoji"
+                        class="text-2xl text-gray-500 dark:text-gray-400 hover:text-blue-500 transition cursor-pointer">
+                        🙂
+                    </button>
+
+                    <input type="file" ref="fileInput" multiple accept="image/*" class="hidden"
+                        @change="handleSelectImages" />
+
+                    <button @click="fileInput?.click()"
+                        class="text-2xl text-gray-500 dark:text-gray-400 cursor-pointer">
+                        📎
+                    </button>
+                </div>
+
+                <!-- Message Input -->
+                <div class="flex gap-2">
+                    <input ref="inputRef" v-model="message" @keyup.enter="sendMessage" @input="sendTyping"
+                        :placeholder="t('typeMessage')"
+                        class="flex-1 bg-transparent outline-none text-base dark:text-slate-200 placeholder-gray-400 dark:placeholder-gray-500" />
+                    <base-button icon="fa-solid fa-paper-plane text-blue-500 text-xl" @click="sendMessage"
+                        class="ml-1" />
+                </div>
+            </div>
+        </div>
     </div>
-
-    <!-- INPUT BAR -->
-    <div class="p-3 border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-gray-900">
-      <div class="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-2xl px-4 py-1.5">
-        
-        <!-- Left icons -->
-        <button @click="togglePicker" class="text-2xl text-gray-500 dark:text-gray-400 hover:text-blue-500 transition">
-          🙂
-        </button>
-        <button class="text-2xl text-gray-500 dark:text-gray-400">
-          📎
-        </button>
-
-        <!-- Message Input -->
-        <input
-          v-model="message"
-          @keyup.enter="sendMessage"
-          @input="sendTyping"
-          :placeholder="t('typeMessage')"
-          class="flex-1 bg-transparent outline-none text-base dark:text-slate-200 placeholder-gray-400 dark:placeholder-gray-500"
-        />
-
-        <!-- Right icons -->
-        <button @click="togglePicker" class="text-2xl text-gray-500 dark:text-gray-400 hover:text-blue-500 transition">
-          😊
-        </button>
-        <base-button 
-          icon="fa-solid fa-paper-plane text-blue-500 text-xl" 
-          @click="sendMessage" 
-          class="ml-1" 
-        />
-      </div>
-
-      <!-- Sticker / Emoji / GIF Picker -->
-      <div v-if="showPicker" 
-           class="mt-2 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-        
-        <!-- Tabs -->
-        <div class="flex border-b border-gray-200 dark:border-gray-700">
-          <button 
-            v-for="tab in tabs" 
-            :key="tab.key"
-            @click="activeTab = tab.key"
-            :class="[
-              'flex-1 py-3 text-sm font-medium transition',
-              activeTab === tab.key 
-                ? 'text-blue-500 border-b-2 border-blue-500' 
-                : 'text-gray-500 dark:text-gray-400'
-            ]">
-            {{ tab.label }}
-          </button>
-        </div>
-
-        <!-- Search -->
-        <div class="p-3">
-          <div class="relative">
-            <input 
-              v-model="searchQuery"
-              placeholder="Tìm kiếm sticker" 
-              class="w-full bg-gray-100 dark:bg-gray-700 rounded-xl py-2.5 pl-10 text-sm focus:outline-none"
-            />
-            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
-          </div>
-        </div>
-
-        <!-- Content Area -->
-        <div class="max-h-80 overflow-auto p-3 grid grid-cols-4 gap-3" style="scrollbar-width: thin;">
-          <!-- Gần đây + Sticker grid -->
-          <div v-for="(item, i) in filteredItems" :key="i" 
-               class="aspect-square flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded-2xl cursor-pointer hover:scale-110 transition active:scale-95"
-               @click="sendSticker(item)">
-            <img :src="item.url" class="w-14 h-14 object-contain" alt="sticker" />
-          </div>
-        </div>
-
-        <!-- Bottom quick icons (như Zalo) -->
-        <div class="border-t border-gray-200 dark:border-gray-700 p-3 flex gap-4 overflow-x-auto">
-          <button v-for="(icon, i) in quickIcons" :key="i" 
-                  class="text-3xl shrink-0 hover:scale-110 transition">
-            {{ icon }}
-          </button>
-          <button class="text-3xl shrink-0 text-gray-400">+</button>
-        </div>
-      </div>
-    </div>
-  </div>
 </template>
 <script setup lang="ts">
+import { style } from '@/assets/tailwindcss';
+import EmojiPicker from '@/components/Emoji/EmojiPicker.vue';
 import { useDebounce } from '@/composables/useDebounce';
 import { useScroll } from '@/composables/useScroll';
 import { useTranslate } from '@/composables/useTranslate';
@@ -112,7 +78,7 @@ import { SendMessageType } from '@/types/common';
 import { MessageEnum } from '@/types/enum';
 import { socketSubscribe, sockJSSendMessage } from '@/utils/websocket';
 import { StompSubscription } from '@stomp/stompjs';
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
 const props = defineProps<{
     scrollContainer: HTMLElement | null
@@ -125,42 +91,53 @@ const messageStorage = useMessageStore()
 const { scrollToBottom } = useScroll()
 
 const message = ref('')
+const inputRef = ref(null)
 const typingUsers = ref<Map<number, any>>(new Map())
+const emojiWrapper = ref<any>(null)
 
-const showPicker = ref(false)
-const activeTab = ref<'sticker' | 'emoji' | 'gif' | string>('sticker')
-const searchQuery = ref('')
+const fileInput = ref<HTMLInputElement | null>(null)
+const selectedImages = ref<File[]>([])
+const previewImages = ref<string[]>([])
+const showEmoji = ref(false)
 
-const tabs = [
-  { key: 'sticker', label: 'STICKER' },
-  { key: 'emoji',   label: 'EMOJI' },
-  { key: 'gif',     label: 'GIF' }
-]
+const handleSelectImages = (e: Event) => {
+    const input = e.target as HTMLInputElement
+    const files = Array.from(input.files || [])
 
-// Dữ liệu mẫu sticker (bạn thay bằng API sau)
-const recentStickers = ref([
-  { url: 'https://via.placeholder.com/100/FF6B6B/fff?text=Cat' },
-  { url: 'https://via.placeholder.com/100/4ECDC4/fff?text=Meow' },
-  { url: 'https://via.placeholder.com/100/45B7D1/fff?text=Wow' },
-  // ... thêm nhiều hơn
-])
+    selectedImages.value = [...selectedImages.value, ...files]
 
-const filteredItems = computed(() => {
-  // sau này filter theo searchQuery + activeTab
-  return recentStickers.value
-})
+    // tạo preview
+    files.forEach((file: File) => {
+        const url = URL.createObjectURL(file)
+        previewImages.value.push(url)
+    })
 
-const quickIcons = ['🐱', '😺', '😹', '🙀', '😻', '🐶']
-
-const togglePicker = () => {
-  showPicker.value = !showPicker.value
+    // reset input để chọn lại cùng file vẫn trigger
+    // e.target.value = ''
 }
 
-const sendSticker = (sticker: any) => {
-  // Gửi sticker (contentType = STICKER, content = sticker.url)
-  console.log('Gửi sticker:', sticker)
-  showPicker.value = false
-  // gọi messageStorage.sendMessage(...)
+const removeImage = (index: number) => {
+    previewImages.value.splice(index, 1)
+    selectedImages.value.splice(index, 1)
+}
+
+const sendImages = async () => {
+    for (const file of selectedImages.value) {
+        await messageStorage.sendMessage({
+            file,
+            conversationId: conversationStorage.conversation?.id,
+            contentType: MessageEnum.IMAGE
+        })
+    }
+
+    // clear
+    selectedImages.value = []
+    previewImages.value = []
+}
+
+const toggleEmoji = () => {
+    showEmoji.value = !showEmoji.value
+    console.log(showEmoji.value)
 }
 
 const { debounced: sendTyping } = useDebounce(() => {
@@ -171,7 +148,33 @@ const { debounced: sendTyping } = useDebounce(() => {
     }, "chat.typing")
 }, 300)
 
+const handleSelectEmoji = (emoji: any) => {
+    const input: any = inputRef.value
+    if (!input) return
+
+    const start = input.selectionStart
+    const end = input.selectionEnd
+
+    const text = message.value
+
+    // 👉 chèn emoji vào đúng vị trí cursor
+    message.value =
+        text.slice(0, start) +
+        emoji +
+        text.slice(end)
+
+    // 👉 giữ focus + set lại cursor
+    nextTick(() => {
+        input.focus()
+        input.selectionStart = input.selectionEnd = start + emoji.length
+    })
+}
+
 const sendMessage = async () => {
+    if (selectedImages.value.length) {
+        await sendImages()
+    }
+
     if (!message.value.trim()) return
 
     const payload: SendMessageType = {
@@ -188,13 +191,24 @@ const sendMessage = async () => {
     }
 }
 
+const handleClickOutside = (event: any) => {
+    if (!emojiWrapper.value) return
+
+    // nếu click KHÔNG nằm trong picker → đóng
+    if (!emojiWrapper.value.contains(event.target)) {
+        showEmoji.value = false
+    }
+}
+
 let subTyping: StompSubscription | undefined
 
 onMounted(() => {
+    document.addEventListener('click', handleClickOutside)
     resetSubscribe()
 })
 
 onUnmounted(() => {
+    document.removeEventListener('click', handleClickOutside)
     subTyping?.unsubscribe()
 })
 

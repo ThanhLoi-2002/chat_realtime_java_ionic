@@ -19,7 +19,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     FROM Message m
     LEFT JOIN FETCH m.sender
     LEFT JOIN FETCH m.replyToMessage
-    WHERE m.conversationId = :conversationId AND m.stt = 1
+    WHERE m.conversationId = :conversationId
     ORDER BY m.ct DESC
 """)
     Page<Message> findAllWithRelationShip(
@@ -32,7 +32,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     FROM Message m
     LEFT JOIN FETCH m.sender
     LEFT JOIN FETCH m.replyToMessage
-    WHERE m.conversationId = :conversationId AND m.id = :id AND m.stt = 1
+    WHERE m.conversationId = :conversationId AND m.id = :id
 """)
     Optional<Message> findOneWithRelationShip(
             @Param("id") Long id,

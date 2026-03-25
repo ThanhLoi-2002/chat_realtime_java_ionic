@@ -42,7 +42,9 @@
 <script setup lang="ts">
 import { useConversation } from '@/composables/useConversation';
 import { useDateTime } from '@/composables/useDateTime';
-import { ConversationType } from '@/types/entities';
+import { useTranslate } from '@/composables/useTranslate';
+import { ConversationType, MessageType } from '@/types/entities';
+import { MessageEnum } from '@/types/enum';
 import { RANDOM_AVATAR } from '@/utils/constant';
 import { computed } from 'vue';
 const props = defineProps<{
@@ -50,8 +52,30 @@ const props = defineProps<{
   selectedConversation?: ConversationType
 }>()
 
+const { t } = useTranslate()
 const { getUserNameFromLastMessage, conversationAvatar, conversationName } = useConversation()
 const { timeAgo } = useDateTime()
 
-const lastMessageContent = computed(() => `${getUserNameFromLastMessage(props.conversation.lastMessage)}: ${props.conversation.lastMessage?.content}`)
+const lastMessageContent = computed(() => {
+  let content = ''
+  const lastMessage: MessageType | undefined = props.conversation.lastMessage
+
+  switch (lastMessage?.contentType) {
+    case MessageEnum.IMAGE:
+      content = t("Vừa gửi 1 ảnh")
+      break
+
+    case MessageEnum.FILE:
+      content = t("Vừa gửi 1 file")
+      break
+
+    case MessageEnum.TEXT:
+      content = lastMessage.content
+      break
+
+    default:
+      content = lastMessage?.content || ''
+  }
+  return `${getUserNameFromLastMessage(lastMessage)}: ${content}`
+})
 </script>

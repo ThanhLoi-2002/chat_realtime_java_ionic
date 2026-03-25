@@ -1,5 +1,5 @@
 export enum ConversationEnum {
-  PRIVATE, GROUP
+    PRIVATE, GROUP
 }
 
 export enum MemberRoleEnum {
@@ -7,7 +7,7 @@ export enum MemberRoleEnum {
 }
 
 export enum MessageEnum {
-    TEXT, IMAGE, FILE, SYSTEM
+    TEXT = "TEXT", IMAGE = "IMAGE", FILE = "FILE", SYSTEM = "SYSTEM", STICKER = "STICKER"
 }
 
 export enum DeliveryStatusEnum {

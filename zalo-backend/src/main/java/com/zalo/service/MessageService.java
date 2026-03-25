@@ -5,22 +5,20 @@ import com.zalo.dto.filter.MessageFilter;
 import com.zalo.dto.request.Message.CreateMessageRequest;
 import com.zalo.dto.response.Message.MessageResponse;
 import com.zalo.dto.response.conversation.ConversationResponse;
-import com.zalo.model.Conversation;
-import com.zalo.model.ConversationMember;
-import com.zalo.model.Message;
-import com.zalo.model.MessageStatus;
+import com.zalo.model.*;
 import com.zalo.model.enums.DeliveryStatus;
+import com.zalo.model.enums.MessageType;
 import com.zalo.repository.*;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -34,8 +32,9 @@ public class MessageService {
     private final ConversationService conversationService;
     private final EntityManager em;
     private final WebsocketService websocketService;
+    private final CloudinaryService cloudinaryService;
 
-    public Message sendMessage(Long conversationId, Long senderId, CreateMessageRequest dto) {
+    public void sendMessage(Long conversationId, Long senderId, CreateMessageRequest dto) throws IOException {
         // check sender is member
         ConversationMember cm = memberRepo.findByConversationIdAndUserId(conversationId, senderId)
                 .orElseThrow(() -> new IllegalArgumentException("Sender is not a member"));
@@ -47,9 +46,17 @@ public class MessageService {
                 .conversationId(conversationId)
                 .senderId(senderId)
                 .content(dto.content)
-                .contentType(dto.type)
+                .contentType(dto.contentType)
                 .replyToMessageId(dto.replyToId)
                 .build();
+        System.out.println("File: " + dto.contentType);
+        if(dto.contentType == MessageType.IMAGE){
+            File file = cloudinaryService.uploadFile(dto.file);
+            m.setFile(file);
+            System.out.println("File: " + G.toJson(file));
+            System.out.println("m: " + G.toJson(m));
+        }
+
         m = messageRepo.save(m);
         // clear persistence context
         em.flush();
@@ -81,8 +88,6 @@ public class MessageService {
         statusRepo.saveAll(statuses);
 
         websocketService.sendMessage(new MessageResponse(m), new ConversationResponse(conv));
-
-        return m;
     }
 
     public Page<MessageResponse> fetchMessages(Long conversationId, MessageFilter filter) {

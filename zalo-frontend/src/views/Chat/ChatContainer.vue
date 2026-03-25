@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import { useTranslate } from '@/composables/useTranslate';
 import { useConversationStore } from '@/stores/conversation.storage';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useMessageStore } from '@/stores/message.storage';
 import ChatHeader from './component/Chat/ChatHeader.vue';
 import { useConversation } from '@/composables/useConversation';
@@ -150,7 +150,6 @@ const checkScrollAtBottom = () => {
     const distanceFromBottom = scrollHeight - scrollTop - clientHeight
 
     showScrollButton.value = distanceFromBottom > 200
-    console.log(distanceFromBottom > 200)
 }
 
 const handleScrollBottom = (smooth: boolean) => {
@@ -161,11 +160,33 @@ const handleScrollBottom = (smooth: boolean) => {
     }, smooth ? 800 : 100)
 }
 
+const waitForImages = async () => {
+    const container = scrollContainer.value
+    if (!container) return
+
+    const images = container.querySelectorAll('img')
+
+    await Promise.all(
+        Array.from(images).map(img => {
+            if (img.complete) return Promise.resolve()
+            return new Promise(resolve => {
+                img.onload = resolve
+                img.onerror = resolve
+            })
+        })
+    )
+}
+
 const reset = async () => {
     sysStorage.setShowBottomMenu(false)
     messageStorage.resetPagination()
     await messageStorage.getMessages(conversationStorage.conversation!.id)
+
+    await nextTick()
+    await waitForImages()
+    
     handleScrollBottom(false)
+    console.log('123')
 }
 
 onMounted(async () => {

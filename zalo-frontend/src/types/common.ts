@@ -28,6 +28,7 @@ export type SendMessageType = {
   conversationId?: number
   replyToId?: number
   contentType: MessageEnum
+  file?: File
 }
 
 export type BaseFilter = {

@@ -11,10 +11,15 @@
         <!-- BUBBLE -->
         <div class="relative group"> <!-- thêm class group ở đây -->
             <div ref="bubbleRef" :class="[
-                'px-4 py-2 text-sm border flex flex-col rounded-lg relative',
-                isOwner
-                    ? 'bg-blue-500 text-white border-blue-500'
-                    : 'bg-white dark:bg-gray-800 dark:text-slate-100 border-slate-300 dark:border-gray-700'
+                'text-sm flex flex-col relative',
+
+                // 👉 chỉ áp dụng bubble khi KHÔNG phải image
+                (message.contentType !== MessageEnum.IMAGE || message.contentType == MessageEnum.FILE) && [
+                    'px-4 py-2 border rounded-lg',
+                    isOwner
+                        ? 'bg-blue-500 text-white border-blue-500'
+                        : 'bg-white dark:bg-gray-800 dark:text-slate-100 border-slate-300 dark:border-gray-700'
+                ]
             ]">
 
                 <!-- USERNAME -->
@@ -23,7 +28,23 @@
                 </span>
 
                 <!-- CONTENT -->
-                <span class="py-1">{{ message.content }}</span>
+                <div class="py-1">
+                    <!-- nếu bị thu hồi -->
+                    <span v-if="message.stt === -1" class="italic text-gray-600 dark:text-gray-700">
+                        {{ isOwner ? 'Bạn đã thu hồi tin nhắn' : 'Tin nhắn đã bị thu hồi' }}
+                    </span>
+
+                    <!-- nếu là image -->
+                    <img v-else-if="message.contentType === MessageEnum.IMAGE" :src="message.file.url"
+                        @click="handlePreviewImage(message.file.url)"
+                        class="max-w-55 rounded-xl object-cover cursor-pointer hover:opacity-90 transition" />
+
+                    <!-- text bình thường -->
+                    <span v-else>
+                        {{ message.content }}
+                    </span>
+                </div>
+
                 <!-- TIME -->
                 <span v-if="message.showTime" :class="[
                     'text-xs',
@@ -45,7 +66,8 @@
 
                     <!-- REACTIONS: ẩn mặc định, hiện khi hover vào nút like -->
                     <div class="absolute bottom-full -mb-1 -translate-x-1/2 hidden group-hover/like:flex gap-1
-                            bg-white dark:bg-gray-800 shadow-lg rounded-full px-2 py-1" :class="[isOwner ? '-right-20' : 'left-1/2']">
+                            bg-white dark:bg-gray-800 shadow-lg rounded-full px-2 py-1"
+                        :class="[isOwner ? '-right-20' : 'left-1/2']">
                         <span class="cursor-pointer hover:scale-125 transition">👍</span>
                         <span class="cursor-pointer hover:scale-125 transition">❤️</span>
                         <span class="cursor-pointer hover:scale-125 transition">😂</span>
@@ -99,6 +121,24 @@
                 </div>
             </div>
         </teleport>
+
+        <div v-if="previewImage" class="fixed inset-0 z-50 flex items-center justify-center 
+           bg-black/80 backdrop-blur-sm">
+
+            <!-- overlay click để đóng -->
+            <div class="absolute inset-0" @click="closePreview"></div>
+
+            <!-- ảnh -->
+            <img :src="previewImage" class="relative max-w-[90vw] max-h-[90vh] rounded-xl shadow-2xl z-10" />
+
+            <!-- nút close -->
+            <button @click="closePreview" class="absolute top-5 right-5 z-20 
+               w-10 h-10 flex items-center justify-center 
+               bg-white/10 hover:bg-white/20 
+               rounded-full text-white text-xl">
+                ✕
+            </button>
+        </div>
     </div>
 </template>
 
@@ -108,6 +148,7 @@ import { useDateTime } from '@/composables/useDateTime'
 import { useUserStore } from '@/stores/user.storage'
 import CircleAvatar from '@/components/Avatar/CircleAvatar.vue'
 import { useTranslate } from '@/composables/useTranslate';
+import { MessageEnum } from '@/types/enum';
 
 const props = defineProps<{
     message: any
@@ -122,7 +163,6 @@ const userStorage = useUserStore()
 const isOwner = props.message.sender.id === userStorage.user?.id
 
 // refs
-const rootRef = ref<HTMLElement | null>(null)
 const bubbleRef = ref<HTMLElement | null>(null)
 const moreBtnRef = ref<HTMLElement | null>(null)
 const menuRef = ref<HTMLElement | null>(null)
@@ -192,6 +232,16 @@ const positionMenu = () => {
         left: `${Math.round(left)}px`,
         opacity: menuInlineStyle.value.opacity ?? '1'
     }
+}
+
+const previewImage = ref<string | null>(null)
+
+const handlePreviewImage = (url: string) => {
+    previewImage.value = url
+}
+
+const closePreview = () => {
+    previewImage.value = null
 }
 
 // Actions (placeholders — replace with your actual logic)
