@@ -41,7 +41,8 @@ public class GlobalExceptionHandler {
 
         System.out.println("message = " + ex.getMessage());
         ApiResponse<?> response = ApiResponse.builder()
-                .message(langService.t(message, lang))
+//                .message(langService.t(message, lang))
+                .message(message)
                 .result(null)
                 .build();
 
@@ -56,7 +57,8 @@ public class GlobalExceptionHandler {
         String lang = LangUtil.getLang();
 
         ApiResponse<?> response = ApiResponse.builder()
-                .message(langService.t(ex.getMessage(), lang))
+//                .message(langService.t(ex.getMessage(), lang))
+                .message(ex.getMessage())
                 .result(null)
                 .build();
 

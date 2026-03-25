@@ -92,6 +92,7 @@ export const useLangStore = defineStore('lang', {
             await tryCatch(async () => {
                 const result: any = await langApi.getListByLang(this.lang);
                 this.langData = result.result
+                console.log(this.langData)
             })
         }
     }

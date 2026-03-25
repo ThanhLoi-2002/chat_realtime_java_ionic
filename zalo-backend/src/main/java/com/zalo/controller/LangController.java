@@ -7,6 +7,7 @@ import com.zalo.dto.request.Lang.LangUpdateRequest;
 import com.zalo.dto.response.Lang.LangResponse;
 import com.zalo.model.Lang;
 import com.zalo.model.User;
+import com.zalo.repository.dto.LangDto;
 import com.zalo.service.LangService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class LangController {
     }
 
     @GetMapping("/getByLang/{lang}")
-    public Map<String,String> getByLang(@PathVariable String lang) {
+    public Map<String, String> getByLang(@PathVariable String lang) {
         return langService.getByLang(lang);
     }
 

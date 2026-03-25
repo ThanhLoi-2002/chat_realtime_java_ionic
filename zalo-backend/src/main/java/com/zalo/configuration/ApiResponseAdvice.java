@@ -48,7 +48,8 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
         String lang = LangUtil.getLang();
 
         return ApiResponse.builder()
-                .message(langService.t(message, lang))
+//                .message(langService.t(message, lang))
+                .message(message)
                 .result(body)
                 .build();
     }

@@ -6,6 +6,7 @@ import com.zalo.dto.response.Lang.LangResponse;
 import com.zalo.mapper.LangMapper;
 import com.zalo.model.Lang;
 import com.zalo.repository.LangRepository;
+import com.zalo.repository.dto.LangDto;
 import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,46 +33,50 @@ public class LangService {
 
     Map<String, Map<String, String>> cache = new HashMap<>();
 
-    @PostConstruct
-    public void loadLang() {
+//    @PostConstruct
+//    public void loadLang() {
+//
+//        List<Lang> list = langRepository.findAll();
+//
+//        for (Lang l : list) {
+//
+//            Map<String, String> value = new HashMap<>();
+//            value.put("vi", l.getVi());
+//            value.put("en", l.getEn());
+//            value.put("tw", l.getTw());
+//            value.put("cn", l.getCn());
+//
+//            cache.put(l.getCode(), value);
+//        }
+//    }
 
-        List<Lang> list = langRepository.findAll();
+//    public String t(String code, String lang) {
+//
+//        Map<String, String> map = cache.get(code);
+//
+//        if (map == null) {
+//            return code;
+//        }
+//
+//        return map.getOrDefault(lang, map.get("vi"));
+//    }
 
-        for (Lang l : list) {
+    public Map<String, String> getByLang(String lang) {
+//        Map<String, String> result = new HashMap<>();
+//
+//        for (Map.Entry<String, Map<String, String>> entry : cache.entrySet()) {
+//
+//            String code = entry.getKey();
+//            Map<String, String> value = entry.getValue();
+//
+//            result.put(code, value.getOrDefault(lang, value.get("vi")));
+//        }
 
-            Map<String, String> value = new HashMap<>();
-            value.put("vi", l.getVi());
-            value.put("en", l.getEn());
-            value.put("tw", l.getTw());
-            value.put("cn", l.getCn());
-
-            cache.put(l.getCode(), value);
-        }
-    }
-
-    public String t(String code, String lang) {
-
-        Map<String, String> map = cache.get(code);
-
-        if (map == null) {
-            return code;
-        }
-
-        return map.getOrDefault(lang, map.get("vi"));
-    }
-
-    public Map<String,String> getByLang(String lang) {
-        Map<String, String> result = new HashMap<>();
-
-        for (Map.Entry<String, Map<String, String>> entry : cache.entrySet()) {
-
-            String code = entry.getKey();
-            Map<String, String> value = entry.getValue();
-
-            result.put(code, value.getOrDefault(lang, value.get("vi")));
-        }
-
-        return result;
+        return langRepository.findByLang(lang).stream()
+                .collect(Collectors.toMap(
+                        LangDto::getCode,
+                        LangDto::getValue
+                ));
     }
 
     public List<LangResponse> getAll() {
@@ -95,7 +101,7 @@ public class LangService {
 
         LangResponse langResponse = langMapper.toResponse(langRepository.save(e));
 
-        loadLang();
+//        loadLang();
 
         return langResponse;
     }
@@ -109,12 +115,12 @@ public class LangService {
         lang.setEu(userId);
 
         LangResponse langResponse = langMapper.toResponse(langRepository.save(lang));
-        loadLang();
+//        loadLang();
         return langResponse;
     }
 
     public void delete(Long id) {
         langRepository.deleteById(id);
-        loadLang();
+//        loadLang();
     }
 }

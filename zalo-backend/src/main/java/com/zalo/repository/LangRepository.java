@@ -13,8 +13,6 @@ import java.util.Optional;
 @Repository
 public interface LangRepository extends JpaRepository<Lang, Long> {
 
-    Optional<Lang> findByCode(String code);
-
     boolean existsByCode(String code);
 
     @Query("""

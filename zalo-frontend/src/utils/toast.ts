@@ -1,11 +1,12 @@
+import { useTranslate } from '@/composables/useTranslate'
 import { toastController } from '@ionic/vue'
 import { addIcons } from 'ionicons'
 import {
-  checkmarkCircle,
-  closeCircle,
-  alertCircle,
-  informationCircle,
-  close 
+    checkmarkCircle,
+    closeCircle,
+    alertCircle,
+    informationCircle,
+    close
 } from 'ionicons/icons'
 
 interface ToastType {
@@ -16,8 +17,9 @@ interface ToastType {
 }
 export const toast = async (options: ToastType) => {
     const { message, color = 'success', duration = 2000, position = 'top' } = options
+    const { t } = useTranslate()
     const toast = await toastController.create({
-        message,
+        message: t(message),
         duration,
         color,
         position,
@@ -35,11 +37,11 @@ export const toast = async (options: ToastType) => {
 }
 
 addIcons({
-  checkmarkCircle,
-  closeCircle,
-  alertCircle,
-  informationCircle,
-  close 
+    checkmarkCircle,
+    closeCircle,
+    alertCircle,
+    informationCircle,
+    close
 })
 
 function getIcon(color: string) {
