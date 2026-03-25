@@ -48,13 +48,13 @@
                 <!-- REMINDER -->
                 <section
                     :class="['p-4 border-b hover:bg-gray-50 dark:hover:bg-slate-800 cursor-pointer', style.border.primary, style.text.secondary]">
-                    Danh sách nhắc hẹn
+                    {{ t('listReminders') }}
                 </section>
 
                 <!-- COMMON GROUP -->
                 <section
                     :class="['p-4 border-b hover:bg-gray-50 dark:hover:bg-slate-800 cursor-pointer', style.border.primary, style.text.secondary]">
-                    👥 3 nhóm chung
+                    👥 3 {{ t('generalGroup') }}
                 </section>
 
                 <!-- MEDIA -->
@@ -92,22 +92,22 @@
 
                 <!-- LINK -->
                 <section class="p-4 border-b border-gray-200 dark:border-slate-700">
-                    <div class="font-medium mb-2 dark:text-white">Link</div>
+                    <div class="font-medium mb-2 dark:text-white">{{ t("link") }}</div>
                     <div class="text-gray-400 text-sm">
-                        Chưa có link được chia sẻ
+                        {{ t("noLinkShared") }}
                     </div>
                 </section>
 
                 <!-- SECURITY -->
-                <collapse v-model:isOpen="open.security" :title="t('Thiết lập bảo mật')">
+                <collapse v-model:isOpen="open.security" :title="t('setUpSecurity')">
                     <div>
-                        <div class="dark:text-white">Tin nhắn tự xóa</div>
-                        <div class="text-xs text-gray-400">Không bao giờ</div>
+                        <div class="dark:text-white">{{ t('messagesDeleteThemselves') }}</div>
+                        <div class="text-xs text-gray-400">{{ t('never') }}</div>
                     </div>
 
                     <!-- SWITCH -->
                     <div class="flex justify-between items-center">
-                        <span class="dark:text-white">Ẩn trò chuyện</span>
+                        <span class="dark:text-white">{{ t('hideChat') }}</span>
 
                         <button @click="isHidden = !isHidden"
                             class="w-10 h-6 flex items-center rounded-full p-1 transition"
@@ -118,7 +118,7 @@
                     </div>
 
                     <div class="text-red-500 hover:text-red-600 cursor-pointer transition" @click="deleteConversation">
-                        {{ t('Xóa lịch sử trò chuyện') }}
+                        {{ t('deleteChatHistory') }}
                     </div>
                 </collapse>
             </div>

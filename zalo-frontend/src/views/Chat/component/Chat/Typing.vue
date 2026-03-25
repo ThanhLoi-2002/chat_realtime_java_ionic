@@ -104,7 +104,6 @@ const resetSubscribe = () => {
         if (data.userId === userStorage.user?.id) return
 
         handleTyping(data)
-        console.log(typingUsers.value.values())
     })
 }
 
