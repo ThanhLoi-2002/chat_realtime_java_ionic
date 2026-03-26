@@ -11,11 +11,11 @@
         <!-- BUBBLE -->
         <div class="relative group"> <!-- thêm class group ở đây -->
             <div ref="bubbleRef" :class="[
-                'text-sm flex flex-col relative',
+                'text-sm flex flex-col relative min-w-12',
 
                 // 👉 chỉ áp dụng bubble khi KHÔNG phải image
                 (message.contentType !== MessageEnum.IMAGE || message.contentType == MessageEnum.FILE) && [
-                    'px-4 py-2 border rounded-lg',
+                    'px-2 py-0.5 md:px-4 md:py-2 border rounded-lg',
                     isOwner
                         ? 'bg-blue-500 text-white border-blue-500'
                         : 'bg-white dark:bg-gray-800 dark:text-slate-100 border-slate-300 dark:border-gray-700'
@@ -28,16 +28,16 @@
                 </span>
 
                 <!-- CONTENT -->
-                <div class="py-1">
+                <div :class="[message.showTime ? 'py-1' : 'py-0.5']">
                     <!-- nếu bị thu hồi -->
                     <span v-if="message.stt === -1" class="italic text-gray-600 dark:text-gray-700">
-                        {{ isOwner ? 'Bạn đã thu hồi tin nhắn' : 'Tin nhắn đã bị thu hồi' }}
+                        {{ isOwner ? t('youRecalledmessage') : t('messageHasBeenWithdrawn') }}
                     </span>
 
                     <!-- nếu là image -->
                     <img v-else-if="message.contentType === MessageEnum.IMAGE" :src="message.file.url"
                         @click="handlePreviewImage(message.file.url)"
-                        class="max-w-55 rounded-xl object-cover cursor-pointer hover:opacity-90 transition" />
+                        class="max-w-20 md:max-w-30 rounded-xl object-cover cursor-pointer hover:opacity-90 transition" />
 
                     <!-- text bình thường -->
                     <span v-else>
@@ -47,8 +47,8 @@
 
                 <!-- TIME -->
                 <span v-if="message.showTime" :class="[
-                    'text-xs',
-                    isOwner ? 'text-blue-100' : 'text-slate-400 dark:text-slate-400'
+                    'text-[10px] md:text-xs',
+                    'text-slate-300 dark:text-slate-400'
                 ]">
                     {{ formatTime(message.ct) }}
                 </span>
@@ -60,8 +60,8 @@
                 pointer-events-none group-hover:pointer-events-auto">
                 <div class="relative group/like">
                     <button
-                        class="w-5 h-5 flex items-center justify-center rounded-full bg-slate-100 dark:bg-gray-700 hover:bg-slate-200 dark:hover:bg-gray-600 shadow-sm p-1">
-                        <i class="far fa-thumbs-up dark:text-white text-xs"></i>
+                        class="w-4 h-4 md:w-5 md:h-5 flex items-center justify-center rounded-full bg-slate-100 dark:bg-gray-700 hover:bg-slate-200 dark:hover:bg-gray-600 shadow-sm p-1">
+                        <i class="far fa-thumbs-up dark:text-white text-[10px] md:text-xs"></i>
                     </button>
 
                     <!-- REACTIONS: ẩn mặc định, hiện khi hover vào nút like -->
@@ -104,13 +104,16 @@
            bg-white dark:bg-gray-800 rounded-lg shadow-lg border
            border-gray-200 dark:border-gray-700 overflow-hidden
            transition-opacity duration-150 text-sm">
-                <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer" @click="onCopy">
+                <div :class="['p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer', style.text.primary]"
+                    @click="onCopy">
                     {{ t('copyMessage') }}
                 </div>
-                <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer" @click="onMark">
+                <div :class="['p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer', style.text.primary]"
+                    @click="onMark">
                     {{ t('markMessage') }}
                 </div>
-                <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer" @click="onDetails">
+                <div :class="['p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer', style.text.primary]"
+                    @click="onDetails">
                     {{ t('seeDetails') }}
                 </div>
 
@@ -129,13 +132,13 @@
             <div class="absolute inset-0" @click="closePreview"></div>
 
             <!-- ảnh -->
-            <img :src="previewImage" class="relative max-w-[90vw] max-h-[90vh] rounded-xl shadow-2xl z-10" />
+            <img :src="previewImage" class="relative max-w-[90vw] max-h-[90vh] min-w-[60vw] min-h-[60vh] rounded-xl shadow-2xl z-10 object-contain" />
 
             <!-- nút close -->
             <button @click="closePreview" class="absolute top-5 right-5 z-20 
-               w-10 h-10 flex items-center justify-center 
+               w-6 h-6 md:w-10 md:h-10 flex items-center justify-center 
                bg-white/10 hover:bg-white/20 
-               rounded-full text-white text-xl">
+               rounded-full text-white text-xs md:text-lg">
                 ✕
             </button>
         </div>
@@ -149,6 +152,7 @@ import { useUserStore } from '@/stores/user.storage'
 import CircleAvatar from '@/components/Avatar/CircleAvatar.vue'
 import { useTranslate } from '@/composables/useTranslate';
 import { MessageEnum } from '@/types/enum';
+import { style } from '@/assets/tailwindcss';
 
 const props = defineProps<{
     message: any
@@ -299,10 +303,10 @@ onBeforeUnmount(() => {
 })
 
 // reposition when content or ownership changes
-watch(
-    () => [props.message.content, isOwner],
-    () => {
-        if (showMenu.value) nextTick(positionMenu)
-    }
-)
+// watch(
+//     () => [props.message.content, isOwner],
+//     () => {
+//         if (showMenu.value) nextTick(positionMenu)
+//     }
+// )
 </script>

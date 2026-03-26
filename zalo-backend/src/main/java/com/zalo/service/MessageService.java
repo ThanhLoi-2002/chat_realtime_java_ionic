@@ -49,12 +49,10 @@ public class MessageService {
                 .contentType(dto.contentType)
                 .replyToMessageId(dto.replyToId)
                 .build();
-        System.out.println("File: " + dto.contentType);
+
         if(dto.contentType == MessageType.IMAGE){
             File file = cloudinaryService.uploadFile(dto.file);
             m.setFile(file);
-            System.out.println("File: " + G.toJson(file));
-            System.out.println("m: " + G.toJson(m));
         }
 
         m = messageRepo.save(m);

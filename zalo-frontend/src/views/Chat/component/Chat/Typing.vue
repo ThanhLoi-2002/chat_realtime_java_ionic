@@ -35,12 +35,12 @@
         </div>
 
         <!-- INPUT BAR -->
-        <div class="p-3 border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-gray-900">
-            <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-800 rounded-2xl px-4 py-1.5">
+        <div class="p-1 md:p-3 border-t border-gray-200 dark:border-slate-700 md:bg-white dark:bg-gray-900">
+            <div class="flex flex-col gap-2 bg-gray-100 md:dark:bg-gray-800 rounded-2xl px-2 py-0.5 md:px-4 md:py-1.5">
                 <!-- Left icons -->
                 <div class="flex gap-2 border-b pb-1" :class="[style.border.primary]">
                     <button @click.stop="toggleEmoji"
-                        class="text-2xl text-gray-500 dark:text-gray-400 hover:text-blue-500 transition cursor-pointer">
+                        class="text-sm md:text-xl text-gray-500 dark:text-gray-400 hover:text-blue-500 transition cursor-pointer">
                         🙂
                     </button>
 
@@ -48,7 +48,7 @@
                         @change="handleSelectImages" />
 
                     <button @click="fileInput?.click()"
-                        class="text-2xl text-gray-500 dark:text-gray-400 cursor-pointer">
+                        class="text-sm md:text-xl text-gray-500 dark:text-gray-400 cursor-pointer">
                         📎
                     </button>
                 </div>
@@ -57,8 +57,8 @@
                 <div class="flex gap-2">
                     <input ref="inputRef" v-model="message" @keyup.enter="sendMessage" @input="sendTyping"
                         :placeholder="t('typeMessage')"
-                        class="flex-1 bg-transparent outline-none text-base dark:text-slate-200 placeholder-gray-400 dark:placeholder-gray-500" />
-                    <base-button icon="fa-solid fa-paper-plane text-blue-500 text-xl" @click="sendMessage"
+                        class="flex-1 bg-transparent outline-none text-xs md:text-base dark:text-slate-200 placeholder-gray-400 dark:placeholder-gray-500" />
+                    <base-button icon="fa-solid fa-paper-plane text-blue-500 text-xs md:text-xl" @click="sendMessage"
                         class="ml-1" />
                 </div>
             </div>

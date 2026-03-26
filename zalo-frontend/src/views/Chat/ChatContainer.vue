@@ -6,13 +6,13 @@
     <!-- MESSAGES -->
     <div class="flex-1 relative overflow-hidden">
         <!-- Phần cuộn tin nhắn -->
-        <div ref="scrollContainer" class="h-full overflow-y-auto p-6 space-y-2" @scroll="scrollMore">
+        <div ref="scrollContainer" class="h-full overflow-y-auto p-1 space-y-1 md:p-6 md:space-y-2" @scroll="scrollMore">
             <div v-if="messageStorage.isLoading" class="text-center text-gray-400 text-sm py-4">
                 <LoadingSpinner />
             </div>
 
             <div v-for="msg in messagesWithMeta" :key="msg.id">
-                <div v-if="msg.showTimeSeparator" class="text-center text-xs text-gray-400 my-6">
+                <div v-if="msg.showTimeSeparator" class="text-center text-[10px] md:text-xs text-slate-500 dark:text-gray-400 my-6 bg-gray-100 dark:bg-slate-700 w-fit mx-auto py-0.5 px-2 rounded-sm">
                     {{ formatSeparatorTime(msg.ct) }}
                 </div>
 
@@ -21,13 +21,13 @@
         </div>
 
         <!-- NÚT SCROLL TO BOTTOM - CỐ ĐỊNH BÊN TRONG KHUNG CHAT -->
-        <button v-if="showScrollButton" @click="handleScrollBottom(true)" class="absolute bottom-6 right-6 z-30 
-             w-11 h-11 flex items-center justify-center 
+        <button v-if="showScrollButton" @click="handleScrollBottom(true)" class="absolute bottom-4 right-4 md:bottom-6 md:right-6 z-30 
+             w-8 h-8 md:w-11 md:h-11 flex items-center justify-center 
              bg-white dark:bg-gray-800 shadow-2xl rounded-2xl 
              border border-gray-200 dark:border-gray-600
              hover:bg-gray-50 dark:hover:bg-gray-700 
              active:scale-95 transition-all duration-200">
-            <i class="fa-solid fa-arrow-down text-xl text-gray-600 dark:text-gray-300"></i>
+            <i class="fa-solid fa-arrow-down mext-sm md:text-xl text-gray-600 dark:text-gray-300"></i>
         </button>
     </div>
 

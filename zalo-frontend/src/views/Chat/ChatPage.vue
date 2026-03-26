@@ -52,7 +52,7 @@ onUnmounted(() => {
 
     <!-- CHAT AREA -->
     <main v-else :class="[
-      'flex-1 flex flex-col bg-gray-100 dark:bg-gray-900'
+      'flex-1 flex flex-col bg-gray-50 dark:bg-gray-900'
     ]">
       <chat-container v-model:isShowInfoSection="isShowInfoSection" />
     </main>
