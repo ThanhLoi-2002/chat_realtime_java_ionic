@@ -19,7 +19,8 @@
             <!-- Vùng like hiển thị khi hover: đặt ngoài bubble hoặc trên mép tùy ý -->
             <div class="absolute right-2 bottom-0 translate-y-1/2 flex items-center gap-2
                 opacity-0 transition-opacity duration-150
-                pointer-events-none group-hover:pointer-events-auto" :class="[message.stt != -1 && 'group-hover:opacity-100']">
+                pointer-events-none group-hover:pointer-events-auto"
+                :class="[message.stt != -1 && 'group-hover:opacity-100']">
                 <div class="relative group/like">
                     <button
                         class="w-4 h-4 md:w-5 md:h-5 flex items-center justify-center rounded-full bg-slate-100 dark:bg-gray-700 hover:bg-slate-200 dark:hover:bg-gray-600 shadow-sm p-1">
@@ -93,7 +94,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
-import { useDateTime } from '@/composables/useDateTime'
 import { useUserStore } from '@/stores/user.storage'
 import CircleAvatar from '@/components/Avatar/CircleAvatar.vue'
 import { useTranslate } from '@/composables/useTranslate';
@@ -109,7 +109,6 @@ const props = defineProps<{
 }>()
 
 const { t } = useTranslate()
-const { formatTime } = useDateTime()
 
 const userStorage = useUserStore()
 const messageStorage = useMessageStore()

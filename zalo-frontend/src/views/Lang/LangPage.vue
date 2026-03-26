@@ -9,7 +9,7 @@
             w-62.5">
                 <i class="fa-solid fa-search text-gray-400"></i>
 
-                <IonInput v-model="search" placeholder="Search..." class="flex-1 search-input" />
+                <IonInput v-model="search" :placeholder="t('search') + ' ...'" class="flex-1 search-input"  @input="handleSearch"/>
             </div>
             <ion-button size="small" class="h-10" color="success" @click="router.push('/languages/add')"><i
                     class="fa fa-plus"></i></ion-button>
@@ -25,6 +25,7 @@
 
 import ConfirmModal from "@/components/Modal/ConfirmModal.vue"
 import PaginationTable from "@/components/Table/PaginationTable.vue"
+import { useDebounce } from "@/composables/useDebounce"
 import { useTranslate } from "@/composables/useTranslate"
 import { useLangStore } from "@/stores/lang.storage"
 import { LangType } from "@/types/entities"
@@ -110,6 +111,10 @@ const columns = computed(() => [
         }
     }
 ])
+
+const { debounced: handleSearch } = useDebounce(() => {
+    langStore.getList(search.value)
+}, 300)
 
 const openModal = (item: LangType) => {
     selectedItem.value = item

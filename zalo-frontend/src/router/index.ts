@@ -2,6 +2,7 @@ import { useUserStore } from '@/stores/user.storage';
 import { ACCESS_TOKEN, ROUTE } from '@/utils/constant';
 import { getKey } from '@/utils/local';
 import ChatPage from '@/views/Chat/ChatPage.vue';
+import FriendPage from '@/views/Friend/FriendPage.vue';
 import AddLang from '@/views/Lang/AddLang.vue';
 import EditLang from '@/views/Lang/EditLang.vue';
 import LangPage from '@/views/Lang/LangPage.vue';
@@ -35,6 +36,11 @@ const routes: Array<RouteRecordRaw> = [
         component: AddLang
       }
     ]
+  },
+  {
+    path: ROUTE.FRIENDS,
+    component: FriendPage,
+    meta: { layout: "main", requiresAuth: true },
   },
 
   // -------------------- AUTH ROUTES --------------------

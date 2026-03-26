@@ -8,7 +8,7 @@ import { LangFormType } from "@/schema/lang.schema";
 const getList = async (filters: any) => {
     const { page, ...query } = filters;
 
-    let filterOptions = `page=${page ?? 1}`;
+    let filterOptions = `page=${page ?? 0}&limit=10000`;
 
     for (const [key, value] of Object.entries(query)) {
         if (value != null || value != undefined)

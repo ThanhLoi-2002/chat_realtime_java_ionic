@@ -1,9 +1,12 @@
 package com.zalo.service;
 
+import com.zalo.dto.filter.LangFilter;
 import com.zalo.dto.request.Lang.LangCreationRequest;
 import com.zalo.dto.request.Lang.LangUpdateRequest;
 import com.zalo.dto.response.Lang.LangResponse;
+import com.zalo.dto.response.conversation.ConversationResponse;
 import com.zalo.mapper.LangMapper;
+import com.zalo.model.Conversation;
 import com.zalo.model.Lang;
 import com.zalo.repository.LangRepository;
 import com.zalo.repository.dto.LangDto;
@@ -12,6 +15,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -79,10 +84,15 @@ public class LangService {
                 ));
     }
 
-    public List<LangResponse> getAll() {
-        List<Lang> list = langRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-//        System.out.println("list: " + G.toJson(list));
-        return langMapper.toListResponses(list);
+    public Page<LangResponse> getAll(LangFilter filter) {
+//        List<Lang> list = langRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+//        return langMapper.toListResponses(list);
+
+        Pageable pageable = filter.toPageable();
+
+        Page<Lang> page = langRepository.findAllLang(filter.getCode(), pageable);
+
+        return page.map(langMapper::toResponse);
     }
 
     public LangResponse getById(Long id) {

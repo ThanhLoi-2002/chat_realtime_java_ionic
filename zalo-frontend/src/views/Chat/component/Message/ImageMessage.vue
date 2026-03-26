@@ -1,4 +1,4 @@
-<template lang="">
+<template>
     <div ref="el" :class="[
                 'text-sm flex flex-col relative min-w-12',
             ]">
@@ -21,13 +21,13 @@
                     <!-- nếu là image -->
                     <img v-else :src="message.file.url"
                         @click="handlePreviewImage(message.file.url)"
-                        class="max-w-20 md:max-w-30 rounded-xl object-cover cursor-pointer hover:opacity-90 transition" />
+                        class="max-w-20 md:max-w-40 rounded-xl object-cover cursor-pointer hover:opacity-90 transition" />
                 </div>
 
                 <!-- TIME -->
                 <span v-if="message.showTime" :class="[
                     'text-[10px] md:text-xs',
-                    'text-slate-300 dark:text-slate-400'
+                    style.text.secondary
                 ]">
                     {{ formatTime(message.ct) }}
                 </span>
@@ -56,6 +56,7 @@
 import { useDateTime } from '@/composables/useDateTime';
 import { useTranslate } from '@/composables/useTranslate';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { style } from '@/assets/tailwindcss';
 
 const props = defineProps<{
     setBubbleRef?: (el: HTMLElement | null) => void

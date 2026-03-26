@@ -59,3 +59,10 @@ export type MessageStatusType = BaseType & {
     userId: number
     status: DeliveryStatusEnum
 }
+
+export type FriendshipType = BaseType & {
+    user1: UserType
+    user2: UserType
+    status: FriendshipType
+    actionUserId: number
+}

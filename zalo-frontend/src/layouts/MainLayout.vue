@@ -2,7 +2,7 @@
   <ion-page>
     <ion-content :fullscreen="true" :scroll-y="false">
 
-      <div class="flex h-full bg-white dark:bg-slate-800">
+      <div class="flex min-h-full bg-white dark:bg-slate-800">
         <sidebar />
 
         <main

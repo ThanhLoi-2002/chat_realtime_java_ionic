@@ -5,14 +5,17 @@
 
     <!-- MESSAGES -->
     <div class="flex-1 relative overflow-hidden">
+        <AddFriendBar v-if="!isFriend"/>
         <!-- Phần cuộn tin nhắn -->
-        <div ref="scrollContainer" class="h-full overflow-y-auto p-1 space-y-1 md:p-6 md:space-y-2" @scroll="scrollMore">
+        <div ref="scrollContainer" class="h-full overflow-y-auto p-1 space-y-1 md:p-6 md:space-y-2"
+            @scroll="scrollMore">
             <div v-if="messageStorage.isLoading" class="text-center text-gray-400 text-sm py-4">
                 <LoadingSpinner />
             </div>
 
             <div v-for="msg in messagesWithMeta" :key="msg.id">
-                <div v-if="msg.showTimeSeparator" class="text-center text-[10px] md:text-xs text-slate-500 dark:text-gray-400 my-6 bg-gray-100 dark:bg-slate-700 w-fit mx-auto py-0.5 px-2 rounded-sm">
+                <div v-if="msg.showTimeSeparator"
+                    class="text-center text-[10px] md:text-xs text-slate-500 dark:text-gray-400 my-6 bg-gray-100 dark:bg-slate-700 w-fit mx-auto py-0.5 px-2 rounded-sm">
                     {{ formatSeparatorTime(msg.ct) }}
                 </div>
 
@@ -52,6 +55,8 @@ import LoadingSpinner from '@/components/Loading/LoadingSpinner.vue';
 import { useScroll } from '@/composables/useScroll';
 import Typing from './component/Chat/Typing.vue';
 import { useSystemStore } from '@/stores/system.storage';
+import AddFriendBar from './component/Chat/AddFriendBar.vue';
+import { useFriendshipStore } from '@/stores/friendship.storage';
 
 const props = defineProps<{
     isShowInfoSection: boolean
@@ -60,12 +65,14 @@ const props = defineProps<{
 const conversationStorage = useConversationStore()
 const messageStorage = useMessageStore()
 const sysStorage = useSystemStore()
+const friendStorage = useFriendshipStore()
 const { t } = useTranslate()
-const { getRecipient } = useConversation()
+const { getRecipient, isGroup } = useConversation()
 const { getTime, formatSeparatorTime } = useDateTime()
 const { onScroll, scrollToBottom } = useScroll()
 
 const friendProfileModal = ref()
+const isFriend = ref(false)
 
 const scrollContainer = ref<HTMLElement | null>(null)
 const showScrollButton = ref(false)
@@ -182,11 +189,14 @@ const reset = async () => {
     messageStorage.resetPagination()
     await messageStorage.getMessages(conversationStorage.conversation!.id)
 
+    if (!isGroup(conversationStorage.conversation)) {
+       isFriend.value = await friendStorage.isFriend(getRecipient(conversationStorage.conversation)?.id || 0)
+    }
+
     await nextTick()
     await waitForImages()
-    
+
     handleScrollBottom(false)
-    console.log('123')
 }
 
 onMounted(async () => {

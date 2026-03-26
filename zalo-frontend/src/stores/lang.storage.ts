@@ -63,10 +63,10 @@ export const useLangStore = defineStore('lang', {
 
             return result
         },
-        async getList() {
+        async getList(code?: string) {
             await tryCatch(async () => {
-                const result: any = await langApi.getList({});
-                this.languages = result.result
+                const result: any = await langApi.getList({ code });
+                this.languages = result.result.content
             })
         },
         async getDetail(id: number) {

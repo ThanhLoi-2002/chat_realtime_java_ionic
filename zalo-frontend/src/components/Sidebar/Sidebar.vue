@@ -93,7 +93,11 @@ const items = [
     {
         icon: 'fa-solid fa-earth-americas',
         to: ROUTE.LANGUAGES,
-        hideOnMobile: false
+        hideOnMobile: true
+    },
+    {
+        icon: 'fa-solid fa-children',
+        to: ROUTE.FRIENDS,
     },
 ]
 

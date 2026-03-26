@@ -1,9 +1,9 @@
 export enum ConversationEnum {
-    PRIVATE, GROUP
+    PRIVATE = "PRIVATE", GROUP = "GROUP"
 }
 
 export enum MemberRoleEnum {
-    MEMBER, ADMIN, SILVER_KEY
+    MEMBER = "MEMBER", ADMIN = "ADMIN", SILVER_KEY = "SILVER_KEY"
 }
 
 export enum MessageEnum {
@@ -11,5 +11,12 @@ export enum MessageEnum {
 }
 
 export enum DeliveryStatusEnum {
-    SENT, DELIVERED, READ
+    SENT = "SENT", DELIVERED = "DELIVERED", READ = "READ"
+}
+
+export enum FriendshipStatusEnum {
+    PENDING = "PENDING",    // đã gửi lời mời
+    ACCEPTED = "ACCEPTED",   // đã là bạn
+    REJECTED = "REJECTED",   // bị từ chối
+    BLOCKED = 'BLOCKED'
 }

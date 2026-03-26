@@ -1,6 +1,9 @@
 package com.zalo.repository;
 
+import com.zalo.model.Conversation;
 import com.zalo.repository.dto.LangDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import com.zalo.model.Lang;
 import org.springframework.data.jpa.repository.Query;
@@ -27,4 +30,16 @@ public interface LangRepository extends JpaRepository<Lang, Long> {
             FROM Lang l
           \s""")
     List<LangDto> findByLang(@Param("lang") String lang);
+
+    @Query("""
+    SELECT l
+    FROM Lang l
+    WHERE (:code IS NULL OR LOWER(l.code) LIKE LOWER(CONCAT('%', :code, '%')))
+    AND l.stt = 1
+    ORDER BY l.ct DESC
+""")
+    Page<Lang> findAllLang(
+            @Param("code") String code,
+            Pageable pageable
+    );
 }

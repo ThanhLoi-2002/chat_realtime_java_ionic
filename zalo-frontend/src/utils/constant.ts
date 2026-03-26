@@ -19,4 +19,5 @@ export const ROUTE = {
     // PROFILE: "/profile",
     CHATS: "/chats",
     LANGUAGES: "/languages",
+    FRIENDS: "/friends"
 }
