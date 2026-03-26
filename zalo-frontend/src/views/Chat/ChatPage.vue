@@ -24,6 +24,11 @@ onMounted(() => {
     messageStorage.addNewMessage(JSON.parse(msg.body).message)
     conversationStorage.updateConversation(JSON.parse(msg.body).conversation)
   })
+
+  subNewMessage = socketSubscribe(`/user/queue/chat.updateMessages`, (msg: any) => {
+    messageStorage.updateMessage(JSON.parse(msg.body).message)
+    conversationStorage.updateConversationLastMessage(JSON.parse(msg.body).message)
+  })
 })
 
 onUnmounted(() => {

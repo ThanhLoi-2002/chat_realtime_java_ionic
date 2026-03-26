@@ -1,7 +1,7 @@
 <template>
 
-    <div class="flex gap-2 items-start relative group"
-        :class="isOwner ? 'ml-auto flex-row-reverse max-w-[50%]' : 'max-w-[50%]'" ref="rootRef">
+    <div class="flex gap-2 items-start relative group max-w-full md:max-w-[60%]"
+        :class="isOwner ? 'ml-auto flex-row-reverse' : ''" ref="rootRef">
 
         <!-- AVATAR -->
         <circle-avatar v-if="!isOwner && message.showAvatar" :url="message.sender?.avatar?.url" size="size-8"
@@ -10,54 +10,16 @@
 
         <!-- BUBBLE -->
         <div class="relative group"> <!-- thêm class group ở đây -->
-            <div ref="bubbleRef" :class="[
-                'text-sm flex flex-col relative min-w-12',
+            <image-message :message="message" :setBubbleRef="setBubbleRef"
+                v-if="message.contentType == MessageEnum.IMAGE" :isOwner="isOwner" />
 
-                // 👉 chỉ áp dụng bubble khi KHÔNG phải image
-                (message.contentType !== MessageEnum.IMAGE || message.contentType == MessageEnum.FILE) && [
-                    'px-2 py-0.5 md:px-4 md:py-2 border rounded-lg',
-                    isOwner
-                        ? 'bg-blue-500 text-white border-blue-500'
-                        : 'bg-white dark:bg-gray-800 dark:text-slate-100 border-slate-300 dark:border-gray-700'
-                ]
-            ]">
-
-                <!-- USERNAME -->
-                <span v-if="message.isFirst && !isOwner" class="text-xs text-slate-400 dark:text-slate-300">
-                    {{ message.sender?.username }}
-                </span>
-
-                <!-- CONTENT -->
-                <div :class="[message.showTime ? 'py-1' : 'py-0.5']">
-                    <!-- nếu bị thu hồi -->
-                    <span v-if="message.stt === -1" class="italic text-gray-600 dark:text-gray-700">
-                        {{ isOwner ? t('youRecalledmessage') : t('messageHasBeenWithdrawn') }}
-                    </span>
-
-                    <!-- nếu là image -->
-                    <img v-else-if="message.contentType === MessageEnum.IMAGE" :src="message.file.url"
-                        @click="handlePreviewImage(message.file.url)"
-                        class="max-w-20 md:max-w-30 rounded-xl object-cover cursor-pointer hover:opacity-90 transition" />
-
-                    <!-- text bình thường -->
-                    <span v-else>
-                        {{ message.content }}
-                    </span>
-                </div>
-
-                <!-- TIME -->
-                <span v-if="message.showTime" :class="[
-                    'text-[10px] md:text-xs',
-                    'text-slate-300 dark:text-slate-400'
-                ]">
-                    {{ formatTime(message.ct) }}
-                </span>
-            </div>
+            <text-message :message="message" :setBubbleRef="setBubbleRef"
+                v-if="message.contentType == MessageEnum.TEXT || message.contentType == null" :isOwner="isOwner" />
 
             <!-- Vùng like hiển thị khi hover: đặt ngoài bubble hoặc trên mép tùy ý -->
             <div class="absolute right-2 bottom-0 translate-y-1/2 flex items-center gap-2
-                opacity-0 group-hover:opacity-100 transition-opacity duration-150
-                pointer-events-none group-hover:pointer-events-auto">
+                opacity-0 transition-opacity duration-150
+                pointer-events-none group-hover:pointer-events-auto" :class="[message.stt != -1 && 'group-hover:opacity-100']">
                 <div class="relative group/like">
                     <button
                         class="w-4 h-4 md:w-5 md:h-5 flex items-center justify-center rounded-full bg-slate-100 dark:bg-gray-700 hover:bg-slate-200 dark:hover:bg-gray-600 shadow-sm p-1">
@@ -80,7 +42,7 @@
 
         <!-- ACTIONS -->
         <div class="flex items-center gap-1
-         opacity-0 group-hover:opacity-100 transition my-auto">
+         opacity-0 transition my-auto" :class="[message.stt != -1 && 'group-hover:opacity-100']">
             <button ref="moreBtnRef" @click.stop="toggleMenu"
                 class="px-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 dark:bg-gray-800 dark:text-white text-center cursor-pointer">
                 <i class="fa-solid fa-quote-right text-[10px] leading-none"></i>
@@ -119,29 +81,13 @@
 
                 <div class="border-t border-gray-200 dark:border-gray-700"></div>
 
-                <div class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-700/20 cursor-pointer" @click="onDelete">
+                <div v-if="userStorage.user?.id == message.sender?.id"
+                    class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-700/20 cursor-pointer"
+                    @click="onDelete(message.id)">
                     {{ t('delete') }}
                 </div>
             </div>
         </teleport>
-
-        <div v-if="previewImage" class="fixed inset-0 z-50 flex items-center justify-center 
-           bg-black/80 backdrop-blur-sm">
-
-            <!-- overlay click để đóng -->
-            <div class="absolute inset-0" @click="closePreview"></div>
-
-            <!-- ảnh -->
-            <img :src="previewImage" class="relative max-w-[90vw] max-h-[90vh] min-w-[60vw] min-h-[60vh] rounded-xl shadow-2xl z-10 object-contain" />
-
-            <!-- nút close -->
-            <button @click="closePreview" class="absolute top-5 right-5 z-20 
-               w-6 h-6 md:w-10 md:h-10 flex items-center justify-center 
-               bg-white/10 hover:bg-white/20 
-               rounded-full text-white text-xs md:text-lg">
-                ✕
-            </button>
-        </div>
     </div>
 </template>
 
@@ -153,6 +99,9 @@ import CircleAvatar from '@/components/Avatar/CircleAvatar.vue'
 import { useTranslate } from '@/composables/useTranslate';
 import { MessageEnum } from '@/types/enum';
 import { style } from '@/assets/tailwindcss';
+import { useMessageStore } from '@/stores/message.storage';
+import ImageMessage from '../Message/ImageMessage.vue';
+import TextMessage from '../Message/TextMessage.vue';
 
 const props = defineProps<{
     message: any
@@ -163,6 +112,7 @@ const { t } = useTranslate()
 const { formatTime } = useDateTime()
 
 const userStorage = useUserStore()
+const messageStorage = useMessageStore()
 
 const isOwner = props.message.sender.id === userStorage.user?.id
 
@@ -174,6 +124,11 @@ const menuRef = ref<HTMLElement | null>(null)
 // menu state
 const showMenu = ref(false)
 const menuInlineStyle = ref<Record<string, string>>({ opacity: '0' })
+
+function setBubbleRef(el: HTMLElement | null) {
+    bubbleRef.value = el
+}
+
 const toggleMenu = async () => {
     showMenu.value = !showMenu.value
     if (showMenu.value) {
@@ -238,16 +193,6 @@ const positionMenu = () => {
     }
 }
 
-const previewImage = ref<string | null>(null)
-
-const handlePreviewImage = (url: string) => {
-    previewImage.value = url
-}
-
-const closePreview = () => {
-    previewImage.value = null
-}
-
 // Actions (placeholders — replace with your actual logic)
 const onCopy = () => {
     navigator.clipboard?.writeText(props.message.content || '')
@@ -265,9 +210,10 @@ const onDetails = () => {
 
 }
 
-const onDelete = () => {
+const onDelete = (id: number) => {
     // confirm & delete
     showMenu.value = false
+    messageStorage.deleteMessage(id, props.message.conversationId)
 }
 
 // click outside: if clicked outside menu and outside more button, close
@@ -301,12 +247,4 @@ onBeforeUnmount(() => {
     window.removeEventListener('resize', handleScrollOrResize)
     window.removeEventListener('scroll', handleScrollOrResize, true)
 })
-
-// reposition when content or ownership changes
-// watch(
-//     () => [props.message.content, isOwner],
-//     () => {
-//         if (showMenu.value) nextTick(positionMenu)
-//     }
-// )
 </script>

@@ -25,6 +25,10 @@ const getMessages = async (options: MessageFilter) => {
     return await axios.get<IResponse<MessageType>>(`/conversations/${conversationId}/messages?page=${page}&limit=${limit}&lastId=${lastId}`);
 }
 
+const deleteMessage = async (id: number, conversationId: number) => {
+    return await axios.delete<IResponse>(`/conversations/${conversationId}/messages/${id}`);
+}
+
 export const messageApi = {
-    sendMessage, getMessages
+    sendMessage, getMessages, deleteMessage
 }

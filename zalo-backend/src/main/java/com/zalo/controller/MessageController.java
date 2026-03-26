@@ -45,4 +45,10 @@ public class MessageController {
         messageService.markRead(conversationId, userId, messageId);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{messageId}")
+    public void delete(@PathVariable Long messageId,
+                       @CurrentUser User user) {
+        messageService.delete(messageId, user.getId());
+    }
 }

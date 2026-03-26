@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ConversationType, UserType } from '@/types/entities'
+import { ConversationType, MessageType, UserType } from '@/types/entities'
 import { conversationApi } from '@/api/conversation.api'
 import { toast } from '@/utils/toast'
 
@@ -97,6 +97,14 @@ export const useConversationStore = defineStore('conversation', {
 
             this.sortConversation()
             console.log(this.conversations[0].lastMessage)
+        },
+
+        updateConversationLastMessage(mess: MessageType) {
+            const index = this.conversations.findIndex(c => c.id === mess.conversationId);
+
+            if (index !== -1 && this.conversations[index].lastMessage?.id == mess.id) {
+                this.conversations[index].lastMessage = mess;
+            }
         },
 
         reset() {

@@ -59,23 +59,28 @@ const { timeAgo } = useDateTime()
 const lastMessageContent = computed(() => {
   let content = ''
   const lastMessage: MessageType | undefined = props.conversation.lastMessage
-
-  switch (lastMessage?.contentType) {
-    case MessageEnum.IMAGE:
-      content = t("Vừa gửi 1 ảnh")
-      break
-
-    case MessageEnum.FILE:
-      content = t("Vừa gửi 1 file")
-      break
-
-    case MessageEnum.TEXT:
-      content = lastMessage.content
-      break
-
-    default:
-      content = lastMessage?.content || ''
+  if (lastMessage?.stt == -1) {
+    content = t("messageHasBeenWithdrawn")
   }
+  else {
+    switch (lastMessage?.contentType) {
+      case MessageEnum.IMAGE:
+        content = t("Vừa gửi 1 ảnh")
+        break
+
+      case MessageEnum.FILE:
+        content = t("Vừa gửi 1 file")
+        break
+
+      case MessageEnum.TEXT:
+        content = lastMessage.content
+        break
+
+      default:
+        content = lastMessage?.content || ''
+    }
+  }
+
   return `${getUserNameFromLastMessage(lastMessage)}: ${content}`
 })
 </script>

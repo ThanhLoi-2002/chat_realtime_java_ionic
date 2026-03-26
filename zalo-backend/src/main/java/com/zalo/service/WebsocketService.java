@@ -4,6 +4,7 @@ import com.zalo.dto.response.Message.MessageResponse;
 import com.zalo.dto.response.conversation.ConversationResponse;
 import com.zalo.gateway.UserOnlineStorage;
 import com.zalo.model.ConversationMember;
+import com.zalo.model.Message;
 import com.zalo.repository.ConversationMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -40,6 +41,29 @@ public class WebsocketService {
                 messagingTemplate.convertAndSendToUser(
                         sessionId,
                         "/queue/chat.newMessages",
+                        payload,
+                        userOnlineStorage.createHeaders(sessionId)
+                );
+            }
+        }
+    }
+
+    public void updateMessage(Message message) {
+        List<ConversationMember> members = memberRepo.findByConversationId(
+                message.getConversationId()
+        );
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("message", new MessageResponse(message));
+
+        for (ConversationMember member : members) {
+            Set<String> sessions = userOnlineStorage.getSessions(member.getUserId());
+
+            for (String sessionId : sessions) {
+
+                messagingTemplate.convertAndSendToUser(
+                        sessionId,
+                        "/queue/chat.updateMessages",
                         payload,
                         userOnlineStorage.createHeaders(sessionId)
                 );

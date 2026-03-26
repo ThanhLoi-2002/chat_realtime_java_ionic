@@ -54,8 +54,25 @@ export const useMessageStore = defineStore('message', {
             }
         },
 
+        async deleteMessage(id: number, conversationId: number) {
+            try {
+                const result: any = await messageApi.deleteMessage(id, conversationId);
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+            }
+        },
+
         addNewMessage(data: MessageType) {
             this.messages.push(data)
+        },
+        updateMessage(data: MessageType) {
+            const idx = this.messages.findIndex(m => m.id === data.id);
+            if (idx !== -1) {
+                this.messages[idx] = data; // replace
+            }
         },
 
         sort() {

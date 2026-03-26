@@ -112,4 +112,21 @@ public class MessageService {
             memberRepo.save(m);
         });
     }
+
+    public void delete(Long id, Long userId){
+        Optional<Message> m = messageRepo.findById(id);
+        if(m.isPresent()){
+            if(Objects.equals(m.get().getSenderId(), userId)){
+                m.get().setStt(-1);
+                messageRepo.save(m.get());
+
+                Message mess = findByIdWithRelationShip(m.get().getId(), m.get().getConversationId());
+
+                websocketService.updateMessage(mess);
+            }else{
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "noRightPerform");
+            }
+
+        }
+    }
 }
