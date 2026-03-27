@@ -1,9 +1,6 @@
 package com.zalo.repository;
 
-import com.zalo.dto.response.conversation.ConversationResponse;
-import com.zalo.dto.response.conversation.ConversationViewResponse;
 import com.zalo.model.Conversation;
-import com.zalo.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

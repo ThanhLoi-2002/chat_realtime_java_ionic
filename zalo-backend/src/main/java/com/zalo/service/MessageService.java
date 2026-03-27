@@ -1,10 +1,9 @@
 package com.zalo.service;
 
-import com.zalo.configuration.G;
 import com.zalo.dto.filter.MessageFilter;
 import com.zalo.dto.request.Message.CreateMessageRequest;
 import com.zalo.dto.response.Message.MessageResponse;
-import com.zalo.dto.response.conversation.ConversationResponse;
+import com.zalo.dto.response.Conversation.ConversationResponse;
 import com.zalo.model.*;
 import com.zalo.model.enums.DeliveryStatus;
 import com.zalo.model.enums.MessageType;

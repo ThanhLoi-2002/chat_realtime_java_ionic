@@ -1,5 +1,6 @@
 package com.zalo.service;
 
+import com.zalo.dto.request.Friendship.CreateFriendship;
 import com.zalo.model.Friendship;
 import com.zalo.model.User;
 import com.zalo.model.enums.FriendStatus;
@@ -33,9 +34,9 @@ public class FriendshipService {
     }
 
     // 📤 gửi lời mời
-    public void sendRequest(Long fromId, Long toId) {
-        Long u1 = min(fromId, toId);
-        Long u2 = max(fromId, toId);
+    public void sendRequest(Long fromId, CreateFriendship dto) {
+        Long u1 = min(fromId, dto.toId);
+        Long u2 = max(fromId, dto.toId);
 
         if (repo.findByUser1IdAndUser2Id(u1, u2).isPresent()) {
             throw new RuntimeException("Already exists");
@@ -44,8 +45,10 @@ public class FriendshipService {
         Friendship f = new Friendship();
         f.setUser1(userRepo.getReferenceById(u1));
         f.setUser2(userRepo.getReferenceById(u2));
+        f.setContent(dto.content);
         f.setStatus(FriendStatus.PENDING);
         f.setActionUserId(fromId);
+        f.setCu(fromId);
 
         repo.save(f);
     }

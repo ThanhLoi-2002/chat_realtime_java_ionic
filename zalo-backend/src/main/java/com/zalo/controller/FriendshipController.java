@@ -1,6 +1,8 @@
 package com.zalo.controller;
 
 import com.zalo.configuration.anotation.CurrentUser;
+import com.zalo.dto.request.Friendship.CreateFriendship;
+import com.zalo.dto.response.Friendship.FriendshipResponse;
 import com.zalo.model.Friendship;
 import com.zalo.model.User;
 import com.zalo.service.FriendshipService;
@@ -17,56 +19,56 @@ public class FriendshipController {
     private final FriendshipService service;
 
     // 📤 gửi lời mời
-    @PostMapping("/request/{toId}")
-    public void send(@RequestParam Long userId,
-                     @PathVariable Long toId) {
-        service.sendRequest(userId, toId);
+    @PostMapping("/request")
+    public void send(@CurrentUser User user,
+                     @RequestBody CreateFriendship dto) {
+        service.sendRequest(user.getId(), dto);
     }
 
     // ✅ accept
     @PostMapping("/accept/{otherId}")
-    public void accept(@RequestParam Long userId,
+    public void accept(@CurrentUser User user,
                        @PathVariable Long otherId) {
-        service.accept(userId, otherId);
+        service.accept(user.getId(), otherId);
     }
 
     // ❌ reject
     @PostMapping("/reject/{otherId}")
-    public void reject(@RequestParam Long userId,
+    public void reject(@CurrentUser User user,
                        @PathVariable Long otherId) {
-        service.reject(userId, otherId);
+        service.reject(user.getId(), otherId);
     }
 
     // 🗑️ cancel
     @DeleteMapping("/cancel/{otherId}")
-    public void cancel(@RequestParam Long userId,
+    public void cancel(@CurrentUser User user,
                        @PathVariable Long otherId) {
-        service.cancelRequest(userId, otherId);
+        service.cancelRequest(user.getId(), otherId);
     }
 
     // 💔 unfriend
     @DeleteMapping("/unfriend/{otherId}")
-    public void unfriend(@RequestParam Long userId,
+    public void unfriend(@CurrentUser User user,
                          @PathVariable Long otherId) {
-        service.unfriend(userId, otherId);
+        service.unfriend(user.getId(), otherId);
     }
 
     // 📋 list bạn
     @GetMapping
-    public List<User> getFriends(@RequestParam Long userId) {
-        return service.getFriends(userId);
+    public List<User> getFriends(@CurrentUser User user) {
+        return service.getFriends(user.getId());
     }
 
     // 📥 request nhận
     @GetMapping("/received")
-    public List<Friendship> received(@RequestParam Long userId) {
-        return service.getReceived(userId);
+    public List<FriendshipResponse> received(@CurrentUser User user) {
+        return service.getReceived(user.getId()).stream().map(FriendshipResponse::new).toList();
     }
 
     // 📤 request gửi
     @GetMapping("/sent")
-    public List<Friendship> sent(@RequestParam Long userId) {
-        return service.getSent(userId);
+    public List<FriendshipResponse> sent(@CurrentUser User user) {
+        return service.getSent(user.getId()).stream().map(FriendshipResponse::new).toList();
     }
 
     @GetMapping("/is-friend/{otherId}")

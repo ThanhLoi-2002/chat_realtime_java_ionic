@@ -19,6 +19,8 @@ public class Conversation extends BaseEntity{
 
     String name;
 
+    String code;
+
     @Convert(converter = FileConverter.class)
     @Column(columnDefinition = "LONGTEXT")
     File avatar;

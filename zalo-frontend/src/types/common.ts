@@ -22,6 +22,7 @@ export type FileType = {
 
 export type SettingPageType = "setting" | "profile"
 export type SearchFriendPageType = "addFriend" | "friendProfile"
+export type FriendMenuType = "friendList" | "groupList" | "friendInvitation" | "groupInvitation"
 
 export type SendMessageType = {
   content?: string
@@ -29,6 +30,11 @@ export type SendMessageType = {
   replyToId?: number
   contentType: MessageEnum
   file?: File
+}
+
+export type SendAddFriendRequestType = {
+  content?: string
+  toId?: number
 }
 
 export type BaseFilter = {

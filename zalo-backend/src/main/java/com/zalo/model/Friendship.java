@@ -23,4 +23,7 @@ public class Friendship extends BaseEntity {
     private FriendStatus status;
 
     private Long actionUserId; // ai là người gửi request
+
+    @Column(columnDefinition = "TEXT")
+    private String content;
 }

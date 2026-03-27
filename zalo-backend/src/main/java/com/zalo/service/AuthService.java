@@ -1,17 +1,17 @@
 package com.zalo.service;
 
-import com.zalo.dto.filter.UserFilter;
+import com.cloudinary.api.exceptions.NotFound;
 import com.zalo.dto.request.Auth.LoginRequest;
 import com.zalo.dto.request.Auth.RegisterRequest;
+import com.zalo.dto.response.Auth.LoginResponse;
 import com.zalo.model.User;
 import com.zalo.repository.UserRepository;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +22,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    public String register(RegisterRequest request) {
+    public LoginResponse register(RegisterRequest request) {
          boolean existed = userService.existedPhone(request.getPhone());
 
         if(existed){
@@ -36,10 +36,12 @@ public class AuthService {
 
         userRepository.save(user);
 
-        return jwtService.generateToken(user);
+        String token = jwtService.generateToken(user, jwtService.tokenTime);
+        String refreshToken = jwtService.generateToken(user, jwtService.refreshTokenTime);
+        return LoginResponse.builder().token(token).refreshToken(refreshToken).build();
     }
 
-    public String login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request) {
         User user = userService.findByPhone(request.getPhone());
 
         if (!passwordEncoder.matches(
@@ -49,7 +51,18 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "invalidPassword");
         }
 
-        return jwtService.generateToken(user);
+        String token = jwtService.generateToken(user, jwtService.tokenTime);
+        String refreshToken = jwtService.generateToken(user, jwtService.refreshTokenTime);
+        return LoginResponse.builder().token(token).refreshToken(refreshToken).build();
     }
 
+    public String newToken(String refreshToken) throws NotFound {
+        Claims claims = jwtService.extractAllClaims(refreshToken);
+        Long userId = claims.get("id", Long.class);
+
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new NotFound("notFound")
+        );
+        return jwtService.generateToken(user, jwtService.tokenTime);
+    }
 }

@@ -74,7 +74,7 @@ import { useUserStore } from '@/stores/user.storage';
 import { SearchFriendPageType } from '@/types/common';
 import { UserType } from '@/types/entities';
 import { RANDOM_AVATAR } from '@/utils/constant';
-import { inject, ref } from 'vue';
+import { inject } from 'vue';
 
 const props = defineProps<{
     user?: UserType | null,

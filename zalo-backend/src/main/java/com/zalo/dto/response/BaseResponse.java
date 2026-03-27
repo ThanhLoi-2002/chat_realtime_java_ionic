@@ -1,6 +1,7 @@
 package com.zalo.dto.response;
 
 import com.zalo.dto.response.User.UserResponse;
+import com.zalo.model.BaseEntity;
 import com.zalo.model.User;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -26,15 +27,15 @@ public class BaseResponse {
 
     LocalDateTime et;
 
-    public BaseResponse(User createdBy, User updatedBy) {
-        if(createdBy != null)
+    public BaseResponse(BaseEntity e) {
+        if(e.getCreatedBy() != null)
         {
-            this.createdBy = new UserResponse(createdBy);
+            this.createdBy = new UserResponse(e.getCreatedBy());
         }
 
-        if(updatedBy != null)
+        if(e.getUpdatedBy() != null)
         {
-            this.updatedBy = new UserResponse(createdBy);
+            this.updatedBy = new UserResponse(e.getUpdatedBy());
         }
     }
 }

@@ -1,5 +1,5 @@
-import { ACCESS_TOKEN, LANG } from "@/utils/constant";
-import { getKey, setKey } from "@/utils/local";
+import { ACCESS_TOKEN, LANG, REFRESH_TOKEN } from "@/utils/constant";
+import { deleteKey, getKey, setKey } from "@/utils/local";
 import axiosClient from "axios";
 import axios from "axios";
 
@@ -39,8 +39,9 @@ instance.interceptors.response.use(
     async function (error) {
         // Any status codes that falls outside the range of 2xx cause this function to trigger
         // Do something with response error
+        console.log(error?.response)
         const originalRequest = error.config;
-        if (error?.response?.status === 1 && !originalRequest._retry) {
+        if (error?.response?.status === 401 && error?.response?.data.message == 'expiredToken' && !originalRequest._retry) {
             originalRequest._retry = true;
 
             // ------- Nếu đang refresh, đợi -------
@@ -54,14 +55,13 @@ instance.interceptors.response.use(
             }
             isRefreshing = true;
 
-            // let refreshToken = getRefreshToken();
-
             try {
-                const res = await axios.post(import.meta.env.VITE_API_URL + '/api/v1/auth/refresh-token', {
-                    // refreshToken: refreshToken,
+                const res = await axios.post(import.meta.env.VITE_API_URL + '/api/auth/refresh', {
+                    refreshToken: getKey(REFRESH_TOKEN),
                 });
-
-                const newToken = res.data.data.token;
+                
+                console.log(res)
+                const newToken = res.data.result.token;
                 setKey(ACCESS_TOKEN,newToken);
 
                 // Update Authorization cho request đầu
@@ -77,8 +77,11 @@ instance.interceptors.response.use(
             } catch (err) {
                 isRefreshing = false;
                 queue = [];
-                // removeToken()
-                window.location.href = '/'
+                
+                deleteKey(ACCESS_TOKEN)
+                deleteKey(REFRESH_TOKEN)
+
+                // window.location.href = '/'
                 return Promise.reject(err);
             }
         }

@@ -1,5 +1,6 @@
 package com.zalo.controller;
 
+import com.zalo.configuration.anotation.CheckConversationMember;
 import com.zalo.configuration.anotation.CurrentUser;
 import com.zalo.dto.filter.MessageFilter;
 import com.zalo.dto.request.Message.CreateMessageRequest;
@@ -26,6 +27,7 @@ public class MessageController {
     private final SimpMessagingTemplate messagingTemplate;
 
     @PostMapping
+    @CheckConversationMember
     public void send(@PathVariable Long conversationId,
                                         @CurrentUser User user,
                                         @ModelAttribute CreateMessageRequest dto) throws IOException {
@@ -33,16 +35,17 @@ public class MessageController {
     }
 
     @GetMapping
+    @CheckConversationMember
     public Page<MessageResponse> fetchMessages(@PathVariable Long conversationId,
-                                     @ModelAttribute MessageFilter filter) {
+                                     @ModelAttribute MessageFilter filter, @CurrentUser User user) {
         return messageService.fetchMessages(conversationId, filter);
     }
 
     @PostMapping("/{messageId}/read")
     public ResponseEntity<Void> markRead(@PathVariable Long conversationId,
                                          @PathVariable Long messageId,
-                                         @RequestParam Long userId) {
-        messageService.markRead(conversationId, userId, messageId);
+                                         @CurrentUser User user) {
+        messageService.markRead(conversationId, user.getId(), messageId);
         return ResponseEntity.ok().build();
     }
 

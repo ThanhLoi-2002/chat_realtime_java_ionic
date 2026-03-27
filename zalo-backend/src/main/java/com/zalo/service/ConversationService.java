@@ -3,7 +3,7 @@ package com.zalo.service;
 import com.zalo.dto.filter.ConversationFilter;
 import com.zalo.dto.filter.UserFilter;
 import com.zalo.dto.request.Conversation.CreateGroupRequest;
-import com.zalo.dto.response.conversation.ConversationResponse;
+import com.zalo.dto.response.Conversation.ConversationResponse;
 import com.zalo.model.Conversation;
 import com.zalo.model.ConversationMember;
 import com.zalo.model.Message;

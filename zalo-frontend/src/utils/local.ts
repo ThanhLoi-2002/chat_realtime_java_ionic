@@ -6,7 +6,7 @@ export const setKey = (key: string, value: any) => {
     if (typeof value !== 'string') {
         value = JSON.stringify(value)
     }
-    console.log(value)
+
     localStorage.setItem(key, value);
 };
 

@@ -1,7 +1,7 @@
 package com.zalo.service;
 
 import com.zalo.dto.response.Message.MessageResponse;
-import com.zalo.dto.response.conversation.ConversationResponse;
+import com.zalo.dto.response.Conversation.ConversationResponse;
 import com.zalo.gateway.UserOnlineStorage;
 import com.zalo.model.ConversationMember;
 import com.zalo.model.Message;

@@ -69,9 +69,9 @@ export function useDateTime() {
         const hh = String(date.getHours()).padStart(2, '0')
         const mm = String(date.getMinutes()).padStart(2, '0')
 
-        if (isSameDay) return `${hh}:${mm}`
+        if (isSameDay) return `${t("today")} ${hh}:${mm}`
 
-        if (isYesterday) return `Hôm qua ${hh}:${mm}`
+        if (isYesterday) return `${t("yesterday")} ${hh}:${mm}`
 
         const dd = String(date.getDate()).padStart(2, '0')
         const MM = String(date.getMonth() + 1).padStart(2, '0')

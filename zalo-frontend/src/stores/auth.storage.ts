@@ -1,6 +1,6 @@
 import { authApi } from '@/api/auth.api'
 import { LoginFormType, RegisterFormType } from '@/schema/auth.schema'
-import { ACCESS_TOKEN } from '@/utils/constant'
+import { ACCESS_TOKEN, REFRESH_TOKEN } from '@/utils/constant'
 import { setKey } from '@/utils/local'
 import { toast } from '@/utils/toast'
 import { defineStore } from 'pinia'
@@ -22,6 +22,7 @@ export const useAuthStore = defineStore('auth', {
                 const result: any = await authApi.login(data);
 
                 setKey(ACCESS_TOKEN, result.result.token)
+                setKey(REFRESH_TOKEN, result.result.refreshToken)
 
                 this.isLoading = false
 

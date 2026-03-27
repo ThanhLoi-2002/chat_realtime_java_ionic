@@ -1,56 +1,53 @@
 <script setup lang="ts">
 import { useTranslate } from "@/composables/useTranslate";
+import { FriendMenuType } from "@/types/common";
 import { FriendshipStatusEnum } from "@/types/enum";
 import { ref } from "vue"
 
-type MenuType = "friends" | "groups" | "friendInvitations" | "groupInvitations"
-const activeMenu = ref<MenuType>("friends")
+const props = defineProps({
+    activeMenu: String
+})
+
+const emit = defineEmits(["changeTab"])
+
 const { t } = useTranslate()
 
 const items = [
     {
         title: 'friendList',
         icon: 'fa-solid fa-users',
-        value: "friends",
-        onClick: (value: FriendshipStatusEnum) => {}
     },
     {
         title: 'groupList',
         icon: 'fa-solid fa-people-group',
-        value: 'groups',
-        onClick: (value: FriendshipStatusEnum) => {}
     },
     {
-        title: 'addFriendRequest',
+        title: 'friendInvitation',
         icon: 'fa-solid fa-person-circle-plus',
-        value: 'friendInvitations',
-        onClick: (value: FriendshipStatusEnum) => {}
     },
     {
-        title: 'groupInvation',
+        title: 'groupInvitation',
         icon: 'fa-solid fa-users-viewfinder',
-        value: 'groupInvitations',
-        onClick: (value: FriendshipStatusEnum) => {}
     },
 ]
 
-const changeTab = (value: MenuType | any) => {
-    activeMenu.value = value
+const changeTab = (value: FriendMenuType | any) => {
+    emit("changeTab", value)
 }
 </script>
 
 <template>
-    <div class="flex-1 px-2 py-3 space-y-1 text-sm">
+    <div class="flex-1 px-2 py-3 space-y-1 text-sm bg-white dark:bg-[#1f2937]">
 
         <!-- ITEM -->
-        <div v-for="(item, index) in items" :key="index" @click="changeTab(item.value)" :class="[
+        <div v-for="(item, index) in items" :key="index" @click="changeTab(item.title)" :class="[
             'px-3 py-2 rounded-sm cursor-pointer flex items-center gap-2 transition-all duration-200',
             'text-gray-700 dark:text-gray-300',
-            activeMenu === item.value
+            activeMenu === item.title
                 ? 'bg-blue-600 text-white font-medium'
-                : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                : 'hover:bg-gray-100 dark:hover:bg-gray-700'
         ]">
-            <i :class="item.icon"/>
+            <i :class="item.icon" />
             <span>{{ t(item.title) }}</span>
         </div>
 

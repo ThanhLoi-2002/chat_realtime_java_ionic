@@ -8,6 +8,7 @@ import com.zalo.model.User;
 import com.zalo.model.enums.MessageType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.Hibernate;
 import org.springframework.beans.BeanUtils;
 
 @EqualsAndHashCode(callSuper = true)
@@ -26,8 +27,8 @@ public class MessageResponse extends BaseResponse {
 
     UserResponse sender;
     public MessageResponse(Message m) {
-        super(m.getCreatedBy(), m.getUpdatedBy());
-        BeanUtils.copyProperties(m, this);
+        super(m);
+        BeanUtils.copyProperties(m, this, "replyToMessage", "sender", "createdBy", "updatedBy");
 
 
         if(m.getReplyToMessage() != null){
