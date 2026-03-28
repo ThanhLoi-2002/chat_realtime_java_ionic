@@ -62,13 +62,13 @@ public class FriendshipController {
     // 📥 request nhận
     @GetMapping("/received")
     public List<FriendshipResponse> received(@CurrentUser User user) {
-        return service.getReceived(user.getId()).stream().map(FriendshipResponse::new).toList();
+        return service.getReceived(user.getId()).stream().map(e -> new FriendshipResponse(e, "user1", "user2")).toList();
     }
 
     // 📤 request gửi
     @GetMapping("/sent")
     public List<FriendshipResponse> sent(@CurrentUser User user) {
-        return service.getSent(user.getId()).stream().map(FriendshipResponse::new).toList();
+        return service.getSent(user.getId()).stream().map(e -> new FriendshipResponse(e, "user1", "user2")).toList();
     }
 
     @GetMapping("/friend/{otherId}")
@@ -76,8 +76,8 @@ public class FriendshipController {
         Friendship f = service.getFriend(user.getId(), otherId);
 
         if(f == null){
-         return null;   
+         return null;
         }
-        return new FriendshipResponse(service.getFriend(user.getId(), otherId), "user1", "user2");
+        return new FriendshipResponse(service.getFriend(user.getId(), otherId));
     }
 }
