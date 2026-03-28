@@ -5,7 +5,7 @@
 
     <!-- MESSAGES -->
     <div class="flex-1 relative overflow-hidden">
-        <AddFriendBar v-if="!isFriend"/>
+        <AddFriendBar :friendship="friendship"/>
         <!-- Phần cuộn tin nhắn -->
         <div ref="scrollContainer" class="h-full overflow-y-auto p-1 space-y-1 md:p-6 md:space-y-2"
             @scroll="scrollMore">
@@ -72,7 +72,7 @@ const { getTime, formatSeparatorTime } = useDateTime()
 const { onScroll, scrollToBottom } = useScroll()
 
 const friendProfileModal = ref()
-const isFriend = ref(false)
+const friendship = ref(undefined)
 
 const scrollContainer = ref<HTMLElement | null>(null)
 const showScrollButton = ref(false)
@@ -190,7 +190,7 @@ const reset = async () => {
     await messageStorage.getMessages(conversationStorage.conversation!.id)
 
     if (!isGroup(conversationStorage.conversation)) {
-       isFriend.value = await friendStorage.isFriend(getRecipient(conversationStorage.conversation)?.id || 0)
+       friendship.value = await friendStorage.getFriend(getRecipient(conversationStorage.conversation)?.id || 0)
     }
 
     await nextTick()

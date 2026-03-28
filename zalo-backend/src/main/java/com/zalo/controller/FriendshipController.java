@@ -71,8 +71,13 @@ public class FriendshipController {
         return service.getSent(user.getId()).stream().map(FriendshipResponse::new).toList();
     }
 
-    @GetMapping("/is-friend/{otherId}")
-    public boolean isFriend(@CurrentUser User user, @PathVariable Long otherId) {
-        return service.isFriend(user.getId(), otherId);
+    @GetMapping("/friend/{otherId}")
+    public FriendshipResponse getFriend(@CurrentUser User user, @PathVariable Long otherId) {
+        Friendship f = service.getFriend(user.getId(), otherId);
+
+        if(f == null){
+         return null;   
+        }
+        return new FriendshipResponse(service.getFriend(user.getId(), otherId), "user1", "user2");
     }
 }

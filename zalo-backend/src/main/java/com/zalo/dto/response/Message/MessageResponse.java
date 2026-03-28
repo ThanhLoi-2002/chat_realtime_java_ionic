@@ -4,12 +4,15 @@ import com.zalo.dto.response.BaseResponse;
 import com.zalo.dto.response.User.UserResponse;
 import com.zalo.model.File;
 import com.zalo.model.Message;
-import com.zalo.model.User;
 import com.zalo.model.enums.MessageType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.Hibernate;
 import org.springframework.beans.BeanUtils;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Getter
@@ -26,16 +29,19 @@ public class MessageResponse extends BaseResponse {
     MessageResponse replyToMessage;
 
     UserResponse sender;
-    public MessageResponse(Message m) {
-        super(m);
+    public MessageResponse(Message m, String... relations) {
+        super(m, relations);
         BeanUtils.copyProperties(m, this, "replyToMessage", "sender", "createdBy", "updatedBy");
 
+        Set<String> rels = relations != null
+                ? new HashSet<>(Arrays.asList(relations))
+                : Collections.emptySet();
 
-        if(m.getReplyToMessage() != null){
+        if (rels.contains("replyToMessage")) {
             this.replyToMessage = new MessageResponse(m.getReplyToMessage());
         }
 
-        if (m.getSender() != null) {
+        if (rels.contains("sender")) {
             this.sender = new UserResponse(m.getSender());
         }
     }

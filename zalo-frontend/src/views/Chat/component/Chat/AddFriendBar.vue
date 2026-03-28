@@ -1,5 +1,5 @@
 <template>
-    <div class="absolute top-1 left-1/2 -translate-x-1/2
+    <div v-if="friendship?.status == FriendshipStatusEnum.PENDING || friendship == null" class="absolute top-1 left-1/2 -translate-x-1/2
          px-4 py-2 flex gap-2 justify-between
          bg-gray-100 dark:bg-slate-700 border
          border-slate-300 dark:border-slate-800
@@ -7,12 +7,12 @@
          text-xs md:text-base" :class="[style.text.primary]">
         <div class="flex gap-2 items-center">
             <i class="fa-solid fa-user-plus"></i>
-            <span :class="[style.text.primary, 'text-sm']">{{ t('sendFriendRequest') }}</span>
+            <span :class="[style.text.primary, 'text-sm']">{{ t(friendship?.status == FriendshipStatusEnum.PENDING ? 'haveSentAddFriendRequest' :'sendFriendRequest') }}</span>
         </div>
-        <div class="flex gap-4 items-center">
+        <div class="flex gap-4 items-center" v-if="friendship?.status != FriendshipStatusEnum.PENDING">
             <div class="px-2 py-1 text-sm rounded-sm cursor-pointer bg-slate-300 dark:bg-slate-600"
                 :class="[style.text.primary]" @click="openModal">{{ t("addFriend") }}</div>
-            <i class="fa-solid fa-ellipsis cursor-pointer"></i>
+            <!-- <i class="fa-solid fa-ellipsis cursor-pointer"></i> -->
         </div>
     </div>
 
@@ -34,6 +34,12 @@ import { computed, ref } from 'vue';
 import FriendProfileUI from '../FriendProfileUI.vue';
 import { useConversation } from '@/composables/useConversation';
 import { useConversationStore } from '@/stores/conversation.storage';
+import { FriendshipType } from '@/types/entities';
+import { FriendshipStatusEnum } from '@/types/enum';
+
+const props = defineProps<{
+    friendship: FriendshipType | undefined
+}>()
 
 const { t } = useTranslate()
 const { getRecipient } = useConversation()

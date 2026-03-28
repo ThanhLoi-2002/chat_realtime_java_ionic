@@ -1,8 +1,8 @@
 import { IResponse, SendAddFriendRequestType } from "@/types/common";
 import axios from "./axios";
 
-const isFriend = async (otherId: number) => {
-    return await axios.get<IResponse>(`/friends/is-friend/${otherId}`);
+const getFriend = async (otherId: number) => {
+    return await axios.get<IResponse>(`/friends/friend/${otherId}`);
 }
 
 const sendAddFriendRequest = async (data: SendAddFriendRequestType) => {
@@ -18,6 +18,6 @@ const getSent = async () => {
 }
 
 export const friendshipApi = {
-    isFriend, sendAddFriendRequest, getReceived, getSent
+    getFriend, sendAddFriendRequest, getReceived, getSent
 }
     

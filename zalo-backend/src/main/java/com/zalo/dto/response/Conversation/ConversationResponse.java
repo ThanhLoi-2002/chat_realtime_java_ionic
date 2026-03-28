@@ -10,6 +10,11 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.BeanUtils;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 @EqualsAndHashCode(callSuper = true)
 @Getter
 @Setter
@@ -26,15 +31,19 @@ public class ConversationResponse extends BaseResponse {
     MessageResponse lastMessage;
     UserResponse recipient;
 
-    public ConversationResponse(Conversation c) {
-        super(c);
+    public ConversationResponse(Conversation c, String... relations) {
+        super(c, relations);
         BeanUtils.copyProperties(c, this, "createdBy", "updatedBy", "lastMessage", "recipient");
 
-        if (c.getLastMessage() != null) {
-            this.lastMessage = new MessageResponse(c.getLastMessage());
+        Set<String> rels = relations != null
+                ? new HashSet<>(Arrays.asList(relations))
+                : Collections.emptySet();
+
+        if (rels.contains("lastMessage")) {
+            this.lastMessage = new MessageResponse(c.getLastMessage(), "sender");
         }
 
-        if (c.getRecipient() != null) {
+        if (rels.contains("recipient")) {
             this.recipient = new UserResponse(c.getRecipient());
         }
     }

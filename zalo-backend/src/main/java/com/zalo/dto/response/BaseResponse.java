@@ -2,17 +2,19 @@ package com.zalo.dto.response;
 
 import com.zalo.dto.response.User.UserResponse;
 import com.zalo.model.BaseEntity;
-import com.zalo.model.User;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PUBLIC)
 public class BaseResponse {
     Long id;
     int stt;
@@ -27,14 +29,16 @@ public class BaseResponse {
 
     LocalDateTime et;
 
-    public BaseResponse(BaseEntity e) {
-        if(e.getCreatedBy() != null)
-        {
+    public BaseResponse(BaseEntity e, String... relations) {
+        Set<String> rels = relations != null
+                ? new HashSet<>(Arrays.asList(relations))
+                : Collections.emptySet();
+
+        if (rels.contains("createdBy") && e.getCreatedBy() != null) {
             this.createdBy = new UserResponse(e.getCreatedBy());
         }
 
-        if(e.getUpdatedBy() != null)
-        {
+        if (rels.contains("updatedBy") && e.getUpdatedBy() != null) {
             this.updatedBy = new UserResponse(e.getUpdatedBy());
         }
     }

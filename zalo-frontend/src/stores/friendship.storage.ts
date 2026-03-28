@@ -12,16 +12,16 @@ export const useFriendshipStore = defineStore('friendship', {
         isLoading: false,
     }),
     actions: {
-        async isFriend(otherId: number) {
+        async getFriend(otherId: number) {
             try {
-                const result: any = await friendshipApi.isFriend(otherId);
+                const result: any = await friendshipApi.getFriend(otherId);
                 return result.result
             } catch (e: any) {
                 toast({
                     color: "danger",
                     message: e.message
                 })
-                return false
+                return undefined
             }
         },
         async sendAddFriendRequest(data: SendAddFriendRequestType) {

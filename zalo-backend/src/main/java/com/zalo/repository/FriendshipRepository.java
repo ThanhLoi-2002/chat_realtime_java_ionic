@@ -12,13 +12,12 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
     Optional<Friendship> findByUser1IdAndUser2Id(Long u1, Long u2);
 
     @Query("""
-    SELECT CASE WHEN COUNT(f) > 0 THEN true ELSE false END
+    SELECT f
     FROM Friendship f
     WHERE f.user1.id = :u1
       AND f.user2.id = :u2
-      AND f.status = 'ACCEPTED'
 """)
-    boolean isFriend(Long u1, Long u2);
+    Friendship getFriend(Long u1, Long u2);
 
     @Query("""
         SELECT f FROM Friendship f

@@ -84,7 +84,7 @@ public class MessageService {
         }
         statusRepo.saveAll(statuses);
 
-        websocketService.sendMessage(new MessageResponse(m), new ConversationResponse(conv));
+        websocketService.sendMessage(new MessageResponse(m, "sender"), new ConversationResponse(conv, "recipient", "lastMessage", "createdBy"));
     }
 
     public Page<MessageResponse> fetchMessages(Long conversationId, MessageFilter filter) {
@@ -92,7 +92,7 @@ public class MessageService {
 
         Page<Message> page = messageRepo.findAllWithRelationShip(conversationId, pageable);
 
-        return page.map(MessageResponse::new);
+        return page.map(e -> new MessageResponse(e, "sender"));
     }
 
     public Message findByIdWithRelationShip(Long id, Long conversationId) {

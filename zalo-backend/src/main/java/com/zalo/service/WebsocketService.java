@@ -54,7 +54,7 @@ public class WebsocketService {
         );
 
         Map<String, Object> payload = new HashMap<>();
-        payload.put("message", new MessageResponse(message));
+        payload.put("message", new MessageResponse(message, "sender"));
 
         for (ConversationMember member : members) {
             Set<String> sessions = userOnlineStorage.getSessions(member.getUserId());

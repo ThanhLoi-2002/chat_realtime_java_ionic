@@ -113,7 +113,7 @@ public class ConversationService {
         return memberRepo.findByConversationId(conversationId);
     }
 
-    public Page<ConversationResponse> findAll(Long userId, ConversationFilter filter) {
+    public Page<Conversation> findAll(Long userId, ConversationFilter filter) {
         List<Long> conversationIds = memberRepo.findConversationIdsByUserId(userId);
 
         filter.setIds(conversationIds);
@@ -121,9 +121,9 @@ public class ConversationService {
 //        Specification<Conversation> spec = filter.toSpecification();
         Pageable pageable = filter.toPageable();
 
-        Page<Conversation> page = conversationRepo.findAllWithRelationShip(conversationIds, filter.getName(), pageable);
+        return conversationRepo.findAllWithRelationShip(conversationIds, filter.getName(), pageable);
 
-        return page.map(ConversationResponse::new);
+//        return page.map(ConversationResponse::new);
     }
 
 //    public Conversation update(Long id) {

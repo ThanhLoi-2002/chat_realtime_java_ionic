@@ -122,10 +122,10 @@ public class FriendshipService {
         return repo.findSentRequests(userId);
     }
 
-    public boolean isFriend(Long a, Long b) {
+    public Friendship getFriend(Long a, Long b) {
         Long u1 = Math.min(a, b);
         Long u2 = Math.max(a, b);
 
-        return repo.isFriend(u1, u2);
+        return repo.getFriend(u1, u2);
     }
 }
