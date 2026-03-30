@@ -73,8 +73,9 @@ import { useConversationStore } from '@/stores/conversation.storage';
 import { useUserStore } from '@/stores/user.storage';
 import { SearchFriendPageType } from '@/types/common';
 import { UserType } from '@/types/entities';
-import { RANDOM_AVATAR } from '@/utils/constant';
+import { RANDOM_AVATAR, ROUTE } from '@/utils/constant';
 import { inject } from 'vue';
+import { useRouter } from 'vue-router';
 
 const props = defineProps<{
     user?: UserType | null,
@@ -82,6 +83,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useTranslate()
+const router = useRouter()
 const userStorage = useUserStore()
 const conversationStorage = useConversationStore()
 const dismiss = inject<() => void>("modalDismiss")
@@ -108,6 +110,7 @@ const items = [
 
 const goToMessage = async () => {
     const success = await conversationStorage.createPrivate(props.user!)
+    router.push(ROUTE.CHATS)
     success && dismiss?.()
 }
 </script>

@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { useTranslate } from "@/composables/useTranslate";
 import { FriendMenuType } from "@/types/common";
-import { FriendshipStatusEnum } from "@/types/enum";
-import { ref } from "vue"
 
 const props = defineProps({
     activeMenu: String
