@@ -36,11 +36,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
+                                auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                        .requestMatchers("/api/auth/**").permitAll()
 //                        .requestMatchers("/api/**").permitAll()
-                        .requestMatchers("/ws/**").permitAll()
-                        .anyRequest().permitAll()
+                                        .requestMatchers("/ws/**").permitAll()
+                                        .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 //                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

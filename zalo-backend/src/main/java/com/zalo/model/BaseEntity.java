@@ -22,7 +22,7 @@ public abstract class BaseEntity {
     Long cu;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cu", insertable=false, updatable=false)
+    @JoinColumn(name = "cu", insertable = false, updatable = false)
     User createdBy;
 
     @CreationTimestamp
@@ -32,7 +32,7 @@ public abstract class BaseEntity {
     Long eu;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "eu", insertable=false, updatable=false)
+    @JoinColumn(name = "eu", insertable = false, updatable = false)
     User updatedBy;
 
     @UpdateTimestamp

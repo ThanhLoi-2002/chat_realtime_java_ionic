@@ -10,7 +10,9 @@ import java.util.Optional;
 
 public interface ConversationMemberRepository extends JpaRepository<ConversationMember, Long> {
     List<ConversationMember> findByUserId(Long userId);
+
     List<ConversationMember> findByConversationId(Long conversationId);
+
     Optional<ConversationMember> findByConversationIdAndUserId(Long conversationId, Long userId);
 
     @Query("SELECT cm.conversationId FROM ConversationMember cm WHERE cm.userId = :userId")

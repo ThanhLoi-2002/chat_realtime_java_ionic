@@ -49,7 +49,7 @@ public class MessageService {
                 .replyToMessageId(dto.replyToId)
                 .build();
 
-        if(dto.contentType == MessageType.IMAGE){
+        if (dto.contentType == MessageType.IMAGE) {
             File file = cloudinaryService.uploadFile(dto.file);
             m.setFile(file);
         }
@@ -112,17 +112,17 @@ public class MessageService {
         });
     }
 
-    public void delete(Long id, Long userId){
+    public void delete(Long id, Long userId) {
         Optional<Message> m = messageRepo.findById(id);
-        if(m.isPresent()){
-            if(Objects.equals(m.get().getSenderId(), userId)){
+        if (m.isPresent()) {
+            if (Objects.equals(m.get().getSenderId(), userId)) {
                 m.get().setStt(-1);
                 messageRepo.save(m.get());
 
                 Message mess = findByIdWithRelationShip(m.get().getId(), m.get().getConversationId());
 
                 websocketService.updateMessage(mess);
-            }else{
+            } else {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "noRightPerform");
             }
 

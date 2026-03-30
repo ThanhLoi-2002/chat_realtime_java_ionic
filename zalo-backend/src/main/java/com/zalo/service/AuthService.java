@@ -23,9 +23,9 @@ public class AuthService {
     private final JwtService jwtService;
 
     public LoginResponse register(RegisterRequest request) {
-         boolean existed = userService.existedPhone(request.getPhone());
+        boolean existed = userService.existedPhone(request.getPhone());
 
-        if(existed){
+        if (existed) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "existed");
         }
 

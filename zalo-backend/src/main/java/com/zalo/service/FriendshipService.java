@@ -1,6 +1,7 @@
 package com.zalo.service;
 
 import com.zalo.dto.request.Friendship.CreateFriendship;
+import com.zalo.dto.response.User.UserResponse;
 import com.zalo.model.Friendship;
 import com.zalo.model.User;
 import com.zalo.model.enums.FriendStatus;
@@ -29,16 +30,16 @@ public class FriendshipService {
     }
 
     private Friendship getRelation(Long u1, Long u2) {
-        return repo.findByUser1IdAndUser2Id(min(u1, u2), max(u1, u2))
+        return repo.findActiveFriendship(min(u1, u2), max(u1, u2))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
     }
 
     // 📤 gửi lời mời
-    public void sendRequest(Long fromId, CreateFriendship dto) {
+    public Friendship sendRequest(Long fromId, CreateFriendship dto) {
         Long u1 = min(fromId, dto.toId);
         Long u2 = max(fromId, dto.toId);
 
-        if (repo.findByUser1IdAndUser2Id(u1, u2).isPresent()) {
+        if (repo.findActiveFriendship(u1, u2).isPresent()) {
             throw new RuntimeException("Already exists");
         }
 
@@ -51,6 +52,8 @@ public class FriendshipService {
         f.setCu(fromId);
 
         repo.save(f);
+
+        return f;
     }
 
     // ✅ accept
@@ -77,8 +80,7 @@ public class FriendshipService {
             throw new RuntimeException("Invalid state");
         }
 
-        f.setStatus(FriendStatus.REJECTED);
-        repo.save(f);
+        repo.delete(f);
     }
 
     // 🗑️ hủy lời mời
@@ -104,11 +106,11 @@ public class FriendshipService {
     }
 
     // 📋 danh sách bạn
-    public List<User> getFriends(Long userId) {
+    public List<UserResponse> getFriends(Long userId) {
         return repo.findFriends(userId).stream()
                 .map(f -> f.getUser1().getId().equals(userId)
-                        ? f.getUser2()
-                        : f.getUser1())
+                        ? new UserResponse(f.getUser2())
+                        : new UserResponse(f.getUser1()))
                 .toList();
     }
 
@@ -123,8 +125,8 @@ public class FriendshipService {
     }
 
     public Friendship getFriend(Long a, Long b) {
-        Long u1 = Math.min(a, b);
-        Long u2 = Math.max(a, b);
+        Long u1 = min(a, b);
+        Long u2 = max(a, b);
 
         return repo.getFriend(u1, u2);
     }

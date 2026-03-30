@@ -46,7 +46,7 @@ public class JwtService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "expiredToken");
 
         } catch (JwtException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"invalidToken");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "invalidToken");
         }
     }
 }

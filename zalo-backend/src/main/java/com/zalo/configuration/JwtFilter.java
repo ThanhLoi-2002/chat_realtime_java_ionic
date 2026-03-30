@@ -46,7 +46,7 @@ public class JwtFilter extends OncePerRequestFilter {
         Long userId = claims.get("id", Long.class);
 
         System.out.println(userId + "     userid");
-        if ( userId != null) {
+        if (userId != null) {
             User user = userRepository.findById(userId).orElse(null);
 
             if (user != null && SecurityContextHolder.getContext().getAuthentication() == null) {

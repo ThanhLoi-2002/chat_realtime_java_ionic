@@ -6,7 +6,7 @@ import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = { UserMapper.class, MessageMapper.class })
+@Mapper(componentModel = "spring", uses = {UserMapper.class, MessageMapper.class})
 public interface ConversationMapper {
 
     @Mapping(target = "lastMessage", qualifiedByName = "safeMessage")

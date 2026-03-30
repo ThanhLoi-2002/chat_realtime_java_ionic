@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useSystemStore } from '@/stores/system.storage';
 import { THEME } from '@/utils/constant'
 import { getKey, setKey } from '@/utils/local'
 import { ref } from 'vue'
@@ -7,6 +8,7 @@ const props = defineProps<{
   customClass?: string
 }>()
 
+const systemStorage = useSystemStore()
 const isDark = ref(getKey(THEME) === 'dark')
 
 const toggleDark = () => {
@@ -18,6 +20,8 @@ const toggleDark = () => {
     document.documentElement.classList.remove('dark')
     setKey(THEME, "light")
   }
+
+  systemStorage.setIsDarkMode(getKey(THEME) === 'dark')
 }
 </script>
 

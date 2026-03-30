@@ -43,7 +43,7 @@ public class ConversationService {
         Optional<User> creator = userService.findOne(UserFilter.builder().id(creatorId).build());
         Optional<User> otherUser = userService.findOne(UserFilter.builder().id(otherUserId).build());
 
-        if(creator.isEmpty() || otherUser.isEmpty()){
+        if (creator.isEmpty() || otherUser.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound");
         }
 

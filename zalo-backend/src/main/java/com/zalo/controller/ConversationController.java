@@ -43,7 +43,7 @@ public class ConversationController {
     ) {
         Page<Conversation> conversations = conversationService.findAll(user.getId(), filter);
 
-        return conversations.map( e -> new ConversationResponse(e, "recipient", "lastMessage", "createdBy"));
+        return conversations.map(e -> new ConversationResponse(e, "recipient", "lastMessage", "createdBy"));
     }
 
     @GetMapping("/{id}")

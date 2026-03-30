@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public class G {
     // use for log object
-    public static String toJson(Object data){
+    public static String toJson(Object data) {
         Gson prettyGson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .setPrettyPrinting()

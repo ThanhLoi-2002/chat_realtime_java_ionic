@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "lang")
-public class Lang extends BaseEntity{
+public class Lang extends BaseEntity {
     @Column(nullable = false, unique = true)
     String code;
 

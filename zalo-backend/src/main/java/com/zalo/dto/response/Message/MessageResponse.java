@@ -29,6 +29,7 @@ public class MessageResponse extends BaseResponse {
     MessageResponse replyToMessage;
 
     UserResponse sender;
+
     public MessageResponse(Message m, String... relations) {
         super(m, relations);
         BeanUtils.copyProperties(m, this, "replyToMessage", "sender", "createdBy", "updatedBy");

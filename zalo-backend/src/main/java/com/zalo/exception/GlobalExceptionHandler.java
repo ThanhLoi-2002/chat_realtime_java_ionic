@@ -52,7 +52,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NullPointerException.class)
     @ResponseBody
-    public ResponseEntity<ApiResponse<?>> handleNull(NullPointerException ex){
+    public ResponseEntity<ApiResponse<?>> handleNull(NullPointerException ex) {
 
         String lang = LangUtil.getLang();
 

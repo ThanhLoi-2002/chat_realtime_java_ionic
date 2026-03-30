@@ -13,7 +13,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "conversation")
-public class Conversation extends BaseEntity{
+public class Conversation extends BaseEntity {
     @Enumerated(EnumType.STRING)
     ConversationType type; // PRIVATE or GROUP
 

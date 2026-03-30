@@ -15,25 +15,25 @@ import java.util.Optional;
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
     @Query("""
-    SELECT m
-    FROM Message m
-    LEFT JOIN FETCH m.sender
-    LEFT JOIN FETCH m.replyToMessage
-    WHERE m.conversationId = :conversationId
-    ORDER BY m.ct DESC
-""")
+                SELECT m
+                FROM Message m
+                LEFT JOIN FETCH m.sender
+                LEFT JOIN FETCH m.replyToMessage
+                WHERE m.conversationId = :conversationId
+                ORDER BY m.ct DESC
+            """)
     Page<Message> findAllWithRelationShip(
             @Param("conversationId") Long conversationId,
             Pageable pageable
     );
 
     @Query("""
-    SELECT m
-    FROM Message m
-    LEFT JOIN FETCH m.sender
-    LEFT JOIN FETCH m.replyToMessage
-    WHERE m.conversationId = :conversationId AND m.id = :id
-""")
+                SELECT m
+                FROM Message m
+                LEFT JOIN FETCH m.sender
+                LEFT JOIN FETCH m.replyToMessage
+                WHERE m.conversationId = :conversationId AND m.id = :id
+            """)
     Optional<Message> findOneWithRelationShip(
             @Param("id") Long id,
             @Param("conversationId") Long conversationId

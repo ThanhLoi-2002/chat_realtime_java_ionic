@@ -49,6 +49,8 @@ onMounted(() => {
     document.documentElement.classList.remove('dark')
   }
 
+  systemStorage.setIsDarkMode(getKey(THEME) === 'dark')
+
   langStore.getListByLang();
 
   isMobile && systemStorage.setShowBottomMenu(true)

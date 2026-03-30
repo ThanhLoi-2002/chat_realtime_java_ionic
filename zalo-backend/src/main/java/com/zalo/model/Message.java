@@ -16,7 +16,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "message")
-public class Message extends BaseEntity{
+public class Message extends BaseEntity {
     Long conversationId;
 
     @Column(name = "senderId")

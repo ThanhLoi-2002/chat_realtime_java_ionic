@@ -44,7 +44,7 @@ public class UserService {
     public User uploadAvatar(MultipartFile file, User user) throws IOException {
         File avatar = cloudinaryService.uploadFile(file);
 
-        if( Boolean.parseBoolean(String.valueOf(user.getAvatar())) && Boolean.parseBoolean(user.getAvatar().getPublicId())){
+        if (Boolean.parseBoolean(String.valueOf(user.getAvatar())) && Boolean.parseBoolean(user.getAvatar().getPublicId())) {
             cloudinaryService.deleteFile(user.getAvatar().getPublicId());
         }
         user.setAvatar(avatar);
@@ -55,7 +55,7 @@ public class UserService {
     public User uploadCover(MultipartFile file, User user) throws IOException {
         File cover = cloudinaryService.uploadFile(file);
 
-        if(Boolean.parseBoolean(String.valueOf(user.getCover())) && Boolean.parseBoolean(user.getCover().getPublicId())){
+        if (Boolean.parseBoolean(String.valueOf(user.getCover())) && Boolean.parseBoolean(user.getCover().getPublicId())) {
             cloudinaryService.deleteFile(user.getCover().getPublicId());
         }
 
@@ -84,19 +84,19 @@ public class UserService {
     public User findByPhone(String phone) {
         UserFilter filter = new UserFilter();
         filter.setPhone(phone);
-        Optional<User> userExisted =  findOne(filter);
+        Optional<User> userExisted = findOne(filter);
 
-        if(userExisted.isEmpty()){
+        if (userExisted.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound");
         }
 
         return userExisted.get();
     }
 
-    public boolean existedPhone(String phone){
+    public boolean existedPhone(String phone) {
         UserFilter filter = new UserFilter();
         filter.setPhone(phone);
-        Optional<User> userExisted =  findOne(filter);
+        Optional<User> userExisted = findOne(filter);
         return userExisted.isPresent();
     }
 

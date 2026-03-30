@@ -22,7 +22,7 @@ import java.util.Set;
 public class WebsocketService {
     private final ConversationMemberRepository memberRepo;
     private final SimpMessagingTemplate messagingTemplate;
-    private  final UserOnlineStorage userOnlineStorage;
+    private final UserOnlineStorage userOnlineStorage;
 
     public void sendMessage(MessageResponse message, ConversationResponse conv) {
         List<ConversationMember> members = memberRepo.findByConversationId(

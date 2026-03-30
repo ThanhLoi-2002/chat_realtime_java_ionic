@@ -18,7 +18,7 @@ public class UserResponse extends BaseResponse {
     File avatar;
     File cover;
 
-    public UserResponse(User u, String... relations){
+    public UserResponse(User u, String... relations) {
         super(u, relations);
         BeanUtils.copyProperties(u, this, "createdBy", "updatedBy");
     }

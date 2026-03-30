@@ -17,6 +17,5 @@ export enum DeliveryStatusEnum {
 export enum FriendshipStatusEnum {
     PENDING = "PENDING",    // đã gửi lời mời
     ACCEPTED = "ACCEPTED",   // đã là bạn
-    REJECTED = "REJECTED",   // bị từ chối
     BLOCKED = 'BLOCKED'
 }

@@ -5,7 +5,7 @@
 
     <!-- MESSAGES -->
     <div class="flex-1 relative overflow-hidden">
-        <AddFriendBar :friendship="friendship"/>
+        <AddFriendBar/>
         <!-- Phần cuộn tin nhắn -->
         <div ref="scrollContainer" class="h-full overflow-y-auto p-1 space-y-1 md:p-6 md:space-y-2"
             @scroll="scrollMore">
@@ -56,7 +56,6 @@ import { useScroll } from '@/composables/useScroll';
 import Typing from './component/Chat/Typing.vue';
 import { useSystemStore } from '@/stores/system.storage';
 import AddFriendBar from './component/Chat/AddFriendBar.vue';
-import { useFriendshipStore } from '@/stores/friendship.storage';
 
 const props = defineProps<{
     isShowInfoSection: boolean
@@ -65,14 +64,12 @@ const props = defineProps<{
 const conversationStorage = useConversationStore()
 const messageStorage = useMessageStore()
 const sysStorage = useSystemStore()
-const friendStorage = useFriendshipStore()
 const { t } = useTranslate()
 const { getRecipient, isGroup } = useConversation()
 const { getTime, formatSeparatorTime } = useDateTime()
 const { onScroll, scrollToBottom } = useScroll()
 
 const friendProfileModal = ref()
-const friendship = ref(undefined)
 
 const scrollContainer = ref<HTMLElement | null>(null)
 const showScrollButton = ref(false)
@@ -188,10 +185,6 @@ const reset = async () => {
     sysStorage.setShowBottomMenu(false)
     messageStorage.resetPagination()
     await messageStorage.getMessages(conversationStorage.conversation!.id)
-
-    if (!isGroup(conversationStorage.conversation)) {
-       friendship.value = await friendStorage.getFriend(getRecipient(conversationStorage.conversation)?.id || 0)
-    }
 
     await nextTick()
     await waitForImages()

@@ -29,15 +29,15 @@ public class MessageController {
     @PostMapping
     @CheckConversationMember
     public void send(@PathVariable Long conversationId,
-                                        @CurrentUser User user,
-                                        @ModelAttribute CreateMessageRequest dto) throws IOException {
+                     @CurrentUser User user,
+                     @ModelAttribute CreateMessageRequest dto) throws IOException {
         messageService.sendMessage(conversationId, user.getId(), dto);
     }
 
     @GetMapping
     @CheckConversationMember
     public Page<MessageResponse> fetchMessages(@PathVariable Long conversationId,
-                                     @ModelAttribute MessageFilter filter, @CurrentUser User user) {
+                                               @ModelAttribute MessageFilter filter, @CurrentUser User user) {
         return messageService.fetchMessages(conversationId, filter);
     }
 

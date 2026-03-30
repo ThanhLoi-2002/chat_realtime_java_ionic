@@ -8,5 +8,6 @@ import java.util.Optional;
 
 public interface MessageStatusRepository extends JpaRepository<MessageStatus, Long> {
     List<MessageStatus> findByMessageId(Long messageId);
+
     Optional<MessageStatus> findByMessageIdAndUserId(Long messageId, Long userId);
 }
