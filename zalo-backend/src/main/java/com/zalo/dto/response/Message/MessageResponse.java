@@ -43,7 +43,9 @@ public class MessageResponse extends BaseResponse {
         }
 
         if (rels.contains("sender")) {
-            this.sender = new UserResponse(m.getSender());
+            if(m.getSender() != null){
+                this.sender = new UserResponse(m.getSender());
+            }
         }
     }
 }

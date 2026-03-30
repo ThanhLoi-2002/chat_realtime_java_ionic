@@ -81,6 +81,8 @@ const lastMessageContent = computed(() => {
     }
   }
 
-  return `${getUserNameFromLastMessage(lastMessage)}: ${content}`
+  if (lastMessage?.contentType == MessageEnum.SYSTEM) {
+    return t(`${content}`)
+  } else return `${getUserNameFromLastMessage(lastMessage)}: ${content}`
 })
 </script>

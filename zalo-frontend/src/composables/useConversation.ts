@@ -1,6 +1,6 @@
 import { useUserStore } from "@/stores/user.storage"
 import { ConversationType, MessageType } from "@/types/entities"
-import { ConversationEnum } from "@/types/enum"
+import { ConversationEnum, MessageEnum } from "@/types/enum"
 import { useTranslate } from "./useTranslate"
 
 export function useConversation() {
@@ -20,9 +20,11 @@ export function useConversation() {
     const getUserNameFromLastMessage = (lastMessage?: MessageType) => {
         if (!lastMessage) return
 
-        if (userStorage.user?.id == lastMessage.sender.id)
+        if(lastMessage.contentType == MessageEnum.SYSTEM) return '';
+
+        if (userStorage.user?.id == lastMessage.sender?.id)
             return t('you')
-        else return lastMessage.sender.username
+        else return lastMessage.sender?.username
     }
 
     const conversationName = (conversation?: ConversationType) => isGroup(conversation) ? conversation?.name : getRecipient(conversation!)?.username

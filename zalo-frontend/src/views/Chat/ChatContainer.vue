@@ -5,7 +5,7 @@
 
     <!-- MESSAGES -->
     <div class="flex-1 relative overflow-hidden">
-        <AddFriendBar/>
+        <AddFriendBar />
         <!-- Phần cuộn tin nhắn -->
         <div ref="scrollContainer" class="h-full overflow-y-auto p-1 space-y-1 md:p-6 md:space-y-2"
             @scroll="scrollMore">
@@ -19,7 +19,12 @@
                     {{ formatSeparatorTime(msg.ct) }}
                 </div>
 
-                <MessageContainer :message="msg" :friendProfileModal="friendProfileModal" />
+                <div v-if="msg.contentType === MessageEnum.SYSTEM"
+                    class="text-center text-xs text-gray-500 bg-slate-100 dark:bg-slate-600 dark:text-slate-300 px-2 py-1 rounded-lg w-fit mx-auto">
+                    {{ t(`${msg.content}`) }}
+                </div>
+
+                <MessageContainer v-else :message="msg" :friendProfileModal="friendProfileModal" />
             </div>
         </div>
 
@@ -56,6 +61,7 @@ import { useScroll } from '@/composables/useScroll';
 import Typing from './component/Chat/Typing.vue';
 import { useSystemStore } from '@/stores/system.storage';
 import AddFriendBar from './component/Chat/AddFriendBar.vue';
+import { MessageEnum } from '@/types/enum';
 
 const props = defineProps<{
     isShowInfoSection: boolean
@@ -88,8 +94,8 @@ const messagesWithMeta = computed(() => {
         const prevTime = prev ? getTime(prev.ct) : 0
         const nextTime = next ? getTime(next.ct) : 0
 
-        const isSamePrev = prev && prev.sender.id === msg.sender.id
-        const isSameNext = next && next.sender.id === msg.sender.id
+        const isSamePrev = prev && prev.sender?.id === msg.sender?.id
+        const isSameNext = next && next.sender?.id === msg.sender?.id
 
         // ✅ START OF GROUP (quan trọng nhất)
         const isStartGroup =

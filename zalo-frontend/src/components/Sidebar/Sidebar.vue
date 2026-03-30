@@ -96,7 +96,7 @@ const items = [
         hideOnMobile: true
     },
     {
-        icon: 'fa-solid fa-children',
+        icon: 'fa-solid fa-book',
         to: ROUTE.FRIENDS,
     },
 ]

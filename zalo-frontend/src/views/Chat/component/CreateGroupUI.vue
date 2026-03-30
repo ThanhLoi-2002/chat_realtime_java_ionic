@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col h-[90%] bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
         <!-- BODY -->
-        <div class="flex-1 overflow-hidden flex flex-col px-4 py-3 rounded-lg">
+        <div class="flex-1 overflow-hidden flex flex-col px-4 py-3 rounded-lg h-full">
 
             <!-- GROUP NAME -->
             <div class="flex items-center gap-3">
@@ -9,48 +9,58 @@
                     <i class="fa fa-camera"></i>
                 </div>
 
-                <input placeholder="Nhập tên nhóm..." class="flex-1 border-b bg-transparent outline-none
+                <input :placeholder="t('enterGroupName') + '...'" class="flex-1 border-b bg-transparent outline-none
                  border-gray-300 dark:border-gray-600
-                 pb-1" />
+                 pb-1" v-model="groupName"/>
             </div>
 
             <!-- SEARCH -->
             <div class="mt-3">
                 <input placeholder="Nhập tên, số điện thoại..." class="w-full px-4 py-2 rounded-full
                  bg-gray-100 dark:bg-gray-800
-                 outline-none" />
+                 outline-none" v-model="keyword"/>
             </div>
             <!-- LIST -->
-            <div class="flex-1 mt-4 pr-1">
+            <div class="flex-1 mt-4 pr-1 h-full">
 
                 <p class="text-sm text-gray-500 mb-2">{{ t("recentChat") }}</p>
 
-                <div class="flex gap-2">
+                <div class="flex gap-2 h-full">
                     <!-- Recent users list: cố định chiều cao, scroll riêng -->
                     <div class="flex-1">
-                        <div class="h-[70%] overflow-y-auto bg-white dark:bg-gray-900 rounded">
-                            <div v-for="user in users" :key="user.id"
-                                class="flex items-center gap-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 rounded px-2"
-                                @click="selectUser(user)">
-                                <span class="w-4 h-4 rounded-full flex justify-center items-center border-slate-400 border"
-                                    :class="isSelected(user) ? 'bg-blue-400' : 'dark:bg-slate-600'"><i
-                                        class="fa fa-check" v-show="isSelected(user)" /></span>
-                                <img :src="user.avatar" class="w-10 h-10 rounded-full object-cover" />
-                                <span class="truncate text-base">{{ user.name }}</span>
+                        <div class="h-[80%] overflow-y-auto bg-white dark:bg-gray-900 rounded">
+                            <div v-for="(group, letter) in groupedFriends" :key="letter">
+                                <!-- LETTER -->
+                                <div class="text-gray-500 dark:text-gray-400 text-xs md:text-sm mb-2 mt-4">
+                                    {{ letter }}
+                                </div>
+
+                                <!-- USERS -->
+                                <div v-for="user in group" :key="user.id"
+                                    class="flex items-center gap-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 rounded pl-2"
+                                    @click="selectUser(user)">
+                                    <span
+                                        class="w-4 h-4 rounded-full flex justify-center items-center border-slate-400 border"
+                                        :class="isSelected(user) ? 'bg-blue-400' : 'dark:bg-slate-600'"><i
+                                            class="fa fa-check" v-show="isSelected(user)" /></span>
+                                    <img :src="user.avatar.url" class="w-10 h-10 rounded-full object-cover" />
+                                    <span class="truncate text-base">{{ user.username }}</span>
+                                </div>
                             </div>
+
                         </div>
                     </div>
 
                     <!-- Selected users list: cũng có scroll riêng; ẩn nếu rỗng -->
                     <div v-if="selectedUsers.length > 0" class="w-40">
                         <span class="dark:text-slate-400 text-sm">{{ t('selected') }} {{ selectedUsers.length
-                            }}/100</span>
-                        <div class="h-[70%] overflow-y-auto bg-white dark:bg-gray-900 rounded flex flex-col gap-2 mt-2">
+                        }}/100</span>
+                        <div class="h-[85%] overflow-y-auto bg-white dark:bg-gray-900 rounded flex flex-col gap-2 mt-2">
                             <div v-for="user in selectedUsers" :key="user.id"
                                 class="flex items-center justify-between gap-2 py-1 cursor-pointer bg-blue-500 rounded-full px-2">
                                 <div class="flex gap-2 items-center">
-                                    <img :src="user.avatar" class="w-6 h-6 rounded-full object-cover" />
-                                    <span class="truncate text-sm">{{ user.name }}</span>
+                                    <img :src="user.avatar.url" class="w-6 h-6 rounded-full object-cover" />
+                                    <span class="truncate text-sm">{{ user.username }}</span>
                                 </div>
                                 <i class="fa fa-close mr-2 dark:hover:text-slate-300 text-sm"
                                     @click="removeUser(user)"></i>
@@ -68,7 +78,7 @@
                 @click="dismiss">
                 {{ t("cancel") }}
             </button>
-            <ion-button class="rounded cursor-pointer" :disabled="selectedUsers.length < 2">
+            <ion-button class="rounded cursor-pointer" :disabled="selectedUsers.length < 2 || groupName.length == 0" @click="createGroup">
                 {{ t("createGroup") }}
             </ion-button>
         </div>
@@ -78,33 +88,49 @@
 
 <script setup lang="ts">
 import { useTranslate } from '@/composables/useTranslate';
-import { inject, ref } from 'vue';
+import { useFriendshipStore } from '@/stores/friendship.storage';
+import { UserType } from '@/types/entities';
+import { normalizeText } from '@/utils/helper';
+import { computed, inject, onMounted, ref } from 'vue';
 
 const dismiss = inject<() => void>("modalDismiss")
 const { t } = useTranslate()
-const users = ref<any[]>([
-    { id: 1, name: 'John kt', avatar: 'https://i.pravatar.cc/100?img=1' },
-    { id: 2, name: 'Mỹ Hoàng', avatar: 'https://i.pravatar.cc/100?img=2' },
-    { id: 3, name: 'Ho Phat', avatar: 'https://i.pravatar.cc/100?img=3' },
-    { id: 4, name: 'Doantbphuong', avatar: 'https://i.pravatar.cc/100?img=4' },
-    { id: 5, name: 'Mark', avatar: 'https://i.pravatar.cc/100?img=5' },
-    { id: 5, name: 'Mark', avatar: 'https://i.pravatar.cc/100?img=5' },
-    { id: 5, name: 'Mark', avatar: 'https://i.pravatar.cc/100?img=5' },
-    { id: 5, name: 'Mark', avatar: 'https://i.pravatar.cc/100?img=5' },
-    { id: 5, name: 'Mark', avatar: 'https://i.pravatar.cc/100?img=5' },
-    { id: 5, name: 'Mark', avatar: 'https://i.pravatar.cc/100?img=5' },
-    { id: 5, name: 'Mark', avatar: 'https://i.pravatar.cc/100?img=5' },
-    { id: 5, name: 'Mark', avatar: 'https://i.pravatar.cc/100?img=5' },
+const keyword = ref("");
+const groupName = ref("");
+const friendshipStorage = useFriendshipStore()
+const users = ref<UserType[]>([
+
 ])
 
-const selectedUsers = ref<any[]>([
+const selectedUsers = ref<UserType[]>([
 ])
 
-const isSelected = (user: any) => {
+// filter
+const filtered = computed(() =>
+    users.value.filter((f) =>
+        normalizeText(f.username)
+            .toLowerCase()
+            .includes(normalizeText(keyword.value).toLowerCase()),
+    ),
+);
+
+const groupedFriends = computed(() => {
+    const groups: any = {};
+
+    filtered.value.forEach((u) => {
+        const letter = u.username.charAt(0).toUpperCase();
+        if (!groups[letter]) groups[letter] = [];
+        groups[letter].push(u);
+    });
+
+    return groups;
+});
+
+const isSelected = (user: UserType) => {
     return selectedUsers.value.some(u => u.id === user.id)
 }
 
-const selectUser = (user: any) => {
+const selectUser = (user: UserType) => {
     const exists = isSelected(user)
     if (!exists) {
         selectedUsers.value.push(user)
@@ -113,7 +139,17 @@ const selectUser = (user: any) => {
     }
 }
 
-const removeUser = (user: any) => {
+const removeUser = (user: UserType) => {
     selectedUsers.value = selectedUsers.value.filter(u => u.id !== user.id)
 }
+
+const createGroup = () => {
+    console.log(groupName.value)
+    console.log(selectedUsers.value.map(u => u.id))
+}
+
+onMounted(async () => {
+    await friendshipStorage.getFriends()
+    users.value = friendshipStorage.friends
+})
 </script>

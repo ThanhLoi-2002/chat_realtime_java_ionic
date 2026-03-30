@@ -1,5 +1,6 @@
 package com.zalo.service;
 
+import com.zalo.configuration.G;
 import com.zalo.dto.filter.MessageFilter;
 import com.zalo.dto.request.Message.CreateMessageRequest;
 import com.zalo.dto.response.Message.MessageResponse;
@@ -127,5 +128,47 @@ public class MessageService {
             }
 
         }
+    }
+
+    public void createSystemMessage(Long conversationId, CreateMessageRequest dto) {
+        Message m = Message.builder()
+                .conversationId(conversationId)
+                .content(dto.content)
+                .contentType(dto.contentType)
+                .replyToMessageId(dto.replyToId)
+                .build();
+
+        m = messageRepo.save(m);
+
+        // clear persistence context
+        em.flush();
+        em.refresh(m);
+
+        m = findByIdWithRelationShip(m.getId(), conversationId);
+
+        // update lastMessage for conversation
+        Conversation conv = conversationService.findById(conversationId);
+        conv.setLastMessageId(m.getId());
+        conversationRepository.save(conv);
+
+        em.flush();
+        em.refresh(conv);
+
+        conv = conversationService.findByIdWithRelationShip(conversationId);
+
+        // create statuses for each member in conversation
+        List<ConversationMember> members = memberRepo.findByConversationId(conversationId);
+        List<MessageStatus> statuses = new ArrayList<>();
+        for (ConversationMember member : members) {
+            MessageStatus st = MessageStatus.builder()
+                    .messageId(m.getId())
+                    .userId(member.getUserId())
+                    .status(DeliveryStatus.READ)
+                    .build();
+            statuses.add(st);
+        }
+        statusRepo.saveAll(statuses);
+
+        websocketService.sendMessage(new MessageResponse(m), new ConversationResponse(conv, "recipient", "lastMessage", "createdBy"));
     }
 }

@@ -28,7 +28,7 @@ public class WebsocketService {
         List<ConversationMember> members = memberRepo.findByConversationId(
                 message.getConversationId()
         );
-
+        System.out.println("lsajdkasjdalsj");
         Map<String, Object> payload = new HashMap<>();
         payload.put("message", message);
         payload.put("conversation", conv);
