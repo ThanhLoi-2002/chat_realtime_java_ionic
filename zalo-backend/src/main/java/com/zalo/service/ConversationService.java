@@ -6,6 +6,7 @@ import com.zalo.dto.request.Conversation.CreateGroupRequest;
 import com.zalo.dto.request.Message.CreateMessageRequest;
 import com.zalo.dto.response.Conversation.ConversationResponse;
 import com.zalo.dto.response.Message.MessageResponse;
+import com.zalo.dto.response.User.UserResponse;
 import com.zalo.model.*;
 import com.zalo.model.enums.ConversationType;
 import com.zalo.model.enums.DeliveryStatus;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -106,12 +108,7 @@ public class ConversationService {
     }
 
     public void createSystemMessage(Long conversationId, CreateMessageRequest dto) {
-        Message m = Message.builder()
-                .conversationId(conversationId)
-                .content(dto.content)
-                .contentType(dto.contentType)
-                .replyToMessageId(dto.replyToId)
-                .build();
+        Message m = Message.builder().conversationId(conversationId).content(dto.content).contentType(dto.contentType).replyToMessageId(dto.replyToId).build();
 
         m = messageRepo.save(m);
 
@@ -131,7 +128,9 @@ public class ConversationService {
 
         conv = findByIdWithRelationShip(conversationId);
 
-        websocketService.sendMessage(new MessageResponse(m), new ConversationResponse(conv, "lastMessage", "createdBy"));
+        List<ConversationMember> members = memberRepo.findByConversationId(conversationId);
+
+        websocketService.sendMessage(new MessageResponse(m), new ConversationResponse(conv, "lastMessage", "createdBy"), members);
     }
 
     public Conversation findByIdWithRelationShip(Long id) {
@@ -142,21 +141,38 @@ public class ConversationService {
         return conversationRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
     }
 
-    public List<ConversationMember> getMembers(Long conversationId) {
-        return memberRepo.findByConversationId(conversationId);
+    public List<User> getMembers(Long conversationId) {
+        List<ConversationMember> members = memberRepo.findByConversationIdOrderByIdDesc(conversationId);
+
+        List<Long> userIds = members.stream().map(ConversationMember::getUserId).toList();
+
+        List<User> users = userRepo.findByIdIn(userIds);
+
+        // map user theo id
+        Map<Long, User> userMap = users.stream().collect(Collectors.toMap(User::getId, u -> u));
+
+        // rebuild theo thứ tự members
+        return userIds.stream().map(userMap::get).filter(Objects::nonNull).toList();
     }
 
-    public Page<Conversation> findAll(Long userId, ConversationFilter filter) {
+    public Page<ConversationResponse> findAll(Long userId, ConversationFilter filter) {
         List<Long> conversationIds = memberRepo.findConversationIdsByUserId(userId);
 
         filter.setIds(conversationIds);
-
-//        Specification<Conversation> spec = filter.toSpecification();
         Pageable pageable = filter.toPageable();
 
-        return conversationRepo.findAllWithRelationShip(conversationIds, filter.getName(), pageable);
+        Page<Conversation> page = conversationRepo.findAllWithRelationShip(conversationIds, filter.getName(), pageable);
 
-//        return page.map(ConversationResponse::new);
+        Page<ConversationResponse> result = page.map(c -> {
+            ConversationResponse conv = new ConversationResponse(c, "recipient", "lastMessage", "createdBy");
+            if (c.getType() == ConversationType.GROUP) {
+                conv.setMembers(getMembers(c.getId()).stream().map(UserResponse::new).toList());
+            }
+
+            return conv;
+        });
+
+        return result;
     }
 
 //    public Conversation update(Long id) {
@@ -164,4 +180,16 @@ public class ConversationService {
 //        conversationRepo.save(conv);
 //        return conversationRepo.save(conv);
 //    }
+
+//    Page<ConversationResponse> result = page.map(e -> {
+//        ConversationResponse conv = new ConversationResponse(e, "recipient", "lastMessage", "createdBy");
+//        if(e.getType() == ConversationType.GROUP){
+//            List<ConversationMember> members = memberRepo.findByConversationId(e.getId());
+//
+//            List<Long> userIds = members.stream().map(ConversationMember::getUserId).toList();
+//            List<User> users = userRepo.findByIdIn(userIds);
+//            conv.setMembers(users.stream().map(UserResponse::new).toList());
+//        }
+//        return conv;
+//    });
 }

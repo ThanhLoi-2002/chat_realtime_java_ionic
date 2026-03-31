@@ -4,8 +4,7 @@
         :class="isOwner ? 'ml-auto flex-row-reverse' : ''" ref="rootRef">
 
         <!-- AVATAR -->
-        <circle-avatar v-if="!isOwner && message.showAvatar" :url="message.sender?.avatar?.url" size="size-8"
-            :onClick="() => friendProfileModal?.present()" />
+        <circle-avatar v-if="!isOwner && message.showAvatar" :user="message.sender" size="size-8" />
         <div v-else-if="!isOwner" class="px-4 py-2"></div>
 
         <!-- BUBBLE -->
@@ -105,7 +104,6 @@ import TextMessage from '../Message/TextMessage.vue';
 
 const props = defineProps<{
     message: any
-    friendProfileModal: any
 }>()
 
 const { t } = useTranslate()

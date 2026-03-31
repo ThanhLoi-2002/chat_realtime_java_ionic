@@ -34,10 +34,9 @@
           class="flex items-center justify-between mb-2 p-2 rounded-lg cursor-pointer transition-all duration-200 hover:bg-gray-200 bg-gray-300 dark:hover:bg-gray-600 dark:bg-gray-700 hover:scale-[1.01]"
         >
           <div class="flex items-center gap-3">
-            <img
-              :src="u.avatar.url"
-              class="w-9 h-9 md:w-10 md:h-10 rounded-full object-cover"
-              @click="openFriendProfile(u)"
+            <circle-avatar
+              :user="u"
+              custom-class="w-9 h-9 md:w-10 md:h-10 rounded-full object-cover"
             />
 
             <span class="text-sm md:text-base font-medium">
@@ -77,20 +76,13 @@
     :message="t('confirmUnfriend')"
     :header="t('unfriend')"
   />
-
-  <Modal ref="friendProfileModal" :title="t('profile')">
-    <friend-profile-u-i
-      :user="selectedFriend"
-    />
-  </Modal>
 </template>
 <script setup lang="ts">
 import { useTranslate } from "@/composables/useTranslate";
 import { useFriendshipStore } from "@/stores/friendship.storage";
 import { UserType } from "@/types/entities";
 import { normalizeText } from "@/utils/helper";
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
-import FriendProfileUI from "@/views/Chat/component/FriendProfileUI.vue";
+import { computed, onBeforeUnmount, onMounted, ref, } from "vue";
 
 const { t } = useTranslate();
 const friendshipStorage = useFriendshipStore();
@@ -98,19 +90,12 @@ const keyword = ref("");
 
 // mock data
 const friends = computed(() => friendshipStorage.friends);
-const selectedFriend = ref<UserType | undefined>(undefined)
 
 const openMenuId = ref<number | null>(null);
 const menuRef = ref<any>(null);
-const friendProfileModal = ref()
 
 const showConfirmDelete = ref(false);
 const selectedUser = ref<UserType | null>(null);
-
-const openFriendProfile = (user: UserType) => {
-  selectedFriend.value = user
-  friendProfileModal.value?.present()
-}
 
 /* toggle menu */
 const toggleMenu = (id: number) => {

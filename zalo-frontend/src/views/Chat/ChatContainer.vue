@@ -24,7 +24,7 @@
                     {{ t(`${msg.content}`) }}
                 </div>
 
-                <MessageContainer v-else :message="msg" :friendProfileModal="friendProfileModal" />
+                <MessageContainer v-else :message="msg" />
             </div>
         </div>
 
@@ -39,10 +39,6 @@
         </button>
     </div>
 
-    <Modal ref="friendProfileModal" :title="t('profile')">
-        <friend-profile-u-i :user="getRecipient(conversationStorage.conversation!)" />
-    </Modal>
-
     <Typing :scrollContainer="scrollContainer" />
 </template>
 <script setup lang="ts">
@@ -52,9 +48,7 @@ import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useMessageStore } from '@/stores/message.storage';
 import ChatHeader from './component/Chat/ChatHeader.vue';
 import { useConversation } from '@/composables/useConversation';
-import FriendProfileUI from './component/FriendProfileUI.vue';
 import MessageContainer from './component/Chat/MessageContainer.vue';
-import Modal from '@/components/Modal/Modal.vue';
 import { useDateTime } from '@/composables/useDateTime';
 import LoadingSpinner from '@/components/Loading/LoadingSpinner.vue';
 import { useScroll } from '@/composables/useScroll';
@@ -62,6 +56,7 @@ import Typing from './component/Chat/Typing.vue';
 import { useSystemStore } from '@/stores/system.storage';
 import AddFriendBar from './component/Chat/AddFriendBar.vue';
 import { MessageEnum } from '@/types/enum';
+import { UserType } from '@/types/entities';
 
 const props = defineProps<{
     isShowInfoSection: boolean
@@ -71,11 +66,8 @@ const conversationStorage = useConversationStore()
 const messageStorage = useMessageStore()
 const sysStorage = useSystemStore()
 const { t } = useTranslate()
-const { getRecipient, isGroup } = useConversation()
 const { getTime, formatSeparatorTime } = useDateTime()
 const { onScroll, scrollToBottom } = useScroll()
-
-const friendProfileModal = ref()
 
 const scrollContainer = ref<HTMLElement | null>(null)
 const showScrollButton = ref(false)
@@ -191,6 +183,10 @@ const reset = async () => {
     sysStorage.setShowBottomMenu(false)
     messageStorage.resetPagination()
     await messageStorage.getMessages(conversationStorage.conversation!.id)
+
+    // if (isGroup(conversationStorage.conversation)) {
+    //     await conversationStorage.getMembers()
+    // }
 
     await nextTick()
     await waitForImages()

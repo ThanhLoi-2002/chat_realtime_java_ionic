@@ -7,7 +7,6 @@ interface ConversationState {
     isLoading: boolean,
     conversations: ConversationType[],
     conversation?: ConversationType,
-    recipient?: UserType
     page: number
     hasMore: boolean
 }
@@ -59,7 +58,7 @@ export const useConversationStore = defineStore('conversation', {
                 const result: any = await conversationApi.getList({ page: this.page });
 
                 const { content, page } = result.result
-                console.log(result.result)
+
                 const newList = content || []
 
                 // Map để loại trùng theo id
@@ -109,7 +108,6 @@ export const useConversationStore = defineStore('conversation', {
             this.conversations.unshift(conv); // thêm lên đầu
 
             this.sortConversation()
-            console.log(this.conversations[0].lastMessage)
         },
 
         updateConversationLastMessage(mess: MessageType) {
@@ -120,10 +118,26 @@ export const useConversationStore = defineStore('conversation', {
             }
         },
 
+        async getMembers() {
+            try {
+                if (this.conversation) {
+                    const result: any = await conversationApi.getMembers(this.conversation.id);
+                    this.conversation.members = result.result;
+                }
+
+                return true
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return false
+            }
+        },
+
         reset() {
             this.conversations = []
             this.conversation = undefined
-            this.recipient = undefined
             this.page = -1
             this.hasMore = true
         }

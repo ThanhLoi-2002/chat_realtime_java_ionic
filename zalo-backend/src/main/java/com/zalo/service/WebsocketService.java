@@ -24,11 +24,7 @@ public class WebsocketService {
     private final SimpMessagingTemplate messagingTemplate;
     private final UserOnlineStorage userOnlineStorage;
 
-    public void sendMessage(MessageResponse message, ConversationResponse conv) {
-        List<ConversationMember> members = memberRepo.findByConversationId(
-                message.getConversationId()
-        );
-        System.out.println("lsajdkasjdalsj");
+    public void sendMessage(MessageResponse message, ConversationResponse conv, List<ConversationMember> members) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("message", message);
         payload.put("conversation", conv);

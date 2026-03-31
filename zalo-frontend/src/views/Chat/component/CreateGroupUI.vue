@@ -146,9 +146,6 @@ const removeUser = (user: UserType) => {
 }
 
 const createGroup = async () => {
-    console.log(groupName.value)
-    console.log(selectedUsers.value.map(u => u.id))
-
     const isSuccess = await convStorage.createGroup({
         name: groupName.value,
         participantIds: selectedUsers.value.map(u => u.id)

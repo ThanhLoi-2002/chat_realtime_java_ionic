@@ -16,7 +16,8 @@
         <div :class="['py-4 border-b overflow-y-auto', style.border.primary]">
 
             <div class="flex flex-col items-center justify-center">
-                <circle-avatar :url="conversationAvatar(conversationStorage.conversation)" size="size-20" />
+                <circle-avatar :user="getRecipient(conversationStorage.conversation)" size="size-20" v-if="!isGroup(conversationStorage.conversation)"/>
+                <group-avatar :conversation="conversationStorage.conversation!" size="w-16 h-16" v-else/>
 
                 <div class="mt-3 font-medium dark:text-white gap-2">
                     {{ conversationName(conversationStorage.conversation) }}
@@ -134,12 +135,13 @@ import { useConversation } from '@/composables/useConversation'
 import { useTranslate } from '@/composables/useTranslate'
 import { style } from '@/assets/tailwindcss'
 import Collapse from '@/components/collapse/Collapse.vue'
+import GroupAvatar from '@/components/Avatar/GroupAvatar.vue'
 
 const emit = defineEmits(['update:isShowInfoSection'])
 
 const conversationStorage = useConversationStore()
 const { t } = useTranslate()
-const { conversationAvatar, conversationName } = useConversation()
+const { conversationAvatar, conversationName, isGroup, getRecipient } = useConversation()
 
 /* STATE */
 const isHidden = ref(false)

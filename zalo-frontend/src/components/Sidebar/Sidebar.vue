@@ -5,8 +5,8 @@
         bg-white dark:bg-gray-800 gap-2
         sticky top-0 h-screen">
 
-        <CircleAvatar :url="userStorage.user?.avatar?.url ?? RANDOM_AVATAR" size="size-10" id="openModal"
-            :onClick="() => openModal()" />
+        <img :src="userStorage.user?.avatar?.url ?? RANDOM_AVATAR" id="openModal" :onClick="() => openModal()"
+            class="size-10 rounded-full cursor-pointer" />
 
         <nav class="flex flex-col gap-2 flex-1">
 
@@ -42,8 +42,8 @@
             ]" />
 
         </router-link>
-        <CircleAvatar :url="userStorage.user?.avatar?.url ?? RANDOM_AVATAR" size="size-8" id="openModal"
-            :onClick="() => openModal()" />
+        <img :src="userStorage.user?.avatar?.url ?? RANDOM_AVATAR" id="openModal" :onClick="() => openModal()"
+            class="size-8 rounded-full cursor-pointer" />
     </nav>
 
     <Modal ref="modalRef" :title="t(pageModal)" :go-back="() => goPage('setting')"

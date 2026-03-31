@@ -85,7 +85,7 @@ public class MessageService {
         }
         statusRepo.saveAll(statuses);
 
-        websocketService.sendMessage(new MessageResponse(m, "sender"), new ConversationResponse(conv, "recipient", "lastMessage", "createdBy"));
+        websocketService.sendMessage(new MessageResponse(m, "sender"), new ConversationResponse(conv, "recipient", "lastMessage", "createdBy"), members);
     }
 
     public Page<MessageResponse> fetchMessages(Long conversationId, MessageFilter filter) {
@@ -158,17 +158,7 @@ public class MessageService {
 
         // create statuses for each member in conversation
         List<ConversationMember> members = memberRepo.findByConversationId(conversationId);
-        List<MessageStatus> statuses = new ArrayList<>();
-        for (ConversationMember member : members) {
-            MessageStatus st = MessageStatus.builder()
-                    .messageId(m.getId())
-                    .userId(member.getUserId())
-                    .status(DeliveryStatus.READ)
-                    .build();
-            statuses.add(st);
-        }
-        statusRepo.saveAll(statuses);
 
-        websocketService.sendMessage(new MessageResponse(m), new ConversationResponse(conv, "recipient", "lastMessage", "createdBy"));
+        websocketService.sendMessage(new MessageResponse(m), new ConversationResponse(conv, "recipient", "lastMessage", "createdBy"), members);
     }
 }

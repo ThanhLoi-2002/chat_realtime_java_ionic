@@ -17,6 +17,7 @@ declare module 'vue' {
     ConfirmModal: typeof import('./src/components/Modal/ConfirmModal.vue')['default']
     EmojiPicker: typeof import('./src/components/Emoji/EmojiPicker.vue')['default']
     FormInput: typeof import('./src/components/Input/FormInput.vue')['default']
+    GroupAvatar: typeof import('./src/components/Avatar/GroupAvatar.vue')['default']
     IonAlert: typeof import('@ionic/vue')['IonAlert']
     IonApp: typeof import('@ionic/vue')['IonApp']
     IonBackButton: typeof import('@ionic/vue')['IonBackButton']

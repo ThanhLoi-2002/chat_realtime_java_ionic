@@ -35,8 +35,8 @@
         </div>
 
         <!-- INPUT BAR -->
-        <div class="p-1 md:p-3 border-t border-gray-200 dark:border-slate-700 md:bg-white dark:bg-gray-900">
-            <div class="flex flex-col gap-2 bg-gray-100 md:dark:bg-gray-800 rounded-2xl px-2 py-0.5 md:px-4 md:py-1.5">
+        <div class="p-1 md:p-3 border-t border-gray-200 dark:border-slate-700 dark:bg-gray-900">
+            <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-800 rounded-2xl px-2 py-0.5 md:px-4 md:py-1.5">
                 <!-- Left icons -->
                 <div class="flex gap-2 border-b pb-1" :class="[style.border.primary]">
                     <button @click.stop="toggleEmoji"

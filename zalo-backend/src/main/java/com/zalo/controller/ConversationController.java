@@ -5,6 +5,7 @@ import com.zalo.configuration.anotation.CurrentUser;
 import com.zalo.dto.filter.ConversationFilter;
 import com.zalo.dto.request.Conversation.CreateGroupRequest;
 import com.zalo.dto.response.Conversation.ConversationResponse;
+import com.zalo.dto.response.User.UserResponse;
 import com.zalo.mapper.ConversationMapper;
 import com.zalo.model.Conversation;
 import com.zalo.model.ConversationMember;
@@ -43,8 +44,7 @@ public class ConversationController {
             @CurrentUser User user,
             @ModelAttribute ConversationFilter filter
     ) {
-        Page<Conversation> conversations = conversationService.findAll(user.getId(), filter);
-        return conversations.map(e -> new ConversationResponse(e, "recipient", "lastMessage", "createdBy"));
+        return conversationService.findAll(user.getId(), filter);
     }
 
     @GetMapping("/{id}")
@@ -53,7 +53,7 @@ public class ConversationController {
     }
 
     @GetMapping("/{id}/members")
-    public ResponseEntity<List<ConversationMember>> members(@PathVariable Long id) {
-        return ResponseEntity.ok(conversationService.getMembers(id));
+    public List<UserResponse> members(@PathVariable Long id) {
+        return conversationService.getMembers(id).stream().map(UserResponse::new).toList();
     }
 }

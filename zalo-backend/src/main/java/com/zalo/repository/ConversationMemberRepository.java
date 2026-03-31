@@ -12,6 +12,7 @@ public interface ConversationMemberRepository extends JpaRepository<Conversation
     List<ConversationMember> findByUserId(Long userId);
 
     List<ConversationMember> findByConversationId(Long conversationId);
+    List<ConversationMember> findByConversationIdOrderByIdDesc(Long conversationId);
 
     Optional<ConversationMember> findByConversationIdAndUserId(Long conversationId, Long userId);
 

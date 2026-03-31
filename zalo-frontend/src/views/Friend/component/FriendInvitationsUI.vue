@@ -17,7 +17,7 @@
           <!-- TOP -->
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <img :src="getOther(friendship).avatar?.url" class="w-10 h-10 rounded-full object-cover cursor-pointer" @click="openFriendProfile(getOther(friendship))"/>
+              <CircleAvatar :user="getOther(friendship)" custom-class="w-10 h-10 rounded-full object-cover cursor-pointer"/>
 
               <div>
                 <div class="font-medium text-sm">
@@ -64,7 +64,7 @@
           <!-- TOP -->
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <img :src="getOther(friendship).avatar?.url" class="w-10 h-10 rounded-full object-cover cursor-pointer" @click="openFriendProfile(getOther(friendship))"/>
+              <CircleAvatar :user="getOther(friendship)" custom-class="w-10 h-10 rounded-full object-cover cursor-pointer"/>
 
               <div>
                 <div class="font-medium text-sm">
@@ -106,10 +106,6 @@
   <!-- CONFIRM: REJECT -->
   <ConfirmModal v-model:showConfirm="showConfirmReject" :onOk="rejectRequest" :message="t('confirmRejectRequest')"
     :header="t('rejectAddFriend')" />
-
-  <Modal ref="friendProfileModal" :title="t('profile')">
-    <friend-profile-u-i :user="selectedFriend" />
-  </Modal>
 </template>
 
 <script setup lang="ts">
@@ -118,9 +114,9 @@ import { useDateTime } from "@/composables/useDateTime";
 import { useFriendship } from "@/composables/useFriendship";
 import { useTranslate } from "@/composables/useTranslate";
 import { useFriendshipStore } from "@/stores/friendship.storage";
-import { FriendshipType, UserType } from "@/types/entities";
+import { FriendshipType } from "@/types/entities";
 import { onMounted, ref } from "vue";
-import FriendProfileUI from "@/views/Chat/component/FriendProfileUI.vue";
+import CircleAvatar from "@/components/Avatar/CircleAvatar.vue";
 
 const friendshipStorage = useFriendshipStore();
 const { getOther } = useFriendship();
@@ -135,17 +131,9 @@ const showConfirmCancel = ref(false)
 const showConfirmAccept = ref(false)
 const showConfirmReject = ref(false)
 
-const selectedFriend = ref<UserType | undefined>(undefined)
-const friendProfileModal = ref()
-
 const received = ref<FriendshipType[]>([]); // lời mời nhận (đang empty)
 
 const sent = ref<FriendshipType[]>([]);
-
-const openFriendProfile = (user: UserType) => {
-  selectedFriend.value = user
-  friendProfileModal.value?.present()
-}
 
 const cancelRequest = async () => {
   const otherId = getOther(selectedFriendship.value!).id

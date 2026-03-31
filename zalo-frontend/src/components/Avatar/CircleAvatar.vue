@@ -4,16 +4,26 @@
         size ? size : 'size-12',
         'rounded-full',
         'cursor-pointer'
-    ]" :src="url || RANDOM_AVATAR" @click="onClick" :id="id" />
+    ]" :src="user?.avatar?.url || RANDOM_AVATAR" :onClick="() => !isDisabled && profileModal?.present()" />
+
+    <Modal ref="profileModal" :title="t('profile')">
+        <FriendProfileUI :user="user" />
+    </Modal>
 </template>
 <script setup lang="ts">
+import { useTranslate } from '@/composables/useTranslate';
+import { UserType } from '@/types/entities';
 import { RANDOM_AVATAR } from '@/utils/constant';
+import FriendProfileUI from '@/views/Chat/component/FriendProfileUI.vue';
+import { ref } from 'vue';
 
 defineProps<{
-    url?: string
+    user?: UserType
     size?: string
-    onClick?: () => void
-    id?: string,
+    isDisabled?: boolean
     customClass?: string
 }>()
+
+const { t } = useTranslate()
+const profileModal = ref()
 </script>

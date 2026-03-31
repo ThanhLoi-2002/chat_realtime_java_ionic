@@ -10,10 +10,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.BeanUtils;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Getter
@@ -30,6 +27,8 @@ public class ConversationResponse extends BaseResponse {
 
     MessageResponse lastMessage;
     UserResponse recipient;
+
+    List<UserResponse> members;
 
     public ConversationResponse(Conversation c, String... relations) {
         super(c, relations);

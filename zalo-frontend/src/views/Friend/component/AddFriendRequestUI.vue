@@ -13,8 +13,9 @@
         <div class="relative w-24 h-24">
           <!-- Avatar -->
           <CircleAvatar
-            :url="user?.avatar?.url ?? RANDOM_AVATAR"
-            class="w-24 h-24 rounded-full ring-2 ring-white dark:ring-slate-800 overflow-hidden bg-gray-300"
+            :user="user"
+            custom-class="w-24 h-24 rounded-full ring-2 ring-white dark:ring-slate-800 overflow-hidden bg-gray-300"
+            :is-disabled=true
           />
         </div>
       </div>

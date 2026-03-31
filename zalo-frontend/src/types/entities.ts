@@ -34,6 +34,7 @@ export type ConversationType = BaseType & {
   lastMessageId?: number
   lastMessage?: MessageType
   recipient?: UserType
+  members: UserType[]
 }
 
 export type MessageType = BaseType & {

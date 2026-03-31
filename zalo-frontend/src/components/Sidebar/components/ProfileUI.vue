@@ -18,7 +18,7 @@
         <div class="relative w-24 h-24">
 
           <!-- Avatar -->
-          <CircleAvatar :url="userStorage.user?.avatar?.url ?? RANDOM_AVATAR" v-if="!isAvatarLoading"
+          <img :src="userStorage.user?.avatar?.url ?? RANDOM_AVATAR" v-if="!isAvatarLoading"
             class="w-24 h-24 rounded-full ring-2 ring-white dark:ring-slate-800 overflow-hidden bg-gray-300" />
 
           <div v-else
