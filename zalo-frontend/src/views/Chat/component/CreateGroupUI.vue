@@ -88,6 +88,7 @@
 
 <script setup lang="ts">
 import { useTranslate } from '@/composables/useTranslate';
+import { useConversationStore } from '@/stores/conversation.storage';
 import { useFriendshipStore } from '@/stores/friendship.storage';
 import { UserType } from '@/types/entities';
 import { normalizeText } from '@/utils/helper';
@@ -98,6 +99,7 @@ const { t } = useTranslate()
 const keyword = ref("");
 const groupName = ref("");
 const friendshipStorage = useFriendshipStore()
+const convStorage = useConversationStore()
 const users = ref<UserType[]>([
 
 ])
@@ -143,9 +145,15 @@ const removeUser = (user: UserType) => {
     selectedUsers.value = selectedUsers.value.filter(u => u.id !== user.id)
 }
 
-const createGroup = () => {
+const createGroup = async () => {
     console.log(groupName.value)
     console.log(selectedUsers.value.map(u => u.id))
+
+    const isSuccess = await convStorage.createGroup({
+        name: groupName.value,
+        participantIds: selectedUsers.value.map(u => u.id)
+    })
+    isSuccess && dismiss?.()
 }
 
 onMounted(async () => {

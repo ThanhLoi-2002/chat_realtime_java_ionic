@@ -20,7 +20,7 @@
                 </div>
 
                 <div v-if="msg.contentType === MessageEnum.SYSTEM"
-                    class="text-center text-xs text-gray-500 bg-slate-100 dark:bg-slate-600 dark:text-slate-300 px-2 py-1 rounded-lg w-fit mx-auto">
+                    class="text-center text-xs text-gray-500 bg-slate-100 dark:bg-slate-700 dark:text-gray-400 px-2 py-1 rounded-lg w-fit mx-auto">
                     {{ t(`${msg.content}`) }}
                 </div>
 

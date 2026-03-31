@@ -10,6 +10,7 @@ import com.zalo.model.Conversation;
 import com.zalo.model.ConversationMember;
 import com.zalo.model.User;
 import com.zalo.service.ConversationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -31,9 +32,10 @@ public class ConversationController {
     }
 
     @PostMapping("/group")
-    public Conversation createGroup(@CurrentUser User user, @RequestParam CreateGroupRequest dto) {
-        Conversation conv = conversationService.createGroupConversation(user.getId(), dto);
-        return conv;
+    public void createGroup(@CurrentUser User user, @RequestBody @Valid CreateGroupRequest dto) {
+        dto.getParticipantIds().add(user.getId());
+        System.out.println(G.toJson(dto));
+        conversationService.createGroupConversation(user.getId(), dto);
     }
 
     @GetMapping
@@ -42,7 +44,6 @@ public class ConversationController {
             @ModelAttribute ConversationFilter filter
     ) {
         Page<Conversation> conversations = conversationService.findAll(user.getId(), filter);
-
         return conversations.map(e -> new ConversationResponse(e, "recipient", "lastMessage", "createdBy"));
     }
 

@@ -37,6 +37,19 @@ export const useConversationStore = defineStore('conversation', {
                 return false
             }
         },
+        async createGroup(data: any) {
+            try {
+                const result: any = await conversationApi.createGroup(data);
+                // this.conversation = result.result
+                return true
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return false
+            }
+        },
         async getConversations() {
             try {
                 this.isLoading = true

@@ -7,6 +7,10 @@ const createPrivate = async (data: UserType) => {
     return await axios.post<IResponse<ConversationType>>(`/conversations/private?otherId=${data.id}`);
 }
 
+const createGroup = async (data: any) => {
+    return await axios.post<IResponse<ConversationType>>(`/conversations/group`, data);
+}
+
 const getList = async (filter: ConversationFilter) => {
     const { page, limit = 20 } = filter
     return await axios.get<IResponse<ConversationType>>(`/conversations?page=${page}&limit=${limit}`);
@@ -14,5 +18,5 @@ const getList = async (filter: ConversationFilter) => {
 
 
 export const conversationApi = {
-    createPrivate, getList
+    createPrivate, getList, createGroup
 }

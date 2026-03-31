@@ -10,7 +10,7 @@
           <i class="fa fa-search text-gray-500"></i>
           <input
             v-model="keyword"
-            placeholder="Tìm bạn"
+            :placeholder="t('search')"
             class="bg-transparent outline-none text-sm w-full text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
           />
         </div>

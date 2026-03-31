@@ -44,7 +44,9 @@ public class ConversationResponse extends BaseResponse {
         }
 
         if (rels.contains("recipient")) {
-            this.recipient = new UserResponse(c.getRecipient());
+            if(c.getRecipient() != null){
+                this.recipient = new UserResponse(c.getRecipient());
+            }
         }
     }
 }

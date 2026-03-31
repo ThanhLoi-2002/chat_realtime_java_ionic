@@ -3,18 +3,19 @@ package com.zalo.service;
 import com.zalo.dto.filter.ConversationFilter;
 import com.zalo.dto.filter.UserFilter;
 import com.zalo.dto.request.Conversation.CreateGroupRequest;
+import com.zalo.dto.request.Message.CreateMessageRequest;
 import com.zalo.dto.response.Conversation.ConversationResponse;
-import com.zalo.model.Conversation;
-import com.zalo.model.ConversationMember;
-import com.zalo.model.Message;
-import com.zalo.model.User;
+import com.zalo.dto.response.Message.MessageResponse;
+import com.zalo.model.*;
 import com.zalo.model.enums.ConversationType;
+import com.zalo.model.enums.DeliveryStatus;
 import com.zalo.model.enums.MemberRole;
 import com.zalo.model.enums.MessageType;
 import com.zalo.repository.ConversationMemberRepository;
 import com.zalo.repository.ConversationRepository;
 import com.zalo.repository.MessageRepository;
 import com.zalo.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +35,8 @@ public class ConversationService {
     private final ConversationMemberRepository memberRepo;
     private final UserRepository userRepo;
     private final UserService userService;
+    private final EntityManager em;
+    private final WebsocketService websocketService;
 
     public Conversation createPrivateConversation(Long creatorId, Long otherUserId) {
         // try find existing
@@ -68,7 +71,7 @@ public class ConversationService {
         return findByIdWithRelationShip(conv.getId());
     }
 
-    public Conversation createGroupConversation(Long creatorId, CreateGroupRequest dto) {
+    public void createGroupConversation(Long creatorId, CreateGroupRequest dto) {
         userRepo.findById(creatorId).orElseThrow();
         for (Long id : dto.participantIds) userRepo.findById(id).orElseThrow();
 
@@ -89,16 +92,46 @@ public class ConversationService {
         memberRepo.saveAll(members);
 
         // create system message
-        Message message = new Message();
+        CreateMessageRequest message = new CreateMessageRequest();
         message.setContentType(MessageType.SYSTEM);
-        message.setConversationId(conv.getId());
         message.setContent("Bạn vừa được thêm vào nhóm");
-        message = messageRepo.save(message);
 
-        conv.setLastMessageId(message.getId());
+        createSystemMessage(conv.getId(), message);
+//        message = messageRepo.save(message);
+//
+//        conv.setLastMessageId(message.getId());
+//        conversationRepo.save(conv);
+
+//        return conv;
+    }
+
+    public void createSystemMessage(Long conversationId, CreateMessageRequest dto) {
+        Message m = Message.builder()
+                .conversationId(conversationId)
+                .content(dto.content)
+                .contentType(dto.contentType)
+                .replyToMessageId(dto.replyToId)
+                .build();
+
+        m = messageRepo.save(m);
+
+        // clear persistence context
+        em.flush();
+        em.refresh(m);
+
+        m = messageRepo.findOneWithRelationShip(m.getId(), conversationId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
+
+        // update lastMessage for conversation
+        Conversation conv = findById(conversationId);
+        conv.setLastMessageId(m.getId());
         conversationRepo.save(conv);
 
-        return conv;
+        em.flush();
+        em.refresh(conv);
+
+        conv = findByIdWithRelationShip(conversationId);
+
+        websocketService.sendMessage(new MessageResponse(m), new ConversationResponse(conv, "lastMessage", "createdBy"));
     }
 
     public Conversation findByIdWithRelationShip(Long id) {
