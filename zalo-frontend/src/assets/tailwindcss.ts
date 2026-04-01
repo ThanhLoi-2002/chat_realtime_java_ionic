@@ -31,6 +31,7 @@ export const style = {
       text-gray-800 dark:text-gray-200
       transition
     `,
+    primary: ""
   },
 
   item: {

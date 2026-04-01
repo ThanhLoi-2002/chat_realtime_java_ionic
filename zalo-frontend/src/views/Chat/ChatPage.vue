@@ -4,7 +4,7 @@ import ConversationSection from './ConversationSection.vue';
 import { useConversationStore } from '@/stores/conversation.storage';
 import { onMounted, onUnmounted, ref } from 'vue';
 import ChatContainer from './ChatContainer.vue';
-import InfoSection from './InfoSection.vue';
+import InfoSection from './Info/InfoSection.vue';
 import { useDevice } from '@/composables/useDevice';
 import { StompSubscription } from '@stomp/stompjs';
 import { socketSubscribe } from '@/utils/websocket';

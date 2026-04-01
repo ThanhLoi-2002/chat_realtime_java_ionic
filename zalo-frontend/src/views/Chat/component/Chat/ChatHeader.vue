@@ -11,7 +11,7 @@
                 <GroupAvatar v-if="isGroup(conversationStorage.conversation)"
                     :conversation="conversationStorage.conversation!" />
                 <circle-avatar v-else :user="getRecipient(conversationStorage.conversation)" size="size-10"
-                    :onClick="() => friendProfileModal?.present()" />
+                    />
 
                 <div class="flex flex-col">
                     <span class="font-medium dark:text-slate-200">
@@ -37,10 +37,6 @@
                     @click="emit('update:isShowInfoSection', !isShowInfoSection)"></i>
             </div>
         </div>
-
-        <Modal ref="friendProfileModal" :title="t('profile')">
-            <friend-profile-u-i :user="getRecipient(conversationStorage.conversation!)" />
-        </Modal>
     </header>
 </template>
 <script setup lang="ts">
@@ -49,9 +45,6 @@ import { useConversation } from '@/composables/useConversation';
 import { useTranslate } from '@/composables/useTranslate';
 import { useConversationStore } from '@/stores/conversation.storage';
 import { useSystemStore } from '@/stores/system.storage';
-import { onMounted, ref, watch } from 'vue';
-import FriendProfileUI from '../FriendProfileUI.vue';
-import Modal from '@/components/Modal/Modal.vue';
 import GroupAvatar from '@/components/Avatar/GroupAvatar.vue';
 import { style } from '@/assets/tailwindcss';
 import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
@@ -62,10 +55,8 @@ const props = defineProps<{
 
 const conversationStorage = useConversationStore()
 const systemStorage = useSystemStore()
-const { isGroup, getRecipient, conversationAvatar, conversationName } = useConversation()
+const { isGroup, getRecipient, conversationName } = useConversation()
 const { t } = useTranslate()
-
-const friendProfileModal = ref()
 
 const emit = defineEmits(['update:isShowInfoSection'])
 
@@ -83,12 +74,4 @@ const onBack = () => {
 
 //   return systemStorage.onlineUsers.has(user.id)
 // })
-
-onMounted(() => {
-
-})
-
-watch(() => conversationStorage.conversation, () => {
-
-})
 </script>

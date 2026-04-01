@@ -12,10 +12,22 @@ public interface ConversationMemberRepository extends JpaRepository<Conversation
     List<ConversationMember> findByUserId(Long userId);
 
     List<ConversationMember> findByConversationId(Long conversationId);
+
     List<ConversationMember> findByConversationIdOrderByIdDesc(Long conversationId);
 
     Optional<ConversationMember> findByConversationIdAndUserId(Long conversationId, Long userId);
 
     @Query("SELECT cm.conversationId FROM ConversationMember cm WHERE cm.userId = :userId")
     List<Long> findConversationIdsByUserId(@Param("userId") Long userId);
+
+    @Query("""
+                SELECT cm.conversationId
+                FROM ConversationMember cm
+                WHERE cm.userId IN (:userId, :targetUserId)
+                GROUP BY cm.conversationId
+                HAVING COUNT(DISTINCT cm.userId) = 2
+            """)
+    List<Long> findCommonConversationIds(Long userId, Long targetUserId);
+
+    List<ConversationMember> findTop3ByConversationIdOrderByCtDesc(Long conversationId);
 }

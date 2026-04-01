@@ -1,15 +1,16 @@
 package com.zalo.service;
 
+import com.zalo.configuration.G;
 import com.zalo.dto.filter.ConversationFilter;
 import com.zalo.dto.filter.UserFilter;
 import com.zalo.dto.request.Conversation.CreateGroupRequest;
 import com.zalo.dto.request.Message.CreateMessageRequest;
+import com.zalo.dto.response.Conversation.ConversationInfoResponse;
 import com.zalo.dto.response.Conversation.ConversationResponse;
 import com.zalo.dto.response.Message.MessageResponse;
 import com.zalo.dto.response.User.UserResponse;
 import com.zalo.model.*;
 import com.zalo.model.enums.ConversationType;
-import com.zalo.model.enums.DeliveryStatus;
 import com.zalo.model.enums.MemberRole;
 import com.zalo.model.enums.MessageType;
 import com.zalo.repository.ConversationMemberRepository;
@@ -19,6 +20,7 @@ import com.zalo.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -89,6 +91,7 @@ public class ConversationService {
             m.setConversationId(conv.getId());
             m.setUserId(id);
             m.setRole(id.equals(creatorId) ? MemberRole.ADMIN : MemberRole.MEMBER);
+            m.setAddById(creatorId);
             members.add(m);
         }
         memberRepo.saveAll(members);
@@ -175,21 +178,46 @@ public class ConversationService {
         return result;
     }
 
+    public ConversationInfoResponse getInfo(Long conversationId, Long userId) {
+        Conversation c = findById(conversationId);
+
+        ConversationInfoResponse conversationInfo = new ConversationInfoResponse();
+
+        if (c.getType() == ConversationType.PRIVATE) {
+            List<Long> conversationIds = memberRepo.findCommonConversationIds(userId, Objects.equals(c.getRecipientId(), userId) ? c.getCu() : c.getRecipientId());
+            List<Conversation> conversations = conversationRepo.findByIdInAndType(conversationIds, ConversationType.GROUP);
+
+            List<ConversationResponse> conversationResponses = conversations.stream().map(ConversationResponse::new).toList();
+
+            for (ConversationResponse conv : conversationResponses) {
+
+                if (conv.getAvatar() == null) {
+
+                    List<ConversationMember> members = memberRepo.findTop3ByConversationIdOrderByCtDesc(conv.getId());
+                    System.out.println(G.toJson(members));
+
+                    // map sang user (nếu cần)
+                    List<Long> userIds = members.stream().map(ConversationMember::getUserId).toList();
+
+                    List<UserResponse> users = userRepo.findAllById(userIds).stream().map(UserResponse::new).toList();
+                    conv.setMembers(users);
+                }
+            }
+
+            conversationInfo.generalGroup = conversationResponses;
+        }
+
+        Pageable limit = PageRequest.of(0, 6);
+
+        List<Message> images = messageRepo.findByConversationIdAndContentTypeOrderByCtDesc(conversationId, MessageType.IMAGE, limit).getContent();
+        conversationInfo.messages = images.stream().map(m -> new MessageResponse(m, "sender")).toList();
+
+        return conversationInfo;
+    }
+
 //    public Conversation update(Long id) {
 //        Conversation conv = findById(id);
 //        conversationRepo.save(conv);
 //        return conversationRepo.save(conv);
 //    }
-
-//    Page<ConversationResponse> result = page.map(e -> {
-//        ConversationResponse conv = new ConversationResponse(e, "recipient", "lastMessage", "createdBy");
-//        if(e.getType() == ConversationType.GROUP){
-//            List<ConversationMember> members = memberRepo.findByConversationId(e.getId());
-//
-//            List<Long> userIds = members.stream().map(ConversationMember::getUserId).toList();
-//            List<User> users = userRepo.findByIdIn(userIds);
-//            conv.setMembers(users.stream().map(UserResponse::new).toList());
-//        }
-//        return conv;
-//    });
 }

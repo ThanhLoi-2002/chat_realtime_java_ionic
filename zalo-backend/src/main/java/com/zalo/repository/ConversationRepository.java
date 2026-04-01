@@ -1,6 +1,7 @@
 package com.zalo.repository;
 
 import com.zalo.model.Conversation;
+import com.zalo.model.enums.ConversationType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -60,4 +61,6 @@ public interface ConversationRepository extends JpaRepository<Conversation, Long
     Optional<Conversation> findOneWithRelationShipById(
             @Param("id") Long id
     );
+
+    List<Conversation> findByIdInAndType(List<Long> ids, ConversationType type);
 }

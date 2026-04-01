@@ -1,11 +1,11 @@
 <template>
 
-    <div class="flex gap-2 items-start relative group max-w-full md:max-w-[60%]"
+    <div class="flex gap-2 items-start relative group max-w-full lg:max-w-[60%]"
         :class="isOwner ? 'ml-auto flex-row-reverse' : ''" ref="rootRef">
 
         <!-- AVATAR -->
-        <circle-avatar v-if="!isOwner && message.showAvatar" :user="message.sender" size="size-8" />
-        <div v-else-if="!isOwner" class="px-4 py-2"></div>
+        <circle-avatar v-if="!isOwner && message.showAvatar" :user="message.sender" size="size-10" />
+        <div v-else-if="!isOwner" class="px-5 py-2"></div>
 
         <!-- BUBBLE -->
         <div class="relative group"> <!-- thêm class group ở đây -->

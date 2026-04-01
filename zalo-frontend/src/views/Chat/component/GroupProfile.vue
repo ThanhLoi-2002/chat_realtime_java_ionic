@@ -20,13 +20,13 @@
                     </div>
 
                     <div class="flex items-center gap-2 mt-3">
-                        <span class="font-medium truncate">JHV - Digitalization IT</span>
+                        <span class="font-medium truncate">{{ convStorage.conversation?.name }}</span>
                         <i class="fas fa-pen text-sm text-gray-500 dark:text-gray-400 cursor-pointer"></i>
                     </div>
                 </div>
 
                 <button
-                    class="mt-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 px-6 py-2 rounded-sm text-sm cursor-pointer w-[80%] transition"
+                    class="mt-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 px-6 py-2 rounded-sm text-sm cursor-pointer w-[90%] transition"
                     @click="goToMessage">
                     {{ t("message") }}
                 </button>
@@ -34,16 +34,33 @@
 
             <!-- MEMBERS -->
             <div class="border-t border-gray-200 dark:border-gray-800 px-4 py-3">
-                <div class="text-sm mb-2 text-gray-600 dark:text-gray-300">Thành viên (5)</div>
+                <div class="text-sm mb-2 text-gray-600 dark:text-gray-300">{{ t("member") }} ({{ conversation.members?.length }})</div>
 
-                <div class="flex items-center -space-x-3">
-                    <img v-for="user in conversation.members" :key="user.id" :src="user.avatar.url ?? RANDOM_AVATAR"
-                        class="w-10 h-10 rounded-full border-2 border-white dark:border-gray-900 cursor-pointer" />
+                <div class="flex items-center -space-x-4">
+                    <div class="flex -space-x-4">
+                        <div v-for="user in conversation.members" :key="user.id" class="relative group">
+                            <!-- AVATAR -->
+                            <img :src="user.avatar?.url ?? RANDOM_AVATAR"
+                                class="w-10 h-10 rounded-full border-2 border-white dark:border-gray-900 cursor-pointer object-cover" />
+
+                            <!-- TOOLTIP -->
+                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2
+                                px-2 py-1 text-xs rounded-md shadow-lg
+                                bg-gray-900 text-white 
+                                dark:bg-white dark:text-black
+                                opacity-0 scale-90
+                                group-hover:opacity-100 group-hover:scale-100
+                                transition-all duration-200
+                                whitespace-nowrap z-50 pointer-events-none">
+                                {{ user.username }}
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- more -->
                     <div
-                        class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 border-2 border-white dark:border-gray-900 text-gray-700 dark:text-white">
-                        ...
+                        class="z-2 w-10 h-10 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-700 border-2 border-white dark:border-gray-900 text-gray-700 dark:text-white">
+                        <i class="fas fa-ellipsis-h"></i>
                     </div>
                 </div>
             </div>

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ConversationType, MessageType, UserType } from '@/types/entities'
 import { conversationApi } from '@/api/conversation.api'
 import { toast } from '@/utils/toast'
+import { FileType } from '@/types/common'
 
 interface ConversationState {
     isLoading: boolean,
@@ -9,6 +10,8 @@ interface ConversationState {
     conversation?: ConversationType,
     page: number
     hasMore: boolean
+    generalGroup: ConversationType[]
+    images: FileType[]
 }
 
 export const useConversationStore = defineStore('conversation', {
@@ -17,7 +20,9 @@ export const useConversationStore = defineStore('conversation', {
         conversations: [],
         conversation: undefined,
         page: -1,
-        hasMore: true
+        hasMore: true,
+        generalGroup: [],
+        images: [],
     }),
     actions: {
         selectConversation(data?: ConversationType) {
@@ -118,11 +123,29 @@ export const useConversationStore = defineStore('conversation', {
             }
         },
 
-        async getMembers() {
+        // async getMembers() {
+        //     try {
+        //         if (this.conversation) {
+        //             const result: any = await conversationApi.getMembers(this.conversation.id);
+        //             this.conversation.members = result.result;
+        //         }
+
+        //         return true
+        //     } catch (e: any) {
+        //         toast({
+        //             color: "danger",
+        //             message: e.message
+        //         })
+        //         return false
+        //     }
+        // },
+
+        async getConversationInfo() {
             try {
                 if (this.conversation) {
-                    const result: any = await conversationApi.getMembers(this.conversation.id);
-                    this.conversation.members = result.result;
+                    const result: any = await conversationApi.getConversationInfo(this.conversation.id);
+                    this.generalGroup = result.result.generalGroup;
+                    this.images = result.result.images;
                 }
 
                 return true
@@ -140,6 +163,8 @@ export const useConversationStore = defineStore('conversation', {
             this.conversation = undefined
             this.page = -1
             this.hasMore = true
+            this.images = []
+            this.generalGroup = []
         }
 
     }

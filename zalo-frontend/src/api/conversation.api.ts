@@ -16,10 +16,14 @@ const getList = async (filter: ConversationFilter) => {
     return await axios.get<IResponse<ConversationType>>(`/conversations?page=${page}&limit=${limit}`);
 }
 
-const getMembers = async (id: number) => {
-    return await axios.get<IResponse<UserType>>(`/conversations/${id}/members`);
+// const getMembers = async (id: number) => {
+//     return await axios.get<IResponse<UserType>>(`/conversations/${id}/members`);
+// }
+
+const getConversationInfo = async (id: number) => {
+    return await axios.get<IResponse>(`/conversations/${id}/info`);
 }
 
 export const conversationApi = {
-    createPrivate, getList, createGroup, getMembers
+    createPrivate, getList, createGroup, getConversationInfo
 }

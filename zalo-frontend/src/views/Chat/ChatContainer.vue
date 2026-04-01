@@ -47,7 +47,6 @@ import { useConversationStore } from '@/stores/conversation.storage';
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useMessageStore } from '@/stores/message.storage';
 import ChatHeader from './component/Chat/ChatHeader.vue';
-import { useConversation } from '@/composables/useConversation';
 import MessageContainer from './component/Chat/MessageContainer.vue';
 import { useDateTime } from '@/composables/useDateTime';
 import LoadingSpinner from '@/components/Loading/LoadingSpinner.vue';
@@ -56,7 +55,6 @@ import Typing from './component/Chat/Typing.vue';
 import { useSystemStore } from '@/stores/system.storage';
 import AddFriendBar from './component/Chat/AddFriendBar.vue';
 import { MessageEnum } from '@/types/enum';
-import { UserType } from '@/types/entities';
 
 const props = defineProps<{
     isShowInfoSection: boolean

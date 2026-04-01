@@ -2,6 +2,7 @@ package com.zalo.repository;
 
 import com.zalo.model.Conversation;
 import com.zalo.model.Message;
+import com.zalo.model.enums.MessageType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -37,5 +38,11 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     Optional<Message> findOneWithRelationShip(
             @Param("id") Long id,
             @Param("conversationId") Long conversationId
+    );
+
+    Page<Message> findByConversationIdAndContentTypeOrderByCtDesc(
+            Long conversationId,
+            MessageType type,
+            Pageable pageable
     );
 }

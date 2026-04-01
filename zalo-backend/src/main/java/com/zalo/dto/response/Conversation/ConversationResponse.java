@@ -15,8 +15,6 @@ import java.util.*;
 @EqualsAndHashCode(callSuper = true)
 @Getter
 @Setter
-//@NoArgsConstructor
-//@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ConversationResponse extends BaseResponse {
     ConversationType type; // PRIVATE or GROUP
