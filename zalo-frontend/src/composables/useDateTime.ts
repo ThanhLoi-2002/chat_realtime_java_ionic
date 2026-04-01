@@ -47,6 +47,32 @@ export function useDateTime() {
         })
     }
 
+    const formatDateTime = (input: TimeInput) => {
+        const d = new Date(input)
+
+        if (isNaN(d.getTime())) return ''
+
+        return d.toLocaleString('vi-VN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        })
+    }
+
+    const formatDate = (input: TimeInput) => {
+        const d = new Date(input)
+
+        if (isNaN(d.getTime())) return ''
+
+        return d.toLocaleString('vi-VN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+        })
+    }
+
     const getTime = (t: any) => new Date(t).getTime()
 
     const formatSeparatorTime = (time: any) => {
@@ -81,6 +107,6 @@ export function useDateTime() {
     }
 
     return {
-        timeAgo, formatTime, getTime, formatSeparatorTime
+        timeAgo, formatTime, getTime, formatSeparatorTime, formatDateTime, formatDate
     }
 }

@@ -40,9 +40,10 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
             @Param("conversationId") Long conversationId
     );
 
-    Page<Message> findByConversationIdAndContentTypeOrderByCtDesc(
+    Page<Message> findByConversationIdAndContentTypeAndSttOrderByCtDesc(
             Long conversationId,
             MessageType type,
+            Integer stt,
             Pageable pageable
     );
 }

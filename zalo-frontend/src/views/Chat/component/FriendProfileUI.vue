@@ -33,27 +33,22 @@
             <div class="flex gap-3 mt-2">
                 <button
                     class="flex-1 border hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-slate-600 dark:border-slate-700 dark:text-slate-300 py-2 rounded cursor-pointer">
-                    Kết bạn
+                    {{ t('addFriend') }}
                 </button>
                 <button class="flex-1 hover:bg-blue-500 bg-blue-600 text-white py-2 rounded cursor-pointer"
                     @click="goToMessage">
-                    Nhắn tin
+                    {{ t('message') }}
                 </button>
             </div>
 
             <!-- INFO -->
             <div class="mt-5 border-t border-gray-700 pt-4">
-                <p class="text-gray-500 mb-2 dark:text-slate-200">Thông tin cá nhân</p>
+                <p class="text-gray-500 mb-2 dark:text-slate-200">{{ t('profile') }}</p>
 
                 <div class="flex justify-between text-sm py-1">
                     <span class="text-gray-500 dark:text-slate-400">{{ t("phone") }}</span>
                     <span class="dark:text-slate-300">{{ user?.phone }}</span>
                 </div>
-
-                <!-- <div class="flex justify-between text-sm py-1">
-                    <span class="text-gray-400">Ngày sinh</span>
-                    <span>{{ user?.dob ?? '30 tháng 04, 2002' }}</span>
-                </div> -->
             </div>
 
             <!-- OPTIONS -->

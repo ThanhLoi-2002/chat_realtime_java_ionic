@@ -11,7 +11,7 @@
         <div class="flex-1 overflow-y-auto p-3">
             <div class="flex items-center gap-3 p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded cursor-pointer"
                 v-for="c in convStorage.generalGroup" :key="c.id">
-                <GroupAvatar :conversation="c" size="w-12 h-12"/>
+                <GroupAvatar :conversation="c" size="w-12 h-12" />
                 <div class="flex-1">
                     <div class="text-sm font-medium dark:text-white">
                         {{ c.name }}

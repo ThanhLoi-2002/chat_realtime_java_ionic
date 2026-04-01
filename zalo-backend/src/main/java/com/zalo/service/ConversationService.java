@@ -207,9 +207,9 @@ public class ConversationService {
             conversationInfo.generalGroup = conversationResponses;
         }
 
-        Pageable limit = PageRequest.of(0, 6);
+        Pageable limit = PageRequest.of(0, 8);
 
-        List<Message> images = messageRepo.findByConversationIdAndContentTypeOrderByCtDesc(conversationId, MessageType.IMAGE, limit).getContent();
+        List<Message> images = messageRepo.findByConversationIdAndContentTypeAndSttOrderByCtDesc(conversationId, MessageType.IMAGE, 1, limit).getContent();
         conversationInfo.messages = images.stream().map(m -> new MessageResponse(m, "sender")).toList();
 
         return conversationInfo;

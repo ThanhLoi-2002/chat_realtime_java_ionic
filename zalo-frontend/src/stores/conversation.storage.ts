@@ -11,7 +11,7 @@ interface ConversationState {
     page: number
     hasMore: boolean
     generalGroup: ConversationType[]
-    images: FileType[]
+    images: MessageType[]
 }
 
 export const useConversationStore = defineStore('conversation', {
@@ -145,7 +145,7 @@ export const useConversationStore = defineStore('conversation', {
                 if (this.conversation) {
                     const result: any = await conversationApi.getConversationInfo(this.conversation.id);
                     this.generalGroup = result.result.generalGroup;
-                    this.images = result.result.images;
+                    this.images = result.result.messages;
                 }
 
                 return true

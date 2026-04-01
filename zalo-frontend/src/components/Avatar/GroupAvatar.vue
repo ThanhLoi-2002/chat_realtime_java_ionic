@@ -46,7 +46,11 @@
     </div>
 
     <Modal ref="groupProfileModal" :title="t('groupProfile')">
-        <GroupProfile :conversation="conversation"/>
+        <transition name="slide">
+            <GroupProfile v-if="view == 'groupInfo'" :conversation="conversation" @update:view="view = $event" />
+
+            <Member v-else-if="view == 'member'" @back="view = 'groupInfo'" :is-show-back-button="true" />
+        </transition>
     </Modal>
 </template>
 
@@ -57,6 +61,7 @@ import { RANDOM_AVATAR } from "@/utils/constant";
 import { useTranslate } from "@/composables/useTranslate";
 import Modal from "../Modal/Modal.vue";
 import GroupProfile from "@/views/Chat/component/GroupProfile.vue";
+import Member from "@/views/Chat/Info/components/Member.vue";
 
 const props = defineProps<{
     conversation: ConversationType;
@@ -66,6 +71,7 @@ const props = defineProps<{
 
 const { t } = useTranslate()
 const groupProfileModal = ref()
+const view = ref<'groupInfo' | 'member'>('groupInfo')
 
 // ✅ luôn dùng computed để giữ reactivity
 const users = computed(() => props.conversation.members || []);

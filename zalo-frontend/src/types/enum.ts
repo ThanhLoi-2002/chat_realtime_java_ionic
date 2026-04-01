@@ -7,7 +7,7 @@ export enum MemberRoleEnum {
 }
 
 export enum MessageEnum {
-    TEXT = "TEXT", IMAGE = "IMAGE", FILE = "FILE", SYSTEM = "SYSTEM", STICKER = "STICKER"
+    TEXT = "TEXT", IMAGE = "IMAGE", FILE = "FILE", VIDEO = "VIDEO", SYSTEM = "SYSTEM", STICKER = "STICKER"
 }
 
 export enum DeliveryStatusEnum {
