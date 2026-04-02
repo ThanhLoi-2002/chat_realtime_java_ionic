@@ -70,7 +70,7 @@ import { useUserStore } from '@/stores/user.storage';
 import { SearchFriendPageType } from '@/types/common';
 import { UserType } from '@/types/entities';
 import { RANDOM_AVATAR, ROUTE } from '@/utils/constant';
-import { inject } from 'vue';
+import { modalController } from '@ionic/vue';
 import { useRouter } from 'vue-router';
 
 const props = defineProps<{
@@ -82,7 +82,6 @@ const { t } = useTranslate()
 const router = useRouter()
 const userStorage = useUserStore()
 const conversationStorage = useConversationStore()
-const dismiss = inject<() => void>("modalDismiss")
 
 const items = [
     {
@@ -105,8 +104,17 @@ const items = [
 ]
 
 const goToMessage = async () => {
+    // đóng hết modal trước
+    let topModal = await modalController.getTop()
+    while (topModal) {
+        await topModal.dismiss()
+        topModal = await modalController.getTop()
+    }
+
+    // sau đó mới xử lý logic
     const success = await conversationStorage.createPrivate(props.user!)
-    router.push(ROUTE.CHATS)
-    success && dismiss?.()
+    if (success) {
+        router.push(ROUTE.CHATS)
+    }
 }
 </script>

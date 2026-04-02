@@ -23,7 +23,7 @@
                     </span>
                     <div v-else class="flex gap-2 items-center">
                         <i class="fa fa-user text-xs" :class="[style.text.secondary]"/>
-                        <span class="text-sm" :class="[style.text.secondary]">
+                        <span class="text-xs hover:text-blue-400 cursor-pointer" :class="[style.text.secondary]" @click="() => memberModal?.present()">
                             {{ conversationStorage.conversation?.members?.length }} {{ t("members") }}
                         </span>
                     </div>
@@ -37,6 +37,9 @@
                     @click="emit('update:isShowInfoSection', !isShowInfoSection)"></i>
             </div>
         </div>
+        <Modal ref="memberModal" title="">
+            <Member :isShowBackButton="false"/>
+        </Modal>
     </header>
 </template>
 <script setup lang="ts">
@@ -48,6 +51,9 @@ import { useSystemStore } from '@/stores/system.storage';
 import GroupAvatar from '@/components/Avatar/GroupAvatar.vue';
 import { style } from '@/assets/tailwindcss';
 import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
+import Modal from '@/components/Modal/Modal.vue';
+import Member from '../../Info/components/Member.vue';
+import { ref } from 'vue';
 
 const props = defineProps<{
     isShowInfoSection: boolean
@@ -57,6 +63,7 @@ const conversationStorage = useConversationStore()
 const systemStorage = useSystemStore()
 const { isGroup, getRecipient, conversationName } = useConversation()
 const { t } = useTranslate()
+const memberModal = ref()
 
 const emit = defineEmits(['update:isShowInfoSection'])
 

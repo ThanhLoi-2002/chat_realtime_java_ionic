@@ -1,5 +1,5 @@
 <template>
-    <div class="flex h-screen bg-gray-100 dark:bg-[#1f2937] text-gray-900 dark:text-white">
+    <div class="flex h-screen overflow-hidden bg-white dark:bg-[#1f2937] text-gray-900 dark:text-white">
 
         <!-- SIDEBAR (DESKTOP) -->
         <div class="hidden md:flex w-64 bg-white dark:bg-[#111827]
@@ -36,9 +36,7 @@
 
             <FriendListUI v-if="activeMenu === 'friendList'" />
 
-            <div v-else-if="activeMenu === 'groupList'">
-                <!-- lời mời kết bạn -->
-            </div>
+            <GroupList v-else-if="activeMenu === 'groupList'" />
 
             <FriendInvitationsUI v-else-if="activeMenu === 'friendInvitation'" />
 
@@ -51,13 +49,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue"
+import { ref } from "vue"
 import FriendSidebar from "./component/FriendSidebar.vue"
 import { FriendMenuType } from "@/types/common"
 import FriendListUI from "./component/FriendListUI.vue"
 import { useTranslate } from "@/composables/useTranslate"
 import FriendInvitationsUI from "./component/FriendInvitationsUI.vue"
 import { style } from "@/assets/tailwindcss"
+import GroupList from "./component/GroupList.vue"
 
 const { t } = useTranslate()
 const showSidebar = ref(false)

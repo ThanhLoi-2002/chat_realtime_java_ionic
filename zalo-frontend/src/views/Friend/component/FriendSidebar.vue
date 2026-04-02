@@ -35,7 +35,7 @@ const changeTab = (value: FriendMenuType | any) => {
 </script>
 
 <template>
-    <div class="flex-1 px-2 py-3 space-y-1 text-sm bg-white dark:bg-[#1f2937]">
+    <div class="flex-1 px-2 py-3 space-y-1 text-sm bg-white dark:bg-[#1f2937] h-full">
 
         <!-- ITEM -->
         <div v-for="(item, index) in items" :key="index" @click="changeTab(item.title)" :class="[

@@ -194,7 +194,6 @@ public class ConversationService {
                 if (conv.getAvatar() == null) {
 
                     List<ConversationMember> members = memberRepo.findTop3ByConversationIdOrderByCtDesc(conv.getId());
-                    System.out.println(G.toJson(members));
 
                     // map sang user (nếu cần)
                     List<Long> userIds = members.stream().map(ConversationMember::getUserId).toList();
@@ -213,6 +212,29 @@ public class ConversationService {
         conversationInfo.messages = images.stream().map(m -> new MessageResponse(m, "sender")).toList();
 
         return conversationInfo;
+    }
+
+    public List<ConversationResponse> getGroups(Long userId){
+        List<Long> conversationIds = memberRepo.findConversationIdsByUserId(userId);
+        List<Conversation> conversations = conversationRepo.findByIdInAndType(conversationIds, ConversationType.GROUP);
+
+        List<ConversationResponse> conversationResponses = conversations.stream().map(ConversationResponse::new).toList();
+
+        for (ConversationResponse conv : conversationResponses) {
+
+            if (conv.getAvatar() == null) {
+
+                List<ConversationMember> members = memberRepo.findTop3ByConversationIdOrderByCtDesc(conv.getId());
+
+                // map sang user (nếu cần)
+                List<Long> userIds = members.stream().map(ConversationMember::getUserId).toList();
+
+                List<UserResponse> users = userRepo.findAllById(userIds).stream().map(UserResponse::new).toList();
+                conv.setMembers(users);
+            }
+        }
+
+        return conversationResponses;
     }
 
 //    public Conversation update(Long id) {

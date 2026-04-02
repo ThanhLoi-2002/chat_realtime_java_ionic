@@ -7,7 +7,7 @@
     ]" :src="user?.avatar?.url || RANDOM_AVATAR" :onClick="() => !isDisabled && profileModal?.present()" />
 
     <Modal ref="profileModal" :title="t('profile')">
-        <FriendProfileUI :user="user" />
+        <FriendProfileUI :user="user"/>
     </Modal>
 </template>
 <script setup lang="ts">
@@ -16,6 +16,7 @@ import { UserType } from '@/types/entities';
 import { RANDOM_AVATAR } from '@/utils/constant';
 import FriendProfileUI from '@/views/Chat/component/FriendProfileUI.vue';
 import { ref } from 'vue';
+import Modal from '../Modal/Modal.vue';
 
 defineProps<{
     user?: UserType

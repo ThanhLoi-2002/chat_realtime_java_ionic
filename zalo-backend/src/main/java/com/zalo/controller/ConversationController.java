@@ -11,6 +11,7 @@ import com.zalo.mapper.ConversationMapper;
 import com.zalo.model.Conversation;
 import com.zalo.model.ConversationMember;
 import com.zalo.model.User;
+import com.zalo.model.enums.ConversationType;
 import com.zalo.service.ConversationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -61,5 +62,10 @@ public class ConversationController {
     @GetMapping("/{id}/info")
     public ConversationInfoResponse getInfo(@CurrentUser User user, @PathVariable Long id) {
         return conversationService.getInfo(id, user.getId());
+    }
+
+    @GetMapping("/get-groups")
+    public List<ConversationResponse> getGroups(@CurrentUser User user) {
+        return conversationService.getGroups(user.getId());
     }
 }

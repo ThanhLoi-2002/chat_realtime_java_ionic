@@ -24,6 +24,10 @@ const getConversationInfo = async (id: number) => {
     return await axios.get<IResponse>(`/conversations/${id}/info`);
 }
 
+const getGroups = async () => {
+    return await axios.get<IResponse>(`/conversations/get-groups`);
+}
+
 export const conversationApi = {
-    createPrivate, getList, createGroup, getConversationInfo
+    createPrivate, getList, createGroup, getConversationInfo, getGroups
 }

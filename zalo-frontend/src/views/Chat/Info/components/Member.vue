@@ -27,7 +27,8 @@
 
         <!-- SEARCH -->
         <div class="p-3">
-            <div class="flex items-center rounded-full px-3 py-2" :class="[style.bg.secondary, style.text.secondary]">
+            <div
+                :class="`flex items-center rounded-full px-3 py-2 border ${style.border.primary} ${style.bg.secondary} ${style.text.secondary}`">
                 <i class="fa fa-search mr-2"></i>
                 <input v-model="keyword" :placeholder="`${t('search')} ${t('member')}...`"
                     class="bg-transparent outline-none text-sm w-full placeholder-gray-400" />
@@ -68,6 +69,7 @@ import { useTranslate } from '@/composables/useTranslate'
 import { useConversationStore } from '@/stores/conversation.storage'
 import { useFriendshipStore } from '@/stores/friendship.storage'
 import { useUserStore } from '@/stores/user.storage'
+import { normalizeText } from '@/utils/helper'
 import { computed, onMounted, ref } from 'vue'
 
 const props = defineProps<{
@@ -84,7 +86,7 @@ const filteredMembers = computed(() => {
     if (!keyword.value) return convStorage.conversation?.members
 
     return convStorage.conversation?.members.filter(u =>
-        u.username.toLowerCase().includes(keyword.value.toLowerCase())
+        normalizeText(u.username).toLowerCase().includes(normalizeText(keyword.value).toLowerCase())
     )
 })
 

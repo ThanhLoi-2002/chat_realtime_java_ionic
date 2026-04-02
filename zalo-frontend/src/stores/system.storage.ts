@@ -8,14 +8,14 @@ interface ConversationState {
 export const useSystemStore = defineStore('system', {
     state: (): ConversationState => ({
         isShowBottomMenu: false,
-        isDarkMode: false
+        isDarkMode: false,
     }),
     actions: {
         setShowBottomMenu(value: boolean) {
             this.isShowBottomMenu = value
         },
-        setIsDarkMode(value: boolean){
+        setIsDarkMode(value: boolean) {
             this.isDarkMode = value
-        }
+        },
     }
 })

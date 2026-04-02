@@ -158,6 +158,20 @@ export const useConversationStore = defineStore('conversation', {
             }
         },
 
+        async getGroups() {
+            try {
+                const result: any = await conversationApi.getGroups();
+
+                return result.result
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return []
+            }
+        },
+
         reset() {
             this.conversations = []
             this.conversation = undefined
