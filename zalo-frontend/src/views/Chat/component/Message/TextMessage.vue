@@ -3,10 +3,11 @@
     ref="el"
     :class="[
       'text-sm flex flex-col relative min-w-12',
-      'px-2 py-0.5 md:px-4 md:py-2 border rounded-lg',
+      'px-2 md:px-4 border rounded-lg',
       isOwner
         ? 'bg-blue-400 text-white border-blue-500'
         : 'bg-white dark:bg-gray-800 dark:text-slate-100 border-slate-300 dark:border-gray-700',
+      message.reactions.length > 0 ? 'pt-0.5 pb-4 md:pt-0.5 md:pb-4' : 'py-0.5 md:py-2'
     ]"
   >
     <!-- USERNAME -->
@@ -40,6 +41,8 @@
     >
       {{ formatTime(message.ct) }}
     </span>
+
+    <Reactions :message="message"/>
   </div>
 </template>
 <script setup lang="ts">
@@ -47,6 +50,7 @@ import { style } from "@/assets/tailwindcss";
 import { useDateTime } from "@/composables/useDateTime";
 import { useTranslate } from "@/composables/useTranslate";
 import { ref, onMounted, onBeforeUnmount } from "vue";
+import Reactions from "./Reactions.vue";
 
 const props = defineProps<{
     setBubbleRef?: (el: HTMLElement | null) => void;

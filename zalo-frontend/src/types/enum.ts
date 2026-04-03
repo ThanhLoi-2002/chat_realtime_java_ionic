@@ -19,3 +19,12 @@ export enum FriendshipStatusEnum {
     ACCEPTED = "ACCEPTED",   // đã là bạn
     BLOCKED = 'BLOCKED'
 }
+
+export enum ReactionEnum {
+    LIKE = "LIKE",  
+    LOVE = "LOVE",
+    HAHA = 'HAHA',
+    WOW = 'WOW',
+    SAD = 'SAD',
+    ANGRY = 'ANGRY'
+}

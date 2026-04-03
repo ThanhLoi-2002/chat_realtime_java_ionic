@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
-import { MessageType } from '@/types/entities'
+import { MessageType, ReactionType } from '@/types/entities'
 import { SendMessageType } from '@/types/common';
 import { messageApi } from '@/api/message.api';
 import { toast } from '@/utils/toast';
+import { ReactionEnum } from '@/types/enum';
 
-interface ConversationState {
+interface State {
     isLoading: boolean,
     messages: MessageType[],
     page: number,
@@ -12,7 +13,7 @@ interface ConversationState {
 }
 
 export const useMessageStore = defineStore('message', {
-    state: (): ConversationState => ({
+    state: (): State => ({
         isLoading: false,
         messages: [],
         page: -1,
@@ -22,6 +23,18 @@ export const useMessageStore = defineStore('message', {
         async sendMessage(data: SendMessageType) {
             try {
                 await messageApi.sendMessage(data);
+                return true
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return false
+            }
+        },
+        async readMessage(id: number, conversationId: number) {
+            try {
+                await messageApi.readMessage(id, conversationId);
                 return true
             } catch (e: any) {
                 toast({
@@ -62,6 +75,42 @@ export const useMessageStore = defineStore('message', {
                     color: "danger",
                     message: e.message
                 })
+            }
+        },
+
+        async addReaction(id: number, conversationId: number, type: keyof typeof ReactionEnum) {
+            try {
+                await messageApi.addReaction(id, conversationId, type);
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+            }
+        },
+
+        addReactionRealtime(reaction: ReactionType) {
+            const idx = this.messages.findIndex(m => m.id === reaction.messageId);
+            if (idx !== -1) {
+                this.messages[idx].reactions.push(reaction)
+            }
+        },
+
+        async deleteAllReaction(id: number, conversationId: number) {
+            try {
+                await messageApi.deleteAllReaction(id, conversationId);
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+            }
+        },
+
+        reloadReactions(reactions: ReactionType[]) {
+            const idx = this.messages.findIndex(m => m.id === reactions[0]?.messageId);
+            if (idx !== -1) {
+                this.messages[idx].reactions = reactions
             }
         },
 

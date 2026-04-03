@@ -33,7 +33,7 @@
           </p>
 
           <!-- Unread badge -->
-          <span class="ml-2 flex items-center justify-center
+          <span v-if="conversation.unread > 0" class="ml-2 flex items-center justify-center
                  min-w-7 h-5 px-1
                  text-xs font-medium
                  rounded-full

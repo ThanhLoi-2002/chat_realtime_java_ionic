@@ -1,6 +1,7 @@
 import { IResponse, MessageFilter, SendMessageType } from "@/types/common";
 import axios from "./axios";
-import { MessageType } from "@/types/entities";
+import { MessageType, ReactionType } from "@/types/entities";
+import { ReactionEnum } from "@/types/enum";
 
 
 const sendMessage = async (data: SendMessageType) => {
@@ -29,6 +30,18 @@ const deleteMessage = async (id: number, conversationId: number) => {
     return await axios.delete<IResponse>(`/conversations/${conversationId}/messages/${id}`);
 }
 
+const readMessage = async (id: number, conversationId: number) => {
+    return await axios.post<IResponse>(`/conversations/${conversationId}/messages/${id}/read`);
+}
+
+const addReaction = async (id: number, conversationId: number, type: keyof typeof ReactionEnum) => {
+    return await axios.post<IResponse>(`/conversations/${conversationId}/messages/reaction/add`, { messageId: id, type});
+}
+
+const deleteAllReaction = async (id: number, conversationId: number) => {
+    return await axios.delete<IResponse>(`/conversations/${conversationId}/messages/reaction/remove-all?messageId=${id}`);
+}
+
 export const messageApi = {
-    sendMessage, getMessages, deleteMessage
+    sendMessage, getMessages, deleteMessage, readMessage, addReaction, deleteAllReaction
 }

@@ -55,6 +55,8 @@ import Typing from './component/Chat/Typing.vue';
 import { useSystemStore } from '@/stores/system.storage';
 import AddFriendBar from './component/Chat/AddFriendBar.vue';
 import { MessageEnum } from '@/types/enum';
+import { StompSubscription } from '@stomp/stompjs';
+import { socketSubscribe } from '@/utils/websocket';
 
 const props = defineProps<{
     isShowInfoSection: boolean
@@ -69,6 +71,8 @@ const { onScroll, scrollToBottom } = useScroll()
 
 const scrollContainer = ref<HTMLElement | null>(null)
 const showScrollButton = ref(false)
+
+let subReaction: StompSubscription | undefined
 
 const emit = defineEmits(['update:isShowInfoSection'])
 
@@ -125,12 +129,6 @@ const messagesWithMeta = computed(() => {
 })
 
 const scrollMore = () => {
-    // if (messageStorage.isLoading || !messageStorage.hasMore) return
-
-    // checkScrollAtBottom()
-
-    // onScroll(scrollContainer.value, () => messageStorage.getMessages(conversationStorage.conversation!.id))
-
     checkScrollAtBottom()
 
     // Chỉ gọi load more khi gần đầu trang và còn dữ liệu
@@ -180,23 +178,44 @@ const waitForImages = async () => {
 const reset = async () => {
     sysStorage.setShowBottomMenu(false)
     messageStorage.resetPagination()
-    await messageStorage.getMessages(conversationStorage.conversation!.id)
 
-    // if (isGroup(conversationStorage.conversation)) {
-    //     await conversationStorage.getMembers()
-    // }
+    if (conversationStorage.conversation) {
+        await messageStorage.getMessages(conversationStorage.conversation.id)
 
-    await nextTick()
-    await waitForImages()
+        if (conversationStorage.conversation.lastMessageId) {
+            messageStorage.readMessage(conversationStorage.conversation.lastMessageId, conversationStorage.conversation.id)
+            conversationStorage.updateUnreadCount(conversationStorage.conversation.id)
+        }
 
-    handleScrollBottom(false)
+        await nextTick()
+        await waitForImages()
+
+        handleScrollBottom(false)
+    }
+}
+
+const resetSubscribe = () => {
+    subReaction = socketSubscribe(`/user/queue/chat.conversation.${conversationStorage.conversation?.id}.addReaction`, (msg: any) => {
+        const data = JSON.parse(msg.body)
+        console.log(data)
+        messageStorage.addReactionRealtime(data)
+    })
+
+    subReaction = socketSubscribe(`/user/queue/chat.conversation.${conversationStorage.conversation?.id}.reactions`, (msg: any) => {
+        const data = JSON.parse(msg.body)
+        console.log(data)
+        messageStorage.reloadReactions(data)
+    })
 }
 
 onMounted(async () => {
     reset()
+    resetSubscribe()
 })
 
 watch(() => conversationStorage.conversation, async () => {
     reset()
+    subReaction?.unsubscribe()
+    resetSubscribe()
 })
 </script>

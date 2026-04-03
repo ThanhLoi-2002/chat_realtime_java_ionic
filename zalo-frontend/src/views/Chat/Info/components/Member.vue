@@ -53,13 +53,23 @@
                 </div>
 
                 <!-- ACTION -->
-                <button v-if="!isFriend(user.id)" class="bg-blue-500 hover:bg-blue-600 text-xs px-3 py-1 rounded-md">
+                <button v-if="!isFriend(user.id)" class="bg-blue-500 hover:bg-blue-600 text-xs px-3 py-1 rounded-md" @click="openModal(user)">
                     {{ t('addFriend') }}
                 </button>
             </div>
 
         </div>
     </div>
+
+    <!-- MODAL -->
+    <Modal ref="modalRef" :title="t(pageModal == 'friendProfile' ? 'profile' : pageModal)"
+        :go-back="() => goPage('addFriend')" :isDisplayBackButton="pageModal != Object.keys(pages)[0]">
+        <transition name="slide" mode="out-in">
+            <KeepAlive>
+                <component :is="pages[pageModal]" :key="pageModal" :goPage="goPage" :user="selectedUser" />
+            </KeepAlive>
+        </transition>
+    </Modal>
 </template>
 
 <script setup lang="ts">
@@ -70,7 +80,10 @@ import { useConversationStore } from '@/stores/conversation.storage'
 import { useFriendshipStore } from '@/stores/friendship.storage'
 import { useUserStore } from '@/stores/user.storage'
 import { normalizeText } from '@/utils/helper'
+import AddFriendRequestUI from '@/views/Friend/component/AddFriendRequestUI.vue'
 import { computed, onMounted, ref } from 'vue'
+import FriendProfileUI from '../../component/FriendProfileUI.vue'
+import { UserType } from '@/types/entities'
 
 const props = defineProps<{
     isShowBackButton: boolean
@@ -81,6 +94,24 @@ const emit = defineEmits(['back'])
 const convStorage = useConversationStore()
 const friendStorage = useFriendshipStore()
 const userStorage = useUserStore()
+
+const modalRef = ref()
+const pageModal = ref<'addFriend' | 'friendProfile'>('addFriend')
+const pages = {
+    addFriend: AddFriendRequestUI,
+    friendProfile: FriendProfileUI
+}
+const selectedUser = ref<UserType | undefined>(undefined)
+
+const openModal = (user: UserType) => {
+    selectedUser.value = user
+    goPage('addFriend')
+    modalRef.value?.present()
+}
+
+const goPage = (page: 'addFriend' | 'friendProfile') => {
+    pageModal.value = page
+}
 
 const filteredMembers = computed(() => {
     if (!keyword.value) return convStorage.conversation?.members

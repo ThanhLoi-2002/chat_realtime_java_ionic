@@ -37,7 +37,6 @@ public class ConversationController {
     @PostMapping("/group")
     public void createGroup(@CurrentUser User user, @RequestBody @Valid CreateGroupRequest dto) {
         dto.getParticipantIds().add(user.getId());
-        System.out.println(G.toJson(dto));
         conversationService.createGroupConversation(user.getId(), dto);
     }
 

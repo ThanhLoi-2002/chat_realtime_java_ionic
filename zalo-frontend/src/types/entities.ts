@@ -1,5 +1,5 @@
 import { FileType } from "./common"
-import { ConversationEnum, DeliveryStatusEnum, FriendshipStatusEnum, MemberRoleEnum, MessageEnum } from "./enum"
+import { ConversationEnum, DeliveryStatusEnum, FriendshipStatusEnum, MemberRoleEnum, MessageEnum, ReactionEnum } from "./enum"
 
 export type BaseType = {
     id: number
@@ -46,6 +46,7 @@ export type MessageType = BaseType & {
   contentType: MessageEnum
   file: FileType
   replyToMessageId: number
+  reactions: ReactionType[]
 }
 
 export type ConversationMemberType = BaseType & {
@@ -67,4 +68,9 @@ export type FriendshipType = BaseType & {
     user2: UserType
     status: FriendshipStatusEnum
     actionUserId: number
+}
+
+export type ReactionType = BaseType & {
+    messageId: number
+    type: ReactionEnum
 }

@@ -1,7 +1,7 @@
 <template>
 
     <div class="flex gap-2 items-start relative group max-w-full lg:max-w-[60%]"
-        :class="isOwner ? 'ml-auto flex-row-reverse' : ''" ref="rootRef">
+        :class="[isOwner ? 'ml-auto flex-row-reverse' : '', message.reactions.length > 0 && 'mb-4']" ref="rootRef">
 
         <!-- AVATAR -->
         <circle-avatar v-if="!isOwner && message.showAvatar" :user="message.sender" size="size-10" />
@@ -14,30 +14,7 @@
 
             <text-message :message="message" :setBubbleRef="setBubbleRef"
                 v-if="message.contentType == MessageEnum.TEXT || message.contentType == null" :isOwner="isOwner" />
-
-            <!-- Vùng like hiển thị khi hover: đặt ngoài bubble hoặc trên mép tùy ý -->
-            <div class="absolute right-2 bottom-0 translate-y-1/2 flex items-center gap-2
-                opacity-0 transition-opacity duration-150
-                pointer-events-none group-hover:pointer-events-auto"
-                :class="[message.stt != -1 && 'group-hover:opacity-100']">
-                <div class="relative group/like">
-                    <button
-                        class="w-4 h-4 md:w-5 md:h-5 flex items-center justify-center rounded-full bg-slate-100 dark:bg-gray-700 hover:bg-slate-200 dark:hover:bg-gray-600 shadow-sm p-1">
-                        <i class="far fa-thumbs-up dark:text-white text-[10px] md:text-xs"></i>
-                    </button>
-
-                    <!-- REACTIONS: ẩn mặc định, hiện khi hover vào nút like -->
-                    <div class="absolute bottom-full -mb-1 -translate-x-1/2 hidden group-hover/like:flex gap-1
-                            bg-white dark:bg-gray-800 shadow-lg rounded-full px-2 py-1"
-                        :class="[isOwner ? '-right-20' : 'left-1/2']">
-                        <span class="cursor-pointer hover:scale-125 transition">👍</span>
-                        <span class="cursor-pointer hover:scale-125 transition">❤️</span>
-                        <span class="cursor-pointer hover:scale-125 transition">😂</span>
-                        <span class="cursor-pointer hover:scale-125 transition">😮</span>
-                        <span class="cursor-pointer hover:scale-125 transition">😢</span>
-                    </div>
-                </div>
-            </div>
+            
         </div>
 
         <!-- ACTIONS -->
@@ -92,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useUserStore } from '@/stores/user.storage'
 import CircleAvatar from '@/components/Avatar/CircleAvatar.vue'
 import { useTranslate } from '@/composables/useTranslate';
@@ -101,9 +78,10 @@ import { style } from '@/assets/tailwindcss';
 import { useMessageStore } from '@/stores/message.storage';
 import ImageMessage from '../Message/ImageMessage.vue';
 import TextMessage from '../Message/TextMessage.vue';
+import { MessageType } from '@/types/entities';
 
 const props = defineProps<{
-    message: any
+    message: MessageType & any
 }>()
 
 const { t } = useTranslate()

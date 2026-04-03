@@ -172,6 +172,14 @@ export const useConversationStore = defineStore('conversation', {
             }
         },
 
+        updateUnreadCount(id: number) {
+            const index = this.conversations.findIndex(c => c.id === id);
+
+            if (index !== -1) {
+                this.conversations[index].unread = 0;
+            }
+        },
+
         reset() {
             this.conversations = []
             this.conversation = undefined

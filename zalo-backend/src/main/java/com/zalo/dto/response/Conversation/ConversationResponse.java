@@ -22,6 +22,7 @@ public class ConversationResponse extends BaseResponse {
     String name;
     String code;
     File avatar;
+    Long lastMessageId;
 
     MessageResponse lastMessage;
     UserResponse recipient;

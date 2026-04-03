@@ -9,11 +9,14 @@ import { useDevice } from '@/composables/useDevice';
 import { StompSubscription } from '@stomp/stompjs';
 import { socketSubscribe } from '@/utils/websocket';
 import { useMessageStore } from '@/stores/message.storage';
+import { ConversationType, MessageType } from '@/types/entities';
+import { useUserStore } from '@/stores/user.storage';
 
 const { t } = useTranslate()
 const { isMobile } = useDevice()
 
 const conversationStorage = useConversationStore()
+const userStorage = useUserStore()
 const messageStorage = useMessageStore()
 const isShowInfoSection = ref(false)
 
@@ -21,8 +24,18 @@ let subNewMessage: StompSubscription | undefined
 
 onMounted(() => {
   subNewMessage = socketSubscribe(`/user/queue/chat.newMessages`, (msg: any) => {
-    messageStorage.addNewMessage(JSON.parse(msg.body).message)
-    conversationStorage.updateConversation(JSON.parse(msg.body).conversation)
+    const mess: MessageType = JSON.parse(msg.body).message
+    const conv: ConversationType = JSON.parse(msg.body).conversation
+
+    const isOpening = conversationStorage.conversation?.id === mess.conversationId
+    if (isOpening) {
+      if (mess.senderId != userStorage.user?.id) {
+        messageStorage.readMessage(mess.id, mess.conversationId)
+      }
+    }
+
+    messageStorage.addNewMessage(mess)
+    conversationStorage.updateConversation(conv)
   })
 
   subNewMessage = socketSubscribe(`/user/queue/chat.updateMessages`, (msg: any) => {

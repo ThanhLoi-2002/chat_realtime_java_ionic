@@ -21,3 +21,12 @@ export const ROUTE = {
     LANGUAGES: "/languages",
     FRIENDS: "/friends"
 }
+
+export const EMOJI_MAP = {
+  LIKE: '👍',
+  LOVE: '❤️',
+  HAHA: '😂',
+  WOW: '😮',
+  SAD: '😢',
+  ANGRY: '😡'
+}

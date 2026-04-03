@@ -2,7 +2,9 @@ package com.zalo.service;
 
 import com.zalo.configuration.G;
 import com.zalo.dto.filter.MessageFilter;
+import com.zalo.dto.request.Message.AddReactionRequest;
 import com.zalo.dto.request.Message.CreateMessageRequest;
+import com.zalo.dto.response.Message.MessageReactionResponse;
 import com.zalo.dto.response.Message.MessageResponse;
 import com.zalo.dto.response.Conversation.ConversationResponse;
 import com.zalo.dto.response.User.UserResponse;
@@ -12,7 +14,9 @@ import com.zalo.model.enums.DeliveryStatus;
 import com.zalo.model.enums.MessageType;
 import com.zalo.repository.*;
 import jakarta.persistence.EntityManager;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -22,19 +26,22 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MessageService {
-    private final MessageRepository messageRepo;
-    private final MessageStatusRepository statusRepo;
-    private final ConversationMemberRepository memberRepo;
-    private final ConversationRepository conversationRepository;
-    private final ConversationService conversationService;
-    private final EntityManager em;
-    private final WebsocketService websocketService;
-    private final CloudinaryService cloudinaryService;
+    MessageRepository messageRepo;
+    MessageStatusRepository statusRepo;
+    ConversationMemberRepository memberRepo;
+    ConversationRepository conversationRepository;
+    ConversationService conversationService;
+    EntityManager em;
+    WebsocketService websocketService;
+    CloudinaryService cloudinaryService;
+    MessageReactionRepository messageReactionRepository;
 
     public void sendMessage(Long conversationId, Long senderId, CreateMessageRequest dto) throws IOException {
         // check sender is member
@@ -87,6 +94,9 @@ public class MessageService {
         }
         statusRepo.saveAll(statuses);
 
+        //mark read my message
+        markRead(conversationId, senderId, m.getId());
+
         ConversationResponse conversationResponse = new ConversationResponse(conv, "recipient", "lastMessage", "createdBy");
 
         if (conv.getType() == ConversationType.GROUP) {
@@ -101,7 +111,22 @@ public class MessageService {
 
         Page<Message> page = messageRepo.findAllWithRelationShip(conversationId, pageable);
 
-        return page.map(e -> new MessageResponse(e, "sender"));
+        List<MessageReaction> mrs = messageReactionRepository.findByMessageIdIn(page.getContent().stream().map(BaseEntity::getId).toList());
+
+        Map<Long, List<MessageReactionResponse>> mapReaction = mrs.stream()
+                .collect(Collectors.groupingBy(
+                        MessageReaction::getMessageId,
+                        Collectors.mapping(
+                                mr -> new MessageReactionResponse(mr, "createdBy"),
+                                Collectors.toList()
+                        )
+                ));
+
+        return page.map(e -> {
+            MessageResponse m = new MessageResponse(e, "sender");
+            m.setReactions(mapReaction.getOrDefault(m.getId(), List.of()));
+            return m;
+        });
     }
 
     public Message findByIdWithRelationShip(Long id, Long conversationId) {
@@ -168,5 +193,26 @@ public class MessageService {
         List<ConversationMember> members = memberRepo.findByConversationId(conversationId);
 
         websocketService.sendMessage(new MessageResponse(m), new ConversationResponse(conv, "recipient", "lastMessage", "createdBy"), members);
+    }
+
+    public void addReaction(Long userId, Long conversationId, AddReactionRequest dto) {
+        MessageReaction mr = new MessageReaction();
+        mr.setCu(userId);
+        mr.setMessageId(dto.messageId);
+        mr.setType(dto.type);
+
+        mr = messageReactionRepository.save(mr);
+System.out.println(conversationId);
+        websocketService.addReaction(conversationId, mr);
+    }
+
+    public void removeAllReactionByUserId(Long conversationId, Long messageId, Long userId) {
+        messageReactionRepository.deleteByMessageIdAndCu(
+                messageId,
+                userId
+        );
+
+        List<MessageReaction> mrs = messageReactionRepository.findByMessageId(messageId);
+        websocketService.removeAllReactionByUserId(conversationId, mrs);
     }
 }

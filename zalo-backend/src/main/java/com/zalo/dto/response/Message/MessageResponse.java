@@ -9,10 +9,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.BeanUtils;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Getter
@@ -29,6 +26,8 @@ public class MessageResponse extends BaseResponse {
     MessageResponse replyToMessage;
 
     UserResponse sender;
+
+    List<MessageReactionResponse> reactions;
 
     public MessageResponse(Message m, String... relations) {
         super(m, relations);
