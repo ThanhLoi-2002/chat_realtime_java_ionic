@@ -34,11 +34,11 @@
 
           <!-- Unread badge -->
           <span class="ml-2 flex items-center justify-center
-                 min-w-5 h-5 px-1
+                 min-w-7 h-5 px-1
                  text-xs font-medium
                  rounded-full
                  bg-blue-500 text-white">
-            3
+            {{ conversation.unread > MAX_UNREAD ? `+${MAX_UNREAD}` : conversation.unread }}
           </span>
         </div>
       </div>
@@ -63,6 +63,8 @@ const props = defineProps<{
 const { t } = useTranslate()
 const { getUserNameFromLastMessage, conversationAvatar, conversationName, isGroup } = useConversation()
 const { timeAgo } = useDateTime()
+
+const MAX_UNREAD = 5;
 
 const lastMessageContent = computed(() => {
   let content = ''

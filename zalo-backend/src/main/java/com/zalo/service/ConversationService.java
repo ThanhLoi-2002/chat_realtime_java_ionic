@@ -17,6 +17,7 @@ import com.zalo.repository.ConversationMemberRepository;
 import com.zalo.repository.ConversationRepository;
 import com.zalo.repository.MessageRepository;
 import com.zalo.repository.UserRepository;
+import com.zalo.repository.dto.UnreadDto;
 import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -166,11 +167,15 @@ public class ConversationService {
 
         Page<Conversation> page = conversationRepo.findAllWithRelationShip(conversationIds, filter.getName(), pageable);
 
+        Map<Long, Long> mapUnread = getUnreadFromIds(page.getContent().stream().map(BaseEntity::getId).toList(), userId);
+
         Page<ConversationResponse> result = page.map(c -> {
             ConversationResponse conv = new ConversationResponse(c, "recipient", "lastMessage", "createdBy");
             if (c.getType() == ConversationType.GROUP) {
                 conv.setMembers(getMembers(c.getId()).stream().map(UserResponse::new).toList());
             }
+
+            conv.setUnread(mapUnread.getOrDefault(c.getId(), 0L));
 
             return conv;
         });
@@ -214,7 +219,7 @@ public class ConversationService {
         return conversationInfo;
     }
 
-    public List<ConversationResponse> getGroups(Long userId){
+    public List<ConversationResponse> getGroups(Long userId) {
         List<Long> conversationIds = memberRepo.findConversationIdsByUserId(userId);
         List<Conversation> conversations = conversationRepo.findByIdInAndType(conversationIds, ConversationType.GROUP);
 
@@ -235,6 +240,15 @@ public class ConversationService {
         }
 
         return conversationResponses;
+    }
+
+    public Map<Long, Long> getUnreadFromIds(List<Long> ids, Long userId){
+        List<UnreadDto> unread = conversationRepo.countUnread(ids, userId);
+
+        return unread.stream().collect(Collectors.toMap(
+                UnreadDto::getConversationId,  // key
+                UnreadDto::getUnreadCount            // value
+        ));
     }
 
 //    public Conversation update(Long id) {

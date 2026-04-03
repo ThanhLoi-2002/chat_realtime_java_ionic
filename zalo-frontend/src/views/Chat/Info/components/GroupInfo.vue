@@ -6,7 +6,7 @@
                 <div class="p-4 flex items-center gap-2 font-semibold 
                 border-b border-gray-200 dark:border-slate-700">
                     <div class="sm:hidden">
-                        <mobile-back-button :onClick="() => emit('update:isShowInfoSection', false)" />
+                        <mobile-back-button :onClick="() => emit('close')" />
                     </div>
                     <span :class="['text-center w-full', style.text.secondary]">
                         {{ t("conversationInfo") }}
@@ -88,7 +88,7 @@ import StoragePanel from './Storage/StoragePanel.vue'
 import StorageComponent from './Storage/StorageComponent.vue'
 import Member from './Member.vue'
 
-const emit = defineEmits(['update:isShowInfoSection'])
+const emit = defineEmits(['close'])
 
 const conversationStorage = useConversationStore()
 const { t } = useTranslate()

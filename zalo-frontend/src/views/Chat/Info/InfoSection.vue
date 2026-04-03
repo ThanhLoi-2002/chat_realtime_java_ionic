@@ -1,6 +1,6 @@
 <template>
-    <profile-info v-if="!isGroup(conversationStorage.conversation)" />
-    <group-info v-else />
+    <profile-info v-if="!isGroup(conversationStorage.conversation)" @close="emit('update:isShowInfoSection', false)"/>
+    <group-info v-else @close="emit('update:isShowInfoSection', false)"/>
 </template>
 
 <script setup lang="ts">

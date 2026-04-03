@@ -10,8 +10,7 @@
 
                 <GroupAvatar v-if="isGroup(conversationStorage.conversation)"
                     :conversation="conversationStorage.conversation!" />
-                <circle-avatar v-else :user="getRecipient(conversationStorage.conversation)" size="size-10"
-                    />
+                <circle-avatar v-else :user="getRecipient(conversationStorage.conversation)" size="size-10" />
 
                 <div class="flex flex-col">
                     <span class="font-medium dark:text-slate-200">
@@ -19,11 +18,13 @@
                     </span>
 
                     <span class="text-xs bg-green-400 rounded-full w-2.5 h-2.5"
+                        :class="[isOnline ? 'bg-green-400' : 'bg-gray-400']"
                         v-if="!isGroup(conversationStorage.conversation!)">
                     </span>
                     <div v-else class="flex gap-2 items-center">
-                        <i class="fa fa-user text-xs" :class="[style.text.secondary]"/>
-                        <span class="text-xs hover:text-blue-400 cursor-pointer" :class="[style.text.secondary]" @click="() => memberModal?.present()">
+                        <i class="fa fa-user text-xs" :class="[style.text.secondary]" />
+                        <span class="text-xs hover:text-blue-400 cursor-pointer" :class="[style.text.secondary]"
+                            @click="() => memberModal?.present()">
                             {{ conversationStorage.conversation?.members?.length }} {{ t("members") }}
                         </span>
                     </div>
@@ -38,7 +39,7 @@
             </div>
         </div>
         <Modal ref="memberModal" title="">
-            <Member :isShowBackButton="false"/>
+            <Member :isShowBackButton="false" />
         </Modal>
     </header>
 </template>
@@ -53,7 +54,7 @@ import { style } from '@/assets/tailwindcss';
 import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
 import Modal from '@/components/Modal/Modal.vue';
 import Member from '../../Info/components/Member.vue';
-import { ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 const props = defineProps<{
     isShowInfoSection: boolean
@@ -64,6 +65,7 @@ const systemStorage = useSystemStore()
 const { isGroup, getRecipient, conversationName } = useConversation()
 const { t } = useTranslate()
 const memberModal = ref()
+const isOnline = ref(false)
 
 const emit = defineEmits(['update:isShowInfoSection'])
 
@@ -72,13 +74,21 @@ const onBack = () => {
     systemStorage.setShowBottomMenu(true)
 }
 
-// const isRecipientOnline = computed(() => {
-//   const conversation = conversationStorage.conversation
-//   if (!conversation || isGroup(conversation)) return false
+const checkUserOnline = () => {
+    if (!isGroup(conversationStorage.conversation)) {
+        if (systemStorage.userIdsOnline[getRecipient(conversationStorage.conversation)!.id]) {
+            isOnline.value = true
+        } else {
+            isOnline.value = false
+        }
+    }
+}
 
-//   const user = getRecipient(conversation)
-//   if (!user) return false
+onMounted(() => {
+    checkUserOnline()
+})
 
-//   return systemStorage.onlineUsers.has(user.id)
-// })
+watch(() => conversationStorage.conversation, async () => {
+    checkUserOnline()
+})
 </script>

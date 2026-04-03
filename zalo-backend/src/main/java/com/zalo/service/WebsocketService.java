@@ -6,6 +6,7 @@ import com.zalo.gateway.UserOnlineStorage;
 import com.zalo.model.ConversationMember;
 import com.zalo.model.Message;
 import com.zalo.repository.ConversationMemberRepository;
+import com.zalo.repository.ConversationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -23,17 +24,21 @@ public class WebsocketService {
     private final ConversationMemberRepository memberRepo;
     private final SimpMessagingTemplate messagingTemplate;
     private final UserOnlineStorage userOnlineStorage;
+    public final ConversationRepository conversationRepository;
 
     public void sendMessage(MessageResponse message, ConversationResponse conv, List<ConversationMember> members) {
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("message", message);
-        payload.put("conversation", conv);
-
         for (ConversationMember member : members) {
             Set<String> sessions = userOnlineStorage.getSessions(member.getUserId());
 
-            for (String sessionId : sessions) {
+            Long countUnread = conversationRepository.countUnread(conv.getId(), member.getUserId());
 
+            conv.setUnread(countUnread);
+
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("message", message);
+            payload.put("conversation", conv);
+
+            for (String sessionId : sessions) {
                 messagingTemplate.convertAndSendToUser(
                         sessionId,
                         "/queue/chat.newMessages",

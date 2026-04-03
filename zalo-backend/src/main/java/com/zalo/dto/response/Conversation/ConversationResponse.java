@@ -27,6 +27,7 @@ public class ConversationResponse extends BaseResponse {
     UserResponse recipient;
 
     List<UserResponse> members;
+    Long unread;
 
     public ConversationResponse(Conversation c, String... relations) {
         super(c, relations);
@@ -37,7 +38,9 @@ public class ConversationResponse extends BaseResponse {
                 : Collections.emptySet();
 
         if (rels.contains("lastMessage")) {
-            this.lastMessage = new MessageResponse(c.getLastMessage(), "sender");
+            if(c.getLastMessage() != null) {
+                this.lastMessage = new MessageResponse(c.getLastMessage(), "sender");
+            }
         }
 
         if (rels.contains("recipient")) {

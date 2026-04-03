@@ -2,6 +2,7 @@ package com.zalo.repository;
 
 import com.zalo.model.Conversation;
 import com.zalo.model.enums.ConversationType;
+import com.zalo.repository.dto.UnreadDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public interface ConversationRepository extends JpaRepository<Conversation, Long>, JpaSpecificationExecutor<Conversation> {
@@ -60,6 +62,41 @@ public interface ConversationRepository extends JpaRepository<Conversation, Long
             """)
     Optional<Conversation> findOneWithRelationShipById(
             @Param("id") Long id
+    );
+
+    @Query("""
+                SELECT c.id AS conversationId, COUNT(m.id) AS unreadCount
+                FROM Conversation c
+                LEFT JOIN ConversationMember cm
+                    ON cm.conversationId = c.id AND cm.userId = :userId
+                LEFT JOIN Message m
+                    ON m.conversationId = c.id AND 
+                    m.id > cm.lastReadMessageId AND 
+                    m.contentType != 'SYSTEM'
+                WHERE (:ids IS NULL OR c.id IN :ids)
+                GROUP BY c.id
+            """)
+    List<UnreadDto> countUnread(
+            @Param("ids") List<Long> ids,
+            @Param("userId") Long userId
+    );
+
+    @Query("""
+                SELECT COUNT(m.id) AS unreadCount
+                FROM Conversation c
+                LEFT JOIN ConversationMember cm
+                    ON cm.conversationId = c.id AND cm.userId = :userId
+                LEFT JOIN Message m
+                    ON m.conversationId = c.id AND 
+                    m.id > cm.lastReadMessageId AND 
+                    m.contentType != 'SYSTEM'
+                WHERE c.id = :id
+                GROUP BY c.id
+                LIMIT 1
+            """)
+    Long countUnread(
+            @Param("id") Long id,
+            @Param("userId") Long userId
     );
 
     List<Conversation> findByIdInAndType(List<Long> ids, ConversationType type);

@@ -5,7 +5,9 @@ import com.zalo.dto.filter.MessageFilter;
 import com.zalo.dto.request.Message.CreateMessageRequest;
 import com.zalo.dto.response.Message.MessageResponse;
 import com.zalo.dto.response.Conversation.ConversationResponse;
+import com.zalo.dto.response.User.UserResponse;
 import com.zalo.model.*;
+import com.zalo.model.enums.ConversationType;
 import com.zalo.model.enums.DeliveryStatus;
 import com.zalo.model.enums.MessageType;
 import com.zalo.repository.*;
@@ -85,7 +87,13 @@ public class MessageService {
         }
         statusRepo.saveAll(statuses);
 
-        websocketService.sendMessage(new MessageResponse(m, "sender"), new ConversationResponse(conv, "recipient", "lastMessage", "createdBy"), members);
+        ConversationResponse conversationResponse = new ConversationResponse(conv, "recipient", "lastMessage", "createdBy");
+
+        if (conv.getType() == ConversationType.GROUP) {
+            conversationResponse.setMembers(conversationService.getMembers(conv.getId()).stream().map(UserResponse::new).toList());
+        }
+
+        websocketService.sendMessage(new MessageResponse(m, "sender"), conversationResponse, members);
     }
 
     public Page<MessageResponse> fetchMessages(Long conversationId, MessageFilter filter) {
