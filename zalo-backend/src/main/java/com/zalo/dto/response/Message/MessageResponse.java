@@ -27,7 +27,7 @@ public class MessageResponse extends BaseResponse {
 
     UserResponse sender;
 
-    List<MessageReactionResponse> reactions;
+    List<MessageReactionResponse> reactions = List.of();
 
     public MessageResponse(Message m, String... relations) {
         super(m, relations);

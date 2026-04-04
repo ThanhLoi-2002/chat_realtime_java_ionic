@@ -7,7 +7,7 @@
       isOwner
         ? 'bg-blue-400 text-white border-blue-500'
         : 'bg-white dark:bg-gray-800 dark:text-slate-100 border-slate-300 dark:border-gray-700',
-      message.reactions.length > 0 ? 'pt-2 pb-4' : 'py-0.5 md:py-2'
+      message.reactions?.length > 0 ? 'pt-2 pb-4' : 'py-0.5 md:py-2'
     ]"
   >
     <!-- USERNAME -->

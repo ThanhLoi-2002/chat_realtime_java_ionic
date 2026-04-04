@@ -33,6 +33,8 @@
         </span>
     </div>
 
+    <Reactions :message="message"/>
+
     <div v-if="previewImage" class="fixed inset-0 z-50 flex bg-black/90" @click.self="closePreview">
 
         <!-- MAIN IMAGE -->
@@ -66,6 +68,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { style } from '@/assets/tailwindcss';
 import { useMessageStore } from '@/stores/message.storage';
 import { MessageEnum } from '@/types/enum';
+import Reactions from '../Reaction/Reactions.vue';
 
 const props = defineProps<{
     setBubbleRef?: (el: HTMLElement | null) => void

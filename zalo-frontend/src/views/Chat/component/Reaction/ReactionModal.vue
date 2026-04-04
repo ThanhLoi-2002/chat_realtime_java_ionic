@@ -48,8 +48,6 @@ const userGroupedList = computed(() => {
     return Object.values(groups);
 });
 
-console.log(userGroupedList)
-
 /**
  * 2. Xác định Top User
  */

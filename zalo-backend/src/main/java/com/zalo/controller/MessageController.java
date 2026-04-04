@@ -61,7 +61,7 @@ public class MessageController {
 
     @DeleteMapping("/reaction/remove-all")
     @CheckConversationMember
-    public void removeAll(@PathVariable Long conversationId, @CurrentUser User user, @ModelAttribute Long messageId) {
+    public void removeAll(@PathVariable Long conversationId, @CurrentUser User user, @RequestParam Long messageId) {
         messageService.removeAllReactionByUserId(conversationId, messageId, user.getId());
     }
 }

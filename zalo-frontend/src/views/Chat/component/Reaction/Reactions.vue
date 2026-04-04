@@ -34,7 +34,7 @@
                     :class="[isOwner ? '-right-20' : 'left-1/2']">
                     <span class="cursor-pointer hover:scale-125 transition" v-for="(value, key) in EMOJI_MAP" :key="key"
                         @click="addReaction(key)">{{ value }}</span>
-                    <span :class="[message.reactions.length > 0 ? '' : 'hidden']">x</span>
+                    <span :class="[message.reactions.length > 0 && message.reactions.some(i => i.cu == userStorage.user?.id) ? '' : 'hidden']" @click="deleteAllReaction">x</span>
                 </div>
             </div>
         </div>
@@ -69,7 +69,7 @@ const reactionRef = ref()
 const groupedReactions = computed(() => {
     const map: Record<string, number> = {}
 
-    props.message.reactions.forEach(r => {
+    props.message.reactions?.forEach(r => {
         map[r.type] = (map[r.type] || 0) + 1
     })
 
@@ -91,6 +91,10 @@ const totalCount = computed(() => {
 
 const addReaction = (key: keyof typeof ReactionEnum) => {
     messageStorage.addReaction(props.message.id, props.message.conversationId, key)
+}
+
+const deleteAllReaction = () => {
+    messageStorage.deleteAllReaction(props.message.id, props.message.conversationId)
 }
 
 </script>
