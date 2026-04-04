@@ -16,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 public class MessageReactionResponse extends BaseResponse {
     Long messageId;
     ReactionType type;
+    Integer count;
 
     public MessageReactionResponse(MessageReaction mr, String... relations) {
         super(mr, relations);

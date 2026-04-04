@@ -73,4 +73,5 @@ export type FriendshipType = BaseType & {
 export type ReactionType = BaseType & {
     messageId: number
     type: ReactionEnum
+    count: number
 }

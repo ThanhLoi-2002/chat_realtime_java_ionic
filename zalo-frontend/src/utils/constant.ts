@@ -30,3 +30,5 @@ export const EMOJI_MAP = {
   SAD: '😢',
   ANGRY: '😡'
 }
+
+export type ReactionKey = keyof typeof EMOJI_MAP;

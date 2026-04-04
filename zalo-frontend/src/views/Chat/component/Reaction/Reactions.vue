@@ -1,10 +1,10 @@
 <template>
-    <div class="absolute flex gap-1 -bottom-3 right-1">
-        <div v-if="groupedReactions?.length > 0" class="flex items-center gap-1 px-1
+    <div class="absolute flex gap-1 -bottom-3 right-1 cursor-pointer">
+        <div @click="reactionRef?.present()" v-if="groupedReactions?.length > 0" class="flex items-center gap-1 px-1
                bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 
                rounded-full shadow text-xs">
             <!-- icons -->
-            <div class="flex items-center -space-x-1">
+            <div class="flex items-center -space-x-0.5">
                 <span v-for="(r, index) in groupedReactions" :key="index" class="text-sm">
                     {{ EMOJI_MAP[r.type as keyof typeof EMOJI_MAP] }}
                 </span>
@@ -34,26 +34,36 @@
                     :class="[isOwner ? '-right-20' : 'left-1/2']">
                     <span class="cursor-pointer hover:scale-125 transition" v-for="(value, key) in EMOJI_MAP" :key="key"
                         @click="addReaction(key)">{{ value }}</span>
+                    <span :class="[message.reactions.length > 0 ? '' : 'hidden']">x</span>
                 </div>
             </div>
         </div>
     </div>
+
+    <Modal ref="reactionRef" :title="t('reaction')">
+        <ReactionModal :reactions="message.reactions"/>
+    </Modal>
 </template>
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { MessageType } from '@/types/entities'
 import { ReactionEnum } from '@/types/enum';
 import { useMessageStore } from '@/stores/message.storage';
 import { EMOJI_MAP } from '@/utils/constant';
 import { useUserStore } from '@/stores/user.storage';
+import Modal from '@/components/Modal/Modal.vue';
+import { useTranslate } from '@/composables/useTranslate';
+import ReactionModal from './ReactionModal.vue';
 
 const props = defineProps<{
     message: MessageType
 }>()
 
+const { t } = useTranslate()
 const userStorage = useUserStore()
 const messageStorage = useMessageStore()
 const isOwner = props.message.sender.id === userStorage.user?.id
+const reactionRef = ref()
 
 // group theo type
 const groupedReactions = computed(() => {
@@ -73,7 +83,11 @@ const groupedReactions = computed(() => {
 })
 
 // tổng số reaction
-const totalCount = computed(() => props.message.reactions.length)
+const totalCount = computed(() => {
+    return props.message.reactions.reduce((acc, reaction) => {
+        return acc + reaction.count
+    }, 0)
+})
 
 const addReaction = (key: keyof typeof ReactionEnum) => {
     messageStorage.addReaction(props.message.id, props.message.conversationId, key)

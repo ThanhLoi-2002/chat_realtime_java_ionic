@@ -195,14 +195,26 @@ public class MessageService {
         websocketService.sendMessage(new MessageResponse(m), new ConversationResponse(conv, "recipient", "lastMessage", "createdBy"), members);
     }
 
-    public void addReaction(Long userId, Long conversationId, AddReactionRequest dto) {
-        MessageReaction mr = new MessageReaction();
-        mr.setCu(userId);
-        mr.setMessageId(dto.messageId);
-        mr.setType(dto.type);
+    public void addReaction(Long conversationId, Long userId, AddReactionRequest dto) {
+        MessageReaction mr = messageReactionRepository.findByMessageIdAndCuAndType(dto.messageId, userId, dto.type);
 
-        mr = messageReactionRepository.save(mr);
-System.out.println(conversationId);
+        if(mr != null){
+            mr.setCount(mr.getCount() + 1);
+        }else {
+            mr = new MessageReaction();
+            mr.setCu(userId);
+            mr.setMessageId(dto.messageId);
+            mr.setType(dto.type);
+            mr.setCount(1);
+        }
+
+        messageReactionRepository.save(mr);
+
+        em.flush();
+        em.refresh(mr);
+
+        mr = messageReactionRepository.findById(mr.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
+
         websocketService.addReaction(conversationId, mr);
     }
 

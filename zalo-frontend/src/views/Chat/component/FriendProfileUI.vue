@@ -11,7 +11,7 @@
                 <div class="relative w-24 h-24">
 
                     <!-- Avatar -->
-                    <CircleAvatar :user="user"
+                    <CircleAvatar :user="user!"
                         custom-class="w-24 h-24 rounded-full ring-2 ring-white dark:ring-slate-800 overflow-hidden bg-gray-300"
                         :is-disabled="true" />
                 </div>
@@ -63,6 +63,7 @@
     </div>
 </template>
 <script setup lang="ts">
+import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
 import ProfileUI from '@/components/Sidebar/components/ProfileUI.vue';
 import { useTranslate } from '@/composables/useTranslate';
 import { useConversationStore } from '@/stores/conversation.storage';

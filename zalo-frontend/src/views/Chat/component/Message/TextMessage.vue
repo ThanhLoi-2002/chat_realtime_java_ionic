@@ -7,7 +7,7 @@
       isOwner
         ? 'bg-blue-400 text-white border-blue-500'
         : 'bg-white dark:bg-gray-800 dark:text-slate-100 border-slate-300 dark:border-gray-700',
-      message.reactions.length > 0 ? 'pt-0.5 pb-4 md:pt-0.5 md:pb-4' : 'py-0.5 md:py-2'
+      message.reactions.length > 0 ? 'pt-2 pb-4' : 'py-0.5 md:py-2'
     ]"
   >
     <!-- USERNAME -->
@@ -50,7 +50,7 @@ import { style } from "@/assets/tailwindcss";
 import { useDateTime } from "@/composables/useDateTime";
 import { useTranslate } from "@/composables/useTranslate";
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import Reactions from "./Reactions.vue";
+import Reactions from "../Reaction/Reactions.vue";
 
 const props = defineProps<{
     setBubbleRef?: (el: HTMLElement | null) => void;

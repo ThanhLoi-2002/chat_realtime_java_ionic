@@ -21,4 +21,6 @@ public class MessageReaction extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     ReactionType type;
+
+    Integer count;
 }

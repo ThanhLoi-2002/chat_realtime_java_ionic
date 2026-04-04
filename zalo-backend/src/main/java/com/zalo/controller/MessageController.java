@@ -56,7 +56,6 @@ public class MessageController {
     @PostMapping("/reaction/add")
     @CheckConversationMember
     public void addReaction(@PathVariable Long conversationId, @CurrentUser User user, @RequestBody AddReactionRequest dto) {
-        System.out.println(conversationId);
         messageService.addReaction(conversationId, user.getId(), dto);
     }
 

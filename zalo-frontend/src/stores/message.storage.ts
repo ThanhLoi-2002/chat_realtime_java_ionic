@@ -90,9 +90,14 @@ export const useMessageStore = defineStore('message', {
         },
 
         addReactionRealtime(reaction: ReactionType) {
-            const idx = this.messages.findIndex(m => m.id === reaction.messageId);
-            if (idx !== -1) {
-                this.messages[idx].reactions.push(reaction)
+            const messageIdx = this.messages.findIndex(m => m.id === reaction.messageId);
+            if (messageIdx !== -1) {
+                const reactionIdx = this.messages[messageIdx].reactions.findIndex(i => i.type == reaction.type && i.cu == reaction.cu);
+                if (reactionIdx !== -1) {
+                    this.messages[messageIdx].reactions[reactionIdx].count = reaction.count
+                } else {
+                    this.messages[messageIdx].reactions.push(reaction)
+                }
             }
         },
 
