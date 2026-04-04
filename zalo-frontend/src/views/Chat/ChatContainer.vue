@@ -57,6 +57,7 @@ import AddFriendBar from './component/Chat/AddFriendBar.vue';
 import { MessageEnum } from '@/types/enum';
 import { StompSubscription } from '@stomp/stompjs';
 import { socketSubscribe } from '@/utils/websocket';
+import { MessageFilter } from '@/types/common';
 
 const props = defineProps<{
     isShowInfoSection: boolean
@@ -135,8 +136,12 @@ const scrollMore = () => {
     if (messageStorage.hasMore && !messageStorage.isLoading) {
         const { scrollTop } = scrollContainer.value!
         if (scrollTop < 300) {   // gần đầu
+            const options: MessageFilter = {
+                conversationId: conversationStorage.conversation!.id,
+                lastId: messageStorage.messages[0]?.id,
+            }
             onScroll(scrollContainer.value, () =>
-                messageStorage.getMessages(conversationStorage.conversation!.id)
+                messageStorage.getMessages(options)
             )
         }
     }
@@ -180,7 +185,10 @@ const reset = async () => {
     messageStorage.resetPagination()
 
     if (conversationStorage.conversation) {
-        await messageStorage.getMessages(conversationStorage.conversation.id)
+        const options: MessageFilter = {
+                conversationId: conversationStorage.conversation!.id,
+            }
+        await messageStorage.getMessages(options)
 
         if (conversationStorage.conversation.lastMessageId) {
             messageStorage.readMessage(conversationStorage.conversation.lastMessageId, conversationStorage.conversation.id)

@@ -32,6 +32,12 @@ public abstract class BaseFilter {
         return PageRequest.of(page, limit, sortObj);
     }
 
+    public Pageable toScrollable(String sort, Sort.Direction direction) {
+        Sort sortObj = Sort.by(direction, sort);
+
+        return PageRequest.of(0, limit, sortObj);
+    }
+
     // Nếu bạn muốn sort nhiều field (sort=email,createdAt&order=asc,desc)
     // thì có thể override method này ở class con
     public Pageable toPageableWithMultiSort() {

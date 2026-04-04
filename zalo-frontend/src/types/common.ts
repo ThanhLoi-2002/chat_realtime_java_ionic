@@ -38,13 +38,14 @@ export type SendAddFriendRequestType = {
 }
 
 export type BaseFilter = {
-  page: number
+  page?: number
   limit?: number
   lastId?: number
 }
 
 export type MessageFilter = BaseFilter & {
   conversationId: number
+  contentType?: MessageEnum
 }
 
 export type ConversationFilter = BaseFilter

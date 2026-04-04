@@ -50,7 +50,7 @@ public class WebsocketService {
         List<ConversationMember> members = memberRepo.findByConversationId(message.getConversationId());
 
         Map<String, Object> payload = new HashMap<>();
-        payload.put("message", new MessageResponse(message, "sender"));
+        payload.put("message", new MessageResponse(message, "sender", "replyToMessage"));
 
         for (ConversationMember member : members) {
             Set<String> sessions = userOnlineStorage.getSessions(member.getUserId());

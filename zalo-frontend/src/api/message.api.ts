@@ -1,6 +1,6 @@
 import { IResponse, MessageFilter, SendMessageType } from "@/types/common";
 import axios from "./axios";
-import { MessageType, ReactionType } from "@/types/entities";
+import { MessageType } from "@/types/entities";
 import { ReactionEnum } from "@/types/enum";
 
 
@@ -22,8 +22,17 @@ const sendMessage = async (data: SendMessageType) => {
 }
 
 const getMessages = async (options: MessageFilter) => {
-    const { conversationId, page = 0, lastId, limit = 20 } = options
-    return await axios.get<IResponse<MessageType>>(`/conversations/${conversationId}/messages?page=${page}&limit=${limit}&lastId=${lastId}`);
+    const { conversationId, page = 0, limit = 20, ...rest } = options
+
+    let filterOptions = `limit=${limit}`;
+
+    for (const [key, value] of Object.entries(rest)) {
+        if (value != null || value != undefined)
+            filterOptions += `&${key}=${Array.isArray(value) ? value.join(",") : value
+                }`;
+    }
+
+    return await axios.get<IResponse<MessageType>>(`/conversations/${conversationId}/messages?${filterOptions}`);
 }
 
 const deleteMessage = async (id: number, conversationId: number) => {
@@ -35,7 +44,7 @@ const readMessage = async (id: number, conversationId: number) => {
 }
 
 const addReaction = async (id: number, conversationId: number, type: keyof typeof ReactionEnum) => {
-    return await axios.post<IResponse>(`/conversations/${conversationId}/messages/reaction/add`, { messageId: id, type});
+    return await axios.post<IResponse>(`/conversations/${conversationId}/messages/reaction/add`, { messageId: id, type });
 }
 
 const deleteAllReaction = async (id: number, conversationId: number) => {

@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 import { ConversationType, MessageType, UserType } from '@/types/entities'
 import { conversationApi } from '@/api/conversation.api'
 import { toast } from '@/utils/toast'
-import { FileType } from '@/types/common'
 
 interface ConversationState {
     isLoading: boolean,

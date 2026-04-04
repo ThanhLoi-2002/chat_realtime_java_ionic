@@ -33,16 +33,16 @@ public class MessageResponse extends BaseResponse {
         super(m, relations);
         BeanUtils.copyProperties(m, this, "replyToMessage", "sender", "createdBy", "updatedBy");
 
-        Set<String> rels = relations != null
-                ? new HashSet<>(Arrays.asList(relations))
-                : Collections.emptySet();
+        Set<String> rels = relations != null ? new HashSet<>(Arrays.asList(relations)) : Collections.emptySet();
 
         if (rels.contains("replyToMessage")) {
-            this.replyToMessage = new MessageResponse(m.getReplyToMessage());
+            if (m.getReplyToMessage() != null) {
+                this.replyToMessage = new MessageResponse(m.getReplyToMessage());
+            }
         }
 
         if (rels.contains("sender")) {
-            if(m.getSender() != null){
+            if (m.getSender() != null) {
                 this.sender = new UserResponse(m.getSender());
             }
         }

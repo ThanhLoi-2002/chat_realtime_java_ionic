@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { MessageType, ReactionType } from '@/types/entities'
-import { SendMessageType } from '@/types/common';
+import { MessageFilter, SendMessageType } from '@/types/common';
 import { messageApi } from '@/api/message.api';
 import { toast } from '@/utils/toast';
 import { ReactionEnum } from '@/types/enum';
@@ -8,7 +8,6 @@ import { ReactionEnum } from '@/types/enum';
 interface State {
     isLoading: boolean,
     messages: MessageType[],
-    page: number,
     hasMore: boolean
 }
 
@@ -16,7 +15,6 @@ export const useMessageStore = defineStore('message', {
     state: (): State => ({
         isLoading: false,
         messages: [],
-        page: -1,
         hasMore: true
     }),
     actions: {
@@ -44,19 +42,17 @@ export const useMessageStore = defineStore('message', {
                 return false
             }
         },
-        async getMessages(conversationId: number) {
+        async getMessages(options: MessageFilter) {
             try {
                 this.isLoading = true
 
-                this.page += 1
-
-                const result: any = await messageApi.getMessages({ conversationId, page: this.page });
-                const { content, page } = result.result
+                const result: any = await messageApi.getMessages(options);
+                const { content, page: { size, totalElements} } = result.result
 
                 this.messages.unshift(...content)
                 this.sort()
 
-                if ((page.totalPages - 1) == this.page) this.hasMore = false
+                if (totalElements <= size) this.hasMore = false
             } catch (e: any) {
                 toast({
                     color: "danger",
@@ -138,7 +134,6 @@ export const useMessageStore = defineStore('message', {
         },
 
         resetPagination() {
-            this.page = -1
             this.hasMore = true
             this.messages = []
         }

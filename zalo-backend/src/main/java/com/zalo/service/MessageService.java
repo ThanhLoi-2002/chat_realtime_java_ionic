@@ -19,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -107,9 +109,11 @@ public class MessageService {
     }
 
     public Page<MessageResponse> fetchMessages(Long conversationId, MessageFilter filter) {
-        Pageable pageable = filter.toPageable();
+        filter.setConversationId(conversationId);
 
-        Page<Message> page = messageRepo.findAllWithRelationShip(conversationId, pageable);
+        Pageable pageable = filter.toScrollable("ct", Sort.Direction.DESC);
+
+        Page<Message> page = messageRepo.findAll(filter.toSpecification(), pageable);
 
         List<MessageReaction> mrs = messageReactionRepository.findByMessageIdIn(page.getContent().stream().map(BaseEntity::getId).toList());
 
@@ -123,7 +127,7 @@ public class MessageService {
                 ));
 
         return page.map(e -> {
-            MessageResponse m = new MessageResponse(e, "sender");
+            MessageResponse m = new MessageResponse(e, "sender", "replyToMessage");
             m.setReactions(mapReaction.getOrDefault(m.getId(), List.of()));
             return m;
         });
