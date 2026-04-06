@@ -229,6 +229,6 @@ public class MessageService {
         );
 
         List<MessageReaction> mrs = messageReactionRepository.findByMessageId(messageId);
-        websocketService.removeAllReactionByUserId(conversationId, mrs);
+        websocketService.removeAllReactionByUserId(conversationId, messageId, mrs);
     }
 }

@@ -38,8 +38,25 @@ public class MessageFilter extends BaseFilter {
         }
 
         if (contentType != null) {
+            if (contentType == MessageType.IMAGE) {
+                // Nếu là IMAGE, lấy cả IMAGE và VIDEO
+                specs.add((root, query, cb) ->
+                        cb.or(
+                                cb.equal(root.get("contentType"), MessageType.IMAGE),
+                                cb.equal(root.get("contentType"), MessageType.VIDEO)
+                        )
+                );
+            } else {
+                // Các loại khác thì tìm chính xác
+                specs.add((root, query, cb) ->
+                        cb.equal(root.get("contentType"), contentType)
+                );
+            }
+
+            // Luôn lọc theo trạng thái stt = 1 cho các loại media này
             specs.add((root, query, cb) ->
-                    cb.equal(root.get("contentType"), contentType));
+                    cb.equal(root.get("stt"), 1)
+            );
         }
 
         return specs.stream()

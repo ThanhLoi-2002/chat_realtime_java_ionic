@@ -209,9 +209,8 @@ const resetSubscribe = () => {
     })
 
     subReaction = socketSubscribe(`/user/queue/chat.conversation.${conversationStorage.conversation?.id}.reactions`, (msg: any) => {
-        const data = JSON.parse(msg.body).reactions
-        console.log(data)
-        messageStorage.reloadReactions(data)
+        const data = JSON.parse(msg.body)
+        messageStorage.reloadReactions(data.messageId, data.reactions)
     })
 }
 

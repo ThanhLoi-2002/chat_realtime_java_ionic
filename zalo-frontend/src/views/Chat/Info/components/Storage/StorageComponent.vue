@@ -3,8 +3,9 @@
         <!-- MEDIA -->
         <collapse v-model:isOpen="open.media" :title="`${t('image')}/${t('video')}`">
             <div class="grid grid-cols-4 gap-2">
-                <img v-for="(i, index) in conversationStorage.images.slice(0, 8)" :key="index" :src="i.file.url"
-                    class="aspect-square rounded bg-gray-200 dark:bg-slate-700 hover:scale-105 transition cursor-pointer" />
+                <img v-for="(i, index) in messStorage.images.slice(0, 8)" :key="index" :src="i.file.url"
+                    class="aspect-square rounded bg-gray-200 dark:bg-slate-700 hover:scale-105 transition cursor-pointer"
+                    @click="handlePreviewImage(i)" />
             </div>
 
             <ion-button class="btn mx-auto w-full normal-case" @click="goTo('storage/image')">
@@ -42,34 +43,17 @@
             </div>
         </section>
 
-        <!-- SECURITY -->
-        <collapse v-model:isOpen="open.security" :title="t('setUpSecurity')">
-            <div>
-                <div class="dark:text-white">{{ t('messagesDeleteThemselves') }}</div>
-                <div class="text-xs text-gray-400">{{ t('never') }}</div>
-            </div>
 
-            <!-- SWITCH -->
-            <div class="flex justify-between items-center">
-                <span class="dark:text-white">{{ t('hideChat') }}</span>
-
-                <button @click="isHidden = !isHidden" class="w-10 h-6 flex items-center rounded-full p-1 transition"
-                    :class="isHidden ? 'bg-blue-500' : 'bg-gray-300 dark:bg-slate-600'">
-                    <div class="w-4 h-4 bg-white rounded-full shadow transition"
-                        :class="isHidden ? 'translate-x-4' : ''" />
-                </button>
-            </div>
-
-            <div class="text-red-500 hover:text-red-600 cursor-pointer transition" @click="deleteConversation">
-                {{ t('deleteChatHistory') }}
-            </div>
-        </collapse>
     </div>
 </template>
 <script setup lang="ts">
 import { useTranslate } from '@/composables/useTranslate';
 import { useConversationStore } from '@/stores/conversation.storage';
-import { reactive, ref } from 'vue';
+import { useMessageStore } from '@/stores/message.storage';
+import { MessageFilter } from '@/types/common';
+import { MessageType } from '@/types/entities';
+import { MessageEnum } from '@/types/enum';
+import { onMounted, reactive, ref, watch } from 'vue';
 
 const emit = defineEmits<{
     (e: 'update:currentView', value: string): void
@@ -79,18 +63,36 @@ const goTo = (view: string) => {
     emit('update:currentView', view)
 }
 
-const conversationStorage = useConversationStore()
+const convStorage = useConversationStore()
+const messStorage = useMessageStore()
 const { t } = useTranslate()
 const openFile = () => console.log('open file')
-const deleteConversation = () => console.log('delete')
-
-/* STATE */
-const isHidden = ref(false)
 
 const open = reactive({
     media: true,
     file: true,
-    security: true
 })
 
+const handlePreviewImage = (pi: MessageType) => {
+    messStorage.setPreviewImage(pi)
+}
+
+const fetchImages = () => {
+    const options: MessageFilter = {
+        conversationId: convStorage.conversation!.id,
+        limit: 8,
+        lastId: messStorage.images.at(-1)?.id ?? undefined,
+        contentType: MessageEnum.IMAGE
+    }
+    messStorage.getImageMessages(options)
+}
+onMounted(() => {
+    if (messStorage.images.length == 0 && convStorage.conversation) {
+        fetchImages()
+    }
+})
+
+watch(() => convStorage.conversation?.id, () => {
+    fetchImages()
+})
 </script>

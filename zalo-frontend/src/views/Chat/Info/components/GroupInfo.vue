@@ -14,7 +14,7 @@
                 </div>
 
                 <!-- GROUP INFO -->
-                <div :class="['py-4 border-b overflow-y-auto', style.border.primary]">
+                <div :class="['py-4 overflow-y-auto', style.border.primary]">
 
                     <div class="flex flex-col items-center justify-center">
                         <group-avatar :conversation="conversationStorage.conversation!" size="w-20 h-20" />
@@ -60,6 +60,7 @@
                         </section>
 
                         <StorageComponent @update:currentView="currentView = $event" />
+                        <Security/>
                     </div>
                 </div>
             </div>
@@ -87,6 +88,7 @@ import GroupAvatar from '@/components/Avatar/GroupAvatar.vue'
 import StoragePanel from './Storage/StoragePanel.vue'
 import StorageComponent from './Storage/StorageComponent.vue'
 import Member from './Member.vue'
+import Security from './Security.vue'
 
 const emit = defineEmits(['close'])
 

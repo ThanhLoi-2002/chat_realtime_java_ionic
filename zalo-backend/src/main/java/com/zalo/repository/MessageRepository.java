@@ -6,6 +6,8 @@ import com.zalo.model.User;
 import com.zalo.model.enums.MessageType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -17,16 +19,8 @@ import java.util.Optional;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long>, JpaSpecificationExecutor<Message> {
-    @Query("""
-                SELECT m
-                FROM Message m
-                WHERE m.conversationId = :conversationId
-                ORDER BY m.ct DESC
-            """)
-    Page<Message> findAllWithRelationShip(
-            @Param("conversationId") Long conversationId,
-            Pageable pageable
-    );
+    @EntityGraph(attributePaths = {"sender", "replyToMessage"})
+    Page<Message> findAll(Specification<Message> spec, Pageable pageable);
 
     @Query("""
                 SELECT m

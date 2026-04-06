@@ -14,7 +14,7 @@
                 </div>
 
                 <!-- USER INFO -->
-                <div :class="['py-4 border-b overflow-y-auto', style.border.primary]">
+                <div :class="['py-4 overflow-y-auto', style.border.primary]">
 
                     <div class="flex flex-col items-center justify-center">
                         <circle-avatar :user="getRecipient(conversationStorage.conversation)" size="size-20"/>
@@ -60,6 +60,7 @@
                         </section>
 
                         <StorageComponent @update:currentView="currentView = $event"/>
+                        <Security/>
                     </div>
                 </div>
             </div>
@@ -86,6 +87,7 @@ import { style } from '@/assets/tailwindcss'
 import CommonGroupPanel from './CommonGroupPanel.vue'
 import StoragePanel from './Storage/StoragePanel.vue'
 import StorageComponent from './Storage/StorageComponent.vue'
+import Security from './Security.vue'
 
 const emit = defineEmits(['close'])
 

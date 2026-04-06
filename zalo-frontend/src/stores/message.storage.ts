@@ -3,21 +3,31 @@ import { MessageType, ReactionType } from '@/types/entities'
 import { MessageFilter, SendMessageType } from '@/types/common';
 import { messageApi } from '@/api/message.api';
 import { toast } from '@/utils/toast';
-import { ReactionEnum } from '@/types/enum';
+import { MessageEnum, ReactionEnum } from '@/types/enum';
 
 interface State {
     isLoading: boolean,
     messages: MessageType[],
-    hasMore: boolean
+    images: MessageType[],
+    imagesHasMore: boolean,
+    hasMore: boolean,
+    previewImage: MessageType | undefined
 }
 
 export const useMessageStore = defineStore('message', {
     state: (): State => ({
         isLoading: false,
         messages: [],
-        hasMore: true
+        images: [],
+        imagesHasMore: true,
+        hasMore: true,
+        previewImage: undefined
     }),
     actions: {
+        setPreviewImage(previewImage?: MessageType) {
+            this.previewImage = previewImage
+        },
+
         async sendMessage(data: SendMessageType) {
             try {
                 await messageApi.sendMessage(data);
@@ -47,12 +57,16 @@ export const useMessageStore = defineStore('message', {
                 this.isLoading = true
 
                 const result: any = await messageApi.getMessages(options);
-                const { content, page: { size, totalElements} } = result.result
+                const { content, page: { size, totalElements } } = result.result
 
                 this.messages.unshift(...content)
                 this.sort()
 
                 if (totalElements <= size) this.hasMore = false
+
+                content.forEach((i: MessageType) => {
+                    this.addImageMessage(i)
+                })
             } catch (e: any) {
                 toast({
                     color: "danger",
@@ -60,6 +74,24 @@ export const useMessageStore = defineStore('message', {
                 })
             } finally {
                 this.isLoading = false
+            }
+        },
+
+        async getImageMessages(options: MessageFilter) {
+            try {
+                const result: any = await messageApi.getMessages(options);
+                const { content, page: { size, totalElements } } = result.result
+
+                content.forEach((i: MessageType) => {
+                    this.addImageMessage(i)
+                })
+
+                if (totalElements <= size) this.imagesHasMore = false
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
             }
         },
 
@@ -108,8 +140,8 @@ export const useMessageStore = defineStore('message', {
             }
         },
 
-        reloadReactions(reactions: ReactionType[]) {
-            const idx = this.messages.findIndex(m => m.id === reactions[0]?.messageId);
+        reloadReactions(messageId: number, reactions: ReactionType[]) {
+            const idx = this.messages.findIndex(m => m.id === messageId);
             if (idx !== -1) {
                 this.messages[idx].reactions = reactions
             }
@@ -117,11 +149,25 @@ export const useMessageStore = defineStore('message', {
 
         addNewMessage(data: MessageType) {
             this.messages.push(data)
+            if (data.contentType == MessageEnum.IMAGE) {
+                this.images.unshift(data)
+            }
         },
         updateMessage(data: MessageType) {
-            const idx = this.messages.findIndex(m => m.id === data.id);
+            let idx = this.messages.findIndex(m => m.id === data.id);
             if (idx !== -1) {
                 this.messages[idx] = data; // replace
+            }
+
+            if (data.stt == -1) {
+                if (data.contentType == MessageEnum.IMAGE) {
+
+                    idx = this.images.findIndex(i => i.id == data.id)
+                    if (idx !== -1) {
+                        this.images = this.images.filter(i => i.id != data.id)
+                    }
+                }
+
             }
         },
 
@@ -133,8 +179,25 @@ export const useMessageStore = defineStore('message', {
             })
         },
 
+        addImageMessage(i: MessageType) {
+            // 1. Kiểm tra điều kiện loại nội dung và trạng thái
+            const isValidType = i.contentType === MessageEnum.IMAGE || i.contentType === MessageEnum.VIDEO;
+            const isValidStatus = i.stt === 1;
+
+            if (isValidType && isValidStatus) {
+                // 2. Kiểm tra xem ID đã tồn tại trong mảng images chưa
+                const isExisted = this.images.some(img => img.id === i.id);
+
+                if (!isExisted) {
+                    this.images.push(i);
+                }
+            }
+        },
+
         resetPagination() {
             this.hasMore = true
+            this.imagesHasMore = true
+            this.images = []
             this.messages = []
         }
     }

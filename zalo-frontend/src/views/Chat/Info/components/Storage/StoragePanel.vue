@@ -1,5 +1,5 @@
 <template>
-    <div class="h-full flex flex-col">
+    <div class="h-full overflow-hidden flex flex-col">
 
         <!-- HEADER -->
         <div class="p-4 flex justify-between items-center gap-3 border-b dark:border-slate-700"

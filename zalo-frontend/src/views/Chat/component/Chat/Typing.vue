@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="w-full">
         <!-- Typing indicator (giữ nguyên) -->
         <div v-if="typingUsers.size > 0"
             class="text-sm text-gray-600 dark:text-gray-400 px-4 pb-2 flex items-center gap-1">
@@ -20,17 +20,20 @@
             <EmojiPicker v-show="showEmoji" class="fixed bottom-30" @select="handleSelectEmoji" />
         </div>
 
-        <div v-if="previewImages.length > 0" class="flex gap-2 p-2 overflow-x-auto">
+        <div class="w-[97%] overflow-x-auto">
+            <div v-if="previewImages.length > 0"
+                class="flex flex-nowrap gap-3 p-3 w-1/2 border-t border-gray-200 dark:border-slate-700 bg-gray-50/50 dark:bg-gray-900/50 scrollbar-hide">
 
-            <div v-for="(img, index) in previewImages" :key="index"
-                class="relative w-20 h-20 rounded-xl overflow-hidden">
-                <img :src="img" class="w-full h-full object-cover" />
+                <div v-for="(img, index) in previewImages" :key="index"
+                    class="relative w-20 h-20 rounded-xl overflow-hidden shadow-sm shrink-0 border border-gray-200 dark:border-slate-600">
 
-                <!-- nút xoá -->
-                <button @click="removeImage(index)"
-                    class="absolute top-1 right-1 bg-black/50 text-white rounded-full px-1 text-xs">
-                    ✕
-                </button>
+                    <img :src="img" class="w-full h-full object-cover" />
+
+                    <button @click="removeImage(index)"
+                        class="absolute top-1 right-1 cursor-pointer bg-black/60 hover:bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] transition-colors shadow-md">
+                        ✕
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -123,11 +126,13 @@ const removeImage = (index: number) => {
 
 const sendImages = async () => {
     for (const file of selectedImages.value) {
-        await messageStorage.sendMessage({
+        const success = await messageStorage.sendMessage({
             file,
             conversationId: conversationStorage.conversation?.id,
             contentType: MessageEnum.IMAGE
         })
+
+        success && scrollToBottom(props.scrollContainer, true)
     }
 
     // clear

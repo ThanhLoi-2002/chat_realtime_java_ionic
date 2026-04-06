@@ -11,6 +11,7 @@ import { socketSubscribe } from '@/utils/websocket';
 import { useMessageStore } from '@/stores/message.storage';
 import { ConversationType, MessageType } from '@/types/entities';
 import { useUserStore } from '@/stores/user.storage';
+import PreviewImage from './component/Chat/PreviewImage.vue';
 
 const { t } = useTranslate()
 const { isMobile } = useDevice()
@@ -87,6 +88,8 @@ onUnmounted(() => {
     ]">
       <info-section v-model:isShowInfoSection="isShowInfoSection" />
     </aside>
+
+    <preview-image v-if="messageStorage.previewImage"/>
 
   </div>
 </template>
