@@ -39,16 +39,17 @@
 </template>
 <script setup lang="ts">
 import { useTranslate } from '@/composables/useTranslate';
-import { onMounted, ref } from 'vue';
+import { defineAsyncComponent, onMounted, ref } from 'vue';
 import ConversationUI from './component/ConversationUI.vue';
 import { useConversationStore } from '@/stores/conversation.storage';
 import { SearchFriendPageType } from '@/types/common';
-import AddFriendUI from './component/AddFriendUI.vue';
-import FriendProfileUI from './component/FriendProfileUI.vue';
 import Modal from '@/components/Modal/Modal.vue';
 import { ConversationType, UserType } from '@/types/entities';
-import CreateGroupUI from './component/CreateGroupUI.vue';
 import { useScroll } from '@/composables/useScroll';
+
+const CreateGroupUI = defineAsyncComponent(() => import('./component/CreateGroupUI.vue'));
+const AddFriendUI = defineAsyncComponent(() => import('./component/AddFriendUI.vue'));
+const FriendProfileUI = defineAsyncComponent(() => import('./component/FriendProfileUI.vue'));
 
 const { t } = useTranslate()
 const { onScroll } = useScroll()

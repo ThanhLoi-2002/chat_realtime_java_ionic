@@ -14,12 +14,9 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import AuthLayout from './layouts/AuthLayout.vue';
-import MainLayout from './layouts/MainLayout.vue';
-import NoLayout from './layouts/NoLayout.vue';
 import LoadingSpinner from './components/Loading/LoadingSpinner.vue';
 import { useLangStore } from './stores/lang.storage';
-import { onMounted, watch } from 'vue';
+import { defineAsyncComponent, onMounted, watch } from 'vue';
 import { useUserStore } from './stores/user.storage';
 import { getKey } from './utils/local';
 import { ACCESS_TOKEN, THEME } from './utils/constant';
@@ -34,9 +31,9 @@ const systemStorage = useSystemStore()
 const { isMobile } = useDevice()
 
 const layouts: any = {
-  main: MainLayout,
-  auth: AuthLayout,
-  nolayout: NoLayout
+  main: defineAsyncComponent(() => import('./layouts/MainLayout.vue')),
+  auth: defineAsyncComponent(() => import('./layouts/AuthLayout.vue')),
+  nolayout: defineAsyncComponent(() => import('./layouts/NoLayout.vue'))
 }
 
 // Khởi tạo theme từ localStorage hoặc system preference

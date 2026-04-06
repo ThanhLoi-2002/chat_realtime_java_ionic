@@ -22,16 +22,16 @@
 </template>
 
 <script setup lang="ts">
-
-import ConfirmModal from "@/components/Modal/ConfirmModal.vue"
 import PaginationTable from "@/components/Table/PaginationTable.vue"
 import { useDebounce } from "@/composables/useDebounce"
 import { useTranslate } from "@/composables/useTranslate"
 import { useLangStore } from "@/stores/lang.storage"
 import { LangType } from "@/types/entities"
 import { IonButton, IonInput } from "@ionic/vue"
-import { ref, h, onMounted, computed } from "vue"
+import { ref, h, onMounted, computed, defineAsyncComponent } from "vue"
 import { useRouter } from "vue-router"
+
+const ConfirmModal = defineAsyncComponent(() => import('../../components/Modal/ConfirmModal.vue'));
 
 const router = useRouter()
 const langStore = useLangStore()

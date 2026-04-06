@@ -1,11 +1,6 @@
 import { useUserStore } from '@/stores/user.storage';
 import { ACCESS_TOKEN, ROUTE } from '@/utils/constant';
 import { getKey } from '@/utils/local';
-import ChatPage from '@/views/Chat/ChatPage.vue';
-import FriendPage from '@/views/Friend/FriendPage.vue';
-import AddLang from '@/views/Lang/AddLang.vue';
-import EditLang from '@/views/Lang/EditLang.vue';
-import LangPage from '@/views/Lang/LangPage.vue';
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
 
@@ -16,7 +11,7 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: ROUTE.CHATS,
-    component: ChatPage,
+    component: () => import('../views/Chat/ChatPage.vue'),
     meta: { layout: "main", requiresAuth: true }
   },
   {
@@ -25,21 +20,21 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: "",
-        component: LangPage
+        component: () => import('../views/Lang/LangPage.vue')
       },
       {
         path: ":id",
-        component: EditLang
+        component: () => import('../views/Lang/EditLang.vue')
       },
       {
         path: "add",
-        component: AddLang
+        component: () => import('../views/Lang/AddLang.vue')
       }
     ]
   },
   {
     path: ROUTE.FRIENDS,
-    component: FriendPage,
+    component: () => import('../views/Friend/FriendPage.vue'),
     meta: { layout: "main", requiresAuth: true },
   },
 

@@ -49,14 +49,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"
+import { defineAsyncComponent, ref } from "vue"
 import FriendSidebar from "./component/FriendSidebar.vue"
 import { FriendMenuType } from "@/types/common"
 import FriendListUI from "./component/FriendListUI.vue"
 import { useTranslate } from "@/composables/useTranslate"
-import FriendInvitationsUI from "./component/FriendInvitationsUI.vue"
 import { style } from "@/assets/tailwindcss"
-import GroupList from "./component/GroupList.vue"
+
+const FriendInvitationsUI = defineAsyncComponent(() => import('./component/FriendInvitationsUI.vue'));
+const GroupList = defineAsyncComponent(() => import('./component/GroupList.vue'));
 
 const { t } = useTranslate()
 const showSidebar = ref(false)

@@ -5,7 +5,7 @@
         bg-white dark:bg-gray-800 gap-2
         sticky top-0 h-screen">
 
-        <img :src="userStorage.user?.avatar?.url ?? RANDOM_AVATAR" id="openModal" :onClick="() => openModal()"
+        <img :src="userStorage.user?.avatar?.url ?? RANDOM_AVATAR" :onClick="() => openModal()"
             class="size-10 rounded-full cursor-pointer" />
 
         <nav class="flex flex-col gap-2 flex-1">
@@ -42,7 +42,7 @@
             ]" />
 
         </router-link>
-        <img :src="userStorage.user?.avatar?.url ?? RANDOM_AVATAR" id="openModal" :onClick="() => openModal()"
+        <img :src="userStorage.user?.avatar?.url ?? RANDOM_AVATAR" :onClick="() => openModal()"
             class="size-8 rounded-full cursor-pointer" />
     </nav>
 
@@ -59,17 +59,17 @@
 
 <script setup lang="ts">
 import { RANDOM_AVATAR, ROUTE } from '@/utils/constant';
-import CircleAvatar from '../Avatar/CircleAvatar.vue';
 import { useRoute } from 'vue-router';
 import { useDevice } from '@/composables/useDevice';
-import { computed, ref } from 'vue';
+import { computed, defineAsyncComponent, ref } from 'vue';
 import Modal from '../Modal/Modal.vue';
-import SettingsUI from './components/SettingsUI.vue';
 import { useTranslate } from '@/composables/useTranslate';
 import { SettingPageType } from '@/types/common';
-import ProfileUI from './components/ProfileUI.vue';
 import { useUserStore } from '@/stores/user.storage';
 import { useSystemStore } from '@/stores/system.storage';
+
+const ProfileUI = defineAsyncComponent(() => import('./components/ProfileUI.vue'));
+const SettingsUI = defineAsyncComponent(() => import('./components/SettingsUI.vue'));
 
 const { isMobile } = useDevice()
 const systemStorage = useSystemStore()

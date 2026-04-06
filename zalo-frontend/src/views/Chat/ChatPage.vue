@@ -1,19 +1,18 @@
 <script setup lang="ts">
-import { useTranslate } from '@/composables/useTranslate';
-import ConversationSection from './ConversationSection.vue';
 import { useConversationStore } from '@/stores/conversation.storage';
-import { onMounted, onUnmounted, ref } from 'vue';
-import ChatContainer from './ChatContainer.vue';
-import InfoSection from './Info/InfoSection.vue';
+import { defineAsyncComponent, onMounted, onUnmounted, ref } from 'vue';
 import { useDevice } from '@/composables/useDevice';
 import { StompSubscription } from '@stomp/stompjs';
 import { socketSubscribe } from '@/utils/websocket';
 import { useMessageStore } from '@/stores/message.storage';
 import { ConversationType, MessageType } from '@/types/entities';
 import { useUserStore } from '@/stores/user.storage';
-import PreviewImage from './component/Chat/PreviewImage.vue';
 
-const { t } = useTranslate()
+const ConversationSection = defineAsyncComponent(() => import('./ConversationSection.vue'));
+const ChatContainer = defineAsyncComponent(() => import('./ChatContainer.vue'));
+const InfoSection = defineAsyncComponent(() => import('./Info/InfoSection.vue'));
+const PreviewImage = defineAsyncComponent(() => import('./component/Chat/PreviewImage.vue'));
+
 const { isMobile } = useDevice()
 
 const conversationStorage = useConversationStore()
@@ -86,7 +85,7 @@ onUnmounted(() => {
       isShowInfoSection ? 'flex' : 'hidden',
       isMobile ? 'fixed top-0 right-0 z-50 h-full w-full' : ''
     ]">
-      <info-section v-model:isShowInfoSection="isShowInfoSection" />
+      <info-section v-if="isShowInfoSection" v-model:isShowInfoSection="isShowInfoSection" />
     </aside>
 
     <preview-image v-if="messageStorage.previewImage"/>

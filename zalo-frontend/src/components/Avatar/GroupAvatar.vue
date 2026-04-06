@@ -55,13 +55,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, defineAsyncComponent, ref } from "vue";
 import { ConversationType } from "@/types/entities";
 import { RANDOM_AVATAR } from "@/utils/constant";
 import { useTranslate } from "@/composables/useTranslate";
 import Modal from "../Modal/Modal.vue";
-import GroupProfile from "@/views/Chat/component/GroupProfile.vue";
-import Member from "@/views/Chat/Info/components/Member.vue";
+
+const GroupProfile = defineAsyncComponent(() => import('../../views/Chat/component/GroupProfile.vue'));
+const Member = defineAsyncComponent(() => import('../../views/Chat/Info/components/Member.vue'));
 
 const props = defineProps<{
     conversation: ConversationType;
