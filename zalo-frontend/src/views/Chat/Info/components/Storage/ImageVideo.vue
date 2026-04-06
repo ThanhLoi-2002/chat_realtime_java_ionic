@@ -1,5 +1,5 @@
-<template lang="">
-  <div class="h-full">
+<template>
+  <div class="h-full relative">
     <!-- FILTER -->
     <div class="flex gap-2 p-2 border-b border-slate-700">
       <!-- FILTER USER -->
@@ -28,7 +28,7 @@
     <div
       ref="scrollRef"
       @scroll="handleScroll"
-      class="flex-1 overflow-y-auto p-2 space-y-4 h-[85%]"
+      class="flex-1 overflow-y-auto p-2 space-y-4 h-[92%] absolute"
     >
       <div v-for="group in groupedMedia" :key="group.date">
         <!-- DATE -->

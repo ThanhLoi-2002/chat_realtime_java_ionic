@@ -24,7 +24,7 @@
         </div>
 
         <div :class="[style.text.primary, 'absolute left-2 bottom-4 flex items-center gap-2']">
-            <CircleAvatar :user="messStorage.previewImage?.sender" />
+            <CircleAvatar :user="messStorage.previewImage?.sender" :isDisabled="true"/>
 
             <div class="flex flex-col gap-1" :class="[style.text.primary]">
                 <span>{{ messStorage.previewImage?.sender.username }}</span>

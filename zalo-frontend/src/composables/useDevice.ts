@@ -1,12 +1,36 @@
 import { ref, onMounted, onUnmounted } from "vue"
+import { isPlatform } from '@ionic/vue';
+import { Device } from '@capacitor/device';
+import { getPlatforms } from '@ionic/vue';
 
 export function useDevice() {
 
   const isMobile = ref(false)
+  const platforms = getPlatforms();
 
   function check() {
     isMobile.value = window.innerWidth < 768
   }
+
+  const checkDevice = () => {
+    if (isPlatform('ios')) {
+      console.log('Đây là thiết bị iOS');
+    } else if (isPlatform('android')) {
+      console.log('Đây là thiết bị Android');
+    }
+
+    if (isPlatform('capacitor')) {
+      console.log('Đang chạy trong Native App (Hybrid)');
+    } else {
+      console.log('Đang chạy trên Trình duyệt (Web)');
+    }
+  };
+
+  const logDeviceInfo = async () => {
+    const info = await Device.getInfo();
+    console.log(info);
+    // { model: "iPhone 13", platform: "ios", osVersion: "15.0", ... }
+  };
 
   onMounted(() => {
     check()
@@ -18,6 +42,6 @@ export function useDevice() {
   })
 
   return {
-    isMobile
+    isMobile, checkDevice, platforms, logDeviceInfo
   }
 }

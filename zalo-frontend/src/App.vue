@@ -28,14 +28,14 @@ const route: any = useRoute();
 const langStore = useLangStore()
 const userStorage = useUserStore()
 const systemStorage = useSystemStore()
-const { isMobile } = useDevice()
+const { isMobile, logDeviceInfo } = useDevice()
 
 const layouts: any = {
   main: defineAsyncComponent(() => import('./layouts/MainLayout.vue')),
   auth: defineAsyncComponent(() => import('./layouts/AuthLayout.vue')),
   nolayout: defineAsyncComponent(() => import('./layouts/NoLayout.vue'))
 }
-
+logDeviceInfo()
 // Khởi tạo theme từ localStorage hoặc system preference
 onMounted(() => {
   if (getKey(THEME) === 'dark' ||
