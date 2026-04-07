@@ -7,6 +7,7 @@ import com.zalo.dto.request.Message.CreateMessageRequest;
 import com.zalo.dto.response.Message.MessageReactionResponse;
 import com.zalo.dto.response.Message.MessageResponse;
 import com.zalo.dto.response.Conversation.ConversationResponse;
+import com.zalo.dto.response.Message.SystemMetadataResponse;
 import com.zalo.dto.response.User.UserResponse;
 import com.zalo.model.*;
 import com.zalo.model.enums.ConversationType;
@@ -127,15 +128,25 @@ public class MessageService {
 
         return page.map(e -> {
             MessageResponse m = new MessageResponse(e, "sender", "replyToMessage");
+
             m.setReactions(mapReaction.getOrDefault(m.getId(), List.of()));
 
-            if(e.getContentType() == MessageType.SYSTEM && e.getSystemMetadata() != null && e.getSystemMetadata().getType() == SystemMessageType.ADD_USERS_TO_GROUP){
-                    List<Long> userIds = e.getSystemMetadata().getAddedUsersToGroup();
-                    List<User> users = userService.findByIdIn(userIds);
+            getSystemMetadata(e,m);
 
-                    m.getSystemMetadata().type = e.getSystemMetadata().getType();
-                    m.getSystemMetadata().addedUsersToGroup = users.stream().map(UserResponse::new).toList();
-            }
+//            if(e.getContentType() == MessageType.SYSTEM && e.getSystemMetadata() != null){
+//                SystemMetadataResponse metadataResponse = new SystemMetadataResponse();
+//
+//                metadataResponse.setType(e.getSystemMetadata().getType());
+//
+//                if(e.getSystemMetadata().getType() == SystemMessageType.ADD_USERS_TO_GROUP){
+//                    List<Long> userIds = e.getSystemMetadata().getAddedUsersToGroup();
+//                    List<User> users = userService.findByIdIn(userIds);
+//
+//                    metadataResponse.setAddedUsersToGroup(users.stream().map(UserResponse::new).toList());
+//                }
+//
+//                m.setSystemMetadata(metadataResponse);
+//            }
 
             return m;
         });
@@ -206,5 +217,22 @@ public class MessageService {
 
         List<MessageReaction> mrs = messageReactionRepository.findByMessageId(messageId);
         websocketService.removeAllReactionByUserId(conversationId, messageId, mrs);
+    }
+
+    public void getSystemMetadata(Message e, MessageResponse rp) {
+        if(e.getContentType() == MessageType.SYSTEM && e.getSystemMetadata() != null){
+            SystemMetadataResponse metadataResponse = new SystemMetadataResponse();
+
+            metadataResponse.setType(e.getSystemMetadata().getType());
+
+            if(e.getSystemMetadata().getType() == SystemMessageType.ADD_USERS_TO_GROUP){
+                List<Long> userIds = e.getSystemMetadata().getAddedUsersToGroup();
+                List<User> users = userService.findByIdIn(userIds);
+
+                metadataResponse.setAddedUsersToGroup(users.stream().map(UserResponse::new).toList());
+            }
+
+            rp.setSystemMetadata(metadataResponse);
+        }
     }
 }

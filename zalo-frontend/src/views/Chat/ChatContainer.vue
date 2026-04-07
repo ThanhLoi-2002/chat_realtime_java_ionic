@@ -18,10 +18,7 @@
                     {{ formatSeparatorTime(msg.ct) }}
                 </div>
 
-                <div v-if="msg.contentType === MessageEnum.SYSTEM"
-                    class="text-center text-xs text-gray-500 bg-slate-100 dark:bg-slate-700 dark:text-gray-400 px-2 py-1 rounded-lg w-fit mx-auto">
-                    {{ t(`${msg.content}`) }}
-                </div>
+                <SystemMessage v-if="msg.contentType === MessageEnum.SYSTEM" :msg="msg"/>
 
                 <MessageContainer v-else :message="msg" :roles="roles" />
             </div>
@@ -58,6 +55,7 @@ import { StompSubscription } from '@stomp/stompjs';
 import { socketSubscribe } from '@/utils/websocket';
 import { MessageFilter } from '@/types/common';
 import { useUserStore } from '@/stores/user.storage';
+import SystemMessage from './component/Message/SystemMessage.vue';
 
 const props = defineProps<{
     isShowInfoSection: boolean

@@ -1,5 +1,6 @@
 package com.zalo.controller;
 
+import com.zalo.configuration.G;
 import com.zalo.configuration.anotation.CheckConversationMember;
 import com.zalo.configuration.anotation.CurrentUser;
 import com.zalo.dto.filter.MessageFilter;

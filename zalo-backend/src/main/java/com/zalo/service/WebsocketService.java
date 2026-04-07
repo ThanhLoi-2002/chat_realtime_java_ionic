@@ -112,7 +112,7 @@ public class WebsocketService {
                 messagingTemplate.convertAndSendToUser(sessionId, "/queue/chat.conversation." + conversationId + ".leaveGroup", payload, userOnlineStorage.createHeaders(sessionId));
             }
         }
-        
+
         //Realtime for user who leaved the group
         Set<String> sessions = userOnlineStorage.getSessions(userId);
 

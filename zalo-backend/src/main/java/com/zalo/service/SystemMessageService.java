@@ -3,9 +3,12 @@ package com.zalo.service;
 import com.zalo.dto.request.Message.CreateSystemMessageRequest;
 import com.zalo.dto.response.Conversation.ConversationResponse;
 import com.zalo.dto.response.Message.MessageResponse;
+import com.zalo.dto.response.Message.SystemMetadataResponse;
+import com.zalo.dto.response.User.UserResponse;
 import com.zalo.model.Conversation;
 import com.zalo.model.ConversationMember;
 import com.zalo.model.Message;
+import com.zalo.model.User;
 import com.zalo.model.enums.MessageType;
 import com.zalo.model.enums.SystemMessageType;
 import com.zalo.model.metadata.SystemMetadata;
@@ -34,6 +37,7 @@ public class SystemMessageService {
     WebsocketService websocketService;
     ConversationMemberRepository memberRepo;
     MemberService memberService;
+    UserService userService;
 
     public void createSystemMessage(CreateSystemMessageRequest dto) {
         Message m = new Message();
@@ -42,12 +46,14 @@ public class SystemMessageService {
         m.setConversationId(dto.conversationId);
         m.setSenderId(dto.senderId);
 
-        if(dto.systemMessageType == SystemMessageType.ADD_USERS_TO_GROUP){
-            SystemMetadata metadata = new SystemMetadata();
-            metadata.setAddedUsersToGroup(dto.userIdsAddedToGroup);
+        SystemMetadata metadata = new SystemMetadata();
+        metadata.setType(dto.systemMessageType);
 
-            m.setSystemMetadata(metadata);
+        if(dto.systemMessageType == SystemMessageType.ADD_USERS_TO_GROUP){
+            metadata.setAddedUsersToGroup(dto.userIdsAddedToGroup);
         }
+
+        m.setSystemMetadata(metadata);
 
         m = messageRepo.save(m);
 
@@ -72,7 +78,10 @@ public class SystemMessageService {
         ConversationResponse convResponse = new ConversationResponse(conv, "lastMessage", "createdBy");
         convResponse.setMembers(memberService.getMembers(conv.getId()));
 
-        websocketService.sendMessage(new MessageResponse(m, "sender"), convResponse, members);
+        MessageResponse messageResponse = new MessageResponse(m, "sender");
+        getSystemMetadata(m, messageResponse);
+
+        websocketService.sendMessage(messageResponse, convResponse, members);
     }
 
     public Conversation findConversationById(Long id) {
@@ -81,5 +90,22 @@ public class SystemMessageService {
 
     public Conversation findConversationByIdWithRelationShip(Long id) {
         return convRepo.findOneWithRelationShipById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
+    }
+
+    public void getSystemMetadata(Message e, MessageResponse rp) {
+        if(e.getContentType() == MessageType.SYSTEM && e.getSystemMetadata() != null){
+            SystemMetadataResponse metadataResponse = new SystemMetadataResponse();
+
+            metadataResponse.setType(e.getSystemMetadata().getType());
+
+            if(e.getSystemMetadata().getType() == SystemMessageType.ADD_USERS_TO_GROUP){
+                List<Long> userIds = e.getSystemMetadata().getAddedUsersToGroup();
+                List<User> users = userService.findByIdIn(userIds);
+
+                metadataResponse.setAddedUsersToGroup(users.stream().map(UserResponse::new).toList());
+            }
+
+            rp.setSystemMetadata(metadataResponse);
+        }
     }
 }
