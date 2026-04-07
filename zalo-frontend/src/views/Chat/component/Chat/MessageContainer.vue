@@ -6,7 +6,7 @@
         <!-- AVATAR -->
         <div v-if="!isOwner && message.showAvatar" class="relative">
             <circle-avatar :user="message.sender" size="size-10" />
-            <key :role="roles![message.sender?.id]"/>
+            <key :role="roles![message?.sender?.id]"/>
         </div>
 
         <div v-else-if="!isOwner" class="px-5 py-2"></div>

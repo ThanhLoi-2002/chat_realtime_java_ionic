@@ -10,7 +10,7 @@
         <!-- ADD MEMBER -->
         <div class="p-3">
             <div class="flex items-center justify-center gap-2 transition rounded-lg py-2 cursor-pointer"
-                :class="[style.button.base]">
+                :class="[style.button.base]" @click="() => addMemberModal?.present()">
                 <i class="fa fa-user-plus"></i>
                 <span class="text-sm font-medium">{{ t("addMember") }}</span>
             </div>
@@ -46,7 +46,7 @@
                     <!-- AVATAR -->
                     <CircleAvatar :user="user" />
 
-                    <Key :role="user.role"/>
+                    <Key :role="user.role" />
                 </div>
                 <!-- NAME -->
                 <div class="flex-1 min-w-0">
@@ -69,17 +69,21 @@
             </div>
 
         </div>
-    </div>
 
-    <!-- MODAL -->
-    <Modal ref="modalRef" :title="t(pageModal == 'friendProfile' ? 'profile' : pageModal)"
-        :go-back="() => goPage('addFriend')" :isDisplayBackButton="pageModal != Object.keys(pages)[0]">
-        <transition name="slide" mode="out-in">
-            <KeepAlive>
-                <component :is="pages[pageModal]" :key="pageModal" :goPage="goPage" :user="selectedUser" />
-            </KeepAlive>
-        </transition>
-    </Modal>
+        <!-- MODAL -->
+        <Modal ref="modalRef" :title="t(pageModal == 'friendProfile' ? 'profile' : pageModal)"
+            :go-back="() => goPage('addFriend')" :isDisplayBackButton="pageModal != Object.keys(pages)[0]">
+            <transition name="slide" mode="out-in">
+                <KeepAlive>
+                    <component :is="pages[pageModal]" :key="pageModal" :goPage="goPage" :user="selectedUser" />
+                </KeepAlive>
+            </transition>
+        </Modal>
+
+        <Modal ref="addMemberModal" :title="t('addMember')">
+            <AddMember />
+        </Modal>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -95,6 +99,8 @@ import { computed, onMounted, ref } from 'vue'
 import FriendProfileUI from '../../component/FriendProfileUI.vue'
 import { UserType } from '@/types/entities'
 import Key from '@/components/Key/Key.vue'
+import Modal from '@/components/Modal/Modal.vue'
+import AddMember from '../../component/Member/AddMember.vue'
 
 const props = defineProps<{
     isShowBackButton: boolean
@@ -107,6 +113,7 @@ const friendStorage = useFriendshipStore()
 const userStorage = useUserStore()
 
 const modalRef = ref()
+const addMemberModal = ref()
 const pageModal = ref<'addFriend' | 'friendProfile'>('addFriend')
 const pages = {
     addFriend: AddFriendRequestUI,
