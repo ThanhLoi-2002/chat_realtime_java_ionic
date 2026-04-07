@@ -7,7 +7,7 @@
                 <template v-if="systemType === 'ADD_USERS_TO_GROUP'">
                     <span @click="openProfile(msg.sender)"
                         class="font-bold text-gray-700 dark:text-gray-200 cursor-pointer hover:underline">
-                        {{ isMeAction ? t('You') : msg.sender?.username }}
+                        {{ isMeAction ? t('you') : msg.sender?.username }}
                     </span>
                     <span class="mx-1">{{ t('added') }}</span>
 
@@ -19,13 +19,13 @@
                         <span v-else>{{ user.label }}</span>
                     </template>
 
-                    <span class="ml-1">{{ t('to the group') }}</span>
+                    <span class="ml-1">{{ t('toTheGroup') }}</span>
                 </template>
 
                 <template v-else-if="systemType === 'LEAVE_GROUP' || systemType === 'REMOVE_MEMBER'">
                     <span class="italic">
                         <template v-if="isMeAction">
-                            <span class="font-bold text-gray-700 dark:text-gray-200">{{ t('You') }}</span>
+                            <span class="font-bold text-gray-700 dark:text-gray-200">{{ t('you') }}</span>
                             <template v-if="msg.sender?.id !== myId">
                                 <span class="mx-1">{{ t('removed') }}</span>
                                 <span @click="openProfile(msg.sender)"
@@ -33,7 +33,7 @@
                                     {{ msg.sender?.username }}
                                 </span>
                             </template>
-                            <span v-else class="ml-1">{{ t('left the group') }}</span>
+                            <span v-else class="ml-1">{{ t('leftTheGroup') }}</span>
                         </template>
 
                         <template v-else>
@@ -41,7 +41,7 @@
                                 class="font-bold text-gray-700 dark:text-gray-200 cursor-pointer hover:underline">
                                 {{ msg.sender?.username }}
                             </span>
-                            <span class="ml-1">{{ t('left the group') }}</span>
+                            <span class="ml-1">{{ t('leftTheGroup') }}</span>
                         </template>
                     </span>
                 </template>

@@ -101,6 +101,7 @@ public class LangService {
         }
 
         Lang e = new Lang();
+        e.setCode(lang.getCode());
         e.setEn(lang.getEn());
         e.setVi(lang.getVi());
         e.setTw(lang.getTw());
