@@ -106,9 +106,7 @@ public class UserService {
         return userRepository.findAll(spec);
     }
 
-    public UserResponse toResponse(User user) {
-        UserResponse userResponse = new UserResponse();
-        BeanUtils.copyProperties(user, userResponse, "password");
-        return userResponse;
+    public List<User> findByIdIn(List<Long> ids) {
+        return userRepository.findByIdIn(ids);
     }
 }

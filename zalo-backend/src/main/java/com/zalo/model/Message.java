@@ -2,9 +2,13 @@ package com.zalo.model;
 
 import com.zalo.model.covert.FileConverter;
 import com.zalo.model.enums.MessageType;
+import com.zalo.model.metadata.SystemMetadata;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.ColumnTransformer;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.List;
 
@@ -25,6 +29,11 @@ public class Message extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     String content;
 
+    @JdbcTypeCode(SqlTypes.JSON)
+//    @Column(columnDefinition = "json")
+    @ColumnTransformer(write = "?")// Ép Hibernate ghi thẳng giá trị, không dùng CAST(? as json)
+    private SystemMetadata systemMetadata;
+
     @Enumerated(EnumType.STRING)
     MessageType contentType = MessageType.TEXT;
 
@@ -33,11 +42,6 @@ public class Message extends BaseEntity {
     File file;
 
     Long replyToMessageId;
-
-    // ✅ conversation
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "conversationId", insertable = false, updatable = false)
-//    private Conversation conversation;
 
     // ✅ sender
     @ManyToOne(fetch = FetchType.LAZY)

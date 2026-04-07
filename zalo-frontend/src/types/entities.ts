@@ -47,6 +47,7 @@ export type MessageType = BaseType & {
   file: FileType
   replyToMessageId: number
   reactions: ReactionType[]
+  systemMetadata: any
 }
 
 export type ConversationMemberType = BaseType & {
@@ -80,4 +81,9 @@ export type MemberType = UserType & {
     role: MemberRoleEnum
     addById: number
     addBy: UserType
+}
+
+export type SystemMetadataType = {
+    type: MemberRoleEnum
+    addedUsersToGroup: UserType[]
 }

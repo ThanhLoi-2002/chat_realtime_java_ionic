@@ -8,7 +8,6 @@ import com.zalo.dto.response.Conversation.ConversationInfoResponse;
 import com.zalo.dto.response.Conversation.ConversationResponse;
 import com.zalo.dto.response.Conversation.MemberResponse;
 import com.zalo.dto.response.User.UserResponse;
-import com.zalo.mapper.ConversationMapper;
 import com.zalo.model.Conversation;
 import com.zalo.model.ConversationMember;
 import com.zalo.model.User;
@@ -27,7 +26,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ConversationController {
     private final ConversationService conversationService;
-    private final ConversationMapper conversationMapper;
 
     @PostMapping("/private")
     public ConversationResponse createPrivate(@CurrentUser User user, @RequestParam Long otherId) {

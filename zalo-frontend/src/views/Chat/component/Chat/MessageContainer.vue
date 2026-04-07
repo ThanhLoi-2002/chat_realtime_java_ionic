@@ -18,7 +18,6 @@
 
             <text-message :message="message" :setBubbleRef="setBubbleRef"
                 v-if="message.contentType == MessageEnum.TEXT || message.contentType == null" :isOwner="isOwner" :role="roles![message.sender?.id]"/>
-
         </div>
 
         <!-- ACTIONS -->

@@ -5,7 +5,6 @@ import com.zalo.configuration.anotation.CurrentUser;
 import com.zalo.configuration.anotation.ResponseMessage;
 import com.zalo.dto.filter.UserFilter;
 import com.zalo.dto.response.User.UserResponse;
-import com.zalo.mapper.UserMapper;
 import com.zalo.model.User;
 import com.zalo.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +17,12 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final UserMapper userMapper;
 
     @GetMapping("/me")
     public UserResponse getMe(
             @CurrentUser User user
-    ) throws NotFound {
-        return userMapper.toResponse(user);
+    ) {
+        return new UserResponse(user);
     }
 
     @PostMapping("/upload-avatar")
@@ -35,7 +33,7 @@ public class UserController {
     ) throws Exception {
         user = userService.uploadAvatar(file, user);
 
-        return userMapper.toResponse(user);
+        return new UserResponse(user);
     }
 
     @PostMapping("/upload-cover")
@@ -46,7 +44,7 @@ public class UserController {
     ) throws Exception {
         user = userService.uploadCover(file, user);
 
-        return userMapper.toResponse(user);
+        return new UserResponse(user);
     }
 
     @GetMapping
@@ -54,12 +52,12 @@ public class UserController {
             @ModelAttribute UserFilter filter
     ) {
         Page<User> users = userService.findAll(filter);
-        return users.map(userMapper::toResponse);
+        return users.map(UserResponse::new);
     }
 
     @GetMapping("/search-phone")
     public UserResponse getOneByPhone(@ModelAttribute UserFilter filter) {
-        return userMapper.toResponse(userService.findByPhone(filter.getPhone()));
+        return new UserResponse(userService.findByPhone(filter.getPhone()));
     }
 }
 

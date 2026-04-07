@@ -2,18 +2,20 @@ package com.zalo.service;
 
 import com.zalo.dto.request.Friendship.CreateFriendship;
 import com.zalo.dto.request.Message.CreateMessageRequest;
+import com.zalo.dto.request.Message.CreateSystemMessageRequest;
 import com.zalo.dto.response.User.UserResponse;
 import com.zalo.model.Conversation;
 import com.zalo.model.Friendship;
-import com.zalo.model.Message;
-import com.zalo.model.User;
 import com.zalo.model.enums.ConversationType;
 import com.zalo.model.enums.FriendStatus;
 import com.zalo.model.enums.MessageType;
+import com.zalo.model.enums.SystemMessageType;
 import com.zalo.repository.ConversationRepository;
 import com.zalo.repository.FriendshipRepository;
 import com.zalo.repository.UserRepository;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,13 +25,13 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FriendshipService {
-
-    private final FriendshipRepository repo;
-    private final UserRepository userRepo;
-    private final MessageService messageService;
-    private final ConversationService conversationService;
-    private final ConversationRepository conversationRepository;
+    SystemMessageService systemMessageService;
+    FriendshipRepository repo;
+    UserRepository userRepo;
+    ConversationService conversationService;
+    ConversationRepository conversationRepository;
 
     private Long min(Long a, Long b) {
         return Math.min(a, b);
@@ -80,19 +82,21 @@ public class FriendshipService {
         f.setStatus(FriendStatus.ACCEPTED);
         repo.save(f);
 
-        // create system message
-        CreateMessageRequest dto = new CreateMessageRequest();
-        dto.content = "youTwoBecomeFriends";
-        dto.contentType = MessageType.SYSTEM;
-
         Optional<Conversation> c = conversationRepository.findPrivateBetween(userId, otherId, ConversationType.PRIVATE.name());
 
         if(c.isEmpty()){
             c = Optional.ofNullable(conversationService.createPrivateConversation(userId, otherId));
         }
 
-        c.ifPresent(conversation -> messageService.createSystemMessage(conversation.getId(), dto));
+        if(c.isPresent()){
+            CreateSystemMessageRequest createSystemMessageRequest = new CreateSystemMessageRequest();
+            createSystemMessageRequest.conversationId = c.get().getId();
+            createSystemMessageRequest.senderId = userId;
+            createSystemMessageRequest.content = "youTwoBecomeFriends";
+            createSystemMessageRequest.systemMessageType = SystemMessageType.CREATE_GROUP;
 
+            systemMessageService.createSystemMessage(createSystemMessageRequest);
+        }
     }
 
     // ❌ reject

@@ -60,14 +60,21 @@
                         </section>
 
                         <StorageComponent @update:currentView="currentView = $event" />
-                        <Security/>
+                        <Security />
+
+                        <div class="p-2">
+                            <div class="text-red-500 hover:text-red-600 cursor-pointer transition p-2 rounded-xs"
+                                :class="[style.bg.hover]" @click="showConfirm = !showConfirm">
+                                {{ t("leaveTheGroup") }}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- ================= MEMBERS VIEW ================= -->
             <template v-else-if="currentView == 'member'">
-                <Member @back="currentView = 'info'" :type="currentView" :isShowBackButton="true"/>
+                <Member @back="currentView = 'info'" :type="currentView" :isShowBackButton="true" />
             </template>
 
             <!-- ================= IMAGE VIEW ================= -->
@@ -75,6 +82,8 @@
                 <StoragePanel @back="currentView = 'info'" :type="currentView" />
             </template>
         </transition>
+
+        <ConfirmModal v-model:showConfirm="showConfirm" :onOk="onLeaveGroup" :message="t('leaveTheGroup')" :header="t('leaveTheGroup')"/>
     </div>
 </template>
 
@@ -89,6 +98,7 @@ import StoragePanel from './Storage/StoragePanel.vue'
 import StorageComponent from './Storage/StorageComponent.vue'
 import Member from './Member.vue'
 import Security from './Security.vue'
+import ConfirmModal from '@/components/Modal/ConfirmModal.vue'
 
 const emit = defineEmits(['close'])
 
@@ -96,6 +106,7 @@ const conversationStorage = useConversationStore()
 const { t } = useTranslate()
 const { conversationName } = useConversation()
 const currentView = ref<'info' | 'member' | 'storage/image' | 'storage/file' | 'storage/link' | any>('info')
+const showConfirm = ref(false)
 
 /* ACTION */
 const toggleMute = () => console.log('mute')
@@ -120,4 +131,8 @@ const actions = [
         onClick: createGroup
     }
 ]
+
+const onLeaveGroup = () => {
+    showConfirm.value = !showConfirm.value
+}
 </script>

@@ -4,7 +4,6 @@ import com.zalo.dto.filter.LangFilter;
 import com.zalo.dto.request.Lang.LangCreationRequest;
 import com.zalo.dto.request.Lang.LangUpdateRequest;
 import com.zalo.dto.response.Lang.LangResponse;
-import com.zalo.mapper.LangMapper;
 import com.zalo.model.Lang;
 import com.zalo.repository.LangRepository;
 import com.zalo.repository.dto.LangDto;
@@ -29,7 +28,6 @@ import java.util.stream.Collectors;
 public class LangService {
 
     LangRepository langRepository;
-    LangMapper langMapper;
 
     Map<String, Map<String, String>> cache = new HashMap<>();
 
@@ -87,12 +85,13 @@ public class LangService {
 
         Page<Lang> page = langRepository.findAllLang(filter.getCode(), pageable);
 
-        return page.map(langMapper::toResponse);
+        return page.map(LangResponse::new);
     }
 
     public LangResponse getById(Long id) {
-        return langMapper.toResponse(langRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound")));
+        Lang l = langRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
+        return new LangResponse(l);
     }
 
     public LangResponse create(LangCreationRequest lang, Long userId) {
@@ -101,31 +100,31 @@ public class LangService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Code already exists");
         }
 
-        Lang e = langMapper.toEnity(lang);
+        Lang e = new Lang();
+        e.setEn(lang.getEn());
+        e.setVi(lang.getVi());
+        e.setTw(lang.getTw());
+        e.setCn(lang.getCn());
         e.setCu(userId);
 
-        LangResponse langResponse = langMapper.toResponse(langRepository.save(e));
-
-//        loadLang();
-
-        return langResponse;
+        return new LangResponse(langRepository.save(e));
     }
 
     public LangResponse update(Long id, LangUpdateRequest request, Long userId) {
 
-        Lang lang = langRepository.findById(id)
+        Lang e = langRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
 
-        langMapper.updateDtoToEntity(lang, request);
-        lang.setEu(userId);
+        e.setEn(request.getEn());
+        e.setVi(request.getVi());
+        e.setTw(request.getTw());
+        e.setCn(request.getCn());
+        e.setEu(userId);
 
-        LangResponse langResponse = langMapper.toResponse(langRepository.save(lang));
-//        loadLang();
-        return langResponse;
+        return new LangResponse(langRepository.save(e));
     }
 
     public void delete(Long id) {
         langRepository.deleteById(id);
-//        loadLang();
     }
 }

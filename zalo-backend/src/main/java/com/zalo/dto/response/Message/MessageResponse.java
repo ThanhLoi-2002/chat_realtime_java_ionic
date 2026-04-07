@@ -5,6 +5,7 @@ import com.zalo.dto.response.User.UserResponse;
 import com.zalo.model.File;
 import com.zalo.model.Message;
 import com.zalo.model.enums.MessageType;
+import com.zalo.model.metadata.SystemMetadata;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.BeanUtils;
@@ -28,6 +29,8 @@ public class MessageResponse extends BaseResponse {
     UserResponse sender;
 
     List<MessageReactionResponse> reactions = List.of();
+
+    SystemMetadataResponse systemMetadata;
 
     public MessageResponse(Message m, String... relations) {
         super(m, relations);

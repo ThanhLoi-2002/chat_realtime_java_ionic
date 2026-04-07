@@ -5,6 +5,7 @@ import com.zalo.dto.filter.ConversationFilter;
 import com.zalo.dto.filter.UserFilter;
 import com.zalo.dto.request.Conversation.CreateGroupRequest;
 import com.zalo.dto.request.Message.CreateMessageRequest;
+import com.zalo.dto.request.Message.CreateSystemMessageRequest;
 import com.zalo.dto.response.Conversation.ConversationInfoResponse;
 import com.zalo.dto.response.Conversation.ConversationResponse;
 import com.zalo.dto.response.Conversation.MemberResponse;
@@ -14,13 +15,17 @@ import com.zalo.model.*;
 import com.zalo.model.enums.ConversationType;
 import com.zalo.model.enums.MemberRole;
 import com.zalo.model.enums.MessageType;
+import com.zalo.model.enums.SystemMessageType;
+import com.zalo.model.metadata.SystemMetadata;
 import com.zalo.repository.ConversationMemberRepository;
 import com.zalo.repository.ConversationRepository;
 import com.zalo.repository.MessageRepository;
 import com.zalo.repository.UserRepository;
 import com.zalo.repository.dto.UnreadDto;
 import jakarta.persistence.EntityManager;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,14 +41,13 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ConversationService {
-    private final ConversationRepository conversationRepo;
-    private final MessageRepository messageRepo;
-    private final ConversationMemberRepository memberRepo;
-    private final UserRepository userRepo;
-    private final UserService userService;
-    private final EntityManager em;
-    private final WebsocketService websocketService;
+    ConversationRepository conversationRepo;
+    ConversationMemberRepository memberRepo;
+    UserRepository userRepo;
+    UserService userService;
+    SystemMessageService systemMessageService;
 
     public Conversation createPrivateConversation(Long creatorId, Long otherUserId) {
         // try find existing
@@ -103,33 +107,19 @@ public class ConversationService {
         }
         memberRepo.saveAll(members);
 
-        createSystemMessage(conv.getId(), "youHaveRecentAddedToGroup");
-    }
+        CreateSystemMessageRequest createSystemMessageRequest = new CreateSystemMessageRequest();
+        createSystemMessageRequest.conversationId = conv.getId();
+        createSystemMessageRequest.senderId = creatorId;
+        createSystemMessageRequest.content = "haveRecentCreateGroup";
+        createSystemMessageRequest.systemMessageType = SystemMessageType.CREATE_GROUP;
 
-    public void createSystemMessage(Long conversationId, String content) {
-        Message m = Message.builder().conversationId(conversationId).content(content).contentType(MessageType.SYSTEM).build();
+        systemMessageService.createSystemMessage(createSystemMessageRequest);
 
-        m = messageRepo.save(m);
+        createSystemMessageRequest.content = "youHaveRecentAddedToGroup";
+        createSystemMessageRequest.systemMessageType = SystemMessageType.ADD_USERS_TO_GROUP;
+        createSystemMessageRequest.userIdsAddedToGroup = dto.participantIds;
 
-        // clear persistence context
-        em.flush();
-        em.refresh(m);
-
-        m = messageRepo.findOneWithRelationShip(m.getId(), conversationId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
-
-        // update lastMessage for conversation
-        Conversation conv = findById(conversationId);
-        conv.setLastMessageId(m.getId());
-        conversationRepo.save(conv);
-
-        em.flush();
-        em.refresh(conv);
-
-        conv = findByIdWithRelationShip(conversationId);
-
-        List<ConversationMember> members = memberRepo.findByConversationId(conversationId);
-
-        websocketService.sendMessage(new MessageResponse(m), new ConversationResponse(conv, "lastMessage", "createdBy"), members);
+        systemMessageService.createSystemMessage(createSystemMessageRequest);
     }
 
     public Conversation findByIdWithRelationShip(Long id) {
@@ -156,7 +146,7 @@ public class ConversationService {
 
         Map<Long, Long> mapUnread = getUnreadFromIds(page.getContent().stream().map(BaseEntity::getId).toList(), userId);
 
-        Page<ConversationResponse> result = page.map(c -> {
+        return page.map(c -> {
             ConversationResponse conv = new ConversationResponse(c, "recipient", "lastMessage", "createdBy");
             if (c.getType() == ConversationType.GROUP) {
                 conv.setMembers(getMembers(c.getId()));
@@ -166,8 +156,6 @@ public class ConversationService {
 
             return conv;
         });
-
-        return result;
     }
 
     public ConversationInfoResponse getInfo(Long conversationId, Long userId) {
@@ -277,6 +265,20 @@ public class ConversationService {
                         .thenComparing(UserResponse::getUsername, Comparator.nullsLast(String::compareTo))
                 )
                 .toList();
+    }
+
+    public void leaveGroup(Long conversationId, Long userId) {
+        ConversationMember member = memberRepo.findByConversationIdAndUserId(conversationId, userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
+
+        memberRepo.delete(member);
+
+        CreateSystemMessageRequest createSystemMessageRequest = new CreateSystemMessageRequest();
+        createSystemMessageRequest.conversationId = conversationId;
+        createSystemMessageRequest.senderId = userId;
+        createSystemMessageRequest.content = "leaveTheGroup";
+        createSystemMessageRequest.systemMessageType = SystemMessageType.LEAVE_GROUP;
+
+        systemMessageService.createSystemMessage(createSystemMessageRequest);
     }
 
     private int getRolePriority(MemberRole role) {

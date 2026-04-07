@@ -12,6 +12,7 @@ import com.zalo.model.*;
 import com.zalo.model.enums.ConversationType;
 import com.zalo.model.enums.DeliveryStatus;
 import com.zalo.model.enums.MessageType;
+import com.zalo.model.enums.SystemMessageType;
 import com.zalo.repository.*;
 import jakarta.persistence.EntityManager;
 import lombok.AccessLevel;
@@ -44,12 +45,9 @@ public class MessageService {
     WebsocketService websocketService;
     CloudinaryService cloudinaryService;
     MessageReactionRepository messageReactionRepository;
+    UserService userService;
 
     public void sendMessage(Long conversationId, Long senderId, CreateMessageRequest dto) throws IOException {
-        // check sender is member
-        ConversationMember cm = memberRepo.findByConversationIdAndUserId(conversationId, senderId)
-                .orElseThrow(() -> new IllegalArgumentException("Sender is not a member"));
-
         // optional check replyTo exists
         if (dto.replyToId != null) messageRepo.findById(dto.replyToId).orElseThrow();
 
@@ -129,6 +127,15 @@ public class MessageService {
         return page.map(e -> {
             MessageResponse m = new MessageResponse(e, "sender", "replyToMessage");
             m.setReactions(mapReaction.getOrDefault(m.getId(), List.of()));
+
+            if(e.getContentType() == MessageType.SYSTEM && e.getSystemMetadata() != null && e.getSystemMetadata().getType() == SystemMessageType.ADD_USERS_TO_GROUP){
+                    List<Long> userIds = e.getSystemMetadata().getAddedUsersToGroup();
+                    List<User> users = userService.findByIdIn(userIds);
+
+                    m.getSystemMetadata().type = e.getSystemMetadata().getType();
+                    m.getSystemMetadata().addedUsersToGroup = users.stream().map(UserResponse::new).toList();
+            }
+
             return m;
         });
     }
@@ -165,38 +172,6 @@ public class MessageService {
             }
 
         }
-    }
-
-    public void createSystemMessage(Long conversationId, CreateMessageRequest dto) {
-        Message m = Message.builder()
-                .conversationId(conversationId)
-                .content(dto.content)
-                .contentType(dto.contentType)
-                .replyToMessageId(dto.replyToId)
-                .build();
-
-        m = messageRepo.save(m);
-
-        // clear persistence context
-        em.flush();
-        em.refresh(m);
-
-        m = findByIdWithRelationShip(m.getId(), conversationId);
-
-        // update lastMessage for conversation
-        Conversation conv = conversationService.findById(conversationId);
-        conv.setLastMessageId(m.getId());
-        conversationRepository.save(conv);
-
-        em.flush();
-        em.refresh(conv);
-
-        conv = conversationService.findByIdWithRelationShip(conversationId);
-
-        // create statuses for each member in conversation
-        List<ConversationMember> members = memberRepo.findByConversationId(conversationId);
-
-        websocketService.sendMessage(new MessageResponse(m), new ConversationResponse(conv, "recipient", "lastMessage", "createdBy"), members);
     }
 
     public void addReaction(Long conversationId, Long userId, AddReactionRequest dto) {
