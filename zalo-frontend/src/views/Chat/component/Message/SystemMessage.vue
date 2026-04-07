@@ -1,44 +1,80 @@
 <template>
     <div class="flex justify-center my-3 px-4">
-        <div class="bg-gray-100 dark:bg-slate-800 px-4 py-1.5 rounded-full border border-gray-200 dark:border-slate-700 max-w-[90%] shadow-sm">
-            <p class="text-[12px] text-gray-500 dark:text-gray-400 text-center">
-                
+        <div
+            class="bg-gray-100 dark:bg-slate-800 px-4 py-1.5 rounded-full border border-gray-200 dark:border-slate-700 max-w-[90%] shadow-sm">
+            <p class="text-[12px] text-gray-500 dark:text-gray-400 text-center leading-relaxed">
+
                 <template v-if="systemType === 'ADD_USERS_TO_GROUP'">
-                    <span class="font-bold text-gray-700 dark:text-gray-200">
+                    <span @click="openProfile(msg.sender)"
+                        class="font-bold text-gray-700 dark:text-gray-200 cursor-pointer hover:underline">
                         {{ isMeAction ? t('You') : msg.sender?.username }}
                     </span>
                     <span class="mx-1">{{ t('added') }}</span>
-                    <span class="font-bold text-gray-700 dark:text-gray-200">{{ formatAddedUsers }}</span>
+
+                    <template v-for="(user) in formattedAddedList" :key="user.id">
+                        <span v-if="user.isName" @click="openProfile(user.raw)"
+                            class="font-bold text-gray-700 dark:text-gray-200 cursor-pointer hover:underline">
+                            {{ user.label }}
+                        </span>
+                        <span v-else>{{ user.label }}</span>
+                    </template>
+
                     <span class="ml-1">{{ t('to the group') }}</span>
                 </template>
 
                 <template v-else-if="systemType === 'LEAVE_GROUP' || systemType === 'REMOVE_MEMBER'">
-                    <span class="font-medium italic">
-                        {{ leaveMessage }}
+                    <span class="italic">
+                        <template v-if="isMeAction">
+                            <span class="font-bold text-gray-700 dark:text-gray-200">{{ t('You') }}</span>
+                            <template v-if="msg.sender?.id !== myId">
+                                <span class="mx-1">{{ t('removed') }}</span>
+                                <span @click="openProfile(msg.sender)"
+                                    class="font-bold text-gray-700 dark:text-gray-200 cursor-pointer hover:underline">
+                                    {{ msg.sender?.username }}
+                                </span>
+                            </template>
+                            <span v-else class="ml-1">{{ t('left the group') }}</span>
+                        </template>
+
+                        <template v-else>
+                            <span @click="openProfile(msg.sender)"
+                                class="font-bold text-gray-700 dark:text-gray-200 cursor-pointer hover:underline">
+                                {{ msg.sender?.username }}
+                            </span>
+                            <span class="ml-1">{{ t('left the group') }}</span>
+                        </template>
                     </span>
                 </template>
 
                 <template v-else>
                     {{ t(msg.content) }}
                 </template>
-
             </p>
         </div>
+
+        <Modal ref="profileModal" :title="t('profile')">
+            <FriendProfileUI :user="selectedUser" />
+        </Modal>
     </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useTranslate } from '@/composables/useTranslate';
 import { useUserStore } from '@/stores/user.storage';
+import Modal from '@/components/Modal/Modal.vue';
+import FriendProfileUI from '../FriendProfileUI.vue';
+import { UserType } from '@/types/entities';
 
 const props = defineProps<{
-    msg: any 
+    msg: any
 }>();
 
 const { t } = useTranslate();
 const userStorage = useUserStore();
 const myId = userStorage.user?.id;
+const profileModal = ref()
+const selectedUser = ref<UserType>()
 
 // 1. Phân loại loại tin nhắn hệ thống
 const systemType = computed(() => props.msg.systemMetadata?.type);
@@ -47,36 +83,65 @@ const systemType = computed(() => props.msg.systemMetadata?.type);
 const isMeAction = computed(() => props.msg.sender?.id === myId);
 
 // 3. Logic xử lý thông báo Rời nhóm / Mời ra khỏi nhóm
-const leaveMessage = computed(() => {
-    // Giả sử sender là người thực hiện hành động
-    // Nếu sender.id == userId bị xóa => Tự rời
-    // Nếu sender.id != userId bị xóa => Bị mời ra
-    const targetUser = props.msg.sender; // Object user bị tác động
-    const isTargetMe = targetUser?.id === myId;
+// const leaveMessage = computed(() => {
+//     // Giả sử sender là người thực hiện hành động
+//     // Nếu sender.id == userId bị xóa => Tự rời
+//     // Nếu sender.id != userId bị xóa => Bị mời ra
+//     const targetUser = props.msg.sender; // Object user bị tác động
+//     const isTargetMe = targetUser?.id === myId;
 
-    if (isMeAction.value) {
-        // Mình là người thực hiện
-        return isTargetMe ? t('You left the group') : `${t('You removed')} ${targetUser?.username}`;
-    } else {
-        // Người khác thực hiện
-        return isTargetMe ? t('You were removed from the group') : `${targetUser?.username} ${t('left the group')}`;
-    }
-});
+//     if (isMeAction.value) {
+//         // Mình là người thực hiện
+//         return isTargetMe ? t('You left the group') : `${t('You removed')} ${targetUser?.username}`;
+//     } else {
+//         // Người khác thực hiện
+//         return isTargetMe ? t('You were removed from the group') : `${targetUser?.username} ${t('left the group')}`;
+//     }
+// });
 
-// 4. Logic xử lý danh sách người được thêm (Giữ nguyên như cũ nhưng thêm check "bạn")
-const formatAddedUsers = computed(() => {
+// Hàm mở Modal (Bạn thay bằng logic của dự án bạn, ví dụ: emit hoặc call store)
+const openProfile = (user: UserType) => {
+    if (!user || user.id === myId) return; // Không mở profile của chính mình (tùy bạn)
+    selectedUser.value = user
+    profileModal.value?.present()
+};
+
+// Logic xử lý danh sách người được thêm dưới dạng mảng các phần tử
+const formattedAddedList = computed(() => {
     const users = props.msg.systemMetadata?.addedUsersToGroup || [];
-    const names = users.map((u: any) => u.id === myId ? t('you') : u.username);
+    if (users.length === 0) return [];
 
-    if (names.length === 0) return "";
-    if (names.length === 1) return names[0];
-    
-    if (names.length <= 3) {
-        const last = names.pop();
-        return `${names.join(', ')} ${t('and')} ${last}`;
+    const result: any[] = [];
+
+    if (users.length <= 3) {
+        users.forEach((u: any, idx: number) => {
+            result.push({
+                isName: true,
+                label: u.id === myId ? t('you') : u.username,
+                raw: u
+            });
+
+            if (idx < users.length - 2) {
+                result.push({ isName: false, label: ", " });
+            } else if (idx === users.length - 2) {
+                result.push({ isName: false, label: ` ${t('and')} ` });
+            }
+        });
     } else {
-        const firstTwo = names.slice(0, 2).join(', ');
-        return `${firstTwo} ${t('and')} ${names.length - 2} ${t('others')}`;
+        // Trường hợp > 3 người: "User1, User2 và n người khác"
+        const firstTwo = users.slice(0, 2);
+        firstTwo.forEach((u: any, idx: number) => {
+            result.push({
+                isName: true,
+                label: u.id === myId ? t('you') : u.username,
+                raw: u
+            });
+            if (idx === 0) result.push({ isName: false, label: ", " });
+        });
+
+        result.push({ isName: false, label: ` ${t('and')} ${users.length - 2} ${t('others')}` });
     }
+
+    return result;
 });
 </script>
