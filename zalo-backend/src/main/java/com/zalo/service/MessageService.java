@@ -46,6 +46,7 @@ public class MessageService {
     CloudinaryService cloudinaryService;
     MessageReactionRepository messageReactionRepository;
     UserService userService;
+    MemberService memberService;
 
     public void sendMessage(Long conversationId, Long senderId, CreateMessageRequest dto) throws IOException {
         // optional check replyTo exists
@@ -100,7 +101,7 @@ public class MessageService {
         ConversationResponse conversationResponse = new ConversationResponse(conv, "recipient", "lastMessage", "createdBy");
 
         if (conv.getType() == ConversationType.GROUP) {
-            conversationResponse.setMembers(conversationService.getMembers(conv.getId()));
+            conversationResponse.setMembers(memberService.getMembers(conv.getId()));
         }
 
         websocketService.sendMessage(new MessageResponse(m, "sender"), conversationResponse, members);

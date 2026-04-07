@@ -56,7 +56,7 @@
                         <section
                             :class="['p-4 border-b hover:bg-gray-50 dark:hover:bg-slate-800 cursor-pointer flex items-center', style.border.primary, style.text.secondary]"
                             @click="currentView = 'member'">
-                            👥 {{ t('member') }}
+                            👥 {{ conversationStorage.conversation?.members?.length }} {{ t('member') }}
                         </section>
 
                         <StorageComponent @update:currentView="currentView = $event" />
@@ -83,7 +83,8 @@
             </template>
         </transition>
 
-        <ConfirmModal v-model:showConfirm="showConfirm" :onOk="onLeaveGroup" :message="t('leaveTheGroup')" :header="t('leaveTheGroup')"/>
+        <ConfirmModal v-model:showConfirm="showConfirm" :onOk="onLeaveGroup" :message="t('leaveTheGroup')"
+            :header="t('leaveTheGroup')" />
     </div>
 </template>
 
@@ -132,7 +133,13 @@ const actions = [
     }
 ]
 
-const onLeaveGroup = () => {
-    showConfirm.value = !showConfirm.value
+const onLeaveGroup = async () => {
+    const success = await conversationStorage.leaveGroup();
+
+    showConfirm.value = false
+
+    if (success) {
+        conversationStorage.selectConversation()
+    }
 }
 </script>

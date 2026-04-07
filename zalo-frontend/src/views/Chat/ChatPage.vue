@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useConversationStore } from '@/stores/conversation.storage';
-import { defineAsyncComponent, onMounted, onUnmounted, ref } from 'vue';
+import { defineAsyncComponent, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useDevice } from '@/composables/useDevice';
 import { StompSubscription } from '@stomp/stompjs';
 import { socketSubscribe } from '@/utils/websocket';
@@ -20,10 +20,10 @@ const userStorage = useUserStore()
 const messageStorage = useMessageStore()
 const isShowInfoSection = ref(false)
 
-let subNewMessage: StompSubscription | undefined
+let sub: StompSubscription | undefined
 
 onMounted(() => {
-  subNewMessage = socketSubscribe(`/user/queue/chat.newMessages`, (msg: any) => {
+  sub = socketSubscribe(`/user/queue/chat.newMessages`, (msg: any) => {
     const mess: MessageType = JSON.parse(msg.body).message
     const conv: ConversationType = JSON.parse(msg.body).conversation
 
@@ -38,14 +38,18 @@ onMounted(() => {
     conversationStorage.updateConversation(conv)
   })
 
-  subNewMessage = socketSubscribe(`/user/queue/chat.updateMessages`, (msg: any) => {
+  sub = socketSubscribe(`/user/queue/chat.updateMessages`, (msg: any) => {
     messageStorage.updateMessage(JSON.parse(msg.body).message)
     conversationStorage.updateConversationLastMessage(JSON.parse(msg.body).message)
   })
 })
 
 onUnmounted(() => {
-  subNewMessage?.unsubscribe()
+  sub?.unsubscribe()
+})
+
+watch(() => conversationStorage.conversation, () => {
+  if (!conversationStorage.conversation) isShowInfoSection.value = false
 })
 </script>
 
@@ -88,7 +92,7 @@ onUnmounted(() => {
       <info-section v-if="isShowInfoSection" v-model:isShowInfoSection="isShowInfoSection" />
     </aside>
 
-    <preview-image v-if="messageStorage.previewImage"/>
+    <preview-image v-if="messageStorage.previewImage" />
 
   </div>
 </template>

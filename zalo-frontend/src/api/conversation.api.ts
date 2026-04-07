@@ -24,6 +24,14 @@ const getGroups = async () => {
     return await axios.get<IResponse>(`/conversations/get-groups`);
 }
 
+const leaveGroup = async (id: number) => {
+    return await axios.delete<IResponse>(`/conversations/${id}/leave-group`);
+}
+
+const addMembers = async (id: number, memberIds: number[]) => {
+    return await axios.post<IResponse>(`/conversations/${id}/add-members`, memberIds);
+}
+
 export const conversationApi = {
-    createPrivate, getList, createGroup, getConversationInfo, getGroups
+    createPrivate, getList, createGroup, getConversationInfo, getGroups, leaveGroup, addMembers
 }

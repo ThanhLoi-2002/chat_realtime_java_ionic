@@ -91,6 +91,7 @@ import { useConversationStore } from '@/stores/conversation.storage';
 import { useFriendshipStore } from '@/stores/friendship.storage';
 import { UserType } from '@/types/entities';
 import { normalizeText } from '@/utils/helper';
+import { modalController } from '@ionic/vue';
 import { computed, inject, onMounted, ref } from 'vue';
 
 const dismiss = inject<() => void>("modalDismiss")
@@ -118,8 +119,17 @@ const removeUser = (user: UserType) => {
 }
 
 
-const addMember = () => {
+const addMember = async () => {
+    const success = await convStorage.addMembers(selectedUsers.value.map(u => u.id));
 
+    if (success) {
+        // đóng hết modal trước
+        let topModal = await modalController.getTop()
+        while (topModal) {
+            await topModal.dismiss()
+            topModal = await modalController.getTop()
+        }
+    }
 }
 
 // filter

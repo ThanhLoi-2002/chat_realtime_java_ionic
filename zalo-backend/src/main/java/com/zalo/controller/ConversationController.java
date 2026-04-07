@@ -61,4 +61,14 @@ public class ConversationController {
     public List<ConversationResponse> getGroups(@CurrentUser User user) {
         return conversationService.getGroups(user.getId());
     }
+
+    @PostMapping("/{conversationId}/add-members")
+    public void addMembers(@PathVariable Long conversationId, @CurrentUser User user, @RequestBody List<Long> memberIds) {
+        conversationService.addMembersToGroups(conversationId, user.getId(), memberIds);
+    }
+
+    @DeleteMapping("/{conversationId}/leave-group")
+    public void leaveGroup(@PathVariable Long conversationId, @CurrentUser User user) {
+        conversationService.leaveGroup(conversationId, user.getId());
+    }
 }

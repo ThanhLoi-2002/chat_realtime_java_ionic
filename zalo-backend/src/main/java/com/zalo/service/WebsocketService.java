@@ -1,5 +1,6 @@
 package com.zalo.service;
 
+import com.zalo.dto.response.Conversation.MemberResponse;
 import com.zalo.dto.response.Message.MessageReactionResponse;
 import com.zalo.dto.response.Message.MessageResponse;
 import com.zalo.dto.response.Conversation.ConversationResponse;
@@ -93,6 +94,45 @@ public class WebsocketService {
             for (String sessionId : sessions) {
 
                 messagingTemplate.convertAndSendToUser(sessionId, "/queue/chat.conversation." + conversationId + ".reactions", payload, userOnlineStorage.createHeaders(sessionId));
+            }
+        }
+    }
+
+    public void leaveGroup(Long conversationId, Long userId){
+        List<ConversationMember> members = memberRepo.findByConversationId(conversationId);
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("userId", userId);
+
+        //Realtime for members in the group
+        for (ConversationMember member : members) {
+            Set<String> sessions = userOnlineStorage.getSessions(member.getUserId());
+
+            for (String sessionId : sessions) {
+                messagingTemplate.convertAndSendToUser(sessionId, "/queue/chat.conversation." + conversationId + ".leaveGroup", payload, userOnlineStorage.createHeaders(sessionId));
+            }
+        }
+        
+        //Realtime for user who leaved the group
+        Set<String> sessions = userOnlineStorage.getSessions(userId);
+
+        for (String sessionId : sessions) {
+            messagingTemplate.convertAndSendToUser(sessionId, "/queue/chat.conversation." + conversationId + ".leaveGroup", payload, userOnlineStorage.createHeaders(sessionId));
+        }
+    }
+
+    public void addMembers(Long conversationId, List<MemberResponse> memberResponses){
+        List<ConversationMember> members = memberRepo.findByConversationId(conversationId);
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("members", memberResponses);
+
+        for (ConversationMember member : members) {
+            Set<String> sessions = userOnlineStorage.getSessions(member.getUserId());
+
+            for (String sessionId : sessions) {
+
+                messagingTemplate.convertAndSendToUser(sessionId, "/queue/chat.conversation." + conversationId + ".addMembers", payload, userOnlineStorage.createHeaders(sessionId));
             }
         }
     }

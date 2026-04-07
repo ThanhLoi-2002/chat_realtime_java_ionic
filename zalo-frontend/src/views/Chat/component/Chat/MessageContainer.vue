@@ -6,7 +6,7 @@
         <!-- AVATAR -->
         <div v-if="!isOwner && message.showAvatar" class="relative">
             <circle-avatar :user="message.sender" size="size-10" />
-            <key :role="roles![message?.sender?.id]"/>
+            <key v-if="roles" :role="roles[message?.sender?.id]"/>
         </div>
 
         <div v-else-if="!isOwner" class="px-5 py-2"></div>
@@ -17,7 +17,7 @@
                 v-if="message.contentType == MessageEnum.IMAGE" :isOwner="isOwner" />
 
             <text-message :message="message" :setBubbleRef="setBubbleRef"
-                v-if="message.contentType == MessageEnum.TEXT || message.contentType == null" :isOwner="isOwner" :role="roles![message.sender?.id]"/>
+                v-if="message.contentType == MessageEnum.TEXT || message.contentType == null" :isOwner="isOwner" :role="roles ? roles[message.sender?.id] : undefined"/>
         </div>
 
         <!-- ACTIONS -->

@@ -33,6 +33,7 @@ public class SystemMessageService {
     EntityManager em;
     WebsocketService websocketService;
     ConversationMemberRepository memberRepo;
+    MemberService memberService;
 
     public void createSystemMessage(CreateSystemMessageRequest dto) {
         Message m = new Message();
@@ -68,7 +69,10 @@ public class SystemMessageService {
 
         List<ConversationMember> members = memberRepo.findByConversationId(dto.conversationId);
 
-        websocketService.sendMessage(new MessageResponse(m, "senderId"), new ConversationResponse(conv, "lastMessage", "createdBy"), members);
+        ConversationResponse convResponse = new ConversationResponse(conv, "lastMessage", "createdBy");
+        convResponse.setMembers(memberService.getMembers(conv.getId()));
+
+        websocketService.sendMessage(new MessageResponse(m, "sender"), convResponse, members);
     }
 
     public Conversation findConversationById(Long id) {

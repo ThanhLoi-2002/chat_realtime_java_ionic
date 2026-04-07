@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ConversationType, MessageType, UserType } from '@/types/entities'
+import { ConversationType, MemberType, MessageType, UserType } from '@/types/entities'
 import { conversationApi } from '@/api/conversation.api'
 import { toast } from '@/utils/toast'
 
@@ -156,6 +156,62 @@ export const useConversationStore = defineStore('conversation', {
 
             if (index !== -1) {
                 this.conversations[index].unread = 0;
+            }
+        },
+
+        async addMembers(memberIds: number[]) {
+            try {
+                const result: any = await conversationApi.addMembers(this.conversation!.id, memberIds);
+
+                return true
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return false
+            }
+        },
+
+        addMembersRealtime(members: MemberType[]) {
+            if (this.conversation?.members) {
+                this.conversation.members = members;
+
+                const idx = this.conversations.findIndex(c => c.id == this.conversation?.id)
+
+                if (idx != -1) {
+                    this.conversations[idx].members = members
+                }
+            }
+        },
+
+        async leaveGroup() {
+            try {
+                const result: any = await conversationApi.leaveGroup(this.conversation!.id);
+
+                return true
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return false
+            }
+        },
+
+        leaveGroupRealtime(userId: number, isMe: boolean) {
+            if (this.conversation?.members) {
+                // Phải gán ngược lại vì .filter trả về mảng mới
+                this.conversation.members = this.conversation.members.filter(u => u.id !== userId);
+            }
+
+            if (isMe) {
+                const idx = this.conversations.findIndex(c => c.id == this.conversation?.id)
+
+                if (idx !== -1) {
+                    // Xóa 1 phần tử tại vị trí idx
+                    this.conversations.splice(idx, 1);
+                }
             }
         },
 

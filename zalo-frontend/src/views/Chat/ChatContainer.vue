@@ -7,8 +7,7 @@
     <div class="flex-1 relative overflow-hidden">
         <AddFriendBar />
         <!-- Phần cuộn tin nhắn -->
-        <div ref="scrollContainer" class="h-full overflow-y-auto p-1 space-y-1 md:p-6 md:space-y-2"
-            @scroll="scrollMore">
+        <div ref="scrollContainer" class="h-full overflow-y-auto px-1 pt-2 pb-5 space-y-2 md:p-6" @scroll="scrollMore">
             <div v-if="messageStorage.isLoading" class="text-center text-gray-400 text-sm py-4">
                 <LoadingSpinner />
             </div>
@@ -24,7 +23,7 @@
                     {{ t(`${msg.content}`) }}
                 </div>
 
-                <MessageContainer v-else :message="msg" :roles="roles"/>
+                <MessageContainer v-else :message="msg" :roles="roles" />
             </div>
         </div>
 
@@ -58,6 +57,7 @@ import { MemberRoleEnum, MessageEnum } from '@/types/enum';
 import { StompSubscription } from '@stomp/stompjs';
 import { socketSubscribe } from '@/utils/websocket';
 import { MessageFilter } from '@/types/common';
+import { useUserStore } from '@/stores/user.storage';
 
 const props = defineProps<{
     isShowInfoSection: boolean
@@ -65,6 +65,7 @@ const props = defineProps<{
 
 const conversationStorage = useConversationStore()
 const messageStorage = useMessageStore()
+const userStorage = useUserStore()
 const sysStorage = useSystemStore()
 const { t } = useTranslate()
 const { getTime, formatSeparatorTime } = useDateTime()
@@ -76,6 +77,7 @@ const scrollContainer = ref<HTMLElement | null>(null)
 const showScrollButton = ref(false)
 
 let subReaction: StompSubscription | undefined
+let sub: StompSubscription | undefined
 
 const emit = defineEmits(['update:isShowInfoSection'])
 
@@ -222,6 +224,16 @@ const resetSubscribe = () => {
         const data = JSON.parse(msg.body)
         messageStorage.reloadReactions(data.messageId, data.reactions)
     })
+
+    sub = socketSubscribe(`/user/queue/chat.conversation.${conversationStorage.conversation?.id}.leaveGroup`, (msg: any) => {
+        const userId = JSON.parse(msg.body).userId
+
+        conversationStorage.leaveGroupRealtime(userId, userStorage.user?.id == userId)
+    })
+
+    sub = socketSubscribe(`/user/queue/chat.conversation.${conversationStorage.conversation?.id}.addMembers`, (msg: any) => {
+        conversationStorage.addMembersRealtime(JSON.parse(msg.body).members)
+    })
 }
 
 onMounted(async () => {
@@ -232,6 +244,13 @@ onMounted(async () => {
 watch(() => conversationStorage.conversation, async () => {
     reset()
     subReaction?.unsubscribe()
+    sub?.unsubscribe()
     resetSubscribe()
+})
+
+watch(() => messageStorage.messages.length, () => {
+    if (!showScrollButton.value) {
+        handleScrollBottom(true)
+    }
 })
 </script>

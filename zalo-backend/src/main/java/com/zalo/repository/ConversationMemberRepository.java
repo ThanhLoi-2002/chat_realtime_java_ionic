@@ -15,6 +15,8 @@ public interface ConversationMemberRepository extends JpaRepository<Conversation
 
     List<ConversationMember> findByConversationIdOrderByIdDesc(Long conversationId);
 
+    List<ConversationMember> findByConversationIdAndUserIdInOrderByIdDesc(Long conversationId, List<Long> memberIds);
+
     Optional<ConversationMember> findByConversationIdAndUserId(Long conversationId, Long userId);
 
     @Query("SELECT cm.conversationId FROM ConversationMember cm WHERE cm.userId = :userId")
