@@ -7,6 +7,7 @@ import com.zalo.dto.request.Conversation.CreateGroupRequest;
 import com.zalo.dto.request.Message.CreateMessageRequest;
 import com.zalo.dto.response.Conversation.ConversationInfoResponse;
 import com.zalo.dto.response.Conversation.ConversationResponse;
+import com.zalo.dto.response.Conversation.MemberResponse;
 import com.zalo.dto.response.Message.MessageResponse;
 import com.zalo.dto.response.User.UserResponse;
 import com.zalo.model.*;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.lang.reflect.Member;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -84,6 +86,8 @@ public class ConversationService {
         Conversation conv = new Conversation();
         conv.setType(ConversationType.GROUP);
         conv.setCu(creatorId);
+        conv.setOwnerId(creatorId);
+        conv.setInviteCode(UUID.randomUUID().toString().substring(0, 8));
         conv.setName(dto.name);
         conv.setLastMessageId(0L);
         conv = conversationRepo.save(conv);
@@ -99,22 +103,11 @@ public class ConversationService {
         }
         memberRepo.saveAll(members);
 
-        // create system message
-        CreateMessageRequest message = new CreateMessageRequest();
-        message.setContentType(MessageType.SYSTEM);
-        message.setContent("Bạn vừa được thêm vào nhóm");
-
-        createSystemMessage(conv.getId(), message);
-//        message = messageRepo.save(message);
-//
-//        conv.setLastMessageId(message.getId());
-//        conversationRepo.save(conv);
-
-//        return conv;
+        createSystemMessage(conv.getId(), "youHaveRecentAddedToGroup");
     }
 
-    public void createSystemMessage(Long conversationId, CreateMessageRequest dto) {
-        Message m = Message.builder().conversationId(conversationId).content(dto.content).contentType(dto.contentType).replyToMessageId(dto.replyToId).build();
+    public void createSystemMessage(Long conversationId, String content) {
+        Message m = Message.builder().conversationId(conversationId).content(content).contentType(MessageType.SYSTEM).build();
 
         m = messageRepo.save(m);
 
@@ -147,18 +140,10 @@ public class ConversationService {
         return conversationRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
     }
 
-    public List<User> getMembers(Long conversationId) {
+    public List<MemberResponse> getMembers(Long conversationId) {
         List<ConversationMember> members = memberRepo.findByConversationIdOrderByIdDesc(conversationId);
 
-        List<Long> userIds = members.stream().map(ConversationMember::getUserId).toList();
-
-        List<User> users = userRepo.findByIdIn(userIds);
-
-        // map user theo id
-        Map<Long, User> userMap = users.stream().collect(Collectors.toMap(User::getId, u -> u));
-
-        // rebuild theo thứ tự members
-        return userIds.stream().map(userMap::get).filter(Objects::nonNull).toList();
+        return convertMembersToMemberResponses(members);
     }
 
     public Page<ConversationResponse> findAll(Long userId, ConversationFilter filter) {
@@ -174,7 +159,7 @@ public class ConversationService {
         Page<ConversationResponse> result = page.map(c -> {
             ConversationResponse conv = new ConversationResponse(c, "recipient", "lastMessage", "createdBy");
             if (c.getType() == ConversationType.GROUP) {
-                conv.setMembers(getMembers(c.getId()).stream().map(UserResponse::new).toList());
+                conv.setMembers(getMembers(c.getId()));
             }
 
             conv.setUnread(mapUnread.getOrDefault(c.getId(), 0L));
@@ -202,21 +187,13 @@ public class ConversationService {
 
                     List<ConversationMember> members = memberRepo.findTop3ByConversationIdOrderByCtDesc(conv.getId());
 
-                    // map sang user (nếu cần)
-                    List<Long> userIds = members.stream().map(ConversationMember::getUserId).toList();
-
-                    List<UserResponse> users = userRepo.findAllById(userIds).stream().map(UserResponse::new).toList();
-                    conv.setMembers(users);
+                    List<MemberResponse> memberResponses = convertMembersToMemberResponses(members);
+                    conv.setMembers(memberResponses);
                 }
             }
 
             conversationInfo.generalGroup = conversationResponses;
         }
-
-        Pageable limit = PageRequest.of(0, 8);
-
-        List<Message> images = messageRepo.findByConversationIdAndContentTypeAndSttOrderByCtDesc(conversationId, MessageType.IMAGE, 1, limit).getContent();
-        conversationInfo.messages = images.stream().map(m -> new MessageResponse(m, "sender")).toList();
 
         return conversationInfo;
     }
@@ -232,12 +209,7 @@ public class ConversationService {
             if (conv.getAvatar() == null) {
 
                 List<ConversationMember> members = memberRepo.findTop3ByConversationIdOrderByCtDesc(conv.getId());
-
-                // map sang user (nếu cần)
-                List<Long> userIds = members.stream().map(ConversationMember::getUserId).toList();
-
-                List<UserResponse> users = userRepo.findAllById(userIds).stream().map(UserResponse::new).toList();
-                conv.setMembers(users);
+                conv.setMembers(convertMembersToMemberResponses(members));
             }
         }
 
@@ -251,6 +223,70 @@ public class ConversationService {
                 UnreadDto::getConversationId,  // key
                 UnreadDto::getUnreadCount            // value
         ));
+    }
+
+    public void addMembersToGroups(Long conversationId, Long inviterId, List<Long> participantIds) {
+        List<ConversationMember> members = new ArrayList<>();
+        for (Long id : participantIds) {
+            ConversationMember m = new ConversationMember();
+            m.setConversationId(conversationId);
+            m.setUserId(id);
+            m.setRole(MemberRole.MEMBER);
+            m.setAddById(inviterId);
+            members.add(m);
+        }
+        memberRepo.saveAll(members);
+    }
+
+    public List<MemberResponse> convertMembersToMemberResponses(List<ConversationMember> members) {
+        Map<Long, ConversationMember> memberMap = members.stream()
+                .collect(Collectors.toMap(
+                        ConversationMember::getUserId,
+                        m -> m,
+                        (existing, replacement) -> existing
+                ));
+
+        // Lấy tất cả addById duy nhất và không null
+        List<Long> addByIds = members.stream()
+                .map(ConversationMember::getAddById)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+
+        // Truy vấn danh sách User là người mời và biến thành Map<Id, User>
+        Map<Long, User> addByUserMap = userRepo.findAllById(addByIds).stream()
+                .collect(Collectors.toMap(User::getId, u -> u));
+
+        // 3. Lấy danh sách User từ database dựa trên các keys của Map
+        List<User> users = userRepo.findAllById(memberMap.keySet());
+
+        // 4. Map danh sách User sang MemberResponse, gán role lấy từ Map
+        return users.stream()
+                .map(user -> {
+                    ConversationMember memberInfo = memberMap.get(user.getId());
+
+                    return new MemberResponse(
+                            user,
+                            memberInfo.getRole(),
+                            addByUserMap.get(memberInfo.getAddById())
+                    );
+                }).sorted(Comparator
+                        // Điều kiện 1: Sắp xếp theo Role (Admin -> Silverkey -> Member)
+                        .comparingInt((MemberResponse m) -> getRolePriority(m.getRole()))
+                        // Điều kiện 2: Nếu cùng Role, sắp xếp theo tên (A -> Z)
+                        .thenComparing(UserResponse::getUsername, Comparator.nullsLast(String::compareTo))
+                )
+                .toList();
+    }
+
+    private int getRolePriority(MemberRole role) {
+        if (role == null) return 3; // Mặc định thấp nhất
+        return switch (role) {
+            case ADMIN -> 1;
+            case SILVER_KEY -> 2;
+            case MEMBER -> 3;
+            default -> 4;
+        };
     }
 
 //    public Conversation update(Long id) {

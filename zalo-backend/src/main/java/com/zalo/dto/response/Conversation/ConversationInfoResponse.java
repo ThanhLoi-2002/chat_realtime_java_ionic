@@ -1,9 +1,7 @@
 package com.zalo.dto.response.Conversation;
 
-import com.zalo.dto.response.Message.MessageResponse;
+import com.zalo.dto.response.User.UserResponse;
 import com.zalo.model.Conversation;
-import com.zalo.model.File;
-import com.zalo.model.Message;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -14,10 +12,8 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PUBLIC)
 public class ConversationInfoResponse {
     List<ConversationResponse> generalGroup;
-    List<MessageResponse> messages;
 
-    public ConversationInfoResponse(List<Conversation> generalGroup, List<Message> images) {
+    public ConversationInfoResponse(List<Conversation> generalGroup) {
         this.generalGroup = generalGroup.stream().map(ConversationResponse::new).toList();
-        this.messages = images.stream().map(m -> new MessageResponse(m, "sender")).toList();
     }
 }

@@ -20,19 +20,23 @@ public class ConversationResponse extends BaseResponse {
     ConversationType type; // PRIVATE or GROUP
 
     String name;
-    String code;
+    String inviteCode;
+    String description;
     File avatar;
     Long lastMessageId;
+
+    Long ownerId;
+    UserResponse owner;
 
     MessageResponse lastMessage;
     UserResponse recipient;
 
-    List<UserResponse> members;
+    List<MemberResponse> members;
     Long unread;
 
     public ConversationResponse(Conversation c, String... relations) {
         super(c, relations);
-        BeanUtils.copyProperties(c, this, "createdBy", "updatedBy", "lastMessage", "recipient");
+        BeanUtils.copyProperties(c, this, "createdBy", "updatedBy", "lastMessage", "recipient", "owner");
 
         Set<String> rels = relations != null
                 ? new HashSet<>(Arrays.asList(relations))
@@ -47,6 +51,12 @@ public class ConversationResponse extends BaseResponse {
         if (rels.contains("recipient")) {
             if(c.getRecipient() != null){
                 this.recipient = new UserResponse(c.getRecipient());
+            }
+        }
+
+        if (rels.contains("owner")) {
+            if(c.getOwner() != null){
+                this.owner = new UserResponse(c.getOwner());
             }
         }
     }

@@ -6,6 +6,7 @@ import com.zalo.dto.filter.ConversationFilter;
 import com.zalo.dto.request.Conversation.CreateGroupRequest;
 import com.zalo.dto.response.Conversation.ConversationInfoResponse;
 import com.zalo.dto.response.Conversation.ConversationResponse;
+import com.zalo.dto.response.Conversation.MemberResponse;
 import com.zalo.dto.response.User.UserResponse;
 import com.zalo.mapper.ConversationMapper;
 import com.zalo.model.Conversation;
@@ -51,11 +52,6 @@ public class ConversationController {
     @GetMapping("/{id}")
     public ConversationResponse get(@PathVariable Long id) {
         return new ConversationResponse(conversationService.findByIdWithRelationShip(id));
-    }
-
-    @GetMapping("/{id}/members")
-    public List<UserResponse> members(@PathVariable Long id) {
-        return conversationService.getMembers(id).stream().map(UserResponse::new).toList();
     }
 
     @GetMapping("/{id}/info")

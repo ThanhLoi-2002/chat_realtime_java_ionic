@@ -24,7 +24,7 @@
                     {{ t(`${msg.content}`) }}
                 </div>
 
-                <MessageContainer v-else :message="msg" />
+                <MessageContainer v-else :message="msg" :roles="roles"/>
             </div>
         </div>
 
@@ -54,7 +54,7 @@ import { useScroll } from '@/composables/useScroll';
 import Typing from './component/Chat/Typing.vue';
 import { useSystemStore } from '@/stores/system.storage';
 import AddFriendBar from './component/Chat/AddFriendBar.vue';
-import { MessageEnum } from '@/types/enum';
+import { MemberRoleEnum, MessageEnum } from '@/types/enum';
 import { StompSubscription } from '@stomp/stompjs';
 import { socketSubscribe } from '@/utils/websocket';
 import { MessageFilter } from '@/types/common';
@@ -69,6 +69,8 @@ const sysStorage = useSystemStore()
 const { t } = useTranslate()
 const { getTime, formatSeparatorTime } = useDateTime()
 const { onScroll, scrollToBottom } = useScroll()
+
+const roles = ref<Record<number, MemberRoleEnum>>()
 
 const scrollContainer = ref<HTMLElement | null>(null)
 const showScrollButton = ref(false)
@@ -184,10 +186,18 @@ const reset = async () => {
     sysStorage.setShowBottomMenu(false)
     messageStorage.resetPagination()
 
+    roles.value = conversationStorage.conversation?.members.reduce((acc, member) => {
+        // Chỉ lấy những người là ADMIN hoặc SILVER_KEY
+        if (member.role === MemberRoleEnum.ADMIN || member.role === MemberRoleEnum.SILVER_KEY) {
+            acc[member.id] = member.role;
+        }
+        return acc;
+    }, {} as Record<number, MemberRoleEnum>) || {};
+
     if (conversationStorage.conversation) {
         const options: MessageFilter = {
-                conversationId: conversationStorage.conversation!.id,
-            }
+            conversationId: conversationStorage.conversation!.id,
+        }
         await messageStorage.getMessages(options)
 
         if (conversationStorage.conversation.lastMessageId) {

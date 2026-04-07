@@ -10,7 +10,6 @@ interface ConversationState {
     page: number
     hasMore: boolean
     generalGroup: ConversationType[]
-    images: MessageType[]
 }
 
 export const useConversationStore = defineStore('conversation', {
@@ -21,7 +20,6 @@ export const useConversationStore = defineStore('conversation', {
         page: -1,
         hasMore: true,
         generalGroup: [],
-        images: [],
     }),
     actions: {
         selectConversation(data?: ConversationType) {
@@ -122,29 +120,11 @@ export const useConversationStore = defineStore('conversation', {
             }
         },
 
-        // async getMembers() {
-        //     try {
-        //         if (this.conversation) {
-        //             const result: any = await conversationApi.getMembers(this.conversation.id);
-        //             this.conversation.members = result.result;
-        //         }
-
-        //         return true
-        //     } catch (e: any) {
-        //         toast({
-        //             color: "danger",
-        //             message: e.message
-        //         })
-        //         return false
-        //     }
-        // },
-
         async getConversationInfo() {
             try {
                 if (this.conversation) {
                     const result: any = await conversationApi.getConversationInfo(this.conversation.id);
                     this.generalGroup = result.result.generalGroup;
-                    this.images = result.result.messages;
                 }
 
                 return true
@@ -184,7 +164,6 @@ export const useConversationStore = defineStore('conversation', {
             this.conversation = undefined
             this.page = -1
             this.hasMore = true
-            this.images = []
             this.generalGroup = []
         }
 

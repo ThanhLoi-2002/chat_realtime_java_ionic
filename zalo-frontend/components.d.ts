@@ -26,6 +26,7 @@ declare module 'vue' {
     IonItem: typeof import('@ionic/vue')['IonItem']
     IonSelect: typeof import('@ionic/vue')['IonSelect']
     IonSelectOption: typeof import('@ionic/vue')['IonSelectOption']
+    Key: typeof import('./src/components/Key/Key.vue')['default']
     LangDropdown: typeof import('./src/components/Dropdown/LangDropdown.vue')['default']
     LoadingSpinner: typeof import('./src/components/Loading/LoadingSpinner.vue')['default']
     MobileBackButton: typeof import('./src/components/Button/MobileBackButton.vue')['default']

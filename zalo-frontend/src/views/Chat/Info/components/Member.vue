@@ -42,18 +42,28 @@
                 class="flex items-center gap-3 p-2 rounded-lg transition cursor-pointer"
                 :class="[style.text.secondary]">
 
-                <!-- AVATAR -->
-                <CircleAvatar :user="user" />
+                <div class="relative">
+                    <!-- AVATAR -->
+                    <CircleAvatar :user="user" />
 
+                    <Key :role="user.role"/>
+                </div>
                 <!-- NAME -->
                 <div class="flex-1 min-w-0">
-                    <div class="truncate text-sm font-medium">
-                        {{ userStorage.user?.id == user.id ? t("you") : user.username }}
+                    <div class="flex items-center gap-1.5">
+                        <div class="truncate text-sm font-medium">
+                            {{ userStorage.user?.id == user.id ? t("you") : user.username }}
+                        </div>
+                    </div>
+
+                    <div v-if="user.addBy" class="text-xs opacity-60 truncate" :class="[style.text.secondary]">
+                        {{ t('addedBy') }}: {{ user.addBy.username }}
                     </div>
                 </div>
 
                 <!-- ACTION -->
-                <button v-if="!isFriend(user.id)" class="bg-blue-500 hover:bg-blue-600 text-xs px-3 py-1 rounded-md" @click="openModal(user)">
+                <button v-if="!isFriend(user.id)" class="bg-blue-500 hover:bg-blue-600 text-xs px-3 py-1 rounded-md"
+                    @click="openModal(user)">
                     {{ t('addFriend') }}
                 </button>
             </div>
@@ -84,6 +94,7 @@ import AddFriendRequestUI from '@/views/Friend/component/AddFriendRequestUI.vue'
 import { computed, onMounted, ref } from 'vue'
 import FriendProfileUI from '../../component/FriendProfileUI.vue'
 import { UserType } from '@/types/entities'
+import Key from '@/components/Key/Key.vue'
 
 const props = defineProps<{
     isShowBackButton: boolean

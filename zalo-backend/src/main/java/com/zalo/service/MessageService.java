@@ -102,7 +102,7 @@ public class MessageService {
         ConversationResponse conversationResponse = new ConversationResponse(conv, "recipient", "lastMessage", "createdBy");
 
         if (conv.getType() == ConversationType.GROUP) {
-            conversationResponse.setMembers(conversationService.getMembers(conv.getId()).stream().map(UserResponse::new).toList());
+            conversationResponse.setMembers(conversationService.getMembers(conv.getId()));
         }
 
         websocketService.sendMessage(new MessageResponse(m, "sender"), conversationResponse, members);

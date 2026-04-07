@@ -15,11 +15,21 @@ import java.util.List;
 @Table(name = "conversation")
 public class Conversation extends BaseEntity {
     @Enumerated(EnumType.STRING)
-    ConversationType type; // PRIVATE or GROUP
+    ConversationType type;
 
     String name;
 
-    String code;
+    String inviteCode;
+
+    @Column(columnDefinition = "TEXT")
+    String description;
+
+    Long ownerId;
+
+    // ✅ relation tới owner (read-only)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ownerId", insertable = false, updatable = false)
+    private User owner;
 
     @Convert(converter = FileConverter.class)
     @Column(columnDefinition = "LONGTEXT")
@@ -38,12 +48,4 @@ public class Conversation extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipientId", insertable = false, updatable = false)
     private User recipient;
-
-    // ✅ members
-//    @OneToMany(mappedBy = "conversation", fetch = FetchType.LAZY)
-//    private List<ConversationMember> members;
-
-    // ✅ messages (optional)
-//    @OneToMany(mappedBy = "conversation", fetch = FetchType.LAZY)
-//    private List<Message> messages;
 }

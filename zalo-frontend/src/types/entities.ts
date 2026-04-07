@@ -34,7 +34,7 @@ export type ConversationType = BaseType & {
   lastMessageId?: number
   lastMessage?: MessageType
   recipient?: UserType
-  members: UserType[]
+  members: MemberType[]
   unread: number
 }
 
@@ -74,4 +74,10 @@ export type ReactionType = BaseType & {
     messageId: number
     type: ReactionEnum
     count: number
+}
+
+export type MemberType = UserType & {
+    role: MemberRoleEnum
+    addById: number
+    addBy: UserType
 }

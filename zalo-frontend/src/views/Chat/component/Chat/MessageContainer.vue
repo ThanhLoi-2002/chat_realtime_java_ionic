@@ -4,7 +4,11 @@
         :class="[isOwner ? 'ml-auto flex-row-reverse' : '', message.reactions?.length > 0 && 'mb-4']" ref="rootRef">
 
         <!-- AVATAR -->
-        <circle-avatar v-if="!isOwner && message.showAvatar" :user="message.sender" size="size-10" />
+        <div v-if="!isOwner && message.showAvatar" class="relative">
+            <circle-avatar :user="message.sender" size="size-10" />
+            <key :role="roles![message.sender?.id]"/>
+        </div>
+
         <div v-else-if="!isOwner" class="px-5 py-2"></div>
 
         <!-- BUBBLE -->
@@ -13,8 +17,8 @@
                 v-if="message.contentType == MessageEnum.IMAGE" :isOwner="isOwner" />
 
             <text-message :message="message" :setBubbleRef="setBubbleRef"
-                v-if="message.contentType == MessageEnum.TEXT || message.contentType == null" :isOwner="isOwner" />
-            
+                v-if="message.contentType == MessageEnum.TEXT || message.contentType == null" :isOwner="isOwner" :role="roles![message.sender?.id]"/>
+
         </div>
 
         <!-- ACTIONS -->
@@ -73,15 +77,17 @@ import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useUserStore } from '@/stores/user.storage'
 import CircleAvatar from '@/components/Avatar/CircleAvatar.vue'
 import { useTranslate } from '@/composables/useTranslate';
-import { MessageEnum } from '@/types/enum';
+import { MemberRoleEnum, MessageEnum } from '@/types/enum';
 import { style } from '@/assets/tailwindcss';
 import { useMessageStore } from '@/stores/message.storage';
 import ImageMessage from '../Message/ImageMessage.vue';
 import TextMessage from '../Message/TextMessage.vue';
 import { MessageType } from '@/types/entities';
+import Key from '@/components/Key/Key.vue';
 
 const props = defineProps<{
     message: MessageType & any
+    roles: Record<number, MemberRoleEnum> | undefined
 }>()
 
 const { t } = useTranslate()
