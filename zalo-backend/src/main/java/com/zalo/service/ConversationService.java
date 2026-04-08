@@ -67,7 +67,7 @@ public class ConversationService {
         conv.setType(ConversationType.PRIVATE);
         conv.setRecipientId(otherUserId);
         conv.setCu(creatorId);
-        conv.setLastMessageId(0L);
+//        conv.setLastMessageId(0L);
         conv = conversationRepo.save(conv);
 
         ConversationMember m1 = new ConversationMember();
@@ -95,7 +95,7 @@ public class ConversationService {
         conv.setOwnerId(creatorId);
         conv.setInviteCode(UUID.randomUUID().toString().substring(0, 8));
         conv.setName(dto.name);
-        conv.setLastMessageId(0L);
+//        conv.setLastMessageId(0L);
         conv = conversationRepo.save(conv);
 
         List<ConversationMember> members = new ArrayList<>();
