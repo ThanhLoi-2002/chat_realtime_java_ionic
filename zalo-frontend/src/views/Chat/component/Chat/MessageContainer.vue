@@ -6,7 +6,7 @@
         <!-- AVATAR -->
         <div v-if="!isOwner && message.showAvatar" class="relative">
             <circle-avatar :user="message.sender" size="size-10" />
-            <key v-if="roles" :role="roles[message?.sender?.id]"/>
+            <key v-if="roles" :role="roles[message?.sender?.id]" />
         </div>
 
         <div v-else-if="!isOwner" class="px-5 py-2"></div>
@@ -17,7 +17,8 @@
                 v-if="message.contentType == MessageEnum.IMAGE" :isOwner="isOwner" />
 
             <text-message :message="message" :setBubbleRef="setBubbleRef"
-                v-if="message.contentType == MessageEnum.TEXT || message.contentType == null" :isOwner="isOwner" :role="roles ? roles[message.sender?.id] : undefined"/>
+                v-if="message.contentType == MessageEnum.TEXT || message.contentType == null" :isOwner="isOwner"
+                :role="roles ? roles[message.sender?.id] : undefined" />
         </div>
 
         <!-- ACTIONS -->
@@ -63,11 +64,14 @@
 
                 <div v-if="userStorage.user?.id == message.sender?.id"
                     class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-700/20 cursor-pointer"
-                    @click="onDelete(message.id)">
+                    @click="showConfirm = true">
                     {{ t('delete') }}
                 </div>
             </div>
         </teleport>
+
+        <confirm-modal v-model:showConfirm="showConfirm" :onOk="onDelete" :message="t('leaveTheGroup')"
+            :header="t('leaveTheGroup')"/>
     </div>
 </template>
 
@@ -83,6 +87,7 @@ import ImageMessage from '../Message/ImageMessage.vue';
 import TextMessage from '../Message/TextMessage.vue';
 import { MessageType } from '@/types/entities';
 import Key from '@/components/Key/Key.vue';
+import ConfirmModal from '@/components/Modal/ConfirmModal.vue';
 
 const props = defineProps<{
     message: MessageType & any
@@ -100,6 +105,7 @@ const isOwner = props.message.sender.id === userStorage.user?.id
 const bubbleRef = ref<HTMLElement | null>(null)
 const moreBtnRef = ref<HTMLElement | null>(null)
 const menuRef = ref<HTMLElement | null>(null)
+const showConfirm = ref(false)
 
 // menu state
 const showMenu = ref(false)
@@ -190,10 +196,11 @@ const onDetails = () => {
 
 }
 
-const onDelete = (id: number) => {
+const onDelete = () => {
     // confirm & delete
     showMenu.value = false
-    messageStorage.deleteMessage(id, props.message.conversationId)
+    showConfirm.value = false
+    messageStorage.deleteMessage(props.message.id, props.message.conversationId)
 }
 
 // click outside: if clicked outside menu and outside more button, close

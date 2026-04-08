@@ -116,6 +116,7 @@ public class LangService {
         Lang e = langRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
 
+        e.setCode(request.getCode());
         e.setEn(request.getEn());
         e.setVi(request.getVi());
         e.setTw(request.getTw());

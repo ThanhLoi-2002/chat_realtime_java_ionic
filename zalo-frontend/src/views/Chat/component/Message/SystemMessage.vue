@@ -4,7 +4,7 @@
             class="bg-gray-100 dark:bg-slate-800 px-4 py-1.5 rounded-full border border-gray-200 dark:border-slate-700 max-w-[90%] shadow-sm">
             <p class="text-[12px] text-gray-500 dark:text-gray-400 text-center leading-relaxed">
 
-                <template v-if="systemType === 'ADD_USERS_TO_GROUP'">
+                <template v-if="systemType === SystemMetadataEnum.ADD_USERS_TO_GROUP">
                     <span @click="openProfile(msg.sender)"
                         class="font-bold text-gray-700 dark:text-gray-200 cursor-pointer hover:underline">
                         {{ isMeAction ? t('you') : msg.sender?.username }}
@@ -22,7 +22,7 @@
                     <span class="ml-1">{{ t('toTheGroup') }}</span>
                 </template>
 
-                <template v-else-if="systemType === 'LEAVE_GROUP' || systemType === 'REMOVE_MEMBER'">
+                <template v-else-if="systemType === SystemMetadataEnum.LEAVE_GROUP || systemType === SystemMetadataEnum.REMOVE_MEMBER">
                     <span class="italic">
                         <template v-if="isMeAction">
                             <span class="font-bold text-gray-700 dark:text-gray-200">{{ t('you') }}</span>
@@ -64,10 +64,11 @@ import { useTranslate } from '@/composables/useTranslate';
 import { useUserStore } from '@/stores/user.storage';
 import Modal from '@/components/Modal/Modal.vue';
 import FriendProfileUI from '../FriendProfileUI.vue';
-import { UserType } from '@/types/entities';
+import { MessageType, UserType } from '@/types/entities';
+import { SystemMetadataEnum } from '@/types/enum';
 
 const props = defineProps<{
-    msg: any
+    msg: MessageType
 }>();
 
 const { t } = useTranslate();

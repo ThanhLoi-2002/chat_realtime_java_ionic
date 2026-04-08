@@ -6,6 +6,15 @@ export enum MemberRoleEnum {
     MEMBER = "MEMBER", ADMIN = "ADMIN", SILVER_KEY = "SILVER_KEY"
 }
 
+export enum SystemMetadataEnum {
+    ADD_USERS_TO_GROUP = "ADD_USERS_TO_GROUP",
+    CREATE_GROUP = "CREATE_GROUP",
+    LEAVE_GROUP = "LEAVE_GROUP",
+    REMOVE_MEMBER = "REMOVE_MEMBER",
+
+    ADD_FRIEND = "ADD_FRIEND"
+}
+
 export enum MessageEnum {
     TEXT = "TEXT", IMAGE = "IMAGE", FILE = "FILE", VIDEO = "VIDEO", SYSTEM = "SYSTEM", STICKER = "STICKER"
 }
@@ -21,7 +30,7 @@ export enum FriendshipStatusEnum {
 }
 
 export enum ReactionEnum {
-    LIKE = "LIKE",  
+    LIKE = "LIKE",
     LOVE = "LOVE",
     HAHA = 'HAHA',
     WOW = 'WOW',
