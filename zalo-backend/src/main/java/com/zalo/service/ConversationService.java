@@ -50,6 +50,8 @@ public class ConversationService {
     SystemMessageService systemMessageService;
     WebsocketService websocketService;
     MemberService memberService;
+    CloudinaryService cloudinaryService;
+    MessageRepository messRepo;
 
     public Conversation createPrivateConversation(Long creatorId, Long otherUserId) {
         // try find existing
@@ -103,7 +105,7 @@ public class ConversationService {
             ConversationMember m = new ConversationMember();
             m.setConversationId(conv.getId());
             m.setUserId(id);
-            m.setRole(id.equals(creatorId) ? MemberRole.ADMIN : MemberRole.MEMBER);
+            m.setRole(id.equals(creatorId) ? MemberRole.GOLDEN_KEY : MemberRole.MEMBER);
             m.setAddById(creatorId);
             members.add(m);
         }
@@ -190,14 +192,17 @@ public class ConversationService {
 
         for (ConversationResponse conv : conversationResponses) {
 
-            if (conv.getAvatar() == null) {
-
-                List<ConversationMember> members = memberRepo.findTop3ByConversationIdOrderByCtDesc(conv.getId());
-                conv.setMembers(memberService.convertMembersToMemberResponses(members));
-            }
+            setTop3Members(conv);
         }
 
         return conversationResponses;
+    }
+
+    public void setTop3Members(ConversationResponse conv) {
+        if (conv.getAvatar() == null) {
+            List<ConversationMember> members = memberRepo.findTop3ByConversationIdOrderByCtDesc(conv.getId());
+            conv.setMembers(memberService.convertMembersToMemberResponses(members));
+        }
     }
 
     public Map<Long, Long> getUnreadFromIds(List<Long> ids, Long userId){
@@ -246,6 +251,17 @@ public class ConversationService {
         systemMessageService.createSystemMessage(createSystemMessageRequest);
 
         websocketService.leaveGroup(conversationId, userId);
+    }
+
+    public void disbandGroup(Long conversationId) {
+//        memberRepo.deleteManyByConversationId(conversationId);
+//        messRepo.
+
+
+    }
+
+    public Conversation getByInviteCode(String code){
+        return conversationRepo.findByInviteCode(code).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
     }
 
 //    public Conversation update(Long id) {

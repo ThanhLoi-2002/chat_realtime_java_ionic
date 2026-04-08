@@ -1,9 +1,9 @@
 export enum ConversationEnum {
-    PRIVATE = "PRIVATE", GROUP = "GROUP"
+    PRIVATE = "PRIVATE", GROUP = "GROUP", COMMUNITY = "COMMUNITY"
 }
 
 export enum MemberRoleEnum {
-    MEMBER = "MEMBER", ADMIN = "ADMIN", SILVER_KEY = "SILVER_KEY"
+    MEMBER = "MEMBER", GOLDEN_KEY = "GOLDEN_KEY", SILVER_KEY = "SILVER_KEY"
 }
 
 export enum SystemMetadataEnum {

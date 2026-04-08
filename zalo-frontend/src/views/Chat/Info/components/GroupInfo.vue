@@ -63,9 +63,14 @@
                         <Security />
 
                         <div class="p-2">
-                            <div class="text-red-500 hover:text-red-600 cursor-pointer transition p-2 rounded-xs"
-                                :class="[style.bg.hover]" @click="showConfirm = !showConfirm">
+                            <div v-if="!isGoldenKey()"
+                                class="text-red-500 hover:text-red-600 cursor-pointer transition p-2 rounded-xs"
+                                :class="[style.bg.hover]" @click="showConfirmLeaveGroup = !showConfirmLeaveGroup">
                                 {{ t("leaveTheGroup") }}
+                            </div>
+                            <div v-else class="text-red-500 hover:text-red-600 cursor-pointer transition p-2 rounded-xs"
+                                :class="[style.bg.hover]" @click="showConfirmDisbandGroup = !showConfirmDisbandGroup">
+                                {{ t("disbandTheGroup") }}
                             </div>
                         </div>
                     </div>
@@ -83,8 +88,11 @@
             </template>
         </transition>
 
-        <ConfirmModal v-model:showConfirm="showConfirm" :onOk="onLeaveGroup" :message="t('leaveTheGroup')"
+        <ConfirmModal v-model:showConfirm="showConfirmLeaveGroup" :onOk="onLeaveGroup" :message="t('leaveTheGroup')"
             :header="t('leaveTheGroup')" />
+
+        <ConfirmModal v-model:showConfirm="showConfirmDisbandGroup" :onOk="onDisbandGroup" :message="t('disbandTheGroup')"
+            :header="t('disbandTheGroup')" />
     </div>
 </template>
 
@@ -105,9 +113,10 @@ const emit = defineEmits(['close'])
 
 const conversationStorage = useConversationStore()
 const { t } = useTranslate()
-const { conversationName } = useConversation()
+const { conversationName, isGoldenKey } = useConversation()
 const currentView = ref<'info' | 'member' | 'storage/image' | 'storage/file' | 'storage/link' | any>('info')
-const showConfirm = ref(false)
+const showConfirmLeaveGroup = ref(false)
+const showConfirmDisbandGroup = ref(false)
 
 /* ACTION */
 const toggleMute = () => console.log('mute')
@@ -136,7 +145,17 @@ const actions = [
 const onLeaveGroup = async () => {
     const success = await conversationStorage.leaveGroup();
 
-    showConfirm.value = false
+    showConfirmLeaveGroup.value = false
+
+    if (success) {
+        conversationStorage.selectConversation()
+    }
+}
+
+const onDisbandGroup = async () => {
+    const success = await conversationStorage.leaveGroup();
+
+    showConfirmLeaveGroup.value = false
 
     if (success) {
         conversationStorage.selectConversation()

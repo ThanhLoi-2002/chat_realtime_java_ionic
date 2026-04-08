@@ -5,6 +5,9 @@
         {{ t('message') }}
       </span>
       <div class="flex gap-2">
+        <ion-button @click="goScan">
+          <i class="fas fa-qrcode"></i>
+        </ion-button>
         <ion-button :onClick="() => openModal('addFriend')">
           <i class="fas fa-user-plus"></i>
         </ion-button>
@@ -46,6 +49,8 @@ import { SearchFriendPageType } from '@/types/common';
 import Modal from '@/components/Modal/Modal.vue';
 import { ConversationType, UserType } from '@/types/entities';
 import { useScroll } from '@/composables/useScroll';
+import { useRouter } from 'vue-router';
+import { useDevice } from '@/composables/useDevice';
 
 const CreateGroupUI = defineAsyncComponent(() => import('./component/CreateGroupUI.vue'));
 const AddFriendUI = defineAsyncComponent(() => import('./component/AddFriendUI.vue'));
@@ -57,6 +62,7 @@ const { onScroll } = useScroll()
 const conversationStorage = useConversationStore()
 const selectedUser = ref<UserType | null>(null)
 const modalRef = ref()
+const router = useRouter()
 
 const pageModal = ref<SearchFriendPageType | "createGroup">("addFriend")
 const pages = {
@@ -72,6 +78,10 @@ const scrollMore = () => {
   onScroll(conversationRef.value, () =>
     conversationStorage.getConversations()
   )
+}
+
+const goScan = () => {
+  router.push('/scan')
 }
 
 const goPage = (page: SearchFriendPageType | "createGroup") => {

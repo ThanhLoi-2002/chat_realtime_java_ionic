@@ -19,7 +19,10 @@ export const ROUTE = {
     // PROFILE: "/profile",
     CHATS: "/chats",
     LANGUAGES: "/languages",
-    FRIENDS: "/friends"
+    FRIENDS: "/friends",
+    JOIN_GROUP: "/g",
+    SCAN: "/scan",
+    NOT_FOUND: "/notFound"
 }
 
 export const EMOJI_MAP = {
@@ -32,3 +35,4 @@ export const EMOJI_MAP = {
 }
 
 export type ReactionKey = keyof typeof EMOJI_MAP;
+export const qrCodeUrl = import.meta.env.VITE_QR_CODE_URL

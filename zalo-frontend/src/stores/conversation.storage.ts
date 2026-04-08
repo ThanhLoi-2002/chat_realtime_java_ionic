@@ -199,6 +199,24 @@ export const useConversationStore = defineStore('conversation', {
             }
         },
 
+        async disbandGroup() {
+            try {
+                const result: any = await conversationApi.disbandGroup(this.conversation!.id);
+
+                return true
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return false
+            }
+        },
+
+        disbandGroupRealtime(conversationId: number) {
+            
+        },
+
         leaveGroupRealtime(userId: number, isMe: boolean) {
             if (this.conversation?.members) {
                 // Phải gán ngược lại vì .filter trả về mảng mới
@@ -212,6 +230,20 @@ export const useConversationStore = defineStore('conversation', {
                     // Xóa 1 phần tử tại vị trí idx
                     this.conversations.splice(idx, 1);
                 }
+            }
+        },
+
+        async fetchGroupByCode(inviteCode: string) {
+            try {
+                const result: any = await conversationApi.fetchGroupByCode(inviteCode);
+
+                return result.result
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return undefined
             }
         },
 

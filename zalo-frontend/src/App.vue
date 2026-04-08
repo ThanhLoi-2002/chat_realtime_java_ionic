@@ -35,7 +35,9 @@ const layouts: any = {
   auth: defineAsyncComponent(() => import('./layouts/AuthLayout.vue')),
   nolayout: defineAsyncComponent(() => import('./layouts/NoLayout.vue'))
 }
+
 logDeviceInfo()
+
 // Khởi tạo theme từ localStorage hoặc system preference
 onMounted(() => {
   if (getKey(THEME) === 'dark' ||

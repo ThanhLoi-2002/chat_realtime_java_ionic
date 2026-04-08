@@ -1,6 +1,7 @@
 package com.zalo.controller;
 
 import com.zalo.configuration.G;
+import com.zalo.configuration.anotation.CheckConversationMember;
 import com.zalo.configuration.anotation.CurrentUser;
 import com.zalo.dto.filter.ConversationFilter;
 import com.zalo.dto.request.Conversation.CreateGroupRequest;
@@ -62,13 +63,28 @@ public class ConversationController {
         return conversationService.getGroups(user.getId());
     }
 
+    @GetMapping("/by-code/{code}")
+    public ConversationResponse getByCode(@PathVariable String code) {
+        ConversationResponse conv = new ConversationResponse(conversationService.getByInviteCode(code), "owner");
+        conversationService.setTop3Members(conv);
+        return conv;
+    }
+
     @PostMapping("/{conversationId}/add-members")
+    @CheckConversationMember
     public void addMembers(@PathVariable Long conversationId, @CurrentUser User user, @RequestBody List<Long> memberIds) {
         conversationService.addMembersToGroups(conversationId, user.getId(), memberIds);
     }
 
     @DeleteMapping("/{conversationId}/leave-group")
+    @CheckConversationMember
     public void leaveGroup(@PathVariable Long conversationId, @CurrentUser User user) {
         conversationService.leaveGroup(conversationId, user.getId());
+    }
+
+    @DeleteMapping("/{conversationId}/disband-group")
+    @CheckConversationMember
+    public void disbandGroup(@PathVariable Long conversationId, @CurrentUser User user) {
+        conversationService.disbandGroup(conversationId);
     }
 }

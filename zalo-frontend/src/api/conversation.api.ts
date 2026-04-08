@@ -28,10 +28,18 @@ const leaveGroup = async (id: number) => {
     return await axios.delete<IResponse>(`/conversations/${id}/leave-group`);
 }
 
+const disbandGroup = async (id: number) => {
+    return await axios.delete<IResponse>(`/conversations/${id}/disband-group`);
+}
+
 const addMembers = async (id: number, memberIds: number[]) => {
     return await axios.post<IResponse>(`/conversations/${id}/add-members`, memberIds);
 }
 
+const fetchGroupByCode = async (inviteCode: string) => {
+    return await axios.get<IResponse>(`/conversations/by-code/${inviteCode}`);
+}
+
 export const conversationApi = {
-    createPrivate, getList, createGroup, getConversationInfo, getGroups, leaveGroup, addMembers
+    createPrivate, getList, createGroup, getConversationInfo, getGroups, leaveGroup, addMembers, fetchGroupByCode, disbandGroup
 }

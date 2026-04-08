@@ -15,6 +15,16 @@ const routes: Array<RouteRecordRaw> = [
     meta: { layout: "main", requiresAuth: true }
   },
   {
+    path: `${ROUTE.JOIN_GROUP}/:code`,
+    component: () => import('../views/JoinGroup/JoinGroup.vue'),
+    meta: { layout: "noLayout", requiresAuth: false }
+  },
+  {
+    path: `${ROUTE.SCAN}`,
+    component: () => import('../views/Scan/QrCodeScannerPage.vue'),
+    meta: { layout: "noLayout", requiresAuth: false }
+  },
+  {
     path: ROUTE.LANGUAGES,
     meta: { layout: "main", requiresAuth: true },
     children: [
@@ -54,6 +64,20 @@ const routes: Array<RouteRecordRaw> = [
         meta: { guestOnly: true }
       }
     ]
+  },
+
+  {
+    path: ROUTE.NOT_FOUND,
+    name: 'NotFound',
+    component: () => import('../views/Error/NotFoundPage.vue'),
+    meta: { layout: "noLayout", requiresAuth: false }
+  },
+
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFoundAll',
+    component: () => import('../views/Error/NotFoundPage.vue'),
+    meta: { layout: "noLayout", requiresAuth: false }
   },
 ]
 

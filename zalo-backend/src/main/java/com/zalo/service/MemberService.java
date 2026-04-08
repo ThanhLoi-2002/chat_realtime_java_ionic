@@ -77,7 +77,7 @@ public class MemberService {
     private int getRolePriority(MemberRole role) {
         if (role == null) return 3; // Mặc định thấp nhất
         return switch (role) {
-            case ADMIN -> 1;
+            case GOLDEN_KEY -> 1;
             case SILVER_KEY -> 2;
             case MEMBER -> 3;
             default -> 4;

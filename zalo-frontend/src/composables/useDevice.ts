@@ -26,10 +26,15 @@ export function useDevice() {
     }
   };
 
+  const isSmartDevice = () => {
+    // Trả về true nếu chạy trên App cài đặt (Android/iOS App)
+    // Trả về false nếu chạy trên Chrome/Safari/Edge...
+    return isPlatform('hybrid');
+  };
+
   const logDeviceInfo = async () => {
     const info = await Device.getInfo();
     console.log(info);
-    // { model: "iPhone 13", platform: "ios", osVersion: "15.0", ... }
   };
 
   onMounted(() => {
@@ -42,6 +47,6 @@ export function useDevice() {
   })
 
   return {
-    isMobile, checkDevice, platforms, logDeviceInfo
+    isMobile, checkDevice, platforms, logDeviceInfo, isSmartDevice
   }
 }

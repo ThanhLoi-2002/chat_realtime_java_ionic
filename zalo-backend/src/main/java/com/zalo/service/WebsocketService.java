@@ -48,91 +48,65 @@ public class WebsocketService {
     }
 
     public void updateMessage(Message message) {
-        List<ConversationMember> members = memberRepo.findByConversationId(message.getConversationId());
-
         Map<String, Object> payload = new HashMap<>();
         payload.put("message", new MessageResponse(message, "sender", "replyToMessage"));
 
-        for (ConversationMember member : members) {
-            Set<String> sessions = userOnlineStorage.getSessions(member.getUserId());
-
-            for (String sessionId : sessions) {
-
-                messagingTemplate.convertAndSendToUser(sessionId, "/queue/chat.updateMessages", payload, userOnlineStorage.createHeaders(sessionId));
-            }
-        }
+        realtimeToConversation(message.getConversationId(), payload, "/queue/chat.updateMessages");
     }
 
     public void addReaction(Long conversationId, MessageReaction mr) {
-        List<ConversationMember> members = memberRepo.findByConversationId(conversationId);
-
         Map<String, Object> payload = new HashMap<>();
         payload.put("reaction", new MessageReactionResponse(mr, "createdBy"));
 
-        for (ConversationMember member : members) {
-            Set<String> sessions = userOnlineStorage.getSessions(member.getUserId());
-
-            for (String sessionId : sessions) {
-
-                messagingTemplate.convertAndSendToUser(sessionId, "/queue/chat.conversation." + conversationId + ".addReaction", payload, userOnlineStorage.createHeaders(sessionId));
-                System.out.println("/queue/chat.conversation." + conversationId + ".addReaction");
-            }
-        }
+        realtimeToConversation(conversationId, payload, "/queue/chat.conversation." + conversationId + ".addReaction");
     }
 
     public void removeAllReactionByUserId(Long conversationId, Long messageId, List<MessageReaction> mrs) {
-        List<ConversationMember> members = memberRepo.findByConversationId(conversationId);
-
         List<MessageReactionResponse> list = mrs.stream().map(m -> new MessageReactionResponse(m, "createdBy")).toList();
+
         Map<String, Object> payload = new HashMap<>();
         payload.put("reactions", list);
         payload.put("messageId", messageId);
 
-        for (ConversationMember member : members) {
-            Set<String> sessions = userOnlineStorage.getSessions(member.getUserId());
-
-            for (String sessionId : sessions) {
-
-                messagingTemplate.convertAndSendToUser(sessionId, "/queue/chat.conversation." + conversationId + ".reactions", payload, userOnlineStorage.createHeaders(sessionId));
-            }
-        }
+        realtimeToConversation(conversationId, payload, "/queue/chat.conversation." + conversationId + ".reactions");
     }
 
     public void leaveGroup(Long conversationId, Long userId){
-        List<ConversationMember> members = memberRepo.findByConversationId(conversationId);
-
         Map<String, Object> payload = new HashMap<>();
         payload.put("userId", userId);
 
         //Realtime for members in the group
-        for (ConversationMember member : members) {
-            Set<String> sessions = userOnlineStorage.getSessions(member.getUserId());
-
-            for (String sessionId : sessions) {
-                messagingTemplate.convertAndSendToUser(sessionId, "/queue/chat.conversation." + conversationId + ".leaveGroup", payload, userOnlineStorage.createHeaders(sessionId));
-            }
-        }
+        realtimeToConversation(conversationId, payload, "/queue/chat.conversation." + conversationId + ".leaveGroup");
 
         //Realtime for user who leaved the group
         Set<String> sessions = userOnlineStorage.getSessions(userId);
-
         for (String sessionId : sessions) {
             messagingTemplate.convertAndSendToUser(sessionId, "/queue/chat.conversation." + conversationId + ".leaveGroup", payload, userOnlineStorage.createHeaders(sessionId));
         }
     }
 
     public void addMembers(Long conversationId, List<MemberResponse> memberResponses){
-        List<ConversationMember> members = memberRepo.findByConversationId(conversationId);
-
         Map<String, Object> payload = new HashMap<>();
         payload.put("members", memberResponses);
+        realtimeToConversation(conversationId, payload, "/queue/chat.conversation." + conversationId + ".addMembers");
+    }
+
+    public void disbandGroup(Long conversationId) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("conversationId", conversationId);
+
+        realtimeToConversation(conversationId, payload, "/queue/chat.conversation." + conversationId + ".disbandGroup");
+    }
+
+    public void realtimeToConversation(Long conversationId, Object payload, String destination){
+        List<ConversationMember> members = memberRepo.findByConversationId(conversationId);
 
         for (ConversationMember member : members) {
             Set<String> sessions = userOnlineStorage.getSessions(member.getUserId());
 
             for (String sessionId : sessions) {
 
-                messagingTemplate.convertAndSendToUser(sessionId, "/queue/chat.conversation." + conversationId + ".addMembers", payload, userOnlineStorage.createHeaders(sessionId));
+                messagingTemplate.convertAndSendToUser(sessionId, destination, payload, userOnlineStorage.createHeaders(sessionId));
             }
         }
     }

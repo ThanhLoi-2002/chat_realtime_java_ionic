@@ -15,6 +15,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 public interface ConversationRepository extends JpaRepository<Conversation, Long>, JpaSpecificationExecutor<Conversation> {
+    Optional<Conversation> findByInviteCode(String inviteCode);
     // Find a private conversation that includes two users.
     // Since we don't have relationships, we search conversation_members table via native query.
     @Query(value = """

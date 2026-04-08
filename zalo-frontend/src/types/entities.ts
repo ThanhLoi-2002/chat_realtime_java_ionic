@@ -30,6 +30,8 @@ export type UserType = BaseType & {
 export type ConversationType = BaseType & {
   type: ConversationEnum
   name?: string
+  inviteCode: string
+  description: string
   avatar: FileType
   lastMessageId?: number
   lastMessage?: MessageType

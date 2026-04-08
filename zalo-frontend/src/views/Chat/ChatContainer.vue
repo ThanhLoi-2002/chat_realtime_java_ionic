@@ -187,8 +187,8 @@ const reset = async () => {
     messageStorage.resetPagination()
 
     roles.value = conversationStorage.conversation?.members?.reduce((acc, member) => {
-        // Chỉ lấy những người là ADMIN hoặc SILVER_KEY
-        if (member.role === MemberRoleEnum.ADMIN || member.role === MemberRoleEnum.SILVER_KEY) {
+        // Chỉ lấy những người là GOLDEN_KEY hoặc SILVER_KEY
+        if (member.role === MemberRoleEnum.GOLDEN_KEY || member.role === MemberRoleEnum.SILVER_KEY) {
             acc[member.id] = member.role;
         }
         return acc;
