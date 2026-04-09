@@ -1,5 +1,5 @@
-import { MessageType } from "./entities";
-import { MessageEnum } from "./enum";
+import { MediaType, MessageType } from "./entities";
+import { ModuleEnum, MessageEnum, ResourceEnum } from "./enum";
 
 export type IResponse<T = any> = {
   // status: boolean;
@@ -25,11 +25,11 @@ export type SearchFriendPageType = "addFriend" | "friendProfile"
 export type FriendMenuType = "friendList" | "groupList" | "friendInvitation" | "groupInvitation"
 
 export type SendMessageType = {
-  content?: string
+  content?: string | null
   conversationId?: number
   replyToId?: number
   contentType: MessageEnum
-  file?: File
+  attachments?: MediaType[]
 }
 
 export type SendAddFriendRequestType = {
@@ -49,3 +49,20 @@ export type MessageFilter = BaseFilter & {
 }
 
 export type ConversationFilter = BaseFilter
+
+export type GetPresignedUrlType = {
+  folder: string
+  resourceType: ResourceEnum
+}
+
+export type UploadFileType = {
+  folder: string
+  file: File
+  resourceType: ResourceEnum
+}
+
+export type UploadFileRequest = {
+  params: UploadFileType[]
+  updateProgress?: (index: number, percent: number) => void
+  moduleType: ModuleEnum
+}

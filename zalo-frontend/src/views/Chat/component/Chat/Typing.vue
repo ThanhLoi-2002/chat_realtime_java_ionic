@@ -21,13 +21,27 @@
         </div>
 
         <div class="w-[97%] overflow-x-auto">
-            <div v-if="previewImages.length > 0"
+            <div v-if="previewFiles.length > 0"
                 class="flex flex-nowrap gap-3 p-3 w-1/2 border-t border-gray-200 dark:border-slate-700 bg-gray-50/50 dark:bg-gray-900/50 scrollbar-hide">
 
-                <div v-for="(img, index) in previewImages" :key="index"
-                    class="relative w-20 h-20 rounded-xl overflow-hidden shadow-sm shrink-0 border border-gray-200 dark:border-slate-600">
+                <div v-for="(file, index) in previewFiles" :key="index" class="relative w-20 h-20 ...">
+                    <img :src="file.url" class="w-full h-full object-cover"
+                        :class="{ 'opacity-50': uploadProgress[index] < 100 }" />
 
-                    <img :src="img" class="w-full h-full object-cover" />
+                    <div v-if="uploadProgress[index] > 0 && uploadProgress[index] < 100"
+                        class="absolute bottom-0 left-0 w-full h-3 bg-gray-200/50 z-20">
+                        <div class="h-full bg-blue-500 transition-all duration-300"
+                            :style="{ width: uploadProgress[index] + '%' }">
+                        </div>
+                        <span
+                            class="absolute inset-0 flex items-center justify-center text-[10px] text-white font-black drop-shadow-md">
+                            {{ uploadProgress[index] }}%
+                        </span>
+                    </div>
+
+                    <div v-if="uploadProgress[index] === 100" class="absolute top-1 left-1 text-green-500">
+                        ✅
+                    </div>
 
                     <button @click="removeImage(index)"
                         class="absolute top-1 right-1 cursor-pointer bg-black/60 hover:bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] transition-colors shadow-md">
@@ -47,7 +61,7 @@
                         🙂
                     </button>
 
-                    <input type="file" ref="fileInput" multiple accept="image/*" class="hidden"
+                    <input type="file" ref="fileInput" multiple accept="image/*,video/*" class="hidden"
                         @change="handleSelectImages" />
 
                     <button @click="fileInput?.click()"
@@ -62,7 +76,7 @@
                         :placeholder="t('typeMessage')"
                         class="flex-1 bg-transparent outline-none text-xs md:text-base dark:text-slate-200 placeholder-gray-400 dark:placeholder-gray-500" />
                     <base-button icon="fa-solid fa-paper-plane text-blue-500 text-xs md:text-xl" @click="sendMessage"
-                        class="ml-1" />
+                        class="ml-1" :disabled="isLoadingSendMessage" />
                 </div>
             </div>
         </div>
@@ -74,11 +88,12 @@ import EmojiPicker from '@/components/Emoji/EmojiPicker.vue';
 import { useDebounce } from '@/composables/useDebounce';
 import { useScroll } from '@/composables/useScroll';
 import { useTranslate } from '@/composables/useTranslate';
+import { useUpload } from '@/composables/useUpload';
 import { useConversationStore } from '@/stores/conversation.storage';
 import { useMessageStore } from '@/stores/message.storage';
 import { useUserStore } from '@/stores/user.storage';
-import { SendMessageType } from '@/types/common';
-import { MessageEnum } from '@/types/enum';
+import { SendMessageType, UploadFileRequest, UploadFileType } from '@/types/common';
+import { MessageEnum, ModuleEnum, ResourceEnum } from '@/types/enum';
 import { socketSubscribe, sockJSSendMessage } from '@/utils/websocket';
 import { StompSubscription } from '@stomp/stompjs';
 import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
@@ -91,6 +106,7 @@ const { t } = useTranslate()
 const conversationStorage = useConversationStore()
 const userStorage = useUserStore()
 const messageStorage = useMessageStore()
+const { uploadFiles } = useUpload()
 const { scrollToBottom } = useScroll()
 
 const message = ref('')
@@ -99,50 +115,72 @@ const typingUsers = ref<Map<number, any>>(new Map())
 const emojiWrapper = ref<any>(null)
 
 const fileInput = ref<HTMLInputElement | null>(null)
-const selectedImages = ref<File[]>([])
-const previewImages = ref<string[]>([])
+const selectedRawFiles = ref<File[]>([])
+const previewFiles = ref<{ url: string, type: ResourceEnum }[]>([])
 const showEmoji = ref(false)
+const isLoadingSendMessage = ref(false)
+// State lưu trữ tiến độ upload để hiển thị UI
+const uploadProgress = ref<Record<number, number>>({});
 
-const handleSelectImages = (e: Event) => {
-    const input = e.target as HTMLInputElement
-    const files = Array.from(input.files || [])
+const mainFolder = "zalo_java_ionic"
+const imageFolder = `${mainFolder}/images`
+const videoFolder = `${mainFolder}/videos`
+const rawFolder = `${mainFolder}/raws`
 
-    selectedImages.value = [...selectedImages.value, ...files]
+const handleSelectImages = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    if (!target.files) return;
 
-    // tạo preview
-    files.forEach((file: File) => {
-        const url = URL.createObjectURL(file)
-        previewImages.value.push(url)
-    })
+    const files = Array.from(target.files);
 
-    // reset input để chọn lại cùng file vẫn trigger
-    // e.target.value = ''
-}
+    files.forEach(file => {
+        // Tạo URL tạm thời trỏ đến file trong bộ nhớ trình duyệt
+        const objectUrl = URL.createObjectURL(file);
+
+        previewFiles.value.push({
+            url: objectUrl,
+            type: file.type.startsWith('video') ? ResourceEnum.VIDEO : ResourceEnum.IMAGE
+        });
+
+        selectedRawFiles.value.push(file);
+    });
+
+    // Reset input để có thể chọn lại cùng 1 file nếu cần
+    target.value = '';
+};
 
 const removeImage = (index: number) => {
-    previewImages.value.splice(index, 1)
-    selectedImages.value.splice(index, 1)
+    previewFiles.value.splice(index, 1)
+    selectedRawFiles.value.splice(index, 1)
 }
 
 const sendImages = async () => {
-    for (const file of selectedImages.value) {
-        const success = await messageStorage.sendMessage({
-            file,
-            conversationId: conversationStorage.conversation?.id,
-            contentType: MessageEnum.IMAGE
-        })
+    if (selectedRawFiles.value.length === 0) return null;
 
-        success && scrollToBottom(props.scrollContainer, true)
+    const params: UploadFileType[] = selectedRawFiles.value.map((file: File) => ({
+        file,
+        resourceType: file.type.startsWith('video') ? ResourceEnum.VIDEO : ResourceEnum.IMAGE,
+        folder: file.type.startsWith('video') ? videoFolder : imageFolder
+    }))
+
+    const dto: UploadFileRequest = {
+        params,
+        updateProgress: (index: number, percent: number) => uploadProgress.value[index] = percent,
+        moduleType: ModuleEnum.MESSAGE
     }
 
+    const data = await uploadFiles(dto)
+    console.log(data)
+
     // clear
-    selectedImages.value = []
-    previewImages.value = []
+    selectedRawFiles.value = []
+    previewFiles.value = []
+
+    return data
 }
 
 const toggleEmoji = () => {
     showEmoji.value = !showEmoji.value
-    console.log(showEmoji.value)
 }
 
 const { debounced: sendTyping } = useDebounce(() => {
@@ -176,24 +214,29 @@ const handleSelectEmoji = (emoji: any) => {
 }
 
 const sendMessage = async () => {
-    if (selectedImages.value.length) {
-        await sendImages()
-    }
+    const content = message.value.trim() || null
+    if (!content && previewFiles.value.length == 0) return
 
-    if (!message.value.trim()) return
+    isLoadingSendMessage.value = true
+
+    const filesData = await sendImages()
 
     const payload: SendMessageType = {
-        content: message.value.trim(),
+        content,
         conversationId: conversationStorage.conversation?.id,
-        contentType: MessageEnum.TEXT
+        contentType: filesData && filesData.length > 1 ? MessageEnum.IMAGE : MessageEnum.TEXT,
+        attachments: filesData ? filesData : []
     }
 
     const success = await messageStorage.sendMessage(payload);
 
     if (success) {
         message.value = ''
+        uploadProgress.value = {}
         scrollToBottom(props.scrollContainer, true)
     }
+
+    isLoadingSendMessage.value = false
 }
 
 const handleClickOutside = (event: any) => {

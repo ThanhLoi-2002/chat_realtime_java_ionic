@@ -7,18 +7,7 @@ import { ReactionEnum } from "@/types/enum";
 const sendMessage = async (data: SendMessageType) => {
     const { conversationId, ...rest } = data
 
-    const formData = new FormData()
-
-    Object.entries(rest).forEach(([key, value]) => {
-        if (value === null || value === undefined) return
-        formData.append(key, value as any)
-    })
-
-    return await axios.post<IResponse<MessageType>>(`/conversations/${conversationId}/messages`, formData, {
-        headers: {
-            "Content-Type": "multipart/form-data"
-        }
-    });
+    return await axios.post<IResponse<MessageType>>(`/conversations/${conversationId}/messages`, rest);
 }
 
 const getMessages = async (options: MessageFilter) => {

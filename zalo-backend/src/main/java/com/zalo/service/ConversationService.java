@@ -1,40 +1,31 @@
 package com.zalo.service;
 
-import com.zalo.configuration.G;
 import com.zalo.dto.filter.ConversationFilter;
 import com.zalo.dto.filter.UserFilter;
 import com.zalo.dto.request.Conversation.CreateGroupRequest;
-import com.zalo.dto.request.Message.CreateMessageRequest;
 import com.zalo.dto.request.Message.CreateSystemMessageRequest;
 import com.zalo.dto.response.Conversation.ConversationInfoResponse;
 import com.zalo.dto.response.Conversation.ConversationResponse;
 import com.zalo.dto.response.Conversation.MemberResponse;
-import com.zalo.dto.response.Message.MessageResponse;
-import com.zalo.dto.response.User.UserResponse;
 import com.zalo.model.*;
 import com.zalo.model.enums.ConversationType;
 import com.zalo.model.enums.MemberRole;
-import com.zalo.model.enums.MessageType;
 import com.zalo.model.enums.SystemMessageType;
-import com.zalo.model.metadata.SystemMetadata;
 import com.zalo.repository.ConversationMemberRepository;
 import com.zalo.repository.ConversationRepository;
 import com.zalo.repository.MessageRepository;
 import com.zalo.repository.UserRepository;
 import com.zalo.repository.dto.UnreadDto;
-import jakarta.persistence.EntityManager;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.lang.reflect.Member;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -50,7 +41,6 @@ public class ConversationService {
     SystemMessageService systemMessageService;
     WebsocketService websocketService;
     MemberService memberService;
-    CloudinaryService cloudinaryService;
     MessageRepository messRepo;
 
     public Conversation createPrivateConversation(Long creatorId, Long otherUserId) {

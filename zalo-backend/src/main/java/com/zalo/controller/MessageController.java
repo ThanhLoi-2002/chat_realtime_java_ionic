@@ -32,7 +32,7 @@ public class MessageController {
 
     @PostMapping
     @CheckConversationMember
-    public void send(@PathVariable Long conversationId, @CurrentUser User user, @ModelAttribute CreateMessageRequest dto) throws IOException {
+    public void send(@PathVariable Long conversationId, @CurrentUser User user, @RequestBody CreateMessageRequest dto) throws IOException {
         messageService.sendMessage(conversationId, user.getId(), dto);
     }
 

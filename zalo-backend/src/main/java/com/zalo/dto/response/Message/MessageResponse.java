@@ -6,6 +6,8 @@ import com.zalo.model.File;
 import com.zalo.model.Message;
 import com.zalo.model.enums.MessageType;
 import com.zalo.model.metadata.SystemMetadata;
+import com.zalo.modules.media.dtos.responses.MediaResponse;
+import com.zalo.modules.media.entities.Media;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.BeanUtils;
@@ -32,6 +34,8 @@ public class MessageResponse extends BaseResponse {
 
     SystemMetadataResponse systemMetadata;
 
+    List<MediaResponse> attachments;
+
     public MessageResponse(Message m, String... relations) {
         super(m, relations);
         BeanUtils.copyProperties(m, this, "replyToMessage", "sender", "createdBy", "updatedBy");
@@ -49,5 +53,7 @@ public class MessageResponse extends BaseResponse {
                 this.sender = new UserResponse(m.getSender());
             }
         }
+
+        this.attachments = m.getAttachments().stream().map(MediaResponse::new).toList();
     }
 }

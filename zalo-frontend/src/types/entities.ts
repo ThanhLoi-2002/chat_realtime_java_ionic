@@ -1,5 +1,5 @@
 import { FileType } from "./common"
-import { ConversationEnum, DeliveryStatusEnum, FriendshipStatusEnum, MemberRoleEnum, MessageEnum, ReactionEnum, SystemMetadataEnum } from "./enum"
+import { ConversationEnum, DeliveryStatusEnum, FriendshipStatusEnum, MemberRoleEnum, MessageEnum, ModuleEnum, ReactionEnum, SystemMetadataEnum } from "./enum"
 
 export type BaseType = {
     id: number
@@ -50,6 +50,7 @@ export type MessageType = BaseType & {
   replyToMessageId: number
   reactions: ReactionType[]
   systemMetadata: SystemMetadataType
+  attachments: MediaType[]
 }
 
 export type ConversationMemberType = BaseType & {
@@ -88,4 +89,16 @@ export type MemberType = UserType & {
 export type SystemMetadataType = {
     type: SystemMetadataEnum
     addedUsersToGroup: UserType[]
+}
+
+export type MediaType = BaseType & {
+  secureUrl: string
+  publicId: string
+  moduleType: ModuleEnum
+  // moduleId: number
+  resourceType: string
+  format: string
+  bytes: number
+  width: number
+  height: number
 }

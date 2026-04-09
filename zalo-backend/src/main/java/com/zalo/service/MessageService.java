@@ -1,6 +1,5 @@
 package com.zalo.service;
 
-import com.zalo.configuration.G;
 import com.zalo.dto.filter.MessageFilter;
 import com.zalo.dto.request.Message.AddReactionRequest;
 import com.zalo.dto.request.Message.CreateMessageRequest;
@@ -14,6 +13,10 @@ import com.zalo.model.enums.ConversationType;
 import com.zalo.model.enums.DeliveryStatus;
 import com.zalo.model.enums.MessageType;
 import com.zalo.model.enums.SystemMessageType;
+import com.zalo.modules.media.dtos.requests.MediaRequest;
+import com.zalo.modules.media.entities.MediaType;
+import com.zalo.modules.media.service.MediaInterface;
+import com.zalo.modules.media.service.MediaService;
 import com.zalo.repository.*;
 import jakarta.persistence.EntityManager;
 import lombok.AccessLevel;
@@ -22,7 +25,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,68 +46,96 @@ public class MessageService {
     ConversationService conversationService;
     EntityManager em;
     WebsocketService websocketService;
-    CloudinaryService cloudinaryService;
     MessageReactionRepository messageReactionRepository;
     UserService userService;
     MemberService memberService;
+    MediaInterface mediaInterface;
 
     public void sendMessage(Long conversationId, Long senderId, CreateMessageRequest dto) throws IOException {
         // optional check replyTo exists
         if (dto.replyToId != null) messageRepo.findById(dto.replyToId).orElseThrow();
 
+        List<MediaRequest> attachments = dto.attachments;
+        int fileCount = (attachments != null) ? attachments.size() : 0;
+
+        // TRƯỜNG HỢP 1: Nhiều file (> 1) -> Tách TEXT và MEDIA riêng
+        if (fileCount > 1) {
+            // Gửi tin nhắn TEXT trước (nếu có nội dung)
+            if (dto.content != null && !dto.content.trim().isEmpty()) {
+                saveAndNotifyMessage(conversationId, senderId, dto.content, MessageType.TEXT, null, dto.replyToId);
+            }
+            // Gửi tin nhắn MEDIA chứa toàn bộ list ảnh (content lúc này thường để null hoặc tùy bạn)
+            saveAndNotifyMessage(conversationId, senderId, null, MessageType.IMAGE, attachments, null);
+        }
+        // TRƯỜNG HỢP 2: 1 file hoặc 0 file -> Gộp chung
+        else {
+            MessageType type = fileCount == 1 ? MessageType.IMAGE : MessageType.TEXT;
+            saveAndNotifyMessage(conversationId, senderId, dto.content, type, attachments, dto.replyToId);
+        }
+    }
+
+    private void saveAndNotifyMessage(Long conversationId, Long senderId, String content,
+                                      MessageType type, List<MediaRequest> attachments, Long replyId) {
+        if(content == null && attachments.isEmpty()) return;
+
+        // 1. Lưu Message chính
         Message m = Message.builder()
                 .conversationId(conversationId)
                 .senderId(senderId)
-                .content(dto.content)
-                .contentType(dto.contentType)
-                .replyToMessageId(dto.replyToId)
+                .content(content)
+                .contentType(type)
+                .replyToMessageId(replyId)
                 .build();
+        Message newMess = messageRepo.save(m);
 
-        if (dto.contentType == MessageType.IMAGE) {
-            File file = cloudinaryService.uploadFile(dto.file);
-            m.setFile(file);
+        // 2. Lưu danh sách Media (nếu có)
+        if (attachments != null && !attachments.isEmpty()) {
+            List<MediaRequest> mediaEntities = attachments.stream().map(f -> {
+                MediaRequest media = new MediaRequest();
+                media.setModuleId(newMess.getId());
+                media.setModuleType(MediaType.MESSAGE); // Enum bạn đã định nghĩa
+                media.setSecureUrl(f.getSecureUrl());
+                media.setPublicId(f.getPublicId());
+                media.setResourceType(f.getResourceType());
+                media.setFormat(f.getFormat());
+                media.setBytes(f.getBytes());
+                media.setHeight(f.height);
+                media.setWidth(f.width);
+                return media;
+            }).collect(Collectors.toList());
+            mediaInterface.saveAll(mediaEntities, senderId);
         }
 
-        m = messageRepo.save(m);
-        // clear persistence context
+        // 3. Đồng bộ Persistence Context (Flush/Refresh)
         em.flush();
         em.refresh(m);
+        Message finalMsg = findByIdWithRelationShip(m.getId(), conversationId);
 
-        m = findByIdWithRelationShip(m.getId(), conversationId);
-
-        // update lastMessage for conversation
-        Conversation conv = conversationService.findById(conversationId);
-        conv.setLastMessageId(m.getId());
+        // 4. Cập nhật Last Message cho Conversation
+        Conversation conv = conversationRepository.findById(conversationId).orElseThrow();
+        conv.setLastMessageId(finalMsg.getId());
         conversationRepository.save(conv);
 
-        em.flush();
-        em.refresh(conv);
-
-        conv = conversationService.findByIdWithRelationShip(conversationId);
-
-        // create statuses for each member in conversation
+        // 5. Tạo MessageStatus cho các thành viên
         List<ConversationMember> members = memberRepo.findByConversationId(conversationId);
-        List<MessageStatus> statuses = new ArrayList<>();
-        for (ConversationMember member : members) {
-            MessageStatus st = MessageStatus.builder()
-                    .messageId(m.getId())
-                    .userId(member.getUserId())
-                    .status(member.getUserId().equals(senderId) ? DeliveryStatus.DELIVERED : DeliveryStatus.SENT)
-                    .build();
-            statuses.add(st);
-        }
+        List<MessageStatus> statuses = members.stream().map(member ->
+                MessageStatus.builder()
+                        .messageId(finalMsg.getId())
+                        .userId(member.getUserId())
+                        .status(member.getUserId().equals(senderId) ? DeliveryStatus.DELIVERED : DeliveryStatus.SENT)
+                        .build()
+        ).collect(Collectors.toList());
         statusRepo.saveAll(statuses);
 
-        //mark read my message
-        markRead(conversationId, senderId, m.getId());
+        // 6. Đánh dấu đã xem cho chính mình
+        markRead(conversationId, senderId, finalMsg.getId());
 
-        ConversationResponse conversationResponse = new ConversationResponse(conv, "recipient", "lastMessage", "createdBy");
-
+        // 7. Bắn WebSocket
+        ConversationResponse convRes = new ConversationResponse(conversationService.findByIdWithRelationShip(conversationId), "recipient", "lastMessage", "createdBy");
         if (conv.getType() == ConversationType.GROUP) {
-            conversationResponse.setMembers(memberService.getMembers(conv.getId()));
+            convRes.setMembers(memberService.getMembers(conv.getId()));
         }
-
-        websocketService.sendMessage(new MessageResponse(m, "sender"), conversationResponse, members);
+        websocketService.sendMessage(new MessageResponse(finalMsg, "sender"), convRes, members);
     }
 
     public Page<MessageResponse> fetchMessages(Long conversationId, MessageFilter filter) {
@@ -131,7 +161,7 @@ public class MessageService {
 
             m.setReactions(mapReaction.getOrDefault(m.getId(), List.of()));
 
-            getSystemMetadata(e,m);
+            getSystemMetadata(e, m);
 
             return m;
         });
@@ -174,9 +204,9 @@ public class MessageService {
     public void addReaction(Long conversationId, Long userId, AddReactionRequest dto) {
         MessageReaction mr = messageReactionRepository.findByMessageIdAndCuAndType(dto.messageId, userId, dto.type);
 
-        if(mr != null){
+        if (mr != null) {
             mr.setCount(mr.getCount() + 1);
-        }else {
+        } else {
             mr = new MessageReaction();
             mr.setCu(userId);
             mr.setMessageId(dto.messageId);
@@ -205,12 +235,12 @@ public class MessageService {
     }
 
     public void getSystemMetadata(Message e, MessageResponse rp) {
-        if(e.getContentType() == MessageType.SYSTEM && e.getSystemMetadata() != null){
+        if (e.getContentType() == MessageType.SYSTEM && e.getSystemMetadata() != null) {
             SystemMetadataResponse metadataResponse = new SystemMetadataResponse();
 
             metadataResponse.setType(e.getSystemMetadata().getType());
 
-            if(e.getSystemMetadata().getType() == SystemMessageType.ADD_USERS_TO_GROUP){
+            if (e.getSystemMetadata().getType() == SystemMessageType.ADD_USERS_TO_GROUP) {
                 List<Long> userIds = e.getSystemMetadata().getAddedUsersToGroup();
                 List<User> users = userService.findByIdIn(userIds);
 

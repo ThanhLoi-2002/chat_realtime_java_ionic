@@ -70,8 +70,8 @@
             </div>
         </teleport>
 
-        <confirm-modal v-model:showConfirm="showConfirm" :onOk="onDelete" :message="t('leaveTheGroup')"
-            :header="t('leaveTheGroup')"/>
+        <confirm-modal v-model:showConfirm="showConfirm" :onOk="onDelete" :message="t('deleteMessage')"
+            :header="t('deleteMessage')"/>
     </div>
 </template>
 

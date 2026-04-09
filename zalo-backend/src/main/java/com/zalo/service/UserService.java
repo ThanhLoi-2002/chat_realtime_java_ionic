@@ -1,16 +1,14 @@
 package com.zalo.service;
 
 import com.cloudinary.api.exceptions.NotFound;
-import com.zalo.configuration.G;
 import com.zalo.dto.filter.UserFilter;
-import com.zalo.dto.response.User.UserResponse;
 import com.zalo.model.File;
 import com.zalo.model.User;
+import com.zalo.modules.media.service.MediaService;
 import com.zalo.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.NonUniqueResultException;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -30,7 +28,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final CloudinaryService cloudinaryService;
+    private final MediaService cloudinaryService;
 
     public User getOneByToken(String token) throws NotFound {
         Claims claims = jwtService.extractAllClaims(token);

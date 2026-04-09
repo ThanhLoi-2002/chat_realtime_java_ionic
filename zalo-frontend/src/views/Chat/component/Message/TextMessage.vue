@@ -20,15 +20,28 @@
 
     <!-- CONTENT -->
     <div :class="[message.showTime ? 'py-1' : 'py-0.5']">
-      <!-- nếu bị thu hồi -->
       <span v-if="message.stt === -1" class="italic text-gray-700 dark:text-gray-600">
         {{ isOwner ? t("youRecalledmessage") : t("messageHasBeenWithdrawn") }}
       </span>
 
-      <!-- text bình thường -->
-      <span v-else>
-        {{ message.content }}
-      </span>
+      <div v-else class="flex flex-col gap-2">
+        <div v-if="message.attachments?.length === 1" class="">
+          <div class="max-w-62.5 md:max-w-87.5 rounded-lg overflow-hidden border border-black/5 shadow-sm">
+
+            <img v-if="message.attachments[0].resourceType === ResourceEnum.IMAGE" :src="message.attachments[0].secureUrl"
+              class="w-full h-auto object-cover cursor-pointer hover:opacity-95 transition-opacity"
+              @click="messStorage.setPreviewImage(message)" />
+
+            <video v-else-if="message.attachments[0].resourceType === ResourceEnum.VIDEO" :src="message.attachments[0].secureUrl"
+              controls class="w-full h-auto" />
+          </div>
+        </div>
+
+        <span v-if="message.content" :class="isOwner ? 'text-white' : 'text-slate-800 dark:text-slate-100'">
+          {{ message.content }}
+        </span>
+
+      </div>
     </div>
 
     <!-- TIME -->
@@ -45,7 +58,8 @@ import { useDateTime } from "@/composables/useDateTime";
 import { useTranslate } from "@/composables/useTranslate";
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import Reactions from "../Reaction/Reactions.vue";
-import { MemberRoleEnum } from "@/types/enum";
+import { MemberRoleEnum, ResourceEnum } from "@/types/enum";
+import { useMessageStore } from "@/stores/message.storage";
 
 const props = defineProps<{
   setBubbleRef?: (el: HTMLElement | null) => void;
@@ -56,6 +70,7 @@ const props = defineProps<{
 
 const { formatTime } = useDateTime();
 const { t } = useTranslate();
+const messStorage = useMessageStore()
 const emit = defineEmits(['visible']);
 let observer: IntersectionObserver | null = null;
 

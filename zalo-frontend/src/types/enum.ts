@@ -37,3 +37,14 @@ export enum ReactionEnum {
     SAD = 'SAD',
     ANGRY = 'ANGRY'
 }
+
+export enum ResourceEnum {
+    IMAGE = "IMAGE",
+    VIDEO = "VIDEO",
+    RAW = "RAW"
+}
+
+export enum ModuleEnum {
+    CONVERSATION = "CONVERSATION",
+    MESSAGE = "MESSAGE"
+}
