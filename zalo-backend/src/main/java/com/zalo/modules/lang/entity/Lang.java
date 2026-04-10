@@ -1,6 +1,6 @@
 package com.zalo.modules.lang.entity;
 
-import com.zalo.model.BaseEntity;
+import com.zalo.common.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

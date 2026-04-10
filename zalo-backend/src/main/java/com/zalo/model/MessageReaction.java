@@ -1,5 +1,6 @@
 package com.zalo.model;
 
+import com.zalo.common.base.BaseEntity;
 import com.zalo.model.enums.ReactionType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

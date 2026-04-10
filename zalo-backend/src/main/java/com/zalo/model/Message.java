@@ -1,8 +1,10 @@
 package com.zalo.model;
 
-import com.zalo.model.covert.FileConverter;
+import com.zalo.common.base.BaseEntity;
+import com.zalo.common.entity.File;
+import com.zalo.common.covert.FileConverter;
 import com.zalo.model.enums.MessageType;
-import com.zalo.model.metadata.SystemMetadata;
+import com.zalo.common.entity.SystemMetadata;
 import com.zalo.modules.media.entities.Media;
 import com.zalo.modules.user.entities.User;
 import jakarta.persistence.*;

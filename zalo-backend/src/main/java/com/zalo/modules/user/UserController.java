@@ -1,8 +1,8 @@
 package com.zalo.modules.user;
 
-import com.zalo.configuration.anotation.CurrentUser;
-import com.zalo.configuration.anotation.ResponseMessage;
-import com.zalo.dto.filter.UserFilter;
+import com.zalo.common.configuration.anotation.CurrentUser;
+import com.zalo.common.configuration.anotation.ResponseMessage;
+import com.zalo.common.filter.UserFilter;
 import com.zalo.modules.user.dto.response.UserResponse;
 import com.zalo.modules.user.entities.User;
 import com.zalo.modules.user.service.UserService;

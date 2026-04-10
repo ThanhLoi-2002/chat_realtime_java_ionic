@@ -3,7 +3,7 @@
         'text-sm flex flex-col relative min-w-12 rounded-lg',
         'px-2 py-2',
         isOwner && message.content ? 'bg-blue-400 text-white' : !isOwner && message.content ? 'bg-white dark:bg-gray-800 dark:text-slate-100' : '',
-        (role && role != MemberRoleEnum.MEMBER && message.attachments?.length <=1)
+        (role && role != MemberRoleEnum.MEMBER && message.attachments?.length <=1 && !isOwner)
             ? 'border-blue-500 border' // Nếu có role đặc biệt
             : (isOwner ? 'border-blue-500' : 'border-slate-300 dark:border-gray-700') // Border mặc định
     ]" :data-id="message.id">

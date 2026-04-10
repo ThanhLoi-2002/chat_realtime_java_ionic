@@ -7,7 +7,7 @@ import com.zalo.modules.auth.dto.response.LoginResponse;
 import com.zalo.modules.user.entities.User;
 import com.zalo.modules.user.service.UserRepository;
 import com.zalo.modules.user.service.UserService;
-import com.zalo.service.JwtService;
+import com.zalo.common.service.JwtService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

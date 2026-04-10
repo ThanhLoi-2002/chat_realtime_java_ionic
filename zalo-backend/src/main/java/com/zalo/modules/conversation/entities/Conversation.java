@@ -1,10 +1,10 @@
 package com.zalo.modules.conversation.entities;
 
-import com.zalo.model.BaseEntity;
-import com.zalo.model.File;
+import com.zalo.common.base.BaseEntity;
+import com.zalo.common.entity.File;
 import com.zalo.model.Message;
 import com.zalo.modules.user.entities.User;
-import com.zalo.model.covert.FileConverter;
+import com.zalo.common.covert.FileConverter;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

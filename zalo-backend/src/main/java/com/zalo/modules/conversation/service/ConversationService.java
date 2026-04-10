@@ -1,13 +1,13 @@
 package com.zalo.modules.conversation.service;
 
-import com.zalo.dto.filter.ConversationFilter;
-import com.zalo.dto.filter.UserFilter;
+import com.zalo.common.base.BaseEntity;
+import com.zalo.common.filter.ConversationFilter;
+import com.zalo.common.filter.UserFilter;
 import com.zalo.modules.conversation.dto.request.CreateGroupRequest;
 import com.zalo.dto.request.Message.CreateSystemMessageRequest;
 import com.zalo.modules.conversation.dto.respone.ConversationInfoResponse;
 import com.zalo.modules.conversation.dto.respone.ConversationResponse;
 import com.zalo.modules.conversation.dto.respone.MemberResponse;
-import com.zalo.model.*;
 import com.zalo.modules.conversation.entities.ConversationType;
 import com.zalo.modules.conversation.entities.MemberRole;
 import com.zalo.model.enums.SystemMessageType;
@@ -19,7 +19,7 @@ import com.zalo.modules.user.service.UserRepository;
 import com.zalo.modules.conversation.dto.UnreadDto;
 import com.zalo.service.SystemMessageService;
 import com.zalo.modules.user.service.UserService;
-import com.zalo.service.WebsocketService;
+import com.zalo.common.service.WebsocketService;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;

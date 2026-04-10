@@ -1,6 +1,6 @@
 package com.zalo.modules.media.entities;
 
-import com.zalo.model.BaseEntity;
+import com.zalo.common.base.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

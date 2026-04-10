@@ -4,7 +4,7 @@ import com.zalo.dto.response.BaseResponse;
 import com.zalo.dto.response.Message.MessageResponse;
 import com.zalo.modules.user.dto.response.UserResponse;
 import com.zalo.modules.conversation.entities.Conversation;
-import com.zalo.model.File;
+import com.zalo.common.entity.File;
 import com.zalo.modules.conversation.entities.ConversationType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

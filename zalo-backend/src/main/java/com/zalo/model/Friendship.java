@@ -1,5 +1,6 @@
 package com.zalo.model;
 
+import com.zalo.common.base.BaseEntity;
 import com.zalo.model.enums.FriendStatus;
 import com.zalo.modules.user.entities.User;
 import jakarta.persistence.*;

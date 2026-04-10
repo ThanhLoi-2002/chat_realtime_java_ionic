@@ -1,8 +1,8 @@
 package com.zalo.modules.lang;
 
-import com.zalo.configuration.anotation.CurrentUser;
-import com.zalo.configuration.anotation.ResponseMessage;
-import com.zalo.dto.filter.LangFilter;
+import com.zalo.common.configuration.anotation.CurrentUser;
+import com.zalo.common.configuration.anotation.ResponseMessage;
+import com.zalo.common.filter.LangFilter;
 import com.zalo.modules.lang.dto.request.LangCreationRequest;
 import com.zalo.modules.lang.dto.request.LangUpdateRequest;
 import com.zalo.modules.lang.dto.response.LangResponse;

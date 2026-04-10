@@ -1,7 +1,7 @@
 package com.zalo.modules.media.service;
 
 import com.cloudinary.Cloudinary;
-import com.zalo.model.File;
+import com.zalo.common.entity.File;
 import com.zalo.modules.media.dtos.requests.MediaRequest;
 import com.zalo.modules.media.entities.Media;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

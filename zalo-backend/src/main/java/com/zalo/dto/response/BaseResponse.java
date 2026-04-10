@@ -1,7 +1,7 @@
 package com.zalo.dto.response;
 
 import com.zalo.modules.user.dto.response.UserResponse;
-import com.zalo.model.BaseEntity;
+import com.zalo.common.base.BaseEntity;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

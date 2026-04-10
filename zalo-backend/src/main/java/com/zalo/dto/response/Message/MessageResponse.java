@@ -2,7 +2,7 @@ package com.zalo.dto.response.Message;
 
 import com.zalo.dto.response.BaseResponse;
 import com.zalo.modules.user.dto.response.UserResponse;
-import com.zalo.model.File;
+import com.zalo.common.entity.File;
 import com.zalo.model.Message;
 import com.zalo.model.enums.MessageType;
 import com.zalo.modules.media.dtos.responses.MediaResponse;

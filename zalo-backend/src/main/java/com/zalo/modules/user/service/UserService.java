@@ -1,11 +1,11 @@
 package com.zalo.modules.user.service;
 
 import com.cloudinary.api.exceptions.NotFound;
-import com.zalo.dto.filter.UserFilter;
-import com.zalo.model.File;
+import com.zalo.common.filter.UserFilter;
+import com.zalo.common.entity.File;
 import com.zalo.modules.user.entities.User;
 import com.zalo.modules.media.service.MediaService;
-import com.zalo.service.JwtService;
+import com.zalo.common.service.JwtService;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.NonUniqueResultException;

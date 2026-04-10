@@ -1,6 +1,6 @@
 package com.zalo.controller;
 
-import com.zalo.configuration.anotation.CurrentUser;
+import com.zalo.common.configuration.anotation.CurrentUser;
 import com.zalo.dto.request.Friendship.CreateFriendship;
 import com.zalo.dto.response.Friendship.FriendshipResponse;
 import com.zalo.modules.user.dto.response.UserResponse;

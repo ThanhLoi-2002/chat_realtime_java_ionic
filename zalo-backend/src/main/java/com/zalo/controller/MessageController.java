@@ -1,8 +1,8 @@
 package com.zalo.controller;
 
-import com.zalo.configuration.anotation.CheckConversationMember;
-import com.zalo.configuration.anotation.CurrentUser;
-import com.zalo.dto.filter.MessageFilter;
+import com.zalo.common.configuration.anotation.CheckConversationMember;
+import com.zalo.common.configuration.anotation.CurrentUser;
+import com.zalo.common.filter.MessageFilter;
 import com.zalo.dto.request.Message.AddReactionRequest;
 import com.zalo.dto.request.Message.CreateMessageRequest;
 import com.zalo.dto.response.Message.MessageResponse;

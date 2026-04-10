@@ -1,5 +1,6 @@
 package com.zalo.service;
 
+import com.zalo.common.service.WebsocketService;
 import com.zalo.dto.request.Message.CreateSystemMessageRequest;
 import com.zalo.modules.conversation.dto.respone.ConversationResponse;
 import com.zalo.dto.response.Message.MessageResponse;
@@ -11,7 +12,7 @@ import com.zalo.model.Message;
 import com.zalo.modules.user.entities.User;
 import com.zalo.model.enums.MessageType;
 import com.zalo.model.enums.SystemMessageType;
-import com.zalo.model.metadata.SystemMetadata;
+import com.zalo.common.entity.SystemMetadata;
 import com.zalo.modules.conversation.service.MemberService;
 import com.zalo.modules.conversation.service.ConversationMemberRepository;
 import com.zalo.modules.conversation.service.ConversationRepository;
