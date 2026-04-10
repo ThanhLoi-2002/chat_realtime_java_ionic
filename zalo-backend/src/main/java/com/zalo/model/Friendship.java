@@ -1,6 +1,7 @@
 package com.zalo.model;
 
 import com.zalo.model.enums.FriendStatus;
+import com.zalo.modules.user.entities.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

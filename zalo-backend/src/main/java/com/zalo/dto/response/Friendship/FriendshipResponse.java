@@ -1,10 +1,9 @@
 package com.zalo.dto.response.Friendship;
 
 import com.zalo.dto.response.BaseResponse;
-import com.zalo.dto.response.User.UserResponse;
+import com.zalo.modules.user.dto.response.UserResponse;
 import com.zalo.model.Friendship;
 import com.zalo.model.enums.FriendStatus;
-import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

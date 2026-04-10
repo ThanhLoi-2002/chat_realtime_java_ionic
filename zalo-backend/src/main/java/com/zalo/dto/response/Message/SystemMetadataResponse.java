@@ -1,6 +1,6 @@
 package com.zalo.dto.response.Message;
 
-import com.zalo.dto.response.User.UserResponse;
+import com.zalo.modules.user.dto.response.UserResponse;
 import com.zalo.model.enums.SystemMessageType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

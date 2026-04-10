@@ -1,6 +1,6 @@
 package com.zalo.service;
 
-import com.zalo.model.User;
+import com.zalo.modules.user.entities.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.http.HttpStatus;

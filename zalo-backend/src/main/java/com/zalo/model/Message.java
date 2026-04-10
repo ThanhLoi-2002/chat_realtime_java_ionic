@@ -4,6 +4,7 @@ import com.zalo.model.covert.FileConverter;
 import com.zalo.model.enums.MessageType;
 import com.zalo.model.metadata.SystemMetadata;
 import com.zalo.modules.media.entities.Media;
+import com.zalo.modules.user.entities.User;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

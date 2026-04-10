@@ -1,7 +1,7 @@
 package com.zalo.configuration;
 
-import com.zalo.model.User;
-import com.zalo.repository.UserRepository;
+import com.zalo.modules.user.entities.User;
+import com.zalo.modules.user.service.UserRepository;
 import com.zalo.service.JwtService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;

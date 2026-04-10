@@ -2,7 +2,7 @@ package com.zalo.configuration;
 
 import com.zalo.configuration.anotation.ResponseMessage;
 import com.zalo.dto.response.ApiResponse;
-import com.zalo.service.LangService;
+import com.zalo.modules.lang.service.LangService;
 import com.zalo.util.LangUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;

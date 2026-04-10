@@ -1,14 +1,14 @@
 package com.zalo.service;
 
-import com.zalo.dto.response.Conversation.MemberResponse;
+import com.zalo.modules.conversation.dto.respone.MemberResponse;
 import com.zalo.dto.response.Message.MessageReactionResponse;
 import com.zalo.dto.response.Message.MessageResponse;
-import com.zalo.dto.response.Conversation.ConversationResponse;
+import com.zalo.modules.conversation.dto.respone.ConversationResponse;
 import com.zalo.gateway.UserOnlineStorage;
-import com.zalo.model.ConversationMember;
+import com.zalo.modules.conversation.entities.ConversationMember;
 import com.zalo.model.Message;
 import com.zalo.model.MessageReaction;
-import com.zalo.repository.ConversationMemberRepository;
+import com.zalo.modules.conversation.service.ConversationMemberRepository;
 import com.zalo.modules.conversation.service.ConversationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

@@ -1,7 +1,7 @@
 package com.zalo.exception;
 
 import com.zalo.dto.response.ApiResponse;
-import com.zalo.service.LangService;
+import com.zalo.modules.lang.service.LangService;
 import com.zalo.util.LangUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @ControllerAdvice
 @Slf4j

@@ -1,12 +1,10 @@
 package com.zalo.dto.filter;
 
 import com.zalo.dto.common.BaseFilter;
-import com.zalo.model.Conversation;
 import com.zalo.model.Message;
 import com.zalo.model.enums.MessageType;
 import lombok.*;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;

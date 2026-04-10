@@ -1,9 +1,9 @@
 package com.zalo.configuration;
 
 import com.zalo.configuration.anotation.CheckConversationMember;
-import com.zalo.model.ConversationMember;
-import com.zalo.model.User;
-import com.zalo.repository.ConversationMemberRepository;
+import com.zalo.modules.conversation.entities.ConversationMember;
+import com.zalo.modules.user.entities.User;
+import com.zalo.modules.conversation.service.ConversationMemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
@@ -17,7 +17,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.HandlerMapping;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 

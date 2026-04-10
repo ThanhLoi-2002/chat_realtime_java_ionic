@@ -1,19 +1,21 @@
 package com.zalo.service;
 
 import com.zalo.dto.request.Message.CreateSystemMessageRequest;
-import com.zalo.dto.response.Conversation.ConversationResponse;
+import com.zalo.modules.conversation.dto.respone.ConversationResponse;
 import com.zalo.dto.response.Message.MessageResponse;
 import com.zalo.dto.response.Message.SystemMetadataResponse;
-import com.zalo.dto.response.User.UserResponse;
-import com.zalo.model.Conversation;
-import com.zalo.model.ConversationMember;
+import com.zalo.modules.user.dto.response.UserResponse;
+import com.zalo.modules.conversation.entities.Conversation;
+import com.zalo.modules.conversation.entities.ConversationMember;
 import com.zalo.model.Message;
-import com.zalo.model.User;
+import com.zalo.modules.user.entities.User;
 import com.zalo.model.enums.MessageType;
 import com.zalo.model.enums.SystemMessageType;
 import com.zalo.model.metadata.SystemMetadata;
-import com.zalo.repository.ConversationMemberRepository;
+import com.zalo.modules.conversation.service.MemberService;
+import com.zalo.modules.conversation.service.ConversationMemberRepository;
 import com.zalo.modules.conversation.service.ConversationRepository;
+import com.zalo.modules.user.service.UserService;
 import com.zalo.repository.MessageRepository;
 import jakarta.persistence.EntityManager;
 import lombok.AccessLevel;

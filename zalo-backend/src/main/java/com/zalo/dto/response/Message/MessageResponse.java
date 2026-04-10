@@ -1,13 +1,11 @@
 package com.zalo.dto.response.Message;
 
 import com.zalo.dto.response.BaseResponse;
-import com.zalo.dto.response.User.UserResponse;
+import com.zalo.modules.user.dto.response.UserResponse;
 import com.zalo.model.File;
 import com.zalo.model.Message;
 import com.zalo.model.enums.MessageType;
-import com.zalo.model.metadata.SystemMetadata;
 import com.zalo.modules.media.dtos.responses.MediaResponse;
-import com.zalo.modules.media.entities.Media;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.BeanUtils;

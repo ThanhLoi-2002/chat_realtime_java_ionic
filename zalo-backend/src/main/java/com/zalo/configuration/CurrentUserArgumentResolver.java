@@ -1,13 +1,11 @@
 package com.zalo.configuration;
 
-import com.cloudinary.api.exceptions.NotFound;
 import com.zalo.configuration.anotation.CurrentUser;
-import com.zalo.model.User;
-import com.zalo.service.UserService;
+import com.zalo.modules.user.entities.User;
+import com.zalo.modules.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;

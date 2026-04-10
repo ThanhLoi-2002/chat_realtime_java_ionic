@@ -1,12 +1,11 @@
 package com.zalo.controller;
 
-import com.zalo.configuration.G;
 import com.zalo.configuration.anotation.CurrentUser;
 import com.zalo.dto.request.Friendship.CreateFriendship;
 import com.zalo.dto.response.Friendship.FriendshipResponse;
-import com.zalo.dto.response.User.UserResponse;
+import com.zalo.modules.user.dto.response.UserResponse;
 import com.zalo.model.Friendship;
-import com.zalo.model.User;
+import com.zalo.modules.user.entities.User;
 import com.zalo.service.FriendshipService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
