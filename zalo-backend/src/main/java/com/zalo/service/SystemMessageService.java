@@ -13,7 +13,7 @@ import com.zalo.model.enums.MessageType;
 import com.zalo.model.enums.SystemMessageType;
 import com.zalo.model.metadata.SystemMetadata;
 import com.zalo.repository.ConversationMemberRepository;
-import com.zalo.repository.ConversationRepository;
+import com.zalo.modules.conversation.service.ConversationRepository;
 import com.zalo.repository.MessageRepository;
 import jakarta.persistence.EntityManager;
 import lombok.AccessLevel;

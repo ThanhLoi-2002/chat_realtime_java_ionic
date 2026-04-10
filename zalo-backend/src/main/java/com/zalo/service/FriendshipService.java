@@ -1,16 +1,15 @@
 package com.zalo.service;
 
 import com.zalo.dto.request.Friendship.CreateFriendship;
-import com.zalo.dto.request.Message.CreateMessageRequest;
 import com.zalo.dto.request.Message.CreateSystemMessageRequest;
 import com.zalo.dto.response.User.UserResponse;
 import com.zalo.model.Conversation;
 import com.zalo.model.Friendship;
 import com.zalo.model.enums.ConversationType;
 import com.zalo.model.enums.FriendStatus;
-import com.zalo.model.enums.MessageType;
 import com.zalo.model.enums.SystemMessageType;
-import com.zalo.repository.ConversationRepository;
+import com.zalo.modules.conversation.service.ConversationRepository;
+import com.zalo.modules.conversation.service.ConversationService;
 import com.zalo.repository.FriendshipRepository;
 import com.zalo.repository.UserRepository;
 import lombok.AccessLevel;

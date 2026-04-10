@@ -101,4 +101,5 @@ export type MediaType = BaseType & {
   bytes: number
   width: number
   height: number
+  messageContent?: string
 }

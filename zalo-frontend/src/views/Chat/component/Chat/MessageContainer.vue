@@ -14,7 +14,8 @@
         <!-- BUBBLE -->
         <div class="relative group"> <!-- thêm class group ở đây -->
             <image-message :message="message" :setBubbleRef="setBubbleRef"
-                v-if="message.contentType == MessageEnum.IMAGE" :isOwner="isOwner" />
+                v-if="message.contentType == MessageEnum.IMAGE" :isOwner="isOwner" 
+                :role="roles ? roles[message.sender?.id] : undefined"/>
 
             <text-message :message="message" :setBubbleRef="setBubbleRef"
                 v-if="message.contentType == MessageEnum.TEXT || message.contentType == null" :isOwner="isOwner"

@@ -56,7 +56,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleNull(NullPointerException ex) {
 
         String lang = LangUtil.getLang();
+
+        System.out.println("message = " + ex.getMessage());
         ex.printStackTrace();
+
         ApiResponse<?> response = ApiResponse.builder()
 //                .message(langService.t(ex.getMessage(), lang))
                 .message(ex.getMessage())

@@ -9,7 +9,7 @@ import com.zalo.model.ConversationMember;
 import com.zalo.model.Message;
 import com.zalo.model.MessageReaction;
 import com.zalo.repository.ConversationMemberRepository;
-import com.zalo.repository.ConversationRepository;
+import com.zalo.modules.conversation.service.ConversationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;

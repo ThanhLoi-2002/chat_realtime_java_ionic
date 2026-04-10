@@ -10,24 +10,24 @@
 
         <!-- MAIN IMAGE -->
         <div class="relative flex-1 flex items-center justify-center" @click.stop>
-            <img :src="messStorage.previewImage?.file?.url" class="max-w-[90%] max-h-[90%] object-contain transition duration-300" />
+            <img :src="messStorage.previewImage?.secureUrl" class="max-w-[90%] max-h-[90%] object-contain transition duration-300" />
         </div>
 
         <!-- RIGHT SIDEBAR -->
-        <div ref="scroll" class="hidden md:flex w-24 mt-16 bg-black/80 flex-col items-center py-4 gap-3 overflow-y-auto"
+        <div ref="scroll" class="hidden md:flex w-24 mt-16 dark:bg-black/80 flex-col items-center py-4 gap-3 overflow-y-auto"
             @click.stop @scroll="handleScroll">
-            <img v-for="(mess, i) in imageList" :key="i" :src="mess.file?.url" @click="handlePreviewImage(mess)"
-                class="w-16 h-16 object-cover rounded cursor-pointer opacity-70 border border-white/20 transition"
-                :class="mess.id === messStorage.previewImage?.id
-                    ? 'border-2 border-red-400 opacity-100 scale-105'
-                    : ''" />
+            <img v-for="(media, i) in imageList" :key="i" :src="media.secureUrl" @click="handlePreviewImage(media)"
+                class="w-16 h-16 object-cover rounded cursor-pointer opacity-70 border transition"
+                :class="media.id == messStorage.previewImage?.id
+                    ? 'border-2 border-slate-100 opacity-100 scale-105'
+                    : 'border-white/20'" />
         </div>
 
         <div :class="[style.text.primary, 'absolute left-2 bottom-4 flex items-center gap-2']">
-            <CircleAvatar :user="messStorage.previewImage?.sender" :isDisabled="true"/>
+            <CircleAvatar :user="messStorage.previewImage?.createdBy" :isDisabled="true"/>
 
-            <div class="flex flex-col gap-1" :class="[style.text.primary]">
-                <span>{{ messStorage.previewImage?.sender.username }}</span>
+            <div class="flex flex-col gap-1 text-slate-200" >
+                <span>{{ messStorage.previewImage?.createdBy?.username }}</span>
                 <span class="text-xs">{{ formatSeparatorTime(messStorage.previewImage?.ct) }}</span>
             </div>
         </div>
@@ -38,7 +38,7 @@ import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
 import { useDateTime } from '@/composables/useDateTime';
 import { useConversationStore } from '@/stores/conversation.storage';
 import { useMessageStore } from '@/stores/message.storage';
-import { MessageType } from '@/types/entities';
+import { MediaType, MessageType } from '@/types/entities';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { style } from '@/assets/tailwindcss';
 import { useScroll } from '@/composables/useScroll';
@@ -75,7 +75,7 @@ const handleScroll = () => {
     }
 }
 
-const handlePreviewImage = (pi: MessageType) => {
+const handlePreviewImage = (pi: MediaType) => {
     messStorage.setPreviewImage(pi)
 }
 

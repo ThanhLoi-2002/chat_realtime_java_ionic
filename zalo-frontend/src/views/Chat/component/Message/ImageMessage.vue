@@ -1,14 +1,23 @@
 <template>
     <div ref="el" :class="[
-        'text-sm flex flex-col relative min-w-12',
-    ]">
+        'text-sm flex flex-col relative min-w-12 rounded-lg',
+        'px-2 py-2',
+        isOwner && message.content ? 'bg-blue-400 text-white' : !isOwner && message.content ? 'bg-white dark:bg-gray-800 dark:text-slate-100' : '',
+        (role && role != MemberRoleEnum.MEMBER && message.attachments?.length <=1)
+            ? 'border-blue-500 border' // Nếu có role đặc biệt
+            : (isOwner ? 'border-blue-500' : 'border-slate-300 dark:border-gray-700') // Border mặc định
+    ]" :data-id="message.id">
         <!-- USERNAME -->
         <span v-if="message.isFirst && !isOwner" class="text-xs text-slate-400 dark:text-slate-300">
             {{ message.sender?.username }}
         </span>
 
         <!-- CONTENT -->
-        <div :class="[message.showTime ? 'py-1' : 'py-0.5', 'max-w-62.5 md:max-w-100']">
+        <div :class="[
+            message.showTime ? 'py-1' : 'py-0.5',
+            'max-w-62.5 md:max-w-100 flex flex-col gap-2'
+
+        ]">
             <div v-if="message.stt === -1"
                 class="flex flex-col justify-center items-center w-20 h-20 md:w-30 md:h-30 bg-slate-300 dark:bg-slate-500 rounded-xl cursor-pointer hover:opacity-90 transition">
                 <i class="fa-solid fa-image text-6xl md:text-8xl"></i>
@@ -17,26 +26,27 @@
                 </span>
             </div>
 
-            <div v-else-if="message.attachments?.length > 0" class="py-1 max-w-70 md:max-w-105">
-                <div class="flex flex-wrap gap-1 rounded-xl overflow-hidden border border-black/5 shadow-sm">
-
-                    <div v-for="(img, index) in message.attachments" :key="index"
-                        class="relative group cursor-pointer overflow-hidden rounded" :class="[
-                            // Cấu hình Flex Item:
-                            // - 'flex-auto': Tự giãn (flex-grow) để chiếm hết width còn lại của hàng
-                            // - 'h-25': Chiều cao cố định cho mỗi hàng ảnh
-                            // - 'min-w-[30%]': Chiều rộng tối thiểu để ảnh không quá nhỏ (ít nhất 3 ảnh/hàng)
-                            'flex-auto h-25 md:h-32.5 min-w-[30%] aspect-auto',
-
-                            // Xử lý bo góc đặc biệt nếu chỉ có 1 ảnh
-                            message.attachments.length === 1 ? 'rounded-xl h-auto aspect-auto' : ''
-                        ]">
-
-                        <img :src="img.secureUrl" @click="handlePreviewImage(message)"
-                            class="w-full h-full object-cover group-hover:opacity-95 transition-opacity duration-300" />
+            <template v-else>
+                <div v-if="message.attachments?.length > 0" class="max-w-70 md:max-w-105">
+                    <div class="flex flex-wrap gap-1 rounded-xl overflow-hidden border border-black/5 shadow-sm">
+                        <div v-for="(img, index) in message.attachments" :key="index"
+                            class="relative group cursor-pointer overflow-hidden rounded" :class="[
+                                'flex-auto h-25 md:h-32.5 min-w-[30%] aspect-auto',
+                                message.attachments.length === 1 ? 'rounded-xl h-auto max-h-80 aspect-auto' : ''
+                            ]">
+                            <img :src="img.secureUrl" @click="handlePreviewImage(message, +index)"
+                                class="w-full h-full object-cover" />
+                        </div>
                     </div>
                 </div>
-            </div>
+
+                <div v-if="message.content" :class="[
+                    'wrap-break-word leading-relaxed px-1',
+                    isOwner ? 'text-white' : 'text-slate-800 dark:text-slate-200'
+                ]">
+                    {{ message.content }}
+                </div>
+            </template>
         </div>
 
         <!-- TIME -->
@@ -57,12 +67,14 @@ import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { style } from '@/assets/tailwindcss';
 import { useMessageStore } from '@/stores/message.storage';
 import Reactions from '../Reaction/Reactions.vue';
-import { MediaType } from '@/types/entities';
+import { MediaType, MessageType } from '@/types/entities';
+import { MemberRoleEnum } from '@/types/enum';
 
 const props = defineProps<{
     setBubbleRef?: (el: HTMLElement | null) => void
     message: any
     isOwner: boolean
+    role?: MemberRoleEnum;
 }>()
 
 const { formatTime } = useDateTime()
@@ -72,9 +84,13 @@ const { t } = useTranslate()
 const el = ref<HTMLElement | null>(null)
 
 // Sửa lại hàm xử lý click
-const handlePreviewImage = (mess: MediaType) => {
+const handlePreviewImage = (mess: MessageType, index: number) => {
+    const media: MediaType = {
+        ...mess.attachments[index],
+        createdBy: mess.sender
+    }
     // Truyền cả message và index của ảnh được chọn
-    messStorage.setPreviewImage(mess,)
+    messStorage.setPreviewImage(media)
 }
 
 onMounted(() => {

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { MessageType, ReactionType } from '@/types/entities'
+import { MediaType, MessageType, ReactionType } from '@/types/entities'
 import { MessageFilter, SendMessageType } from '@/types/common';
 import { messageApi } from '@/api/message.api';
 import { toast } from '@/utils/toast';
@@ -8,10 +8,10 @@ import { MessageEnum, ReactionEnum } from '@/types/enum';
 interface State {
     isLoading: boolean,
     messages: MessageType[],
-    images: MessageType[],
+    images: MediaType[],
     imagesHasMore: boolean,
     hasMore: boolean,
-    previewImage: MessageType | undefined
+    previewImage: MediaType | undefined
 }
 
 export const useMessageStore = defineStore('message', {
@@ -24,8 +24,9 @@ export const useMessageStore = defineStore('message', {
         previewImage: undefined
     }),
     actions: {
-        setPreviewImage(previewImage?: MessageType) {
+        setPreviewImage(previewImage?: MediaType) {
             this.previewImage = previewImage
+            console.log(previewImage)
         },
 
         async sendMessage(data: SendMessageType) {
@@ -64,8 +65,8 @@ export const useMessageStore = defineStore('message', {
 
                 if (totalElements <= size) this.hasMore = false
 
-                content.forEach((i: MessageType) => {
-                    this.addImageMessage(i)
+                content.forEach((m: MessageType) => {
+                    this.addImage(m)
                 })
             } catch (e: any) {
                 toast({
@@ -83,7 +84,7 @@ export const useMessageStore = defineStore('message', {
                 const { content, page: { size, totalElements } } = result.result
 
                 content.forEach((i: MessageType) => {
-                    this.addImageMessage(i)
+                    this.addImage(i)
                 })
 
                 if (totalElements <= size) this.imagesHasMore = false
@@ -150,7 +151,7 @@ export const useMessageStore = defineStore('message', {
         addNewMessage(data: MessageType) {
             this.messages.push(data)
             if (data.contentType == MessageEnum.IMAGE) {
-                this.images.unshift(data)
+                this.images.unshift(...data.attachments)
             }
         },
         updateMessage(data: MessageType) {
@@ -179,17 +180,19 @@ export const useMessageStore = defineStore('message', {
             })
         },
 
-        addImageMessage(i: MessageType) {
-            // 1. Kiểm tra điều kiện loại nội dung và trạng thái
-            const isValidType = i.contentType === MessageEnum.IMAGE || i.contentType === MessageEnum.VIDEO;
-            const isValidStatus = i.stt === 1;
-
-            if (isValidType && isValidStatus) {
-                // 2. Kiểm tra xem ID đã tồn tại trong mảng images chưa
-                const isExisted = this.images.some(img => img.id === i.id);
+        addImage(m: MessageType) {
+            if (m.contentType == MessageEnum.IMAGE || m.contentType == MessageEnum.VIDEO) {
+                const isExisted = this.images.some(img => img.id === m.id);
 
                 if (!isExisted) {
-                    this.images.push(i);
+                    m.attachments.forEach((item: MediaType) => {
+                        const media: MediaType = {
+                            ...item,
+                            messageContent: m.content,
+                            createdBy: m.sender 
+                        }
+                        this.images.push(media);
+                    })
                 }
             }
         },

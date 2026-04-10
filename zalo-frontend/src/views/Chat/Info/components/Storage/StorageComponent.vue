@@ -3,7 +3,7 @@
         <!-- MEDIA -->
         <collapse v-model:isOpen="open.media" :title="`${t('image')}/${t('video')}`">
             <div class="grid grid-cols-4 gap-2">
-                <img v-for="(i, index) in messStorage.images.slice(0, 8)" :key="index" :src="i.file.url"
+                <img v-for="(i, index) in messStorage.images.slice(0, 8)" :key="index" :src="i.secureUrl"
                     class="aspect-square rounded bg-gray-200 dark:bg-slate-700 hover:scale-105 transition cursor-pointer"
                     @click="handlePreviewImage(i)" />
             </div>
@@ -51,9 +51,9 @@ import { useTranslate } from '@/composables/useTranslate';
 import { useConversationStore } from '@/stores/conversation.storage';
 import { useMessageStore } from '@/stores/message.storage';
 import { MessageFilter } from '@/types/common';
-import { MessageType } from '@/types/entities';
+import { MediaType } from '@/types/entities';
 import { MessageEnum } from '@/types/enum';
-import { onMounted, reactive, ref, watch } from 'vue';
+import { onMounted, reactive, watch } from 'vue';
 
 const emit = defineEmits<{
     (e: 'update:currentView', value: string): void
@@ -73,7 +73,7 @@ const open = reactive({
     file: true,
 })
 
-const handlePreviewImage = (pi: MessageType) => {
+const handlePreviewImage = (pi: MediaType) => {
     messStorage.setPreviewImage(pi)
 }
 

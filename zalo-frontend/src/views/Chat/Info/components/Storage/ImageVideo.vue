@@ -45,7 +45,7 @@
             @click="handlePreviewImage(item)"
           >
             <img
-              :src="item.file?.url"
+              :src="item.secureUrl"
               class="w-full h-full object-cover transition group-hover:scale-105"
             />
 
@@ -65,7 +65,7 @@ import { useScroll } from "@/composables/useScroll";
 import { useConversationStore } from "@/stores/conversation.storage";
 import { useMessageStore } from "@/stores/message.storage";
 import { MessageFilter } from "@/types/common";
-import { MessageType } from "@/types/entities";
+import { MediaType, MessageType } from "@/types/entities";
 import { MessageEnum } from "@/types/enum";
 import { computed, onMounted, ref } from "vue";
 
@@ -77,7 +77,7 @@ const { formatDate } = useDateTime();
 const scrollRef = ref<HTMLElement | null>(null);
 
 const groupedMedia = computed(() => {
-    const map: Record<string, MessageType[]> = {};
+    const map: Record<string, MediaType[]> = {};
 
     filteredImages.value.forEach((item) => {
         const ct = formatDate(item.ct);
@@ -122,7 +122,7 @@ const filteredImages = computed(() => {
     });
 });
 
-const handlePreviewImage = (pi: MessageType) => {
+const handlePreviewImage = (pi: MediaType) => {
     messStorage.setPreviewImage(pi)
 }
 

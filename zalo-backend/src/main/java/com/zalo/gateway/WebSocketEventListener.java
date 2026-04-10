@@ -2,7 +2,6 @@ package com.zalo.gateway;
 
 import com.zalo.model.ConversationMember;
 import com.zalo.repository.ConversationMemberRepository;
-import com.zalo.service.ConversationService;
 import com.zalo.service.WebsocketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
