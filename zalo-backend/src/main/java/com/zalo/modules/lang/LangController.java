@@ -1,6 +1,6 @@
 package com.zalo.modules.lang;
 
-import com.zalo.common.configuration.anotation.CurrentUser;
+import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
 import com.zalo.common.configuration.anotation.ResponseMessage;
 import com.zalo.common.filter.LangFilter;
 import com.zalo.modules.lang.dto.request.LangCreationRequest;

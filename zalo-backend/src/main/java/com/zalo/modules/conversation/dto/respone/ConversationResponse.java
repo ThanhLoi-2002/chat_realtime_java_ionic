@@ -1,7 +1,7 @@
 package com.zalo.modules.conversation.dto.respone;
 
-import com.zalo.dto.response.BaseResponse;
-import com.zalo.dto.response.Message.MessageResponse;
+import com.zalo.common.base.BaseResponse;
+import com.zalo.modules.message.dto.response.MessageResponse;
 import com.zalo.modules.user.dto.response.UserResponse;
 import com.zalo.modules.conversation.entities.Conversation;
 import com.zalo.common.entity.File;

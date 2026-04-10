@@ -1,13 +1,13 @@
 package com.zalo.common.service;
 
 import com.zalo.modules.conversation.dto.respone.MemberResponse;
-import com.zalo.dto.response.Message.MessageReactionResponse;
-import com.zalo.dto.response.Message.MessageResponse;
+import com.zalo.modules.message.dto.response.MessageReactionResponse;
+import com.zalo.modules.message.dto.response.MessageResponse;
 import com.zalo.modules.conversation.dto.respone.ConversationResponse;
 import com.zalo.common.gateway.UserOnlineStorage;
 import com.zalo.modules.conversation.entities.ConversationMember;
-import com.zalo.model.Message;
-import com.zalo.model.MessageReaction;
+import com.zalo.modules.message.entity.Message;
+import com.zalo.modules.message.entity.MessageReaction;
 import com.zalo.modules.conversation.service.ConversationMemberRepository;
 import com.zalo.modules.conversation.service.ConversationRepository;
 import lombok.RequiredArgsConstructor;

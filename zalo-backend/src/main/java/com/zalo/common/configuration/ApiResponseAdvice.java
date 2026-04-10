@@ -1,7 +1,7 @@
 package com.zalo.common.configuration;
 
 import com.zalo.common.configuration.anotation.ResponseMessage;
-import com.zalo.dto.response.ApiResponse;
+import com.zalo.common.dto.ApiResponse;
 import com.zalo.modules.lang.service.LangService;
 import com.zalo.common.util.LangUtil;
 import lombok.RequiredArgsConstructor;

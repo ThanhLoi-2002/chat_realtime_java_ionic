@@ -1,8 +1,8 @@
 package com.zalo.common.filter;
 
 import com.zalo.common.base.BaseFilter;
-import com.zalo.model.Message;
-import com.zalo.model.enums.MessageType;
+import com.zalo.modules.message.entity.Message;
+import com.zalo.modules.message.entity.MessageType;
 import lombok.*;
 import org.springframework.data.jpa.domain.Specification;
 

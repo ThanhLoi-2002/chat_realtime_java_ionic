@@ -1,6 +1,6 @@
 package com.zalo.modules.user.dto.response;
 
-import com.zalo.dto.response.BaseResponse;
+import com.zalo.common.base.BaseResponse;
 import com.zalo.common.entity.File;
 import com.zalo.modules.user.entities.User;
 import lombok.*;

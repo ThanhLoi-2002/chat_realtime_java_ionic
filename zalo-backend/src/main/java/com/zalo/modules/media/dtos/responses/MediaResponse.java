@@ -1,6 +1,6 @@
 package com.zalo.modules.media.dtos.responses;
 
-import com.zalo.dto.response.BaseResponse;
+import com.zalo.common.base.BaseResponse;
 import com.zalo.modules.media.entities.Media;
 import com.zalo.modules.media.entities.MediaType;
 import lombok.AccessLevel;

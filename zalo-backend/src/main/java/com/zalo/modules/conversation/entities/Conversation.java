@@ -2,7 +2,7 @@ package com.zalo.modules.conversation.entities;
 
 import com.zalo.common.base.BaseEntity;
 import com.zalo.common.entity.File;
-import com.zalo.model.Message;
+import com.zalo.modules.message.entity.Message;
 import com.zalo.modules.user.entities.User;
 import com.zalo.common.covert.FileConverter;
 import jakarta.persistence.*;

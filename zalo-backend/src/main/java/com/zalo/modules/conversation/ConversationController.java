@@ -1,7 +1,7 @@
 package com.zalo.modules.conversation;
 
-import com.zalo.common.configuration.anotation.CheckConversationMember;
-import com.zalo.common.configuration.anotation.CurrentUser;
+import com.zalo.common.configuration.anotation.conversationMember.CheckConversationMember;
+import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
 import com.zalo.common.filter.ConversationFilter;
 import com.zalo.modules.conversation.dto.request.CreateGroupRequest;
 import com.zalo.modules.conversation.dto.respone.ConversationInfoResponse;

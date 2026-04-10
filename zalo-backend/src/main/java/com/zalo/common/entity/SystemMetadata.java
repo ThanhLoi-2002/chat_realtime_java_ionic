@@ -1,6 +1,6 @@
 package com.zalo.common.entity;
 
-import com.zalo.model.enums.SystemMessageType;
+import com.zalo.modules.message.entity.SystemMessageType;
 import lombok.Data;
 
 import java.util.List;

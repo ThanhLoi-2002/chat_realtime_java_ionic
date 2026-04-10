@@ -1,6 +1,6 @@
 package com.zalo.common.exception;
 
-import com.zalo.dto.response.ApiResponse;
+import com.zalo.common.dto.ApiResponse;
 import com.zalo.modules.lang.service.LangService;
 import com.zalo.common.util.LangUtil;
 import lombok.RequiredArgsConstructor;
