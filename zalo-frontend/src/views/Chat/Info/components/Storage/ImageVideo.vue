@@ -46,7 +46,7 @@
           >
             <img
               :src="item.secureUrl"
-              class="w-full h-full object-cover transition group-hover:scale-105"
+              class="w-full h-full object-cover transition group-hover:scale-105" loading="lazy"
             />
 
             <!-- hover overlay -->
@@ -61,17 +61,15 @@
 </template>
 <script setup lang="ts">
 import { useDateTime } from "@/composables/useDateTime";
-import { useScroll } from "@/composables/useScroll";
 import { useConversationStore } from "@/stores/conversation.storage";
 import { useMessageStore } from "@/stores/message.storage";
 import { MessageFilter } from "@/types/common";
-import { MediaType, MessageType } from "@/types/entities";
+import { MediaType } from "@/types/entities";
 import { MessageEnum } from "@/types/enum";
 import { computed, onMounted, ref } from "vue";
 
 const convStorage = useConversationStore();
 const messStorage = useMessageStore();
-const { onScroll } = useScroll();
 const { formatDate } = useDateTime();
 
 const scrollRef = ref<HTMLElement | null>(null);
@@ -129,10 +127,10 @@ const handlePreviewImage = (pi: MediaType) => {
 const fetchImageMessages = () => {
     if (!messStorage.imagesHasMore) return;
 
-    const lastId = messStorage.images.at(-1)?.id ?? undefined;
+    const lastId = messStorage.images.at(-1)?.moduleId ?? undefined;
     const options: MessageFilter = {
         conversationId: convStorage.conversation!.id,
-        limit: 30,
+        limit: 10,
         lastId,
         contentType: MessageEnum.IMAGE,
     };

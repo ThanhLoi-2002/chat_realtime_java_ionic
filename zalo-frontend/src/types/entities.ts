@@ -95,7 +95,7 @@ export type MediaType = BaseType & {
   secureUrl: string
   publicId: string
   moduleType: ModuleEnum
-  // moduleId: number
+  moduleId: number
   resourceType: string
   format: string
   bytes: number

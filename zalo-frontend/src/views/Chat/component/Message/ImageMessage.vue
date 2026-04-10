@@ -87,7 +87,8 @@ const el = ref<HTMLElement | null>(null)
 const handlePreviewImage = (mess: MessageType, index: number) => {
     const media: MediaType = {
         ...mess.attachments[index],
-        createdBy: mess.sender
+        createdBy: mess.sender,
+        messageContent: mess.content
     }
     // Truyền cả message và index của ảnh được chọn
     messStorage.setPreviewImage(media)

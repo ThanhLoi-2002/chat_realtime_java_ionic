@@ -12,12 +12,20 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long>, JpaSpecificationExecutor<Message> {
     @EntityGraph(attributePaths = {"sender", "replyToMessage"})
     Page<Message> findAll(Specification<Message> spec, Pageable pageable);
+
+    @Query("""
+                SELECT m
+                FROM Message m
+                WHERE m.contentType = "IMAGE" AND m.file is not null
+            """)
+    List<Message> find123();
 
     @Query("""
                 SELECT m

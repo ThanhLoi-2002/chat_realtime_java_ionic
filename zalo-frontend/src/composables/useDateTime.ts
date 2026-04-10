@@ -75,7 +75,8 @@ export function useDateTime() {
 
     const getTime = (t: any) => new Date(t).getTime()
 
-    const formatSeparatorTime = (time: any) => {
+    const formatSeparatorTime = (time: any, format?: string) => {
+        const onlyDay = format == "onlyDay"
         const date = new Date(time)
         const now = new Date()
 
@@ -95,15 +96,15 @@ export function useDateTime() {
         const hh = String(date.getHours()).padStart(2, '0')
         const mm = String(date.getMinutes()).padStart(2, '0')
 
-        if (isSameDay) return `${t("today")} ${hh}:${mm}`
+        if (isSameDay) return `${t("today")} ${onlyDay ? '' :`${hh}:${mm}`}`
 
-        if (isYesterday) return `${t("yesterday")} ${hh}:${mm}`
+        if (isYesterday) return `${t("yesterday")} ${onlyDay ? '' :`${hh}:${mm}`}`
 
         const dd = String(date.getDate()).padStart(2, '0')
         const MM = String(date.getMonth() + 1).padStart(2, '0')
         const yyyy = date.getFullYear()
 
-        return `${dd}/${MM}/${yyyy} ${hh}:${mm}`
+        return `${dd}/${MM}/${yyyy} ${onlyDay ? '' :`${hh}:${mm}`}`
     }
 
     return {

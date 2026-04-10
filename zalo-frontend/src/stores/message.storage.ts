@@ -182,20 +182,21 @@ export const useMessageStore = defineStore('message', {
 
         addImage(m: MessageType) {
             if (m.contentType == MessageEnum.IMAGE || m.contentType == MessageEnum.VIDEO) {
-                const isExisted = this.images.some(img => img.id === m.id);
+                m.attachments.forEach((item: MediaType) => {
+                    const isExisted = this.images.some(img => img.id === item.id);
 
-                if (!isExisted) {
-                    m.attachments.forEach((item: MediaType) => {
+                    if (!isExisted) {
                         const media: MediaType = {
                             ...item,
                             messageContent: m.content,
-                            createdBy: m.sender 
+                            createdBy: m.sender
                         }
                         this.images.push(media);
-                    })
-                }
+                    }
+                })
             }
         },
+
 
         resetPagination() {
             this.hasMore = true

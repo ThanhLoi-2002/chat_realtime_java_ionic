@@ -16,7 +16,7 @@ import org.springframework.beans.BeanUtils;
 @FieldDefaults(level = AccessLevel.PUBLIC)
 public class MediaResponse extends BaseResponse {
     private MediaType moduleType; // VD: "CONVERSATION", "MESSAGE"
-//    private Long moduleId;    // ID của message, conversation
+    private Long moduleId;    // ID của message, conversation
 
     private String publicId;
     private String secureUrl;

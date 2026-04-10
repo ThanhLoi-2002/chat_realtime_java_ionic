@@ -1,6 +1,7 @@
 package com.zalo.modules.message.service;
 
 import com.zalo.common.base.BaseEntity;
+import com.zalo.common.configuration.json.G;
 import com.zalo.common.service.WebsocketService;
 import com.zalo.common.filter.MessageFilter;
 import com.zalo.modules.message.dto.request.AddReactionRequest;
