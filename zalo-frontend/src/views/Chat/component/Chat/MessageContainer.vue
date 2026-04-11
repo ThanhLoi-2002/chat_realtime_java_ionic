@@ -1,6 +1,6 @@
 <template>
 
-    <div class="flex gap-2 items-start relative group max-w-full lg:max-w-[60%]"
+    <div class="flex gap-2 items-start relative group max-w-full lg:max-w-[60%] ml-4"
         :class="[isOwner ? 'ml-auto flex-row-reverse' : '', message.reactions?.length > 0 && 'mb-4']" ref="rootRef">
 
         <!-- AVATAR -->

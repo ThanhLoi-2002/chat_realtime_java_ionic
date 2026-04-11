@@ -1,10 +1,15 @@
 package com.zalo.modules.conversation.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zalo.common.base.BaseEntity;
+import com.zalo.common.configuration.json.G;
+import com.zalo.common.entity.SystemMetadata;
 import com.zalo.common.filter.ConversationFilter;
 import com.zalo.common.filter.UserFilter;
 import com.zalo.modules.conversation.dto.request.CreateGroupRequest;
 import com.zalo.modules.media.dtos.requests.MediaRequest;
+import com.zalo.modules.media.dtos.responses.MediaResponse;
 import com.zalo.modules.media.entities.Media;
 import com.zalo.modules.media.entities.MediaType;
 import com.zalo.modules.media.service.MediaInterface;
@@ -26,6 +31,8 @@ import com.zalo.common.service.WebsocketService;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -41,6 +48,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ConversationService {
+    private static final Logger logger = LoggerFactory.getLogger(ConversationService.class);
     ConversationRepository conversationRepo;
     ConversationMemberRepository memberRepo;
     UserRepository userRepo;
@@ -270,22 +278,21 @@ public class ConversationService {
             query.set(root.get("eu"), userId);
 
             // 2. WHERE điều kiện lọc
-            return cb.equal(root.get("conversationId"), conversationId);
+            return cb.equal(root.get("id"), conversationId);
         });
 
         if (updatedRows > 0) {
-            CreateSystemMessageRequest sysMess = new CreateSystemMessageRequest();
-            sysMess.conversationId = conversationId;
-            sysMess.content = "haveRecentUpdatedGroupAvatar";
-            sysMess.senderId = userId;
-            sysMess.systemMessageType = SystemMessageType.UPDATE_GROUP_AVATAR;
+            CreateSystemMessageRequest dto = new CreateSystemMessageRequest();
+            dto.conversationId = conversationId;
+            dto.content = "haveRecentUpdatedGroupAvatar";
+            dto.senderId = userId;
+            dto.systemMessageType = SystemMessageType.UPDATE_GROUP_AVATAR;
+            dto.info = Map.of(
+                    "groupAvatar", media
+            );
 
-            systemMessageInterface.createSystemMessage(sysMess);
+            systemMessageInterface.createSystemMessage(dto);
         }
-
-
-//        Conversation conv = findByIdWithRelationShip(conversationId);
-//        websocketService.updateGroupAvatarOrName(conv, "updateAvatar");
     }
 
     public void updateGroupName(Long conversationId, Long userId, String name) {
@@ -295,18 +302,21 @@ public class ConversationService {
             query.set(root.get("eu"), userId);
 
             // 2. WHERE điều kiện lọc
-            return cb.equal(root.get("conversationId"), conversationId);
+            return cb.equal(root.get("id"), conversationId);
         });
 
         // Tùy chọn: Kiểm tra nếu không có bản ghi nào được cập nhật
         if (updatedRows > 0) {
-            CreateSystemMessageRequest sysMess = new CreateSystemMessageRequest();
-            sysMess.conversationId = conversationId;
-            sysMess.content = "haveRecentUpdatedGroupNameTo" + " " + name;
-            sysMess.senderId = userId;
-            sysMess.systemMessageType = SystemMessageType.UPDATE_GROUP_NAME;
+            CreateSystemMessageRequest dto = new CreateSystemMessageRequest();
+            dto.conversationId = conversationId;
+            dto.content = "haveRecentUpdatedGroupNameTo";
+            dto.senderId = userId;
+            dto.systemMessageType = SystemMessageType.UPDATE_GROUP_NAME;
+            dto.info = Map.of(
+                    "groupName", name
+            );
 
-            systemMessageInterface.createSystemMessage(sysMess);
+            systemMessageInterface.createSystemMessage(dto);
         }
     }
 }

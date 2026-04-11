@@ -1,5 +1,6 @@
 package com.zalo.modules.message.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.zalo.common.base.BaseEntity;
 import com.zalo.common.entity.File;
 import com.zalo.common.covert.FileConverter;

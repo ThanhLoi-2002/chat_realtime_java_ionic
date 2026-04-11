@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ConversationType, MemberType, MessageType, UserType } from '@/types/entities'
+import { ConversationType, MediaType, MemberType, MessageType, UserType } from '@/types/entities'
 import { conversationApi } from '@/api/conversation.api'
 import { toast } from '@/utils/toast'
 
@@ -110,6 +110,10 @@ export const useConversationStore = defineStore('conversation', {
             this.conversations.unshift(conv); // thêm lên đầu
 
             this.sortConversation()
+
+            if(conv.id == this.conversation?.id){
+                this.conversation = conv
+            }
         },
 
         updateConversationLastMessage(mess: MessageType) {
@@ -214,7 +218,7 @@ export const useConversationStore = defineStore('conversation', {
         },
 
         disbandGroupRealtime(conversationId: number) {
-            
+
         },
 
         leaveGroupRealtime(userId: number, isMe: boolean) {
@@ -230,6 +234,38 @@ export const useConversationStore = defineStore('conversation', {
                     // Xóa 1 phần tử tại vị trí idx
                     this.conversations.splice(idx, 1);
                 }
+            }
+        },
+
+        async updateAvatar(media: MediaType) {
+            try {
+                if (this.conversation) {
+                    const result: any = await conversationApi.updateAvatar(this.conversation.id, media);
+
+                    return true
+                }
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return false
+            }
+        },
+
+        async updateName(name: string) {
+            try {
+                if (this.conversation) {
+                    const result: any = await conversationApi.updateName(this.conversation.id, name);
+
+                    return true
+                }
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return false
             }
         },
 

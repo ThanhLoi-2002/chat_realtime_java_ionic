@@ -1,6 +1,7 @@
 package com.zalo.modules.conversation.dto.respone;
 
 import com.zalo.common.base.BaseResponse;
+import com.zalo.common.configuration.json.G;
 import com.zalo.modules.media.dtos.responses.MediaResponse;
 import com.zalo.modules.message.dto.response.MessageResponse;
 import com.zalo.modules.user.dto.response.UserResponse;

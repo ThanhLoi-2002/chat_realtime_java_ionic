@@ -1,5 +1,6 @@
 package com.zalo.modules.message.dto.response;
 
+import com.zalo.modules.media.dtos.responses.MediaResponse;
 import com.zalo.modules.user.dto.response.UserResponse;
 import com.zalo.modules.message.entity.SystemMessageType;
 import lombok.*;
@@ -15,4 +16,6 @@ import java.util.List;
 public class SystemMetadataResponse {
     SystemMessageType type;
     List<UserResponse> addedUsersToGroup;
+    String groupName;
+    MediaResponse groupAvatar;
 }

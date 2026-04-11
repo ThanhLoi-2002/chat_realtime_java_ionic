@@ -1,6 +1,6 @@
 import { ConversationFilter, IResponse } from "@/types/common";
 import axios from "./axios";
-import { ConversationType, UserType } from "@/types/entities";
+import { ConversationType, MediaType, UserType } from "@/types/entities";
 
 const createPrivate = async (data: UserType) => {
     return await axios.post<IResponse<ConversationType>>(`/conversations/private?otherId=${data.id}`);
@@ -39,6 +39,18 @@ const fetchGroupByCode = async (inviteCode: string) => {
     return await axios.get<IResponse>(`/conversations/by-code/${inviteCode}`);
 }
 
+const updateAvatar = async (conversationId: number, media: MediaType) => {
+    return await axios.put<IResponse>(`/conversations/${conversationId}/update-avatar`, media);
+}
+
+const updateName = async (conversationId: number, name: string) => {
+    return await axios.put<IResponse>(`/conversations/${conversationId}/update-name`, name, {
+        headers: {
+            'Content-Type': 'text/plain',
+        },
+    });
+}
+
 export const conversationApi = {
-    createPrivate, getList, createGroup, getConversationInfo, getGroups, leaveGroup, addMembers, fetchGroupByCode, disbandGroup
+    createPrivate, getList, createGroup, getConversationInfo, getGroups, leaveGroup, addMembers, fetchGroupByCode, disbandGroup, updateAvatar, updateName
 }

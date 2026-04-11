@@ -89,7 +89,7 @@ public class MessageService {
 
     private void saveAndNotifyMessage(Long conversationId, Long senderId, String content,
                                       MessageType type, List<MediaRequest> attachments, Long replyId) {
-        if(content == null && attachments.isEmpty()) return;
+        if (content == null && attachments.isEmpty()) return;
 
         // 1. Lưu Message chính
         Message m = Message.builder()
@@ -265,6 +265,11 @@ public class MessageService {
             SystemMetadataResponse metadataResponse = new SystemMetadataResponse();
 
             metadataResponse.setType(e.getSystemMetadata().getType());
+            metadataResponse.setGroupName(e.getSystemMetadata().getGroupName());
+
+            if (e.getSystemMetadata().getGroupAvatar() != null) {
+                metadataResponse.setGroupAvatar(new MediaResponse(e.getSystemMetadata().getGroupAvatar()));
+            }
 
             if (e.getSystemMetadata().getType() == SystemMessageType.ADD_USERS_TO_GROUP) {
                 List<Long> userIds = e.getSystemMetadata().getAddedUsersToGroup();

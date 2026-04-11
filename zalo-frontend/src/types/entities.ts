@@ -32,7 +32,7 @@ export type ConversationType = BaseType & {
   name?: string
   inviteCode: string
   description: string
-  avatar: FileType
+  avatar: MediaType
   lastMessageId?: number
   lastMessage?: MessageType
   recipient?: UserType
@@ -89,6 +89,8 @@ export type MemberType = UserType & {
 export type SystemMetadataType = {
     type: SystemMetadataEnum
     addedUsersToGroup: UserType[]
+    groupName: string
+    groupAvatar: MediaType
 }
 
 export type MediaType = BaseType & {

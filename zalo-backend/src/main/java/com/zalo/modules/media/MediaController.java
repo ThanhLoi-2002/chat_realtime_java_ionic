@@ -19,8 +19,12 @@ public class MediaController {
 
     @GetMapping("/presigned")
     public Map<String, Object> getPresignedUrl(@RequestParam String folder, @RequestParam String resourceType) { // "image", "video", hoặc "raw"
+        Map<String, Object> response = new HashMap<>();
+        response.put("apiKey", mediaService.cloudinary.config.apiKey);
+        response.put("cloudName", mediaService.cloudinary.config.cloudName);
 
-        return mediaService.generateSignature(folder, resourceType);
+        response.put("presignedUrl", mediaService.generateSignature(folder, resourceType));
+        return response;
     }
 
     @PostMapping("/presigned-urls")

@@ -92,7 +92,7 @@ public class FriendshipService {
             createSystemMessageRequest.conversationId = c.get().getId();
             createSystemMessageRequest.senderId = userId;
             createSystemMessageRequest.content = "youTwoBecomeFriends";
-            createSystemMessageRequest.systemMessageType = SystemMessageType.CREATE_GROUP;
+            createSystemMessageRequest.systemMessageType = SystemMessageType.ADD_FRIEND;
 
             systemMessageService.createSystemMessage(createSystemMessageRequest);
         }

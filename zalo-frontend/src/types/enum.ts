@@ -7,6 +7,8 @@ export enum MemberRoleEnum {
 }
 
 export enum SystemMetadataEnum {
+    UPDATE_GROUP_AVATAR = "UPDATE_GROUP_AVATAR",
+    UPDATE_GROUP_NAME = "UPDATE_GROUP_NAME",
     ADD_USERS_TO_GROUP = "ADD_USERS_TO_GROUP",
     CREATE_GROUP = "CREATE_GROUP",
     LEAVE_GROUP = "LEAVE_GROUP",

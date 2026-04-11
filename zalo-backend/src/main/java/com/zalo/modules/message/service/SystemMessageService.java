@@ -1,6 +1,7 @@
 package com.zalo.modules.message.service;
 
 import com.zalo.common.service.WebsocketService;
+import com.zalo.modules.media.entities.Media;
 import com.zalo.modules.message.dto.request.CreateSystemMessageRequest;
 import com.zalo.modules.conversation.dto.respone.ConversationResponse;
 import com.zalo.modules.message.dto.response.MessageResponse;
@@ -52,8 +53,15 @@ public class SystemMessageService implements SystemMessageInterface {
         SystemMetadata metadata = new SystemMetadata();
         metadata.setType(dto.systemMessageType);
 
-        if(dto.systemMessageType == SystemMessageType.ADD_USERS_TO_GROUP){
-            metadata.setAddedUsersToGroup(dto.userIdsAddedToGroup);
+        switch (dto.systemMessageType) {
+            case ADD_USERS_TO_GROUP -> metadata.setAddedUsersToGroup(dto.userIdsAddedToGroup);
+
+            case UPDATE_GROUP_NAME -> metadata.setGroupName((String) dto.info.get("groupName"));
+
+            case UPDATE_GROUP_AVATAR -> metadata.setGroupAvatar((Media) dto.info.get("groupAvatar"));
+
+//            default ->
+//                    throw new IllegalArgumentException("Unsupported system message type: " + dto.systemMessageType);
         }
 
         m.setSystemMetadata(metadata);
@@ -96,12 +104,12 @@ public class SystemMessageService implements SystemMessageInterface {
     }
 
     public void getSystemMetadata(Message e, MessageResponse rp) {
-        if(e.getContentType() == MessageType.SYSTEM && e.getSystemMetadata() != null){
+        if (e.getContentType() == MessageType.SYSTEM && e.getSystemMetadata() != null) {
             SystemMetadataResponse metadataResponse = new SystemMetadataResponse();
 
             metadataResponse.setType(e.getSystemMetadata().getType());
 
-            if(e.getSystemMetadata().getType() == SystemMessageType.ADD_USERS_TO_GROUP){
+            if (e.getSystemMetadata().getType() == SystemMessageType.ADD_USERS_TO_GROUP) {
                 List<Long> userIds = e.getSystemMetadata().getAddedUsersToGroup();
                 List<User> users = userService.findByIdIn(userIds);
 

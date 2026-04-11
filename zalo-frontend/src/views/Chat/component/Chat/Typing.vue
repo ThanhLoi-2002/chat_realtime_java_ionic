@@ -106,7 +106,7 @@ const { t } = useTranslate()
 const conversationStorage = useConversationStore()
 const userStorage = useUserStore()
 const messageStorage = useMessageStore()
-const { uploadFiles } = useUpload()
+const { uploadFiles, imageFolder, videoFolder } = useUpload()
 const { scrollToBottom } = useScroll()
 
 const message = ref('')
@@ -121,11 +121,6 @@ const showEmoji = ref(false)
 const isLoadingSendMessage = ref(false)
 // State lưu trữ tiến độ upload để hiển thị UI
 const uploadProgress = ref<Record<number, number>>({});
-
-const mainFolder = "zalo_java_ionic"
-const imageFolder = `${mainFolder}/images`
-const videoFolder = `${mainFolder}/videos`
-const rawFolder = `${mainFolder}/raws`
 
 const handleSelectImages = (event: Event) => {
     const target = event.target as HTMLInputElement;

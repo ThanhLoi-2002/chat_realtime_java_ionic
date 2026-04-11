@@ -8,21 +8,38 @@
             <!-- GROUP INFO -->
             <div class="flex flex-col items-center py-4 gap-1">
                 <div class="flex w-full gap-4 ml-8">
-                    <div class="relative">
+                    <div class="relative group/avatar cursor-pointer" @click="triggerFileInput">
                         <div
-                            class="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                            <i class="fas fa-users text-3xl text-gray-500 dark:text-gray-300"></i>
+                            class="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden border-2 border-transparent hover:border-blue-500 transition-all">
+                            <LoadingSpinner v-if="isUploading" />
+                            <div v-else>
+                                <img v-if="props.conversation.avatar" :src="props.conversation.avatar.secureUrl"
+                                    class="w-full h-full object-cover" />
+                                <i v-else class="fas fa-users text-3xl text-gray-500 dark:text-gray-300"></i>
+
+                                <div
+                                    class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity">
+                                    <i class="fas fa-camera text-white"></i>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- camera icon -->
-                        <div class="absolute bottom-0 right-0 bg-gray-300 dark:bg-gray-800 p-1 rounded-full">
-                            <i class="fas fa-camera text-xs text-gray-700 dark:text-white"></i>
-                        </div>
+                        <input type="file" ref="fileInput" class="hidden" accept="image/*"
+                            @change="handleAvatarChange" />
                     </div>
 
-                    <div class="flex items-center gap-2 mt-3">
-                        <span class="font-medium truncate">{{ convStorage.conversation?.name }}</span>
-                        <i class="fas fa-pen text-sm text-gray-500 dark:text-gray-400 cursor-pointer"></i>
+                    <div class="flex items-center gap-2 mt-3 flex-1 mr-8">
+                        <template v-if="!isEditingName">
+                            <span class="font-medium truncate max-w-37.5">{{ props.conversation.name }}</span>
+                            <i class="fas fa-pen text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:text-blue-500"
+                                @click="startEditingName"></i>
+                        </template>
+
+                        <div v-else class="flex items-center gap-2 w-full">
+                            <input ref="nameInput" v-model="tempName"
+                                class="bg-gray-100 dark:bg-gray-800 border-b-2 border-blue-500 outline-none px-1 py-0.5 w-full text-sm"
+                                @keyup.enter="saveName" @blur="saveName" />
+                        </div>
                     </div>
                 </div>
 
@@ -76,10 +93,8 @@
                             @click="messStorage.setPreviewImage(i)" />
                     </div>
                 </div>
-                <div v-else
-                    class="border-t border-gray-200 dark:border-gray-800 px-4 py-6 text-center text-gray-500 dark:text-gray-400 text-sm">
-                    Chưa có ảnh nào được<br />
-                    chia sẻ trong nhóm này
+                <div v-else class="px-4 py-6 text-center text-gray-500 text-wrap dark:text-gray-400 text-sm">
+                    {{ t("noPhotoshavebeenshared") }}
                 </div>
             </div>
 
@@ -130,13 +145,17 @@
 <script setup lang="ts">
 import { style } from '@/assets/tailwindcss';
 import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
+import LoadingSpinner from '@/components/Loading/LoadingSpinner.vue';
 import QrCode from '@/components/QrCode/QrCode.vue';
 import { useTranslate } from '@/composables/useTranslate';
+import { useUpload } from '@/composables/useUpload';
 import { useConversationStore } from '@/stores/conversation.storage';
 import { useMessageStore } from '@/stores/message.storage';
+import { UploadFileType } from '@/types/common';
 import { ConversationType } from '@/types/entities';
+import { ModuleEnum, ResourceEnum } from '@/types/enum';
 import { qrCodeUrl, ROUTE } from '@/utils/constant';
-import { inject, ref } from 'vue';
+import { inject, nextTick, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const props = defineProps<{
@@ -149,10 +168,67 @@ const convStorage = useConversationStore()
 const messStorage = useMessageStore()
 const openQrCode = ref(false)
 const inviteUrl = `${qrCodeUrl}/${props.conversation.inviteCode}`
+const isUploading = ref(false)
+const { uploadFile, imageFolder } = useUpload()
 
 const dismiss = inject<() => void>("modalDismiss")
 
 const emit = defineEmits(['update:view'])
+
+// --- LOGIC ĐỔI AVATAR ---
+const fileInput = ref<HTMLInputElement | null>(null);
+
+const triggerFileInput = () => {
+    fileInput.value?.click();
+};
+
+const handleAvatarChange = async (event: Event) => {
+    isUploading.value = true
+
+    const target = event.target as HTMLInputElement;
+    const file = target.files?.[0];
+    if (file) {
+        const dto: UploadFileType = {
+            folder: imageFolder,
+            file,
+            resourceType: ResourceEnum.IMAGE
+        }
+        const media = await uploadFile(dto, ModuleEnum.CONVERSATION)
+
+        if (media) {
+            await convStorage.updateAvatar(media)
+        }
+    }
+
+    isUploading.value = false
+};
+
+// --- LOGIC ĐỔI TÊN GROUP ---
+const isEditingName = ref(false);
+const tempName = ref('');
+const nameInput = ref<HTMLInputElement | null>(null);
+
+const startEditingName = () => {
+    tempName.value = props.conversation.name || '';
+    isEditingName.value = true;
+    // Tự động focus vào input khi hiện ra
+    nextTick(() => {
+        nameInput.value?.focus();
+    });
+};
+
+const saveName = async () => {
+    if (!isEditingName.value) return;
+
+    const oldName = props.conversation.name;
+    const newName = tempName.value.trim();
+
+    if (newName && newName !== oldName) {
+        await convStorage.updateName(newName);
+    }
+
+    isEditingName.value = false;
+};
 
 const goToMessage = () => {
     convStorage.selectConversation(props.conversation)
