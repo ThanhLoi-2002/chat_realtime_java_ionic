@@ -37,6 +37,7 @@ public interface ConversationRepository extends JpaRepository<Conversation, Long
                 SELECT c
                 FROM Conversation c
                 LEFT JOIN FETCH c.lastMessage m
+                LEFT JOIN FETCH c.avatar a
                 LEFT JOIN FETCH c.recipient r
                 LEFT JOIN FETCH m.sender
                 LEFT JOIN FETCH c.createdBy cr
@@ -55,6 +56,7 @@ public interface ConversationRepository extends JpaRepository<Conversation, Long
                 SELECT c
                 FROM Conversation c
                 LEFT JOIN FETCH c.lastMessage m
+                LEFT JOIN FETCH c.avatar a
                 LEFT JOIN FETCH c.recipient r
                 LEFT JOIN FETCH m.sender
                 LEFT JOIN FETCH c.createdBy cr

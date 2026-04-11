@@ -1,6 +1,7 @@
 package com.zalo.common.service;
 
 import com.zalo.modules.conversation.dto.respone.MemberResponse;
+import com.zalo.modules.conversation.entities.Conversation;
 import com.zalo.modules.message.dto.response.MessageReactionResponse;
 import com.zalo.modules.message.dto.response.MessageResponse;
 import com.zalo.modules.conversation.dto.respone.ConversationResponse;
@@ -97,6 +98,17 @@ public class WebsocketService {
 
         realtimeToConversation(conversationId, payload, "/queue/chat.conversation." + conversationId + ".disbandGroup");
     }
+
+//    public void updateGroupAvatarOrName(Conversation conv, String type) {
+//        // type = "updateAvatar", "updateName"
+//        ConversationResponse convResponse = new ConversationResponse(conv, "recipient", "lastMessage", "createdBy", "avatar");
+//
+//        Map<String, Object> payload = new HashMap<>();
+//        payload.put("conversation", convResponse);
+//        payload.put("message", convResponse.getLastMessage());
+//
+//        realtimeToConversation(convResponse.id, payload, "/queue/chat.conversation." + convResponse.id + "." + type);
+//    }
 
     public void realtimeToConversation(Long conversationId, Object payload, String destination){
         List<ConversationMember> members = memberRepo.findByConversationId(conversationId);

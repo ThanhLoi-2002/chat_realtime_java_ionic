@@ -52,6 +52,6 @@ public class MessageResponse extends BaseResponse {
             }
         }
 
-        this.attachments = m.getAttachments().stream().map(MediaResponse::new).toList();
+//        this.attachments = m.getAttachments().stream().map(MediaResponse::new).toList();
     }
 }

@@ -7,6 +7,7 @@ import com.zalo.modules.conversation.dto.request.CreateGroupRequest;
 import com.zalo.modules.conversation.dto.respone.ConversationInfoResponse;
 import com.zalo.modules.conversation.dto.respone.ConversationResponse;
 import com.zalo.modules.conversation.entities.Conversation;
+import com.zalo.modules.media.dtos.requests.MediaRequest;
 import com.zalo.modules.user.entities.User;
 import com.zalo.modules.conversation.service.ConversationService;
 import jakarta.validation.Valid;
@@ -42,10 +43,10 @@ public class ConversationController {
         return conversationService.findAll(user.getId(), filter);
     }
 
-    @GetMapping("/{id}")
-    public ConversationResponse get(@PathVariable Long id) {
-        return new ConversationResponse(conversationService.findByIdWithRelationShip(id));
-    }
+    // @GetMapping("/{id}")
+    // public ConversationResponse get(@PathVariable Long id) {
+    //     return new ConversationResponse(conversationService.findByIdWithRelationShip(id));
+    // }
 
     @GetMapping("/{id}/info")
     public ConversationInfoResponse getInfo(@CurrentUser User user, @PathVariable Long id) {
@@ -59,7 +60,7 @@ public class ConversationController {
 
     @GetMapping("/by-code/{code}")
     public ConversationResponse getByCode(@PathVariable String code) {
-        ConversationResponse conv = new ConversationResponse(conversationService.getByInviteCode(code), "owner");
+        ConversationResponse conv = new ConversationResponse(conversationService.getByInviteCode(code), "owner", "avatar");
         conversationService.setTop3Members(conv);
         return conv;
     }
@@ -80,5 +81,17 @@ public class ConversationController {
     @CheckConversationMember
     public void disbandGroup(@PathVariable Long conversationId, @CurrentUser User user) {
         conversationService.disbandGroup(conversationId);
+    }
+
+    @PutMapping("/{conversationId}/update-avatar")
+    @CheckConversationMember
+    public void updateAvatar(@PathVariable Long conversationId, @CurrentUser User user, @RequestBody MediaRequest media) {
+        conversationService.updateAvatar(conversationId, user.getId(), media);
+    }
+
+    @PutMapping("/{conversationId}/update-name")
+    @CheckConversationMember
+    public void updateName(@PathVariable Long conversationId, @CurrentUser User user, @RequestBody String name) {
+        conversationService.updateGroupName(conversationId, user.getId(), name);
     }
 }

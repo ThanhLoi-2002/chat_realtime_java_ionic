@@ -34,7 +34,7 @@
             </div>
 
             <!-- MEMBERS -->
-            <div class="border-t border-gray-200 dark:border-gray-800 px-4 py-3">
+            <div class="border-t-2 border-gray-200 dark:border-gray-800 px-4 py-3">
                 <div class="text-sm mb-2 text-gray-600 dark:text-gray-300">{{ t("member") }} ({{
                     conversation.members?.length }})</div>
 
@@ -67,14 +67,24 @@
             </div>
 
             <!-- MEDIA -->
-            <div
-                class="border-t border-gray-200 dark:border-gray-800 px-4 py-6 text-center text-gray-500 dark:text-gray-400 text-sm">
-                Chưa có ảnh nào được<br />
-                chia sẻ trong nhóm này
+            <div class="flex flex-col gap-2 px-4 py-3 border-t-2 border-gray-200 dark:border-gray-800">
+                <span>{{ t("image/video") }}</span>
+                <div v-if="messStorage.images.length > 0">
+                    <div class="grid grid-cols-4 gap-2">
+                        <img v-for="(i, index) in messStorage.images.slice(0, 4)" :key="index" :src="i.secureUrl"
+                            class="aspect-square rounded bg-gray-200 dark:bg-slate-700 hover:scale-105 transition cursor-pointer"
+                            @click="messStorage.setPreviewImage(i)" />
+                    </div>
+                </div>
+                <div v-else
+                    class="border-t border-gray-200 dark:border-gray-800 px-4 py-6 text-center text-gray-500 dark:text-gray-400 text-sm">
+                    Chưa có ảnh nào được<br />
+                    chia sẻ trong nhóm này
+                </div>
             </div>
 
             <!-- LINK -->
-            <div class="border-t border-gray-200 dark:border-gray-800 px-4 py-3">
+            <div class="border-t-2 border-gray-200 dark:border-gray-800 px-4 py-3">
                 <div class="text-sm mb-2 text-gray-600 dark:text-gray-300">Link tham gia nhóm</div>
 
                 <div class="flex items-center justify-between bg-gray-100 dark:bg-gray-800 p-2 rounded-md">
@@ -93,14 +103,14 @@
                             @click="handleShare" title="Chia sẻ"></i>
                     </div>
                 </div>
-                <collapse v-model:isOpen="openQrCode" :title="`${t('qrCode')}`"
+                <collapse v-model:isOpen="openQrCode" :title="`${t('qrCode')}`" class="border-b-0! pt-4! pb-0!"
                     :class="[style.text.primary, 'text-sm px-0']">
                     <QrCode :code="conversation.inviteCode" />
                 </collapse>
             </div>
 
             <!-- ACTIONS -->
-            <div class="border-t border-gray-200 dark:border-gray-800">
+            <div class="border-t-2 border-gray-200 dark:border-gray-800">
                 <div class="px-4 py-3 flex items-center gap-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
                     <i class="fas fa-cog"></i>
                     <span>Quản lý nhóm</span>
@@ -123,6 +133,7 @@ import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
 import QrCode from '@/components/QrCode/QrCode.vue';
 import { useTranslate } from '@/composables/useTranslate';
 import { useConversationStore } from '@/stores/conversation.storage';
+import { useMessageStore } from '@/stores/message.storage';
 import { ConversationType } from '@/types/entities';
 import { qrCodeUrl, ROUTE } from '@/utils/constant';
 import { inject, ref } from 'vue';
@@ -135,6 +146,7 @@ const props = defineProps<{
 const { t } = useTranslate()
 const router = useRouter()
 const convStorage = useConversationStore()
+const messStorage = useMessageStore()
 const openQrCode = ref(false)
 const inviteUrl = `${qrCodeUrl}/${props.conversation.inviteCode}`
 
@@ -152,7 +164,7 @@ const goToMessage = () => {
 const handleCopy = async () => {
     try {
         await navigator.clipboard.writeText(inviteUrl);
-        alert('Đã sao chép liên kết vào bộ nhớ tạm!'); 
+        alert('Đã sao chép liên kết vào bộ nhớ tạm!');
         // Thay alert bằng toast của bạn nếu có: toast.success('Copied!')
     } catch (err) {
         console.error('Không thể copy:', err);

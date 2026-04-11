@@ -2,12 +2,16 @@ package com.zalo.modules.conversation.entities;
 
 import com.zalo.common.base.BaseEntity;
 import com.zalo.common.entity.File;
+import com.zalo.modules.media.entities.Media;
 import com.zalo.modules.message.entity.Message;
 import com.zalo.modules.user.entities.User;
 import com.zalo.common.covert.FileConverter;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.SQLRestriction;
+
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -32,9 +36,12 @@ public class Conversation extends BaseEntity {
     @JoinColumn(name = "ownerId", insertable = false, updatable = false)
     private User owner;
 
-    @Convert(converter = FileConverter.class)
-    @Column(columnDefinition = "LONGTEXT")
-    File avatar;
+    // Trong Conversation.java
+    Long avatarId;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "avatarId", insertable = false, updatable = false)
+    private Media avatar;
 
     Long lastMessageId;
 
@@ -49,4 +56,6 @@ public class Conversation extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipientId", insertable = false, updatable = false)
     private User recipient;
+
+
 }

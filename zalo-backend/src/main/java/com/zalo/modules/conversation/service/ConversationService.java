@@ -4,6 +4,10 @@ import com.zalo.common.base.BaseEntity;
 import com.zalo.common.filter.ConversationFilter;
 import com.zalo.common.filter.UserFilter;
 import com.zalo.modules.conversation.dto.request.CreateGroupRequest;
+import com.zalo.modules.media.dtos.requests.MediaRequest;
+import com.zalo.modules.media.entities.Media;
+import com.zalo.modules.media.entities.MediaType;
+import com.zalo.modules.media.service.MediaInterface;
 import com.zalo.modules.message.dto.request.CreateSystemMessageRequest;
 import com.zalo.modules.conversation.dto.respone.ConversationInfoResponse;
 import com.zalo.modules.conversation.dto.respone.ConversationResponse;
@@ -13,11 +17,10 @@ import com.zalo.modules.conversation.entities.MemberRole;
 import com.zalo.modules.message.entity.SystemMessageType;
 import com.zalo.modules.conversation.entities.Conversation;
 import com.zalo.modules.conversation.entities.ConversationMember;
+import com.zalo.modules.message.service.SystemMessageInterface;
 import com.zalo.modules.user.entities.User;
-import com.zalo.modules.message.service.MessageRepository;
 import com.zalo.modules.user.service.UserRepository;
 import com.zalo.modules.conversation.dto.UnreadDto;
-import com.zalo.modules.message.service.SystemMessageService;
 import com.zalo.modules.user.service.UserService;
 import com.zalo.common.service.WebsocketService;
 import lombok.AccessLevel;
@@ -42,10 +45,10 @@ public class ConversationService {
     ConversationMemberRepository memberRepo;
     UserRepository userRepo;
     UserService userService;
-    SystemMessageService systemMessageService;
     WebsocketService websocketService;
     MemberService memberService;
-    MessageRepository messRepo;
+    MediaInterface mediaInterface;
+    SystemMessageInterface systemMessageInterface;
 
     public Conversation createPrivateConversation(Long creatorId, Long otherUserId) {
         // try find existing
@@ -109,13 +112,13 @@ public class ConversationService {
         createSystemMessageRequest.content = "haveRecentCreateGroup";
         createSystemMessageRequest.systemMessageType = SystemMessageType.CREATE_GROUP;
 
-        systemMessageService.createSystemMessage(createSystemMessageRequest);
+        systemMessageInterface.createSystemMessage(createSystemMessageRequest);
 
         createSystemMessageRequest.content = "youHaveRecentAddedToGroup";
         createSystemMessageRequest.systemMessageType = SystemMessageType.ADD_USERS_TO_GROUP;
         createSystemMessageRequest.userIdsAddedToGroup = dto.participantIds;
 
-        systemMessageService.createSystemMessage(createSystemMessageRequest);
+        systemMessageInterface.createSystemMessage(createSystemMessageRequest);
     }
 
     public Conversation findByIdWithRelationShip(Long id) {
@@ -137,7 +140,7 @@ public class ConversationService {
         Map<Long, Long> mapUnread = getUnreadFromIds(page.getContent().stream().map(BaseEntity::getId).toList(), userId);
 
         return page.map(c -> {
-            ConversationResponse conv = new ConversationResponse(c, "recipient", "lastMessage", "createdBy");
+            ConversationResponse conv = new ConversationResponse(c, "recipient", "lastMessage", "createdBy", "avatar");
             if (c.getType() == ConversationType.GROUP) {
                 conv.setMembers(memberService.getMembers(c.getId()));
             }
@@ -197,7 +200,7 @@ public class ConversationService {
         }
     }
 
-    public Map<Long, Long> getUnreadFromIds(List<Long> ids, Long userId){
+    public Map<Long, Long> getUnreadFromIds(List<Long> ids, Long userId) {
         List<UnreadDto> unread = conversationRepo.countUnread(ids, userId);
 
         return unread.stream().collect(Collectors.toMap(
@@ -226,7 +229,7 @@ public class ConversationService {
         dto.content = "youHaveRecentAddedToGroup";
 
         websocketService.addMembers(conversationId, memberService.getMembers(conversationId));
-        systemMessageService.createSystemMessage(dto);
+        systemMessageInterface.createSystemMessage(dto);
     }
 
     public void leaveGroup(Long conversationId, Long userId) {
@@ -240,7 +243,7 @@ public class ConversationService {
         createSystemMessageRequest.content = "leaveTheGroup";
         createSystemMessageRequest.systemMessageType = SystemMessageType.LEAVE_GROUP;
 
-        systemMessageService.createSystemMessage(createSystemMessageRequest);
+        systemMessageInterface.createSystemMessage(createSystemMessageRequest);
 
         websocketService.leaveGroup(conversationId, userId);
     }
@@ -252,13 +255,58 @@ public class ConversationService {
 
     }
 
-    public Conversation getByInviteCode(String code){
+    public Conversation getByInviteCode(String code) {
         return conversationRepo.findByInviteCode(code).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
     }
 
-//    public Conversation update(Long id) {
-//        Conversation conv = findById(id);
-//        conversationRepo.save(conv);
-//        return conversationRepo.save(conv);
-//    }
+    public void updateAvatar(Long conversationId, Long userId, MediaRequest mediaRequest) {
+        mediaRequest.moduleType = MediaType.CONVERSATION;
+        mediaRequest.moduleId = conversationId;
+        Media media = mediaInterface.save(mediaRequest, userId);
+
+        long updatedRows = conversationRepo.update((root, query, cb) -> {
+            // 1. SET các giá trị mới
+            query.set(root.get("avatarId"), media.getId());
+            query.set(root.get("eu"), userId);
+
+            // 2. WHERE điều kiện lọc
+            return cb.equal(root.get("conversationId"), conversationId);
+        });
+
+        if (updatedRows > 0) {
+            CreateSystemMessageRequest sysMess = new CreateSystemMessageRequest();
+            sysMess.conversationId = conversationId;
+            sysMess.content = "haveRecentUpdatedGroupAvatar";
+            sysMess.senderId = userId;
+            sysMess.systemMessageType = SystemMessageType.UPDATE_GROUP_AVATAR;
+
+            systemMessageInterface.createSystemMessage(sysMess);
+        }
+
+
+//        Conversation conv = findByIdWithRelationShip(conversationId);
+//        websocketService.updateGroupAvatarOrName(conv, "updateAvatar");
+    }
+
+    public void updateGroupName(Long conversationId, Long userId, String name) {
+        long updatedRows = conversationRepo.update((root, query, cb) -> {
+            // 1. SET các giá trị mới
+            query.set(root.get("name"), name);
+            query.set(root.get("eu"), userId);
+
+            // 2. WHERE điều kiện lọc
+            return cb.equal(root.get("conversationId"), conversationId);
+        });
+
+        // Tùy chọn: Kiểm tra nếu không có bản ghi nào được cập nhật
+        if (updatedRows > 0) {
+            CreateSystemMessageRequest sysMess = new CreateSystemMessageRequest();
+            sysMess.conversationId = conversationId;
+            sysMess.content = "haveRecentUpdatedGroupNameTo" + " " + name;
+            sysMess.senderId = userId;
+            sysMess.systemMessageType = SystemMessageType.UPDATE_GROUP_NAME;
+
+            systemMessageInterface.createSystemMessage(sysMess);
+        }
+    }
 }

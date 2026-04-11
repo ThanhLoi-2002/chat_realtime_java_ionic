@@ -9,6 +9,7 @@ import com.zalo.modules.user.entities.User;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.SQLRestriction;
@@ -61,8 +62,13 @@ public class Message extends BaseEntity {
     @OneToMany(mappedBy = "message", fetch = FetchType.LAZY)
     private List<MessageStatus> statuses;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "moduleId", insertable = false, updatable = false)
-    @SQLRestriction("module_type = 'MESSAGE'") // Chỉ lấy media thuộc về Message
-    private List<Media> attachments;
+//    @OneToMany(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "moduleId", insertable = false, updatable = false)
+//    @SQLRestriction("module_type = 'MESSAGE'") // Chỉ lấy media thuộc về Message
+//    @BatchSize(size = 20)
+//    private List<Media> attachments;
+
+//    @OneToMany(mappedBy = "message", fetch = FetchType.LAZY)
+//    @BatchSize(size = 20)
+//    private List<Media> attachments;
 }

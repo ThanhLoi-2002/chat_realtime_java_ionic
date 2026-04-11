@@ -15,15 +15,15 @@
         <img :src="messStorage.previewImage?.secureUrl"
           class="max-w-[90%] max-h-[90%] object-contain transition duration-300 shadow-2xl" />
 
-        <div class="absolute right-4 z-50 space-y-2">
+        <div class="absolute right-2 md:right-4 z-50 space-y-2">
           <button v-if="currentIndex > 0" @click="navigateImage(-1)"
-            class="w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full text-white transition-all backdrop-blur-sm cursor-pointer">
-            <i class="fa fa-chevron-up text-xl" />
+            class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full text-white transition-all backdrop-blur-sm cursor-pointer">
+            <i class="fa fa-chevron-up text-base md:text-xl" />
           </button>
 
           <button v-if="currentIndex < imageList.length - 1" @click="navigateImage(1)"
-            class="w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full text-white transition-all backdrop-blur-sm cursor-pointer">
-            <i class="fa fa-chevron-down text-xl" />
+            class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full text-white transition-all backdrop-blur-base cursor-pointer">
+            <i class="fa fa-chevron-down text-base md:text-xl" />
           </button>
         </div>
 

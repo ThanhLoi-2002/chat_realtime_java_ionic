@@ -2,7 +2,6 @@ import { ConversationFilter, IResponse } from "@/types/common";
 import axios from "./axios";
 import { ConversationType, UserType } from "@/types/entities";
 
-
 const createPrivate = async (data: UserType) => {
     return await axios.post<IResponse<ConversationType>>(`/conversations/private?otherId=${data.id}`);
 }

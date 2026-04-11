@@ -23,13 +23,6 @@ public interface MessageRepository extends JpaRepository<Message, Long>, JpaSpec
     @Query("""
                 SELECT m
                 FROM Message m
-                WHERE m.contentType = "IMAGE" AND m.file is not null
-            """)
-    List<Message> find123();
-
-    @Query("""
-                SELECT m
-                FROM Message m
                 LEFT JOIN FETCH m.sender
                 LEFT JOIN FETCH m.replyToMessage
                 WHERE m.conversationId = :conversationId AND m.id = :id

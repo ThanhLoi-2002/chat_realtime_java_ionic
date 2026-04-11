@@ -1,6 +1,7 @@
 package com.zalo.modules.conversation.dto.respone;
 
 import com.zalo.common.base.BaseResponse;
+import com.zalo.modules.media.dtos.responses.MediaResponse;
 import com.zalo.modules.message.dto.response.MessageResponse;
 import com.zalo.modules.user.dto.response.UserResponse;
 import com.zalo.modules.conversation.entities.Conversation;
@@ -22,7 +23,7 @@ public class ConversationResponse extends BaseResponse {
     String name;
     String inviteCode;
     String description;
-    File avatar;
+    MediaResponse avatar;
     Long lastMessageId;
 
     Long ownerId;
@@ -36,7 +37,7 @@ public class ConversationResponse extends BaseResponse {
 
     public ConversationResponse(Conversation c, String... relations) {
         super(c, relations);
-        BeanUtils.copyProperties(c, this, "createdBy", "updatedBy", "lastMessage", "recipient", "owner");
+        BeanUtils.copyProperties(c, this, "createdBy", "updatedBy", "lastMessage", "recipient", "owner", "avatar");
 
         Set<String> rels = relations != null
                 ? new HashSet<>(Arrays.asList(relations))
@@ -57,6 +58,12 @@ public class ConversationResponse extends BaseResponse {
         if (rels.contains("owner")) {
             if(c.getOwner() != null){
                 this.owner = new UserResponse(c.getOwner());
+            }
+        }
+
+        if (rels.contains("avatar")) {
+            if(c.getAvatar() != null){
+                this.avatar = new MediaResponse(c.getAvatar());
             }
         }
     }

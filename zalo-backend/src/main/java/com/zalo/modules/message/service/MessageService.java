@@ -4,6 +4,8 @@ import com.zalo.common.base.BaseEntity;
 import com.zalo.common.configuration.json.G;
 import com.zalo.common.service.WebsocketService;
 import com.zalo.common.filter.MessageFilter;
+import com.zalo.modules.media.dtos.responses.MediaResponse;
+import com.zalo.modules.media.entities.Media;
 import com.zalo.modules.message.dto.request.AddReactionRequest;
 import com.zalo.modules.message.dto.request.CreateMessageRequest;
 import com.zalo.modules.message.dto.response.MessageReactionResponse;
@@ -142,7 +144,7 @@ public class MessageService {
         markRead(conversationId, senderId, finalMsg.getId());
 
         // 7. Bắn WebSocket
-        ConversationResponse convRes = new ConversationResponse(conversationService.findByIdWithRelationShip(conversationId), "recipient", "lastMessage", "createdBy");
+        ConversationResponse convRes = new ConversationResponse(conversationService.findByIdWithRelationShip(conversationId), "recipient", "lastMessage", "createdBy", "avatar");
         if (conv.getType() == ConversationType.GROUP) {
             convRes.setMembers(memberService.getMembers(conv.getId()));
         }
@@ -156,7 +158,10 @@ public class MessageService {
 
         Page<Message> page = messageRepo.findAll(filter.toSpecification(), pageable);
 
-        List<MessageReaction> mrs = messageReactionRepository.findByMessageIdIn(page.getContent().stream().map(BaseEntity::getId).toList());
+        List<Long> messageIds = page.getContent().stream().map(BaseEntity::getId).toList();
+
+        List<MessageReaction> mrs = messageReactionRepository.findByMessageIdIn(messageIds);
+        List<Media> medias = mediaInterface.findByModuleIdInAndModuleType(messageIds, MediaType.MESSAGE);
 
         Map<Long, List<MessageReactionResponse>> mapReaction = mrs.stream()
                 .collect(Collectors.groupingBy(
@@ -167,10 +172,20 @@ public class MessageService {
                         )
                 ));
 
+        Map<Long, List<MediaResponse>> mapAttachment = medias.stream()
+                .collect(Collectors.groupingBy(
+                        Media::getModuleId,
+                        Collectors.mapping(
+                                MediaResponse::new,
+                                Collectors.toList()
+                        )
+                ));
+
         return page.map(e -> {
             MessageResponse m = new MessageResponse(e, "sender", "replyToMessage");
 
             m.setReactions(mapReaction.getOrDefault(m.getId(), List.of()));
+            m.setAttachments(mapAttachment.getOrDefault(m.getId(), List.of()));
 
             getSystemMetadata(e, m);
 

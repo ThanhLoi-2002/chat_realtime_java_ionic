@@ -32,7 +32,7 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class SystemMessageService {
+public class SystemMessageService implements SystemMessageInterface {
     MessageRepository messageRepo;
     ConversationRepository convRepo;
     EntityManager em;
@@ -41,6 +41,7 @@ public class SystemMessageService {
     MemberService memberService;
     UserService userService;
 
+    @Override
     public void createSystemMessage(CreateSystemMessageRequest dto) {
         Message m = new Message();
         m.setContent(dto.content);
@@ -77,7 +78,7 @@ public class SystemMessageService {
 
         List<ConversationMember> members = memberRepo.findByConversationId(dto.conversationId);
 
-        ConversationResponse convResponse = new ConversationResponse(conv, "lastMessage", "createdBy");
+        ConversationResponse convResponse = new ConversationResponse(conv, "recipient", "lastMessage", "createdBy", "avatar");
         convResponse.setMembers(memberService.getMembers(conv.getId()));
 
         MessageResponse messageResponse = new MessageResponse(m, "sender");

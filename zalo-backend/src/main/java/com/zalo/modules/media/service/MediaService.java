@@ -4,6 +4,7 @@ import com.cloudinary.Cloudinary;
 import com.zalo.common.entity.File;
 import com.zalo.modules.media.dtos.requests.MediaRequest;
 import com.zalo.modules.media.entities.Media;
+import com.zalo.modules.media.entities.MediaType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -101,8 +102,8 @@ public class MediaService implements MediaInterface {
     }
 
     @Override
-    public void save(MediaRequest dto, Long userId) {
-        mediaRepository.save(toEntity(dto, userId));
+    public Media save(MediaRequest dto, Long userId) {
+        return mediaRepository.save(toEntity(dto, userId));
     }
 
     @Override
@@ -110,5 +111,10 @@ public class MediaService implements MediaInterface {
         List<Media> list = dtos.stream().map(i -> toEntity(i, userId)).toList();
 
         mediaRepository.saveAll(list);
+    }
+
+    @Override
+    public List<Media> findByModuleIdInAndModuleType(List<Long> moduleIds, MediaType type) {
+        return mediaRepository.findByModuleIdInAndModuleType(moduleIds, type);
     }
 }
