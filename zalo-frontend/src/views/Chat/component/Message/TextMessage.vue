@@ -1,6 +1,7 @@
 <template>
   <div ref="el" :class="[
     'text-sm flex flex-col relative min-w-12 px-2 md:px-4 border rounded-lg',
+    'px-2 py-2',
 
     // Logic cho Background và Text
     isOwner ? 'bg-blue-400 text-white' : 'bg-white dark:bg-gray-800 dark:text-slate-100',
@@ -25,19 +26,7 @@
       </span>
 
       <div v-else class="flex flex-col gap-2">
-        <div v-if="message.attachments?.length === 1" class="">
-          <div class="max-w-62.5 md:max-w-87.5 rounded-lg overflow-hidden border border-black/5 shadow-sm">
-
-            <img v-if="message.attachments[0].resourceType === ResourceEnum.IMAGE" :src="message.attachments[0].secureUrl"
-              class="w-full h-auto object-cover cursor-pointer hover:opacity-95 transition-opacity"
-              @click="messStorage.setPreviewImage(message)" />
-
-            <video v-else-if="message.attachments[0].resourceType === ResourceEnum.VIDEO" :src="message.attachments[0].secureUrl"
-              controls class="w-full h-auto" />
-          </div>
-        </div>
-
-        <span v-if="message.content" :class="isOwner ? 'text-white' : 'text-slate-800 dark:text-slate-100'">
+        <span :class="isOwner ? 'text-white' : 'text-slate-800 dark:text-slate-100'">
           {{ message.content }}
         </span>
 
@@ -58,7 +47,7 @@ import { useDateTime } from "@/composables/useDateTime";
 import { useTranslate } from "@/composables/useTranslate";
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import Reactions from "../Reaction/Reactions.vue";
-import { MemberRoleEnum, ResourceEnum } from "@/types/enum";
+import { MemberRoleEnum } from "@/types/enum";
 import { useMessageStore } from "@/stores/message.storage";
 
 const props = defineProps<{

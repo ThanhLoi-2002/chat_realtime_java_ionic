@@ -187,8 +187,6 @@ public class MessageService {
             m.setReactions(mapReaction.getOrDefault(m.getId(), List.of()));
             m.setAttachments(mapAttachment.getOrDefault(m.getId(), List.of()));
 
-            getSystemMetadata(e, m);
-
             return m;
         });
     }
@@ -258,27 +256,5 @@ public class MessageService {
 
         List<MessageReaction> mrs = messageReactionRepository.findByMessageId(messageId);
         websocketService.removeAllReactionByUserId(conversationId, messageId, mrs);
-    }
-
-    public void getSystemMetadata(Message e, MessageResponse rp) {
-        if (e.getContentType() == MessageType.SYSTEM && e.getSystemMetadata() != null) {
-            SystemMetadataResponse metadataResponse = new SystemMetadataResponse();
-
-            metadataResponse.setType(e.getSystemMetadata().getType());
-            metadataResponse.setGroupName(e.getSystemMetadata().getGroupName());
-
-            if (e.getSystemMetadata().getGroupAvatar() != null) {
-                metadataResponse.setGroupAvatar(new MediaResponse(e.getSystemMetadata().getGroupAvatar()));
-            }
-
-            if (e.getSystemMetadata().getType() == SystemMessageType.ADD_USERS_TO_GROUP) {
-                List<Long> userIds = e.getSystemMetadata().getAddedUsersToGroup();
-                List<User> users = userService.findByIdIn(userIds);
-
-                metadataResponse.setAddedUsersToGroup(users.stream().map(UserResponse::new).toList());
-            }
-
-            rp.setSystemMetadata(metadataResponse);
-        }
     }
 }

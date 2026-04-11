@@ -90,7 +90,6 @@ public class SystemMessageService implements SystemMessageInterface {
         convResponse.setMembers(memberService.getMembers(conv.getId()));
 
         MessageResponse messageResponse = new MessageResponse(m, "sender");
-        getSystemMetadata(m, messageResponse);
 
         websocketService.sendMessage(messageResponse, convResponse, members);
     }
@@ -101,22 +100,5 @@ public class SystemMessageService implements SystemMessageInterface {
 
     public Conversation findConversationByIdWithRelationShip(Long id) {
         return convRepo.findOneWithRelationShipById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
-    }
-
-    public void getSystemMetadata(Message e, MessageResponse rp) {
-        if (e.getContentType() == MessageType.SYSTEM && e.getSystemMetadata() != null) {
-            SystemMetadataResponse metadataResponse = new SystemMetadataResponse();
-
-            metadataResponse.setType(e.getSystemMetadata().getType());
-
-            if (e.getSystemMetadata().getType() == SystemMessageType.ADD_USERS_TO_GROUP) {
-                List<Long> userIds = e.getSystemMetadata().getAddedUsersToGroup();
-                List<User> users = userService.findByIdIn(userIds);
-
-                metadataResponse.setAddedUsersToGroup(users.stream().map(UserResponse::new).toList());
-            }
-
-            rp.setSystemMetadata(metadataResponse);
-        }
     }
 }

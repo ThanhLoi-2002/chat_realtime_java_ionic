@@ -51,8 +51,9 @@ import GroupAvatar from '@/components/Avatar/GroupAvatar.vue';
 import { useConversation } from '@/composables/useConversation';
 import { useDateTime } from '@/composables/useDateTime';
 import { useTranslate } from '@/composables/useTranslate';
+import { useUserStore } from '@/stores/user.storage';
 import { ConversationType, MessageType } from '@/types/entities';
-import { MessageEnum } from '@/types/enum';
+import { MessageEnum, SystemMetadataEnum } from '@/types/enum';
 import { RANDOM_AVATAR } from '@/utils/constant';
 import { computed } from 'vue';
 const props = defineProps<{
@@ -61,38 +62,68 @@ const props = defineProps<{
 }>()
 
 const { t } = useTranslate()
+const userStorage = useUserStore()
 const { getUserNameFromLastMessage, conversationAvatar, conversationName, isGroup } = useConversation()
 const { timeAgo } = useDateTime()
 
 const MAX_UNREAD = 5;
 
 const lastMessageContent = computed(() => {
-  let content = ''
   const lastMessage: MessageType | undefined = props.conversation.lastMessage
-  if (lastMessage?.stt == -1) {
-    content = t("messageHasBeenWithdrawn")
+  if (!lastMessage) return ''
+
+  const senderName = lastMessage.sender?.id == userStorage.user?.id ? t("you") : lastMessage.sender?.username
+  
+  // 1. Xử lý tin nhắn bị thu hồi
+  if (lastMessage.stt == -1) {
+    return `${senderName}: ${t("messageHasBeenWithdrawn")}`
   }
-  else {
-    switch (lastMessage?.contentType) {
-      case MessageEnum.IMAGE:
-        content = t("Vừa gửi 1 ảnh")
-        break
 
-      case MessageEnum.FILE:
-        content = t("Vừa gửi 1 file")
-        break
+  // 2. Xử lý tin nhắn hệ thống (Khớp với tin nhắn bạn vừa viết)
+  if (lastMessage.contentType == MessageEnum.SYSTEM) {
+    const type = lastMessage.systemMetadata?.type
+    console.log(type, lastMessage)
 
-      case MessageEnum.TEXT:
-        content = lastMessage.content
-        break
+    switch (type) {
+      case SystemMetadataEnum.ADD_USERS_TO_GROUP:
+        return `${senderName}: ${t("addedMembersToGroup")}`
+        
+      case SystemMetadataEnum.UPDATE_GROUP_NAME:
+        return `${senderName}: ${t("haveRecentUpdatedGroupNameTo")} "${lastMessage.systemMetadata?.groupName}"`
+        
+      case SystemMetadataEnum.UPDATE_GROUP_AVATAR:
+        return `${senderName}: ${t("updatedGroupAvatar")}`
+        
+      case SystemMetadataEnum.LEAVE_GROUP:
+        return `${senderName}: ${t("leftTheGroup")}`
+        
+      case SystemMetadataEnum.REMOVE_MEMBER:
+        return `${senderName}: ${t("removedMember")}`
+
+      case SystemMetadataEnum.CREATE_GROUP:
+        return `${senderName}: ${t("createdTheGroup")}`
 
       default:
-        content = lastMessage?.content || ''
+        return `${senderName}: ${t(lastMessage.content || '')}`
     }
   }
 
-  if (lastMessage?.contentType == MessageEnum.SYSTEM) {
-    return t(`${content}`)
-  } else return `${getUserNameFromLastMessage(lastMessage)}: ${content}`
+  // 3. Xử lý tin nhắn thông thường (Image, File, Text)
+  let content = ''
+  switch (lastMessage.contentType) {
+    case MessageEnum.IMAGE:
+      content = t("sentAnImage")
+      break
+    case MessageEnum.FILE:
+      content = t("sentAFile")
+      break
+    case MessageEnum.TEXT:
+      content = lastMessage.content
+      break
+    default:
+      content = lastMessage.content || ''
+  }
+
+  return `${getUserNameFromLastMessage(lastMessage)}: ${content}`
 })
 </script>

@@ -52,6 +52,10 @@ public class MessageResponse extends BaseResponse {
             }
         }
 
+        if(m.getSystemMetadata() != null){
+            this.systemMetadata =  new SystemMetadataResponse(m.getSystemMetadata());
+        }
+
 //        this.attachments = m.getAttachments().stream().map(MediaResponse::new).toList();
     }
 }

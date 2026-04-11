@@ -239,7 +239,7 @@ onMounted(async () => {
     resetSubscribe()
 })
 
-watch(() => conversationStorage.conversation, async () => {
+watch(() => conversationStorage.conversation?.id, async () => {
     reset()
     subReaction?.unsubscribe()
     sub?.unsubscribe()
