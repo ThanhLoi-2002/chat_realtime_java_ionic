@@ -71,7 +71,7 @@ watch(
     <!-- <input v-model="globalFilter" placeholder="Search..." class="border p-2 mb-3" /> -->
     <div class="w-full overflow-x-auto max-h-[75vh]">
         <table class="w-full min-w-max border border-gray-200 dark:border-gray-700
-    bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 table-fixed">
+    bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
 
             <thead class="sticky top-0 z-10">
                 <tr>

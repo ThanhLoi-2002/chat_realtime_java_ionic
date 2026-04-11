@@ -25,7 +25,7 @@
             <div class="relative group/like">
                 <button
                     class="w-4 h-4 md:w-5 md:h-5 flex items-center justify-center rounded-full bg-slate-100 dark:bg-gray-700 hover:bg-slate-200 dark:hover:bg-gray-600 shadow-sm p-1">
-                    <i class="far fa-thumbs-up dark:text-white text-[10px] md:text-xs"></i>
+                    <i class="far fa-thumbs-up text-black dark:text-white text-[10px] md:text-xs"></i>
                 </button>
 
                 <!-- REACTIONS: ẩn mặc định, hiện khi hover vào nút like -->
@@ -34,7 +34,7 @@
                     :class="[isOwner ? '-right-20' : 'left-1/2']">
                     <span class="cursor-pointer hover:scale-125 transition" v-for="(value, key) in EMOJI_MAP" :key="key"
                         @click="addReaction(key)">{{ value }}</span>
-                    <span :class="[message.reactions.length > 0 && message.reactions.some(i => i.cu == userStorage.user?.id) ? '' : 'hidden']" @click="deleteAllReaction">x</span>
+                    <span :class="[message.reactions.length > 0 && message.reactions.some(i => i.cu == userStorage.user?.id) ? '' : 'hidden', style.text.primary]" @click="deleteAllReaction">x</span>
                 </div>
             </div>
         </div>
@@ -54,6 +54,7 @@ import { useUserStore } from '@/stores/user.storage';
 import Modal from '@/components/Modal/Modal.vue';
 import { useTranslate } from '@/composables/useTranslate';
 import ReactionModal from './ReactionModal.vue';
+import { style } from '@/assets/tailwindcss';
 
 const props = defineProps<{
     message: MessageType

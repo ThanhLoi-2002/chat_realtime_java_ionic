@@ -3,7 +3,7 @@
     <div class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 h-[90%] flex flex-col rounded-md">
 
         <!-- BODY -->
-        <div class="flex-1 overflow-y-auto overflow-x-hidden pb-10">
+        <div class="flex-1 overflow-y-auto overflow-x-hidden">
 
             <!-- GROUP INFO -->
             <div class="flex flex-col items-center py-4 gap-1">
