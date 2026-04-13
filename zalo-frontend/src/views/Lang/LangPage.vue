@@ -47,9 +47,9 @@ const columns = computed(() => [
         header: t("orderNum"),
         trClass: "text-nowrap",
         cell: ({ row }: any) => row.index + 1,
-        meta: {
-            width: "5%"
-        }
+        // meta: {
+        //     width: "5%"
+        // }
     },
     {
         accessorKey: "code",

@@ -4,15 +4,15 @@
     'px-2 py-2',
 
     // Logic cho Background và Text
-    isOwner ? 'bg-blue-400 text-white' : 'bg-white dark:bg-gray-800 dark:text-slate-100',
+    isOwner ? 'bg-blue-900 text-white' : 'bg-white dark:bg-gray-800 dark:text-slate-100',
 
     // Logic Padding dựa trên reaction
     message.reactions?.length > 0 ? 'pt-2 pb-4' : 'py-0.5 md:py-2',
 
     // Logic riêng cho Border (Quan trọng)
     (role && role != MemberRoleEnum.MEMBER)
-      ? 'border-blue-500 border' // Nếu có role đặc biệt
-      : (isOwner ? 'border-blue-500' : 'border-slate-300 dark:border-gray-700') // Border mặc định
+      ? 'border-blue-900 border' // Nếu có role đặc biệt
+      : (isOwner ? 'border-blue-900' : 'border-slate-300 dark:border-gray-700') // Border mặc định
   ]" :data-id="message.id">
     <!-- USERNAME -->
     <span v-if="message.isFirst && !isOwner" class="text-xs text-slate-400 dark:text-slate-300">
@@ -26,10 +26,9 @@
       </span>
 
       <div v-else class="flex flex-col gap-2">
-        <span :class="isOwner ? 'text-white' : 'text-slate-800 dark:text-slate-100'">
-          {{ message.content }}
+        <span :class="isOwner ? 'text-white' : 'text-slate-800 dark:text-slate-100'" v-html="formattedContent"
+          @click="handleContentClick">
         </span>
-
       </div>
     </div>
 
@@ -39,16 +38,25 @@
     </span>
 
     <Reactions :message="message" />
+
+    <Modal ref="profileModal" :title="t('profile')">
+      <FriendProfileUI :user="selectedUser" />
+    </Modal>
   </div>
 </template>
 <script setup lang="ts">
 import { style } from "@/assets/tailwindcss";
 import { useDateTime } from "@/composables/useDateTime";
 import { useTranslate } from "@/composables/useTranslate";
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, onBeforeUnmount, computed, nextTick } from "vue";
 import Reactions from "../Reaction/Reactions.vue";
 import { MemberRoleEnum } from "@/types/enum";
-import { useMessageStore } from "@/stores/message.storage";
+import Modal from "@/components/Modal/Modal.vue";
+import FriendProfileUI from "../FriendProfileUI.vue";
+import { MemberType, UserType } from "@/types/entities";
+import { useConversationStore } from "@/stores/conversation.storage";
+import { toast } from "@/utils/toast";
+import { useMessage } from "@/composables/useMessage";
 
 const props = defineProps<{
   setBubbleRef?: (el: HTMLElement | null) => void;
@@ -59,11 +67,46 @@ const props = defineProps<{
 
 const { formatTime } = useDateTime();
 const { t } = useTranslate();
-const messStorage = useMessageStore()
+const convStorage = useConversationStore()
+const profileModal = ref()
 const emit = defineEmits(['visible']);
+const { formattedContentWithTag } = useMessage()
 let observer: IntersectionObserver | null = null;
 
 const el = ref<HTMLElement | null>(null);
+const selectedUser = ref<UserType | undefined>(undefined)
+
+const formattedContent = computed(() =>
+  formattedContentWithTag(props.message.content, props.isOwner)
+);
+
+const handleContentClick = (event: MouseEvent) => {
+  const target = event.target as HTMLElement;
+
+  // Kiểm tra xem phần tử bị click có class 'mention-link' hay không
+  if (target.classList.contains('mention-link')) {
+    const userId = target.getAttribute('data-user-id');
+
+    // Tìm thông tin user trong list members của cuộc trò chuyện
+    const foundMember = convStorage.conversation?.members?.find(
+      (m: MemberType) => m.id.toString() === userId
+    );
+
+    if (foundMember) {
+      selectedUser.value = foundMember;
+      // Mở modal thông tin cá nhân
+      nextTick(() => {
+        profileModal.value?.present();
+      });
+    } else {
+      console.warn("Không tìm thấy user với ID:", userId);
+      toast({
+        message: t("notFound"),
+        color: "danger"
+      })
+    }
+  }
+};
 
 onMounted(() => {
   // Cấu hình: Khi tin nhắn hiện ra 50% diện tích thì tính là "đã xem"

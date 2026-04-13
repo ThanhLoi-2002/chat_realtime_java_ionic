@@ -71,7 +71,7 @@ watch(
     <!-- <input v-model="globalFilter" placeholder="Search..." class="border p-2 mb-3" /> -->
     <div class="w-full overflow-x-auto max-h-[75vh]">
         <table class="w-full min-w-max border border-gray-200 dark:border-gray-700
-    bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
+            bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
 
             <thead class="sticky top-0 z-10">
                 <tr>
@@ -97,8 +97,10 @@ watch(
             <tbody>
                 <tr v-for="row in table.getRowModel().rows" :key="row.id" class="group cursor-pointer">
                     <td v-for="cell in row.getVisibleCells()" :key="cell.id" class="border border-gray-200 dark:border-gray-700
-                        p-2 bg-white dark:bg-gray-800 group-hover:bg-gray-200 dark:group-hover:bg-gray-600" :style="{ width: cell.column.columnDef.meta?.width }">
-                        <FlexRender :render="cell.column.columnDef.cell ?? cell.getValue()" :props="cell.getContext()" />
+                        p-2 bg-white dark:bg-gray-800
+                        group-hover:bg-gray-200 dark:group-hover:bg-gray-600" :style="{ width: cell.column.columnDef.meta?.width }">
+                        <FlexRender :render="cell.column.columnDef.cell ?? cell.getValue()"
+                            :props="cell.getContext()" />
                     </td>
                 </tr>
             </tbody>

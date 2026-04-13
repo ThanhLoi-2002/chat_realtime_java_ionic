@@ -13,7 +13,7 @@
         <!-- Top -->
         <div class="flex justify-between items-center">
           <div class="flex gap-2 items-center">
-            <i class="fa fa-users text-sm" :class="[style.text.secondary]" v-if="isGroup(conversation)"/>
+            <i class="fa fa-users text-sm" :class="[style.text.secondary]" v-if="isGroup(conversation)" />
             <span class="font-medium text-gray-900
                  dark:text-gray-100 truncate">
               {{ conversationName(conversation) }}
@@ -50,6 +50,7 @@ import { style } from '@/assets/tailwindcss';
 import GroupAvatar from '@/components/Avatar/GroupAvatar.vue';
 import { useConversation } from '@/composables/useConversation';
 import { useDateTime } from '@/composables/useDateTime';
+import { useMessage } from '@/composables/useMessage';
 import { useTranslate } from '@/composables/useTranslate';
 import { useUserStore } from '@/stores/user.storage';
 import { ConversationType, MessageType } from '@/types/entities';
@@ -65,6 +66,7 @@ const { t } = useTranslate()
 const userStorage = useUserStore()
 const { getUserNameFromLastMessage, conversationAvatar, conversationName, isGroup } = useConversation()
 const { timeAgo } = useDateTime()
+const { stripMentionTag } = useMessage()
 
 const MAX_UNREAD = 5;
 
@@ -73,7 +75,7 @@ const lastMessageContent = computed(() => {
   if (!lastMessage) return ''
 
   const senderName = lastMessage.sender?.id == userStorage.user?.id ? t("you") : lastMessage.sender?.username
-  
+
   // 1. Xử lý tin nhắn bị thu hồi
   if (lastMessage.stt == -1) {
     return `${senderName}: ${t("messageHasBeenWithdrawn")}`
@@ -82,21 +84,20 @@ const lastMessageContent = computed(() => {
   // 2. Xử lý tin nhắn hệ thống (Khớp với tin nhắn bạn vừa viết)
   if (lastMessage.contentType == MessageEnum.SYSTEM) {
     const type = lastMessage.systemMetadata?.type
-    console.log(type, lastMessage)
 
     switch (type) {
       case SystemMetadataEnum.ADD_USERS_TO_GROUP:
         return `${senderName}: ${t("addedMembersToGroup")}`
-        
+
       case SystemMetadataEnum.UPDATE_GROUP_NAME:
         return `${senderName}: ${t("haveRecentUpdatedGroupNameTo")} "${lastMessage.systemMetadata?.groupName}"`
-        
+
       case SystemMetadataEnum.UPDATE_GROUP_AVATAR:
         return `${senderName}: ${t("updatedGroupAvatar")}`
-        
+
       case SystemMetadataEnum.LEAVE_GROUP:
         return `${senderName}: ${t("leftTheGroup")}`
-        
+
       case SystemMetadataEnum.REMOVE_MEMBER:
         return `${senderName}: ${t("removedMember")}`
 
@@ -118,10 +119,10 @@ const lastMessageContent = computed(() => {
       content = t("sentAFile")
       break
     case MessageEnum.TEXT:
-      content = lastMessage.content
+      content = stripMentionTag(lastMessage.content)
       break
     default:
-      content = lastMessage.content || ''
+      content = stripMentionTag(lastMessage.content || '')
   }
 
   return `${getUserNameFromLastMessage(lastMessage)}: ${content}`

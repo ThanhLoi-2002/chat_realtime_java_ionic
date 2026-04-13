@@ -66,7 +66,7 @@ ion-content {
 ::-webkit-scrollbar {
   width: 4px;
   /* Chiều rộng của thanh cuộn dọc */
-  height: 4px;
+  height: 6px;
   /* Chiều cao của thanh cuộn ngang */
 }
 
