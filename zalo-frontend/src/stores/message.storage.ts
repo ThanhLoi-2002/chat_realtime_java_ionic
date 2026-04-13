@@ -11,7 +11,7 @@ interface State {
     images: MediaType[],
     imagesHasMore: boolean,
     hasMore: boolean,
-    previewImage: MediaType | undefined
+    previewImage: MediaType | undefined,
 }
 
 export const useMessageStore = defineStore('message', {
@@ -26,7 +26,6 @@ export const useMessageStore = defineStore('message', {
     actions: {
         setPreviewImage(previewImage?: MediaType) {
             this.previewImage = previewImage
-            console.log(previewImage)
         },
 
         async sendMessage(data: SendMessageType) {
@@ -43,8 +42,8 @@ export const useMessageStore = defineStore('message', {
         },
         async readMessage(id: number, conversationId: number) {
             try {
-                await messageApi.readMessage(id, conversationId);
-                return true
+                const result: any = await messageApi.readMessage(id, conversationId);
+                return result.result
             } catch (e: any) {
                 toast({
                     color: "danger",

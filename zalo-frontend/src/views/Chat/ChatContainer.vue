@@ -20,7 +20,8 @@
 
                 <SystemMessage v-if="msg.contentType === MessageEnum.SYSTEM" :msg="msg" />
 
-                <MessageContainer v-else :message="msg" :roles="roles" />
+                <MessageContainer v-else :message="msg" :roles="roles"
+                    v-observe-visibility="(entry: IntersectionObserverEntry) => handleMessageVisible(msg, entry)" />
             </div>
         </div>
 
@@ -60,6 +61,8 @@ import { socketSubscribe } from '@/utils/websocket';
 import { MessageFilter } from '@/types/common';
 import { useUserStore } from '@/stores/user.storage';
 import SystemMessage from './component/Message/SystemMessage.vue';
+import { MessageType } from '@/types/entities';
+import { useDebounce } from '@/composables/useDebounce';
 
 const props = defineProps<{
     isShowInfoSection: boolean
@@ -73,6 +76,7 @@ const { t } = useTranslate()
 const { getTime, formatSeparatorTime } = useDateTime()
 const { onScroll, scrollToBottom } = useScroll()
 const unreadCount = ref(0) // Số tin nhắn mới chưa đọc khi đang cuộn lên trên
+const unreadMessageId = ref<number | undefined>(undefined);
 
 const roles = ref<Record<number, MemberRoleEnum>>()
 
@@ -136,14 +140,76 @@ const messagesWithMeta = computed(() => {
     })
 })
 
-const checkReadMessages = () => {
+const { debounced: debouncedRead } = useDebounce(() => {
+    checkReadMessages()
+}, 500)
+
+// Directive để theo dõi một phần tử có nằm trong tầm mắt hay không
+const vObserveVisibility = {
+    mounted(el: HTMLElement, binding: any) {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    // Nếu phần tử xuất hiện trong tầm mắt (isIntersecting)
+                    if (entry.isIntersecting) {
+                        binding.value(entry); // Gọi hàm callback truyền vào
+                        // Nếu chỉ muốn đánh dấu một lần rồi thôi, có thể unobserve
+                        // observer.unobserve(el); 
+                    }
+                });
+            },
+            {
+                root: null, // Sử dụng viewport của trình duyệt hoặc container
+                threshold: 0.5, // 50% tin nhắn phải hiện ra thì mới tính là đã xem
+            }
+        );
+        observer.observe(el);
+        (el as any)._observer = observer;
+    },
+    unmounted(el: HTMLElement) {
+        if ((el as any)._observer) (el as any)._observer.disconnect();
+    },
+};
+
+const handleMessageVisible = (msg: MessageType, entry: IntersectionObserverEntry) => {
+    // 1. Chỉ xử lý nếu tin nhắn này chưa được đánh dấu là đã đọc (tùy thuộc vào dữ liệu của bạn)
+    // 2. Chỉ xử lý nếu tin nhắn đó là từ người khác gửi đến (sender.id !== userStorage.user.id)
+    console.log(msg)
+    if (entry.isIntersecting && msg.sender?.id !== userStorage.user?.id) {
+        
+        // Cập nhật ID mới nhất: 
+        // Giả sử tin nhắn sau có ID lớn hơn hoặc thời gian ct lớn hơn
+        if (!unreadMessageId.value || msg.id > unreadMessageId.value) {
+            unreadMessageId.value = msg.id;
+        }
+
+        // Kích hoạt debounce (hàm này sẽ chờ 500ms rồi mới chạy sendReadRequest)
+        debouncedRead();
+    }
+};
+
+const checkReadMessages = async () => {
     // Tìm tin nhắn cuối cùng đang hiển thị trong viewport và gọi readMessage
     // Tuy nhiên, thường chỉ cần cuộn xuống đáy (isAtBottom) 
     // là đủ để gọi API đánh dấu đã đọc toàn bộ hội thoại.
-    if (!showScrollDownButton.value && conversationStorage.conversation?.lastMessageId) {
-        messageStorage.readMessage(conversationStorage.conversation.lastMessageId, conversationStorage.conversation.id)
-        conversationStorage.updateUnreadCount(conversationStorage.conversation.id)
-        unreadCount.value = 0
+    if (conversationStorage.conversation &&
+        conversationStorage.conversation.lastMessageId) {
+        let lastMessageId = 0;
+        if (showScrollDownButton.value && conversationStorage.userLastMessageId < (unreadMessageId.value ?? 0)) {
+            const unreadCount = await messageStorage.readMessage(unreadMessageId.value ?? 0, conversationStorage.conversation.id)
+            lastMessageId = unreadMessageId.value ?? 0
+            unreadCount.value = unreadCount
+            conversationStorage.updateUnreadCount(conversationStorage.conversation.id, unreadCount.value)
+        } else {
+            await messageStorage.readMessage(conversationStorage.conversation.lastMessageId, conversationStorage.conversation.id)
+            unreadCount.value = 0
+            conversationStorage.updateUnreadCount(conversationStorage.conversation.id, 0)
+            lastMessageId = conversationStorage.conversation.lastMessageId
+        }
+
+        conversationStorage.getReadLastMessageId(lastMessageId);
+
+        conversationStorage.updateIsMentionFalse(conversationStorage.conversation.id)
     }
 }
 
@@ -213,12 +279,14 @@ const reset = async () => {
     }, {} as Record<number, MemberRoleEnum>) || {};
 
     if (conversationStorage.conversation) {
+        unreadMessageId.value = conversationStorage.conversation.lastMessage?.id
         const options: MessageFilter = {
             conversationId: conversationStorage.conversation!.id,
         }
         await messageStorage.getMessages(options)
 
-        checkReadMessages()
+        await checkReadMessages()
+        conversationStorage.getReadLastMessageId()
 
         await nextTick()
         await waitForImages()
@@ -267,5 +335,9 @@ watch(() => messageStorage.messages.length, (newLen, oldLen) => {
     } else {
         // unreadCount.value += (newLen - oldLen)
     }
+})
+
+watch(() => conversationStorage.conversation, () => {
+    unreadCount.value = conversationStorage.conversation?.unread ?? 0
 })
 </script>

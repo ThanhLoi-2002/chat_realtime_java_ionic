@@ -35,6 +35,7 @@ public class ConversationResponse extends BaseResponse {
 
     List<MemberResponse> members;
     Long unread;
+    Boolean isMention;
 
     public ConversationResponse(Conversation c, String... relations) {
         super(c, relations);

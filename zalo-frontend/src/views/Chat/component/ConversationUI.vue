@@ -32,14 +32,21 @@
             {{ lastMessageContent }}
           </p>
 
-          <!-- Unread badge -->
-          <span v-if="conversation.unread > 0" class="ml-2 flex items-center justify-center
+          <div class="flex gap-2 ml-2">
+            <span v-if="conversation.isMention" class="flex items-center justify-center min-w-7 h-5 px-1
+                 text-xs font-medium rounded-full bg-blue-500 text-white">
+              @
+            </span>
+            <!-- Unread badge -->
+            <span v-if="conversation.unread > 0" class="flex items-center justify-center
                  min-w-7 h-5 px-1
                  text-xs font-medium
                  rounded-full
                  bg-blue-500 text-white">
-            {{ conversation.unread > MAX_UNREAD ? `+${MAX_UNREAD}` : conversation.unread }}
-          </span>
+              {{ conversation.unread > MAX_UNREAD ? `+${MAX_UNREAD}` : conversation.unread }}
+            </span>
+          </div>
+
         </div>
       </div>
     </div>

@@ -21,7 +21,7 @@
 
     <!-- CONTENT -->
     <div :class="[message.showTime ? 'py-1' : 'py-0.5']">
-      <span v-if="message.stt === -1" class="italic text-gray-700 dark:text-gray-600">
+      <span v-if="message.stt === -1" class="italic text-gray-700 dark:text-gray-400">
         {{ isOwner ? t("youRecalledmessage") : t("messageHasBeenWithdrawn") }}
       </span>
 
@@ -33,7 +33,7 @@
     </div>
 
     <!-- TIME -->
-    <span v-if="message.showTime" :class="['text-[10px] md:text-xs', style.text.secondary]">
+    <span v-if="message.showTime" :class="['text-[10px] md:text-xs text-slate-500 dark:text-slate-400']">
       {{ formatTime(message.ct) }}
     </span>
 

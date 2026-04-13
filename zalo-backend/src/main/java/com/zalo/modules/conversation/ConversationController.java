@@ -43,10 +43,10 @@ public class ConversationController {
         return conversationService.findAll(user.getId(), filter);
     }
 
-    // @GetMapping("/{id}")
-    // public ConversationResponse get(@PathVariable Long id) {
-    //     return new ConversationResponse(conversationService.findByIdWithRelationShip(id));
-    // }
+     @GetMapping("/{id}")
+     public Long getReadLastMessageId(@PathVariable Long id, @CurrentUser User user) {
+         return conversationService.getReadLastMessageId(id, user.getId());
+     }
 
     @GetMapping("/{id}/info")
     public ConversationInfoResponse getInfo(@CurrentUser User user, @PathVariable Long id) {

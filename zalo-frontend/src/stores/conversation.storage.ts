@@ -9,7 +9,8 @@ interface ConversationState {
     conversation?: ConversationType,
     page: number
     hasMore: boolean
-    generalGroup: ConversationType[]
+    generalGroup: ConversationType[],
+    userLastMessageId: number
 }
 
 export const useConversationStore = defineStore('conversation', {
@@ -20,6 +21,7 @@ export const useConversationStore = defineStore('conversation', {
         page: -1,
         hasMore: true,
         generalGroup: [],
+        userLastMessageId: 0
     }),
     actions: {
         selectConversation(data?: ConversationType) {
@@ -36,6 +38,25 @@ export const useConversationStore = defineStore('conversation', {
                     message: e.message
                 })
                 return false
+            }
+        },
+        async getReadLastMessageId(lastMessageId?: number) {
+            if (lastMessageId) {
+                this.userLastMessageId = lastMessageId
+                return
+            }
+
+            try {
+                if (this.conversation) {
+                    const result: any = await conversationApi.getReadLastMessageId(this.conversation.id);
+                    this.userLastMessageId = result.result
+                }
+
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
             }
         },
         async createGroup(data: any) {
@@ -111,7 +132,7 @@ export const useConversationStore = defineStore('conversation', {
 
             this.sortConversation()
 
-            if(conv.id == this.conversation?.id){
+            if (conv.id == this.conversation?.id) {
                 this.conversation = conv
             }
         },
@@ -155,11 +176,11 @@ export const useConversationStore = defineStore('conversation', {
             }
         },
 
-        updateUnreadCount(id: number) {
+        updateUnreadCount(id: number, unreadCount: number) {
             const index = this.conversations.findIndex(c => c.id === id);
 
             if (index !== -1) {
-                this.conversations[index].unread = 0;
+                this.conversations[index].unread = unreadCount;
             }
         },
 
@@ -280,6 +301,18 @@ export const useConversationStore = defineStore('conversation', {
                     message: e.message
                 })
                 return undefined
+            }
+        },
+
+        updateIsMentionFalse(id: number) {
+            if (this.conversation) {
+                this.conversation.isMention = false
+            }
+
+            const idx = this.conversations.findIndex(c => c.id == id)
+
+            if (idx !== -1) {
+                this.conversations[idx].isMention = false;
             }
         },
 

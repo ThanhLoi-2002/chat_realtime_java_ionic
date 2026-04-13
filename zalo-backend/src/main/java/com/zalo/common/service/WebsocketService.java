@@ -1,7 +1,9 @@
 package com.zalo.common.service;
 
+import com.zalo.modules.conversation.dto.IsMentionDto;
 import com.zalo.modules.conversation.dto.respone.MemberResponse;
 import com.zalo.modules.conversation.entities.Conversation;
+import com.zalo.modules.conversation.service.ConversationInterface;
 import com.zalo.modules.message.dto.response.MessageReactionResponse;
 import com.zalo.modules.message.dto.response.MessageResponse;
 import com.zalo.modules.conversation.dto.respone.ConversationResponse;
@@ -16,10 +18,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -34,16 +34,24 @@ public class WebsocketService {
         for (ConversationMember member : members) {
             Set<String> sessions = userOnlineStorage.getSessions(member.getUserId());
 
-            Long countUnread = conversationRepository.countUnread(conv.getId(), member.getUserId());
+            if (sessions != null && !sessions.isEmpty()) {
+                Long countUnread = conversationRepository.countUnread(conv.getId(), member.getUserId());
+                List<IsMentionDto> mentions = conversationRepository.checkMentionsInUnread(Collections.singletonList(conv.getId()),member.getUserId());
+                Map<Long, Integer> mapIsMention = mentions.stream().collect(Collectors.toMap(
+                        IsMentionDto::getConversationId,  // key
+                        IsMentionDto::getIsMention            // value
+                ));
 
-            conv.setUnread(countUnread);
+                conv.setUnread(countUnread);
+                conv.setIsMention(mapIsMention.getOrDefault(conv.getId(), 0) == 1);
 
-            Map<String, Object> payload = new HashMap<>();
-            payload.put("message", message);
-            payload.put("conversation", conv);
+                Map<String, Object> payload = new HashMap<>();
+                payload.put("message", message);
+                payload.put("conversation", conv);
 
-            for (String sessionId : sessions) {
-                messagingTemplate.convertAndSendToUser(sessionId, "/queue/chat.newMessages", payload, userOnlineStorage.createHeaders(sessionId));
+                for (String sessionId : sessions) {
+                    messagingTemplate.convertAndSendToUser(sessionId, "/queue/chat.newMessages", payload, userOnlineStorage.createHeaders(sessionId));
+                }
             }
         }
     }
@@ -116,9 +124,11 @@ public class WebsocketService {
         for (ConversationMember member : members) {
             Set<String> sessions = userOnlineStorage.getSessions(member.getUserId());
 
-            for (String sessionId : sessions) {
+            if (sessions != null && !sessions.isEmpty()) {
+                for (String sessionId : sessions) {
 
-                messagingTemplate.convertAndSendToUser(sessionId, destination, payload, userOnlineStorage.createHeaders(sessionId));
+                    messagingTemplate.convertAndSendToUser(sessionId, destination, payload, userOnlineStorage.createHeaders(sessionId));
+                }
             }
         }
     }

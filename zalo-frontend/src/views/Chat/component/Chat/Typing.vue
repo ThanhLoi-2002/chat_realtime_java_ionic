@@ -1,8 +1,8 @@
 <template>
-    <div class="w-full">
+    <div class="w-full relative">
         <!-- Typing indicator (giữ nguyên) -->
         <div v-if="typingUsers.size > 0"
-            class="text-sm text-gray-600 dark:text-gray-400 px-4 pb-2 flex items-center gap-1">
+            class="absolute bottom-full left-2 text-sm text-gray-600 dark:text-gray-400 px-4 pb-2 flex items-center gap-1">
             <span>
                 <span v-for="([id, user], index) in typingUsers" :key="id">
                     <span v-if="index > 0">, </span>{{ user.username }}

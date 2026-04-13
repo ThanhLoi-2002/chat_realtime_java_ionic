@@ -4,6 +4,7 @@ import com.zalo.common.base.BaseEntity;
 import com.zalo.common.configuration.json.G;
 import com.zalo.common.service.WebsocketService;
 import com.zalo.common.filter.MessageFilter;
+import com.zalo.modules.conversation.service.*;
 import com.zalo.modules.media.dtos.responses.MediaResponse;
 import com.zalo.modules.media.entities.Media;
 import com.zalo.modules.message.dto.request.AddReactionRequest;
@@ -22,10 +23,6 @@ import com.zalo.modules.message.entity.MessageType;
 import com.zalo.modules.message.entity.SystemMessageType;
 import com.zalo.modules.conversation.entities.Conversation;
 import com.zalo.modules.conversation.entities.ConversationMember;
-import com.zalo.modules.conversation.service.ConversationMemberRepository;
-import com.zalo.modules.conversation.service.ConversationRepository;
-import com.zalo.modules.conversation.service.ConversationService;
-import com.zalo.modules.conversation.service.MemberService;
 import com.zalo.modules.media.dtos.requests.MediaRequest;
 import com.zalo.modules.media.entities.MediaType;
 import com.zalo.modules.media.service.MediaInterface;
@@ -148,6 +145,7 @@ public class MessageService {
         if (conv.getType() == ConversationType.GROUP) {
             convRes.setMembers(memberService.getMembers(conv.getId()));
         }
+
         websocketService.sendMessage(new MessageResponse(finalMsg, "sender"), convRes, members);
     }
 
@@ -197,7 +195,7 @@ public class MessageService {
         return messageRepo.findOneWithRelationShip(id, conversationId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
     }
 
-    public void markRead(Long conversationId, Long userId, Long messageId) {
+    public Long markRead(Long conversationId, Long userId, Long messageId) {
         Optional<MessageStatus> opt = statusRepo.findByMessageIdAndUserId(messageId, userId);
         opt.ifPresent(ms -> {
             ms.setStatus(DeliveryStatus.READ);
@@ -208,6 +206,8 @@ public class MessageService {
             m.setLastReadMessageId(messageId);
             memberRepo.save(m);
         });
+
+        return conversationRepository.countUnread(conversationId, userId);
     }
 
     public void delete(Long id, Long userId) {

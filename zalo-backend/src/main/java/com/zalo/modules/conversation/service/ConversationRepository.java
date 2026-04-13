@@ -1,5 +1,6 @@
 package com.zalo.modules.conversation.service;
 
+import com.zalo.modules.conversation.dto.IsMentionDto;
 import com.zalo.modules.conversation.entities.Conversation;
 import com.zalo.modules.conversation.entities.ConversationType;
 import com.zalo.modules.conversation.dto.UnreadDto;
@@ -16,6 +17,7 @@ import java.util.Optional;
 
 public interface ConversationRepository extends JpaRepository<Conversation, Long>, JpaSpecificationExecutor<Conversation> {
     Optional<Conversation> findByInviteCode(String inviteCode);
+
     // Find a private conversation that includes two users.
     // Since we don't have relationships, we search conversation_members table via native query.
     @Query(value = """
@@ -104,4 +106,24 @@ public interface ConversationRepository extends JpaRepository<Conversation, Long
 
     @EntityGraph(attributePaths = {"avatar"})
     List<Conversation> findByIdInAndType(List<Long> ids, ConversationType type);
+
+    @Query(value = """
+            SELECT 
+                c.id AS conversationId, 
+                CASE WHEN EXISTS (
+                    SELECT 1 FROM message m 
+                    WHERE m.conversation_id = c.id 
+                      AND m.id > cm.last_read_message_id 
+                      AND m.content_type != 'SYSTEM'
+                      AND m.content LIKE CONCAT('%[mention:', :userId, ']%')
+                ) THEN true ELSE false END AS isMention
+            FROM conversation c
+            JOIN conversation_member cm ON cm.conversation_id = c.id
+            WHERE cm.user_id = :userId
+              AND c.id IN :ids
+            """, nativeQuery = true)
+    List<IsMentionDto> checkMentionsInUnread(
+            @Param("ids") List<Long> ids,
+            @Param("userId") Long userId
+    );
 }

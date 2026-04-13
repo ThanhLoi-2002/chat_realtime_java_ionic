@@ -38,6 +38,7 @@ export type ConversationType = BaseType & {
   recipient?: UserType
   members: MemberType[]
   unread: number
+  isMention: boolean
 }
 
 export type MessageType = BaseType & {

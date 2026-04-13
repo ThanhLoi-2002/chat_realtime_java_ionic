@@ -51,6 +51,10 @@ const updateName = async (conversationId: number, name: string) => {
     });
 }
 
+const getReadLastMessageId = async (conversationId: number) => {
+    return await axios.get<IResponse>(`/conversations/${conversationId}`);
+}
+
 export const conversationApi = {
-    createPrivate, getList, createGroup, getConversationInfo, getGroups, leaveGroup, addMembers, fetchGroupByCode, disbandGroup, updateAvatar, updateName
+    createPrivate, getList, createGroup, getConversationInfo, getGroups, leaveGroup, addMembers, fetchGroupByCode, disbandGroup, updateAvatar, updateName, getReadLastMessageId
 }

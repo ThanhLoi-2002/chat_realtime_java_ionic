@@ -36,8 +36,8 @@ public class MessageController {
 
     @PostMapping("/{messageId}/read")
     @CheckConversationMember
-    public void markRead(@PathVariable Long conversationId, @PathVariable Long messageId, @CurrentUser User user) {
-        messageService.markRead(conversationId, user.getId(), messageId);
+    public Long markRead(@PathVariable Long conversationId, @PathVariable Long messageId, @CurrentUser User user) {
+       return messageService.markRead(conversationId, user.getId(), messageId);
     }
 
     @DeleteMapping("/{messageId}")

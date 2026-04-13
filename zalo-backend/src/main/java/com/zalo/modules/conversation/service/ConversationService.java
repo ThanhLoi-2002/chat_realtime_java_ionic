@@ -7,6 +7,7 @@ import com.zalo.common.configuration.json.G;
 import com.zalo.common.entity.SystemMetadata;
 import com.zalo.common.filter.ConversationFilter;
 import com.zalo.common.filter.UserFilter;
+import com.zalo.modules.conversation.dto.IsMentionDto;
 import com.zalo.modules.conversation.dto.request.CreateGroupRequest;
 import com.zalo.modules.media.dtos.requests.MediaRequest;
 import com.zalo.modules.media.dtos.responses.MediaResponse;
@@ -48,7 +49,7 @@ import java.util.stream.Collectors;
 @Transactional
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ConversationService {
+public class ConversationService implements ConversationInterface {
     private static final Logger logger = LoggerFactory.getLogger(ConversationService.class);
     ConversationRepository conversationRepo;
     ConversationMemberRepository memberRepo;
@@ -145,8 +146,10 @@ public class ConversationService {
         Pageable pageable = filter.toPageable();
 
         Page<Conversation> page = conversationRepo.findAllWithRelationShip(conversationIds, filter.getName(), pageable);
+        List<Long> ids = page.getContent().stream().map(BaseEntity::getId).toList();
 
-        Map<Long, Long> mapUnread = getUnreadFromIds(page.getContent().stream().map(BaseEntity::getId).toList(), userId);
+        Map<Long, Long> mapUnread = getUnreadFromIds(ids, userId);
+        Map<Long, Integer> mapIsMention = isMentionFromIds(ids, userId);
 
         return page.map(c -> {
             ConversationResponse conv = new ConversationResponse(c, "recipient", "lastMessage", "createdBy", "avatar");
@@ -155,6 +158,7 @@ public class ConversationService {
             }
 
             conv.setUnread(mapUnread.getOrDefault(c.getId(), 0L));
+            conv.setIsMention(mapIsMention.getOrDefault(c.getId(), 0) == 1);
 
             return conv;
         });
@@ -207,6 +211,16 @@ public class ConversationService {
         return unread.stream().collect(Collectors.toMap(
                 UnreadDto::getConversationId,  // key
                 UnreadDto::getUnreadCount            // value
+        ));
+    }
+
+    @Override
+    public Map<Long, Integer> isMentionFromIds(List<Long> ids, Long userId) {
+        List<IsMentionDto> mentions = conversationRepo.checkMentionsInUnread(ids, userId);
+
+        return mentions.stream().collect(Collectors.toMap(
+                IsMentionDto::getConversationId,  // key
+                IsMentionDto::getIsMention            // value
         ));
     }
 
@@ -314,5 +328,13 @@ public class ConversationService {
 
             systemMessageInterface.createSystemMessage(dto);
         }
+    }
+
+    public Long getReadLastMessageId(Long conversationId, Long userId) {
+        ConversationMember data = memberRepo.findByConversationIdAndUserId(conversationId, userId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound")
+        );
+
+        return data.getLastReadMessageId();
     }
 }
