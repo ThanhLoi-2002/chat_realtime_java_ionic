@@ -169,4 +169,6 @@ const formattedAddedList = computed(() => {
 
     return result;
 });
+
+console.log(props.msg.systemMetadata)
 </script>

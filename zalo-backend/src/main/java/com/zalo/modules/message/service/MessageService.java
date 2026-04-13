@@ -60,9 +60,9 @@ public class MessageService {
     EntityManager em;
     WebsocketService websocketService;
     MessageReactionRepository messageReactionRepository;
-    UserService userService;
     MemberService memberService;
     MediaInterface mediaInterface;
+    SystemMessageInterface systemMessageInterface;
 
     public void sendMessage(Long conversationId, Long senderId, CreateMessageRequest dto) throws IOException {
         // optional check replyTo exists
@@ -186,6 +186,8 @@ public class MessageService {
 
             m.setReactions(mapReaction.getOrDefault(m.getId(), List.of()));
             m.setAttachments(mapAttachment.getOrDefault(m.getId(), List.of()));
+
+            systemMessageInterface.getSystemMetadata(e, m);
 
             return m;
         });

@@ -165,7 +165,6 @@ const sendImages = async () => {
     }
 
     const data = await uploadFiles(dto)
-    console.log(data)
 
     // clear
     selectedRawFiles.value = []

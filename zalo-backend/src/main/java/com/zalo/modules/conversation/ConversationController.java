@@ -60,9 +60,7 @@ public class ConversationController {
 
     @GetMapping("/by-code/{code}")
     public ConversationResponse getByCode(@PathVariable String code) {
-        ConversationResponse conv = new ConversationResponse(conversationService.getByInviteCode(code), "owner", "avatar");
-        conversationService.setTop3Members(conv);
-        return conv;
+        return conversationService.getByInviteCode(code);
     }
 
     @PostMapping("/{conversationId}/add-members")

@@ -18,20 +18,24 @@
                     {{ formatSeparatorTime(msg.ct) }}
                 </div>
 
-                <SystemMessage v-if="msg.contentType === MessageEnum.SYSTEM" :msg="msg"/>
+                <SystemMessage v-if="msg.contentType === MessageEnum.SYSTEM" :msg="msg" />
 
                 <MessageContainer v-else :message="msg" :roles="roles" />
             </div>
         </div>
 
         <!-- NÚT SCROLL TO BOTTOM - CỐ ĐỊNH BÊN TRONG KHUNG CHAT -->
-        <button v-if="showScrollButton" @click="handleScrollBottom(true)" class="absolute bottom-4 right-4 md:bottom-6 md:right-6 z-30 
+        <button v-if="showScrollDownButton" @click="handleScrollBottom(true)" class="absolute bottom-4 right-4 md:bottom-6 md:right-6 z-30 
              w-8 h-8 md:w-11 md:h-11 flex items-center justify-center 
              bg-white dark:bg-gray-800 shadow-2xl rounded-2xl 
              border border-gray-200 dark:border-gray-600
              hover:bg-gray-50 dark:hover:bg-gray-700 
              active:scale-95 transition-all duration-200">
             <i class="fa-solid fa-arrow-down mext-sm md:text-xl text-gray-600 dark:text-gray-300"></i>
+            <span v-if="unreadCount > 0"
+                class="absolute -top-2 -right-1 bg-red-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white dark:border-gray-800">
+                {{ unreadCount > 99 ? '99+' : unreadCount }}
+            </span>
         </button>
     </div>
 
@@ -68,11 +72,12 @@ const sysStorage = useSystemStore()
 const { t } = useTranslate()
 const { getTime, formatSeparatorTime } = useDateTime()
 const { onScroll, scrollToBottom } = useScroll()
+const unreadCount = ref(0) // Số tin nhắn mới chưa đọc khi đang cuộn lên trên
 
 const roles = ref<Record<number, MemberRoleEnum>>()
 
 const scrollContainer = ref<HTMLElement | null>(null)
-const showScrollButton = ref(false)
+const showScrollDownButton = ref(false)
 
 let subReaction: StompSubscription | undefined
 let sub: StompSubscription | undefined
@@ -131,6 +136,17 @@ const messagesWithMeta = computed(() => {
     })
 })
 
+const checkReadMessages = () => {
+    // Tìm tin nhắn cuối cùng đang hiển thị trong viewport và gọi readMessage
+    // Tuy nhiên, thường chỉ cần cuộn xuống đáy (isAtBottom) 
+    // là đủ để gọi API đánh dấu đã đọc toàn bộ hội thoại.
+    if (!showScrollDownButton.value && conversationStorage.conversation?.lastMessageId) {
+        messageStorage.readMessage(conversationStorage.conversation.lastMessageId, conversationStorage.conversation.id)
+        conversationStorage.updateUnreadCount(conversationStorage.conversation.id)
+        unreadCount.value = 0
+    }
+}
+
 const scrollMore = () => {
     checkScrollAtBottom()
 
@@ -154,14 +170,16 @@ const checkScrollAtBottom = () => {
     const { scrollTop, scrollHeight, clientHeight } = scrollContainer.value
     const distanceFromBottom = scrollHeight - scrollTop - clientHeight
 
-    showScrollButton.value = distanceFromBottom > 200
+    showScrollDownButton.value = distanceFromBottom > 50
+
+    // checkReadMessages()
 }
 
 const handleScrollBottom = (smooth: boolean) => {
     scrollToBottom(scrollContainer.value!, smooth)
     // Đợi scroll hoàn tất rồi mới ẩn nút
     setTimeout(() => {
-        showScrollButton.value = false
+        showScrollDownButton.value = false
     }, smooth ? 800 : 100)
 }
 
@@ -200,10 +218,7 @@ const reset = async () => {
         }
         await messageStorage.getMessages(options)
 
-        if (conversationStorage.conversation.lastMessageId) {
-            messageStorage.readMessage(conversationStorage.conversation.lastMessageId, conversationStorage.conversation.id)
-            conversationStorage.updateUnreadCount(conversationStorage.conversation.id)
-        }
+        checkReadMessages()
 
         await nextTick()
         await waitForImages()
@@ -246,9 +261,11 @@ watch(() => conversationStorage.conversation?.id, async () => {
     resetSubscribe()
 })
 
-watch(() => messageStorage.messages.length, () => {
-    if (!showScrollButton.value) {
+watch(() => messageStorage.messages.length, (newLen, oldLen) => {
+    if (!showScrollDownButton.value) {
         handleScrollBottom(true)
+    } else {
+        // unreadCount.value += (newLen - oldLen)
     }
 })
 </script>

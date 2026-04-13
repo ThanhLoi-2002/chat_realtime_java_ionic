@@ -23,7 +23,7 @@
                             t('community') }}</p>
                             
                         <button @click="join"
-                            class="cursor-pointer bg-[#0068ff] hover:bg-blue-700 text-white font-semibold py-2.5 px-8 rounded-lg flex items-center gap-2 transition-all shadow-lg shadow-blue-200 dark:shadow-none mb-8">
+                            class="cursor-pointer w-fit bg-[#0068ff] hover:bg-blue-700 text-white font-semibold py-2.5 px-8 rounded-lg flex items-center gap-2 transition-all shadow-lg shadow-blue-200 dark:shadow-none mb-8">
                             <i class="fas fa-comment"></i>
                             {{ t('join') }}
                         </button>

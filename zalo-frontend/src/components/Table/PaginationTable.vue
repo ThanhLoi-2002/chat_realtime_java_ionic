@@ -76,8 +76,8 @@ watch(
             <thead class="sticky top-0 z-10">
                 <tr>
                     <th v-for="header in table.getHeaderGroups()[0].headers" :key="header.id" class="border border-gray-200 dark:border-gray-700 cursor-pointer
-  bg-gray-100 dark:bg-gray-700
-  hover:bg-gray-200 dark:hover:bg-gray-600 relative text-center py-2 pr-6" @click="header.column.toggleSorting()">
+                        bg-gray-100 dark:bg-gray-700
+                        hover:bg-gray-200 dark:hover:bg-gray-600 relative text-center py-2 pr-6" @click="header.column.toggleSorting()">
                         <div class="flex items-center justify-center gap-2">
                             <FlexRender :render="header.column.columnDef.header" :props="header.getContext()" />
 
@@ -97,10 +97,8 @@ watch(
             <tbody>
                 <tr v-for="row in table.getRowModel().rows" :key="row.id" class="group cursor-pointer">
                     <td v-for="cell in row.getVisibleCells()" :key="cell.id" class="border border-gray-200 dark:border-gray-700
-          p-2 bg-white dark:bg-gray-800
-          group-hover:bg-gray-200 dark:group-hover:bg-gray-600" :style="{ width: cell.column.columnDef.meta?.width }">
-                        <FlexRender :render="cell.column.columnDef.cell ?? cell.getValue()"
-                            :props="cell.getContext()" />
+                        p-2 bg-white dark:bg-gray-800 group-hover:bg-gray-200 dark:group-hover:bg-gray-600" :style="{ width: cell.column.columnDef.meta?.width }">
+                        <FlexRender :render="cell.column.columnDef.cell ?? cell.getValue()" :props="cell.getContext()" />
                     </td>
                 </tr>
             </tbody>

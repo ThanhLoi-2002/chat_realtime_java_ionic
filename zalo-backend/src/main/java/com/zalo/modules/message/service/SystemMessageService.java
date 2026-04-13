@@ -1,6 +1,7 @@
 package com.zalo.modules.message.service;
 
 import com.zalo.common.service.WebsocketService;
+import com.zalo.modules.media.dtos.responses.MediaResponse;
 import com.zalo.modules.media.entities.Media;
 import com.zalo.modules.message.dto.request.CreateSystemMessageRequest;
 import com.zalo.modules.conversation.dto.respone.ConversationResponse;
@@ -90,6 +91,7 @@ public class SystemMessageService implements SystemMessageInterface {
         convResponse.setMembers(memberService.getMembers(conv.getId()));
 
         MessageResponse messageResponse = new MessageResponse(m, "sender");
+        getSystemMetadata(m, messageResponse);
 
         websocketService.sendMessage(messageResponse, convResponse, members);
     }
@@ -100,5 +102,28 @@ public class SystemMessageService implements SystemMessageInterface {
 
     public Conversation findConversationByIdWithRelationShip(Long id) {
         return convRepo.findOneWithRelationShipById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
+    }
+
+    @Override
+    public void getSystemMetadata(Message e, MessageResponse rp) {
+        if (e.getContentType() == MessageType.SYSTEM && e.getSystemMetadata() != null) {
+            SystemMetadataResponse metadataResponse = new SystemMetadataResponse();
+
+            metadataResponse.setType(e.getSystemMetadata().getType());
+            metadataResponse.setGroupName(e.getSystemMetadata().getGroupName());
+
+            if (e.getSystemMetadata().getGroupAvatar() != null) {
+                metadataResponse.setGroupAvatar(new MediaResponse(e.getSystemMetadata().getGroupAvatar()));
+            }
+
+            if (e.getSystemMetadata().getType() == SystemMessageType.ADD_USERS_TO_GROUP) {
+                List<Long> userIds = e.getSystemMetadata().getAddedUsersToGroup();
+                List<User> users = userService.findByIdIn(userIds);
+
+                metadataResponse.setAddedUsersToGroup(users.stream().map(UserResponse::new).toList());
+            }
+
+            rp.setSystemMetadata(metadataResponse);
+        }
     }
 }

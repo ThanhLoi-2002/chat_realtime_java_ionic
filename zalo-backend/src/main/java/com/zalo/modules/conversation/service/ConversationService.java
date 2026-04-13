@@ -31,6 +31,7 @@ import com.zalo.common.service.WebsocketService;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -191,21 +192,13 @@ public class ConversationService {
         List<Long> conversationIds = memberRepo.findConversationIdsByUserId(userId);
         List<Conversation> conversations = conversationRepo.findByIdInAndType(conversationIds, ConversationType.GROUP);
 
-        List<ConversationResponse> conversationResponses = conversations.stream().map(ConversationResponse::new).toList();
+        List<ConversationResponse> conversationResponses = conversations.stream().map(e -> new ConversationResponse(e, "avatar")).toList();
 
         for (ConversationResponse conv : conversationResponses) {
-
-            setTop3Members(conv);
+            conv.setMembers(memberService.getMembers(conv.getId()));
         }
 
         return conversationResponses;
-    }
-
-    public void setTop3Members(ConversationResponse conv) {
-        if (conv.getAvatar() == null) {
-            List<ConversationMember> members = memberRepo.findTop3ByConversationIdOrderByCtDesc(conv.getId());
-            conv.setMembers(memberService.convertMembersToMemberResponses(members));
-        }
     }
 
     public Map<Long, Long> getUnreadFromIds(List<Long> ids, Long userId) {
@@ -263,8 +256,11 @@ public class ConversationService {
 
     }
 
-    public Conversation getByInviteCode(String code) {
-        return conversationRepo.findByInviteCode(code).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
+    public ConversationResponse getByInviteCode(String code) {
+        Conversation conv = conversationRepo.findByInviteCode(code).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
+        ConversationResponse conversationResponse = new ConversationResponse(conv, "owner", "avatar");
+        conversationResponse.setMembers(memberService.getMembers(conv.getId()));
+        return conversationResponse;
     }
 
     public void updateAvatar(Long conversationId, Long userId, MediaRequest mediaRequest) {

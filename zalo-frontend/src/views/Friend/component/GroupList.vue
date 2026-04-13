@@ -50,10 +50,10 @@
                 <div v-for="group in filteredGroups" :key="group.id" class="group flex items-center gap-4 px-4 py-3 rounded-2xl
                  hover:bg-black/4 dark:hover:bg-white/5 active:bg-white/8 cursor-pointer
                  border border-slate-400 dark:border-slate-600
-                 transition-all duration-200 ease-out">
+                 transition-all duration-200 ease-out" @click="selecteGroup(group)">
                     <!-- Avatar -->
                     <div class="relative shrink-0">
-                        <GroupAvatar :conversation="group" />
+                        <GroupAvatar :conversation="group" :is-disabled="true"/>
                     </div>
 
                     <!-- Info -->
@@ -84,6 +84,14 @@
                 <p class="text-sm">{{ t('notFound') }}</p>
             </div>
         </div>
+
+        <Modal ref="groupProfileModal" :title="t('groupProfile')">
+        <transition name="slide">
+            <GroupProfile v-if="view == 'groupInfo' && convStorage.conversation" :conversation="convStorage.conversation" @update:view="view = $event" />
+
+            <Member v-else-if="view == 'member'" @back="view = 'groupInfo'" :is-show-back-button="true" />
+        </transition>
+    </Modal>
     </div>
 </template>
 
@@ -93,6 +101,8 @@ import GroupAvatar from '@/components/Avatar/GroupAvatar.vue'
 import { useTranslate } from '@/composables/useTranslate'
 import { useConversationStore } from '@/stores/conversation.storage'
 import { ConversationType } from '@/types/entities'
+import GroupProfile from '@/views/Chat/component/GroupProfile.vue'
+import Member from '@/views/Chat/Info/components/Member.vue'
 import { ref, computed, onMounted } from 'vue'
 
 const { t } = useTranslate()
@@ -102,6 +112,8 @@ const filterMode = ref<'all' | 'large' | 'medium' | 'small'>('all')
 const convStorage = useConversationStore()
 
 const groups = ref<ConversationType[]>([])
+const groupProfileModal = ref()
+const view = ref<'groupInfo' | 'member'>('groupInfo')
 
 const filteredGroups = computed(() => {
     let list = [...groups.value]
@@ -124,6 +136,11 @@ const filteredGroups = computed(() => {
 
     return list
 })
+
+const selecteGroup = (group: ConversationType) => {
+    convStorage.selectConversation(group)
+    groupProfileModal.value?.present()
+}
 
 const getGroups = async () => {
     groups.value = await convStorage.getGroups()

@@ -5,6 +5,7 @@ import com.zalo.modules.conversation.entities.ConversationType;
 import com.zalo.modules.conversation.dto.UnreadDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -101,5 +102,6 @@ public interface ConversationRepository extends JpaRepository<Conversation, Long
             @Param("userId") Long userId
     );
 
+    @EntityGraph(attributePaths = {"avatar"})
     List<Conversation> findByIdInAndType(List<Long> ids, ConversationType type);
 }

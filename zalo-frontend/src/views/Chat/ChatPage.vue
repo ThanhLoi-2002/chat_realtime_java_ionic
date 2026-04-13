@@ -35,7 +35,6 @@ onMounted(() => {
     }
 
     messageStorage.addNewMessage(mess)
-    console.log(mess)
     conversationStorage.updateConversation(conv)
   })
 

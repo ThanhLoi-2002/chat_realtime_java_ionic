@@ -24,6 +24,10 @@ public class SystemMetadataResponse {
     public SystemMetadataResponse(SystemMetadata s) {
         BeanUtils.copyProperties(s, this, "groupAvatar");
 
+//        if(s.getAddedUsersToGroup() != null){
+//            this.addedUsersToGroup = s.getAddedUsersToGroup().stream().map(e -> new UserResponse(e)).toList();
+//        }
+
         if(s.getGroupAvatar() != null) {
             this.groupAvatar = new MediaResponse(s.getGroupAvatar());
         }
