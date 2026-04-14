@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class MediaRequest {
     MediaType moduleType; // VD: "CONVERSATION", "MESSAGE"
     Long moduleId;
+    String name;
 
     String publicId;
     String secureUrl;

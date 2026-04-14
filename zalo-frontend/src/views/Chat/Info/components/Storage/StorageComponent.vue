@@ -14,25 +14,11 @@
         </collapse>
 
         <!-- FILE -->
-        <collapse v-model:isOpen="open.file" :title="t('File')">
-            <div class="flex items-center gap-3 p-2 rounded
-                                bg-gray-100 dark:bg-slate-800
-                                hover:bg-gray-200 dark:hover:bg-slate-700
-                                cursor-pointer transition" @click="openFile">
-                <div class="w-10 h-10 bg-purple-500 rounded flex items-center justify-center text-white">
-                    ▶
-                </div>
+        <collapse v-model:isOpen="open.file" :title="t('File')" customClass="gap-0!">
+            <file-container v-for="(media, index) in messStorage.files.slice(0, 4)" :key="index" :media="media" />
 
-                <div class="flex-1">
-                    <div class="truncate dark:text-white">Record_2025.mp4</div>
-                    <div class="text-xs text-gray-400">3.78 MB</div>
-                </div>
-
-                <div class="text-xs text-gray-400">26/12/2025</div>
-            </div>
-
-            <ion-button class="btn mx-auto w-full normal-case" @click="goTo('storage/file')">{{ t("seeAll")
-                }}</ion-button>
+            <ion-button class="btn mt-2 mx-auto w-full normal-case" @click="goTo('storage/file')">{{ t("seeAll")
+            }}</ion-button>
         </collapse>
 
         <!-- LINK -->
@@ -54,6 +40,8 @@ import { MessageFilter } from '@/types/common';
 import { MediaType } from '@/types/entities';
 import { MessageEnum } from '@/types/enum';
 import { onMounted, reactive, watch } from 'vue';
+import FileContainer from './FileContainer.vue';
+import Collapse from '@/components/collapse/Collapse.vue';
 
 const emit = defineEmits<{
     (e: 'update:currentView', value: string): void
@@ -86,13 +74,29 @@ const fetchImages = () => {
     }
     messStorage.getImageMessages(options)
 }
+
+const fetchFiles = () => {
+    const options: MessageFilter = {
+        conversationId: convStorage.conversation!.id,
+        limit: 4,
+        lastId: messStorage.images.at(-1)?.id ?? undefined,
+        contentType: MessageEnum.FILE
+    }
+    messStorage.getFileMessages(options)
+}
+
 onMounted(() => {
     if (messStorage.images.length == 0 && convStorage.conversation) {
         fetchImages()
+    }
+
+    if (messStorage.files.length == 0 && convStorage.conversation) {
+        fetchFiles()
     }
 })
 
 watch(() => convStorage.conversation?.id, () => {
     fetchImages()
+    fetchFiles()
 })
 </script>

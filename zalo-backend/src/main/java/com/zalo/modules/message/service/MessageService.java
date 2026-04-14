@@ -62,19 +62,23 @@ public class MessageService {
         List<MediaRequest> attachments = dto.attachments;
         int fileCount = (attachments != null) ? attachments.size() : 0;
 
-        // TRƯỜNG HỢP 1: Nhiều file (> 1) -> Tách TEXT và MEDIA riêng
-        if (fileCount > 1) {
-            // Gửi tin nhắn TEXT trước (nếu có nội dung)
-            if (dto.content != null && !dto.content.trim().isEmpty()) {
-                saveAndNotifyMessage(conversationId, senderId, dto.content, MessageType.TEXT, null, dto.replyToId);
+        if (dto.contentType == MessageType.TEXT || dto.contentType == MessageType.IMAGE) {
+            // TRƯỜNG HỢP 1: Nhiều file (> 1) -> Tách TEXT và MEDIA riêng
+            if (fileCount > 1) {
+                // Gửi tin nhắn TEXT trước (nếu có nội dung)
+                if (dto.content != null && !dto.content.trim().isEmpty()) {
+                    saveAndNotifyMessage(conversationId, senderId, dto.content, MessageType.TEXT, null, dto.replyToId);
+                }
+                // Gửi tin nhắn MEDIA chứa toàn bộ list ảnh (content lúc này thường để null hoặc tùy bạn)
+                saveAndNotifyMessage(conversationId, senderId, null, MessageType.IMAGE, attachments, null);
             }
-            // Gửi tin nhắn MEDIA chứa toàn bộ list ảnh (content lúc này thường để null hoặc tùy bạn)
-            saveAndNotifyMessage(conversationId, senderId, null, MessageType.IMAGE, attachments, null);
-        }
-        // TRƯỜNG HỢP 2: 1 file hoặc 0 file -> Gộp chung
-        else {
-            MessageType type = fileCount == 1 ? MessageType.IMAGE : MessageType.TEXT;
-            saveAndNotifyMessage(conversationId, senderId, dto.content, type, attachments, dto.replyToId);
+            // TRƯỜNG HỢP 2: 1 file hoặc 0 file -> Gộp chung
+            else {
+                MessageType type = fileCount == 1 ? MessageType.IMAGE : MessageType.TEXT;
+                saveAndNotifyMessage(conversationId, senderId, dto.content, type, attachments, dto.replyToId);
+            }
+        } else {
+            saveAndNotifyMessage(conversationId, senderId, dto.content, MessageType.FILE, attachments, dto.replyToId);
         }
     }
 
@@ -96,6 +100,7 @@ public class MessageService {
         if (attachments != null && !attachments.isEmpty()) {
             List<MediaRequest> mediaEntities = attachments.stream().map(f -> {
                 MediaRequest media = new MediaRequest();
+                media.setName(f.name);
                 media.setModuleId(newMess.getId());
                 media.setModuleType(MediaType.MESSAGE); // Enum bạn đã định nghĩa
                 media.setSecureUrl(f.getSecureUrl());
@@ -140,7 +145,22 @@ public class MessageService {
             convRes.setMembers(memberService.getMembers(conv.getId()));
         }
 
-        websocketService.sendMessage(new MessageResponse(finalMsg, "sender"), convRes, members);
+        MessageResponse messageResponse = new MessageResponse(finalMsg, "sender");
+        if(finalMsg.getContentType() == MessageType.FILE || finalMsg.getContentType() == MessageType.IMAGE){
+            List<Media> medias = mediaInterface.findByModuleIdInAndModuleType(List.of(finalMsg.getId()), MediaType.MESSAGE);
+            Map<Long, List<MediaResponse>> mapAttachment = medias.stream()
+                    .collect(Collectors.groupingBy(
+                            Media::getModuleId,
+                            Collectors.mapping(
+                                    MediaResponse::new,
+                                    Collectors.toList()
+                            )
+                    ));
+
+            messageResponse.setAttachments(mapAttachment.getOrDefault(m.getId(), List.of()));
+        }
+
+        websocketService.sendMessage(messageResponse, convRes, members);
     }
 
     public Page<MessageResponse> fetchMessages(Long conversationId, MessageFilter filter) {

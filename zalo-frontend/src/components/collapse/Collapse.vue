@@ -8,7 +8,7 @@
         </div>
 
         <transition name="collapse">
-            <div v-show="isOpen" class="flex flex-col gap-4 overflow-hidden">
+            <div v-show="isOpen" class="flex flex-col gap-4 overflow-hidden" :class="customClass">
                 <slot />
             </div>
         </transition>
@@ -20,6 +20,7 @@ import { style } from '@/assets/tailwindcss';
 const props = defineProps<{
     isOpen: boolean
     title: string
+    customClass?: string
 }>()
 
 const emit = defineEmits(['update:isOpen'])

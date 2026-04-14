@@ -17,6 +17,7 @@ import org.springframework.beans.BeanUtils;
 public class MediaResponse extends BaseResponse {
     private MediaType moduleType; // VD: "CONVERSATION", "MESSAGE"
     private Long moduleId;    // ID của message, conversation
+    private String name;
 
     private String publicId;
     private String secureUrl;

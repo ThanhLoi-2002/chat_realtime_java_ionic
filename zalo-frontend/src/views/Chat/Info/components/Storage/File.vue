@@ -1,6 +1,6 @@
 <template lang="">
-    <div>
-      <!-- SEARCH -->
+  <div class='w-full h-full'>
+    <!-- SEARCH -->
     <div class="p-3">
       <div class="flex items-center bg-[#374151] rounded-full px-3 py-2">
         <i class="fa fa-search text-gray-400 mr-2"></i>
@@ -27,95 +27,107 @@
     </div>
 
     <!-- LIST -->
-    <div class="flex-1 overflow-y-auto px-3 pb-4 space-y-4">
-
-      <div v-for="group in files" :key="group.date">
-
+    <div class="flex-1 overflow-y-auto px-3 pb-4 space-y-4 w-full h-[80%]" ref="scrollRef"
+      @scroll="handleScroll">
+      <div v-for="group in groupedMedia" :key="group.date">
         <!-- DATE -->
         <div class="text-gray-400 text-sm font-semibold mb-2">
           {{ group.date }}
         </div>
 
         <!-- ITEMS -->
-        <div class="space-y-3">
-          <div
+        <div class="space-y-1 w-full">
+          <FileContainer
             v-for="item in group.items"
             :key="item.id"
             class="flex items-center gap-3"
-          >
-            <!-- ICON -->
-            <div
-              class="w-12 h-12 rounded-lg flex items-center justify-center text-xs font-bold"
-              :class="getFileColor(item.type)"
-            >
-              {{ item.type.toUpperCase() }}
-            </div>
-
-            <!-- INFO -->
-            <div class="flex-1">
-              <div class="font-medium text-sm">
-                {{ item.name }}
-              </div>
-
-              <div class="text-xs text-gray-400 flex items-center gap-2 mt-1">
-                <span>{{ item.size }}</span>
-
-                <template v-if="item.downloaded">
-                  <span class="flex items-center gap-1 text-green-400">
-                    <i class="fa fa-check-circle"></i>
-                    Đã có trên máy
-                  </span>
-                </template>
-
-                <template v-else>
-                  <span class="flex items-center gap-1 text-blue-400 cursor-pointer">
-                    <i class="fa fa-download"></i>
-                    Tải về để xem lâu dài
-                  </span>
-                </template>
-              </div>
-            </div>
-          </div>
+            :media="item"
+          />
         </div>
-
       </div>
-
-    </div>  
     </div>
+  </div>
 </template>
 <script setup lang="ts">
-const files = [
-  {
-    date: 'Ngày 31 Tháng 3',
-    items: [
-      {
-        id: 1,
-        name: 'FarmHU.apk',
-        size: '30.01 MB',
-        type: 'apk',
-        downloaded: false
-      },
-      {
-        id: 2,
-        name: 'NROx10.jar',
-        size: '10.99 MB',
-        type: 'jar',
-        downloaded: true
-      }
-    ]
-  }
-]
+import { useDateTime } from "@/composables/useDateTime";
+import { useMedia } from "@/composables/useMedia";
+import { useConversationStore } from "@/stores/conversation.storage";
+import { useMessageStore } from "@/stores/message.storage";
+import { MessageFilter } from "@/types/common";
+import { MediaType } from "@/types/entities";
+import { MessageEnum } from "@/types/enum";
+import { computed, onMounted, ref } from "vue";
+import FileContainer from "./FileContainer.vue";
 
-const getFileColor = (type: string) => {
-  switch (type) {
-    case 'apk':
-      return 'bg-cyan-500'
-    case 'jar':
-      return 'bg-sky-500'
-    case 'rar':
-      return 'bg-purple-500'
-    default:
-      return 'bg-gray-500'
+const convStorage = useConversationStore();
+const messStorage = useMessageStore();
+const { groupedMediaByTime } = useMedia();
+
+const scrollRef = ref<HTMLElement | null>(null);
+
+const groupedMedia = computed(() => {
+  return groupedMediaByTime(filtered.value);
+});
+
+const filterDate = ref("");
+
+const filtered = computed(() => {
+  return messStorage.files.filter((item) => {
+    // filter user
+    // if (filterUser.value === 'me' && !item.isMe) return false
+    // if (filterUser.value === 'other' && item.isMe) return false
+
+    // filter date
+    const now = new Date();
+    const itemDate = new Date(item.ct);
+
+    if (filterDate.value === "today") {
+      if (itemDate.toDateString() !== now.toDateString()) return false;
+    }
+
+    if (filterDate.value === "week") {
+      const diff = (now.getTime() - itemDate.getTime()) / (1000 * 60 * 60 * 24);
+      if (diff > 7) return false;
+    }
+
+    if (filterDate.value === "month") {
+      const diff = (now.getTime() - itemDate.getTime()) / (1000 * 60 * 60 * 24);
+      if (diff > 30) return false;
+    }
+
+    return true;
+  });
+});
+
+const fetchFileMessages = () => {
+  if (!messStorage.imagesHasMore) return;
+
+  const lastId = messStorage.images.at(-1)?.moduleId ?? undefined;
+  const options: MessageFilter = {
+    conversationId: convStorage.conversation!.id,
+    limit: 10,
+    lastId,
+    contentType: MessageEnum.IMAGE,
+  };
+
+  messStorage.getImageMessages(options);
+};
+
+// Xử lý sự kiện cuộn
+const handleScroll = () => {
+  // Vì đây là danh sách Media (dạng Grid), thường người dùng cuộn XUỐNG để xem ảnh cũ hơn
+  // Bạn cần kiểm tra xem scroll container đã gần tới ĐÁY chưa
+  const el = scrollRef.value;
+  if (!el) return;
+
+  // Logic: Nếu khoảng cách tới đáy < 50px thì tải thêm
+  const isBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 150;
+  if (isBottom) {
+    fetchFileMessages();
   }
-}
+};
+
+onMounted(() => {
+  fetchFileMessages();
+});
 </script>

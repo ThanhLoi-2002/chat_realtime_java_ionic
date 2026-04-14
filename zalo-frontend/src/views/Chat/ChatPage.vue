@@ -39,6 +39,7 @@ onMounted(() => {
     }
 
     conversationStorage.updateConversation(conv)
+    console.log(JSON.parse(msg.body).message)
   })
 
   sub = socketSubscribe(`/user/queue/chat.updateMessages`, (msg: any) => {

@@ -14,12 +14,15 @@
         <!-- BUBBLE -->
         <div class="relative group"> <!-- thêm class group ở đây -->
             <image-message :message="message" :setBubbleRef="setBubbleRef"
-                v-if="message.contentType == MessageEnum.IMAGE" :isOwner="isOwner" 
-                :role="roles ? roles[message.sender?.id] : undefined"/>
+                v-if="message.contentType == MessageEnum.IMAGE" :isOwner="isOwner"
+                :role="roles ? roles[message.sender?.id] : undefined" />
 
             <text-message :message="message" :setBubbleRef="setBubbleRef"
                 v-if="message.contentType == MessageEnum.TEXT || message.contentType == null" :isOwner="isOwner"
                 :role="roles ? roles[message.sender?.id] : undefined" />
+
+            <file-message :message="message" :setBubbleRef="setBubbleRef" v-if="message.contentType == MessageEnum.FILE"
+                :isOwner="isOwner" :role="roles ? roles[message.sender?.id] : undefined" :showReaction="true"/>
         </div>
 
         <!-- ACTIONS -->
@@ -72,7 +75,7 @@
         </teleport>
 
         <confirm-modal v-model:showConfirm="showConfirm" :onOk="onDelete" :message="t('deleteMessage')"
-            :header="t('deleteMessage')"/>
+            :header="t('deleteMessage')" />
     </div>
 </template>
 
@@ -89,6 +92,7 @@ import TextMessage from '../Message/TextMessage.vue';
 import { MessageType } from '@/types/entities';
 import Key from '@/components/Key/Key.vue';
 import ConfirmModal from '@/components/Modal/ConfirmModal.vue';
+import FileMessage from '../Message/FileMessage.vue';
 
 const props = defineProps<{
     message: MessageType & any

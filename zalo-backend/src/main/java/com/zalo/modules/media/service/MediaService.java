@@ -87,6 +87,7 @@ public class MediaService implements MediaInterface {
 
     private Media toEntity(MediaRequest dto, Long userId) {
         Media m = new Media();
+        m.setName(dto.name);
         m.setPublicId(dto.publicId);
         m.setSecureUrl(dto.secureUrl);
         m.setModuleId(dto.moduleId);

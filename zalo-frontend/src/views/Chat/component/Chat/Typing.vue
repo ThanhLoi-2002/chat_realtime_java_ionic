@@ -24,29 +24,24 @@
             <div v-if="previewFiles.length > 0"
                 class="flex flex-nowrap gap-3 p-3 w-1/2 border-t border-gray-200 dark:border-slate-700 bg-gray-50/50 dark:bg-gray-900/50 scrollbar-hide">
 
-                <div v-for="(file, index) in previewFiles" :key="index" class="relative w-20 h-20 ...">
-                    <img :src="file.url" class="w-full h-full object-cover"
-                        :class="{ 'opacity-50': uploadProgress[index] < 100 }" />
+                <div v-for="(file, index) in previewFiles" :key="index"
+                    class="relative w-20 h-20 shrink-0 border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-gray-800 flex flex-col items-center justify-center overflow-hidden">
 
-                    <div v-if="uploadProgress[index] > 0 && uploadProgress[index] < 100"
-                        class="absolute bottom-0 left-0 w-full h-3 bg-gray-200/50 z-20">
-                        <div class="h-full bg-blue-500 transition-all duration-300"
-                            :style="{ width: uploadProgress[index] + '%' }">
-                        </div>
-                        <span
-                            class="absolute inset-0 flex items-center justify-center text-[10px] text-white font-black drop-shadow-md">
-                            {{ uploadProgress[index] }}%
+                    <template v-if="file.type === ResourceEnum.IMAGE || file.type === ResourceEnum.VIDEO">
+                        <img v-if="file.type === ResourceEnum.IMAGE" :src="file.url"
+                            class="w-full h-full object-cover" />
+                        <video v-else :src="file.url" class="w-full h-full object-cover" />
+                    </template>
+
+                    <template v-else>
+                        <span class="text-2xl">{{ getFileIcon(file.name) }}</span>
+                        <span class="text-[10px] px-1 truncate w-full text-center dark:text-gray-300">
+                            {{ file.name }}
                         </span>
-                    </div>
+                    </template>
 
-                    <div v-if="uploadProgress[index] === 100" class="absolute top-1 left-1 text-green-500">
-                        ✅
-                    </div>
+                    <button @click="removeImage(index)" class="absolute top-0.5 right-0.5 ...">✕</button>
 
-                    <button @click="removeImage(index)"
-                        class="absolute top-1 right-1 cursor-pointer bg-black/60 hover:bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] transition-colors shadow-md">
-                        ✕
-                    </button>
                 </div>
             </div>
         </div>
@@ -82,18 +77,30 @@
                             class="text-sm md:text-xl text-gray-500 dark:text-gray-400 cursor-pointer">
                             📎
                         </button>
+
+                        <input type="file" ref="docInput" multiple accept=".doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.txt"
+                            class="hidden" @change="handleDirectUploadAndSend" />
+
+                        <button @click="docInput?.click()"
+                            class="text-sm md:text-xl text-gray-500 dark:text-gray-400 hover:text-blue-500 cursor-pointer transition">
+                            <i class="fa-solid fa-file-lines"></i> </button>
                     </div>
 
                     <!-- Message Input -->
-                    <div class="flex gap-2">
+                    <div class="flex gap-2 items-center">
                         <div class="relative flex-1 bg-gray-100 dark:bg-gray-800 rounded-2xl px-4 py-2">
                             <div ref="inputRef" contenteditable="true"
                                 class="outline-none text-xs md:text-base dark:text-slate-200 min-h-[1.5em] max-h-32 overflow-y-auto wrap-break-word"
                                 :placeholder="t('typeMessage')" @input="onInput" @keydown="onKeyDown">
                             </div>
                         </div>
-                        <base-button icon="fa-solid fa-paper-plane text-blue-500 text-xs md:text-xl"
-                            @click="sendMessage" class="ml-1" :disabled="isLoadingSendMessage" />
+
+                        <div v-if="isLoadingSendMessage">
+                            <LoadingSpinner />
+                        </div>
+
+                        <base-button v-else icon="fa-solid fa-paper-plane text-blue-500 text-xs md:text-xl"
+                            @click="sendMessage" class="ml-1"/>
                     </div>
                 </div>
             </div>
@@ -105,6 +112,7 @@
 import { style } from '@/assets/tailwindcss';
 import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
 import EmojiPicker from '@/components/Emoji/EmojiPicker.vue';
+import LoadingSpinner from '@/components/Loading/LoadingSpinner.vue';
 import { useDebounce } from '@/composables/useDebounce';
 import { useScroll } from '@/composables/useScroll';
 import { useTranslate } from '@/composables/useTranslate';
@@ -126,7 +134,7 @@ const { t } = useTranslate()
 const conversationStorage = useConversationStore()
 const userStorage = useUserStore()
 const messageStorage = useMessageStore()
-const { uploadFiles, imageFolder, videoFolder } = useUpload()
+const { uploadFiles, imageFolder, videoFolder, rawFolder } = useUpload()
 const { scrollToBottom } = useScroll()
 
 const message = ref('')
@@ -136,13 +144,84 @@ const emojiWrapper = ref<any>(null)
 
 const fileInput = ref<HTMLInputElement | null>(null)
 const selectedRawFiles = ref<File[]>([])
-const previewFiles = ref<{ url: string, type: ResourceEnum }[]>([])
+const previewFiles = ref<{ url: string, type: ResourceEnum, name?: string }[]>([])
 const showEmoji = ref(false)
 const isLoadingSendMessage = ref(false)
 // State lưu trữ tiến độ upload để hiển thị UI
 const uploadProgress = ref<Record<number, number>>({});
 
 const mentionSuggestions = ref<any[]>([]);
+
+const docInput = ref<HTMLInputElement | null>(null);
+
+// Hàm hỗ trợ lấy icon nhanh dựa trên đuôi file
+const getFileIcon = (fileName?: string) => {
+    const ext = fileName?.split('.').pop()?.toLowerCase();
+    switch (ext) {
+        case 'doc': case 'docx': return '📄';
+        case 'xls': case 'xlsx': return '📊';
+        case 'ppt': case 'pptx': return '📽️';
+        case 'pdf': return '📕';
+        default: return '📁';
+    }
+};
+
+const handleDirectUploadAndSend = async (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    if (!target.files || target.files.length === 0) return;
+
+    const files = Array.from(target.files);
+    isLoadingSendMessage.value = true;
+
+    try {
+        // 1. Chuẩn bị dữ liệu upload
+        const params: UploadFileType[] = files.map((file) => ({
+            file,
+            resourceType: ResourceEnum.RAW, // Hoặc loại tương ứng backend quy định cho tài liệu
+            folder: rawFolder
+        }));
+
+        const dto: UploadFileRequest = {
+            params,
+            updateProgress: (index: number, percent: number) => {
+                // Bạn có thể dùng một biến progress tổng hoặc bỏ qua nếu không hiện preview
+                console.log(`Uploading file ${index}: ${percent}%`);
+            },
+            moduleType: ModuleEnum.MESSAGE
+        };
+
+        // 2. Thực hiện Upload lên server
+        const filesData = await uploadFiles(dto);
+
+        if (filesData && filesData.length > 0) {
+            // 3. Lặp qua từng file đã upload thành công để gửi từng message
+            const sendPromises = filesData.map((singleFile) => {
+                const payload: SendMessageType = {
+                    content: "", // Để trống hoặc dùng singleFile.name nếu backend hỗ trợ
+                    conversationId: conversationStorage.conversation?.id,
+                    contentType: MessageEnum.FILE,
+                    // Mỗi message chỉ chứa 1 file duy nhất trong mảng attachments
+                    attachments: [singleFile]
+                };
+
+                return messageStorage.sendMessage(payload);
+            });
+
+            // Đợi tất cả tin nhắn được gửi đi
+            const results = await Promise.all(sendPromises);
+
+            // Nếu có ít nhất một tin nhắn thành công thì cuộn xuống
+            if (results.some(success => success)) {
+                scrollToBottom(props.scrollContainer, true);
+            }
+        }
+    } catch (error) {
+        console.error("Gửi file thất bại:", error);
+    } finally {
+        isLoadingSendMessage.value = false;
+        target.value = ''; // Reset input để có thể chọn lại file đó lần sau
+    }
+};
 
 const handleSelectImages = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -174,11 +253,19 @@ const removeImage = (index: number) => {
 const sendImages = async () => {
     if (selectedRawFiles.value.length === 0) return null;
 
-    const params: UploadFileType[] = selectedRawFiles.value.map((file: File) => ({
-        file,
-        resourceType: file.type.startsWith('video') ? ResourceEnum.VIDEO : ResourceEnum.IMAGE,
-        folder: file.type.startsWith('video') ? videoFolder : imageFolder
-    }))
+    const params: UploadFileType[] = selectedRawFiles.value.map((file: File) => {
+        const isVideo = file.type.startsWith('video');
+        const isImage = file.type.startsWith('image');
+        const folder = isVideo ? videoFolder : (isImage ? imageFolder : rawFolder)
+        console.log(folder, file.type)
+
+        return {
+            file,
+            // Nếu không phải ảnh/video thì mặc định là RAW
+            resourceType: isVideo ? ResourceEnum.VIDEO : (isImage ? ResourceEnum.IMAGE : ResourceEnum.RAW),
+            folder
+        };
+    });
 
     const dto: UploadFileRequest = {
         params,

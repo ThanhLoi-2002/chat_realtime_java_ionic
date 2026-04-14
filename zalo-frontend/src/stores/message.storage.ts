@@ -12,6 +12,8 @@ interface State {
     imagesHasMore: boolean,
     hasMore: boolean,
     previewImage: MediaType | undefined,
+    files: MediaType[],
+    filesHasMore: boolean,
 }
 
 export const useMessageStore = defineStore('message', {
@@ -21,7 +23,9 @@ export const useMessageStore = defineStore('message', {
         images: [],
         imagesHasMore: true,
         hasMore: true,
-        previewImage: undefined
+        previewImage: undefined,
+        files: [],
+        filesHasMore: false,
     }),
     actions: {
         setPreviewImage(previewImage?: MediaType) {
@@ -66,6 +70,7 @@ export const useMessageStore = defineStore('message', {
 
                 content.forEach((m: MessageType) => {
                     this.addImage(m)
+                    this.addFile(m)
                 })
             } catch (e: any) {
                 toast({
@@ -87,6 +92,24 @@ export const useMessageStore = defineStore('message', {
                 })
 
                 if (totalElements <= size) this.imagesHasMore = false
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+            }
+        },
+
+        async getFileMessages(options: MessageFilter) {
+            try {
+                const result: any = await messageApi.getMessages(options);
+                const { content, page: { size, totalElements } } = result.result
+
+                content.forEach((i: MessageType) => {
+                    this.addFile(i)
+                })
+
+                if (totalElements <= size) this.filesHasMore = false
             } catch (e: any) {
                 toast({
                     color: "danger",
@@ -152,6 +175,10 @@ export const useMessageStore = defineStore('message', {
             if (data.contentType == MessageEnum.IMAGE) {
                 this.images.unshift(...data.attachments)
             }
+
+            if (data.contentType == MessageEnum.FILE) {
+                this.files.unshift({...data.attachments[0], createdBy: data.sender})
+            }
         },
         updateMessage(data: MessageType) {
             let idx = this.messages.findIndex(m => m.id === data.id);
@@ -168,6 +195,14 @@ export const useMessageStore = defineStore('message', {
                     }
                 }
 
+                if (data.contentType == MessageEnum.FILE) {
+
+                    idx = this.files.findIndex(i => i.id == data.id)
+                    if (idx !== -1) {
+                        this.files = this.files.filter(i => i.id != data.id)
+                    }
+                }
+
             }
         },
 
@@ -180,11 +215,11 @@ export const useMessageStore = defineStore('message', {
         },
 
         addImage(m: MessageType) {
-            if (m.contentType == MessageEnum.IMAGE || m.contentType == MessageEnum.VIDEO) {
+            if ((m.contentType == MessageEnum.IMAGE || m.contentType == MessageEnum.VIDEO) && m.stt == 1) {
                 m.attachments.forEach((item: MediaType) => {
                     const isExisted = this.images.some(img => img.id === item.id);
 
-                    if (!isExisted) {
+                    if (!isExisted && item.stt == 1) {
                         const media: MediaType = {
                             ...item,
                             messageContent: m.content,
@@ -196,12 +231,31 @@ export const useMessageStore = defineStore('message', {
             }
         },
 
+        addFile(m: MessageType) {
+            if (m.contentType == MessageEnum.FILE && m.stt == 1) {
+                m.attachments.forEach((item: MediaType) => {
+                    const isExisted = this.images.some(img => img.id === item.id);
+
+                    if (!isExisted && item.stt == 1) {
+                        const media: MediaType = {
+                            ...item,
+                            createdBy: m.sender
+                        }
+                        this.files.push(media);
+                    }
+                })
+            }
+        },
+
 
         resetPagination() {
             this.hasMore = true
             this.imagesHasMore = true
             this.images = []
+            this.filesHasMore = true
+            this.files = []
             this.messages = []
+            console.log('reset')
         }
     }
 })

@@ -28,30 +28,30 @@ export type UserType = BaseType & {
 }
 
 export type ConversationType = BaseType & {
-  type: ConversationEnum
-  name?: string
-  inviteCode: string
-  description: string
-  avatar: MediaType
-  lastMessageId?: number
-  lastMessage?: MessageType
-  recipient?: UserType
-  members: MemberType[]
-  unread: number
-  isMention: boolean
+    type: ConversationEnum
+    name?: string
+    inviteCode: string
+    description: string
+    avatar: MediaType
+    lastMessageId?: number
+    lastMessage?: MessageType
+    recipient?: UserType
+    members: MemberType[]
+    unread: number
+    isMention: boolean
 }
 
 export type MessageType = BaseType & {
-  conversationId: number
-  senderId: number
-  sender: UserType
-  content: string
-  contentType: MessageEnum
-  file: FileType
-  replyToMessageId: number
-  reactions: ReactionType[]
-  systemMetadata: SystemMetadataType
-  attachments: MediaType[]
+    conversationId: number
+    senderId: number
+    sender: UserType
+    content: string
+    contentType: MessageEnum
+    file: FileType
+    replyToMessageId: number
+    reactions: ReactionType[]
+    systemMetadata: SystemMetadataType
+    attachments: MediaType[]
 }
 
 export type ConversationMemberType = BaseType & {
@@ -96,14 +96,15 @@ export type SystemMetadataType = {
 }
 
 export type MediaType = BaseType & {
-  secureUrl: string
-  publicId: string
-  moduleType: ModuleEnum
-  moduleId: number
-  resourceType: string
-  format: string
-  bytes: number
-  width: number
-  height: number
-  messageContent?: string
+    name: string
+    secureUrl: string
+    publicId: string
+    moduleType: ModuleEnum
+    moduleId: number
+    resourceType: string
+    format: string
+    bytes: number
+    width: number
+    height: number
+    messageContent?: string
 }

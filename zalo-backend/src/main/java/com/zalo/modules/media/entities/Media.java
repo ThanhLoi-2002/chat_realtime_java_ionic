@@ -20,6 +20,7 @@ public class Media extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private MediaType moduleType; // VD: "CONVERSATION", "MESSAGE"
     private Long moduleId;    // ID của message, conversation
+    private String name;
 
     private String publicId;
     private String secureUrl;

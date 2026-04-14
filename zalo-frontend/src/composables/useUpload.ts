@@ -50,7 +50,8 @@ export const useUpload = () => {
                 format: data.format,
                 bytes: data.bytes,
                 width: data.width,
-                height: data.height
+                height: data.height,
+                name: file.name.split('.')[0]
             } as MediaType;
         } catch (e: any) {
             console.log(e)
@@ -106,7 +107,8 @@ export const useUpload = () => {
                         format: data.format,
                         bytes: data.bytes,
                         width: data.width,
-                        height: data.height
+                        height: data.height,
+                        name: file.name.split('.')[0]
                     } as MediaType;
                 } catch (error) {
                     console.error(`Lỗi upload file ${index}:`, error);
@@ -123,5 +125,5 @@ export const useUpload = () => {
             .filter(res => res.status === 'fulfilled')
             .map(res => (res as PromiseFulfilledResult<MediaType>).value);
     };
-    return { uploadFile, uploadFiles, imageFolder, videoFolder }
+    return { uploadFile, uploadFiles, imageFolder, videoFolder, rawFolder }
 }
