@@ -26,14 +26,15 @@
                     </template>
 
                     <template v-else-if="
-                        systemType === SystemMetadataEnum.LEAVE_GROUP ||
-                        systemType === SystemMetadataEnum.REMOVE_MEMBER
+                        systemType === SystemMetadataEnum.LEAVE_GROUP
                     ">
-                        <span class="italic">
+                        <span class="italic flex items-center">
+                            <CircleAvatar v-if="systemType === SystemMetadataEnum.LEAVE_GROUP" :user="msg.sender"
+                                size="w-6 h-6 mr-1" />
                             <template v-if="isMeAction">
                                 <span class="font-bold text-gray-700 dark:text-gray-200">{{
                                     t("you")
-                                    }}</span>
+                                }}</span>
                                 <template v-if="msg.sender?.id !== myId">
                                     <span class="mx-1">{{ t("removed") }}</span>
                                     <span @click="openProfile(msg.sender)"
@@ -54,6 +55,34 @@
                         </span>
                     </template>
 
+                    <template v-else-if="
+                        systemType === SystemMetadataEnum.REMOVE_MEMBER
+                    ">
+                        <span class="italic flex items-center">
+                            <template v-if="isMeAction">
+                                <span class="font-bold text-gray-700 dark:text-gray-200">{{
+                                    t("you")
+                                }}</span>
+                                <span class="mx-1">{{ t("haveRemoved") }}</span>
+                                <CircleAvatar :user="msg.systemMetadata.user" size="w-6 h-6 mr-1" />
+                                <span @click="openProfile(msg.systemMetadata.user)"
+                                    class="font-bold text-gray-700 dark:text-gray-200 cursor-pointer hover:underline">
+                                    {{ msg.systemMetadata.user?.username }}
+                                </span>
+                                <span class="ml-1">{{ t("fromGroup") }}</span>
+                            </template>
+
+                            <template v-else>
+                                <CircleAvatar :user="msg.sender" size="w-6 h-6 mr-1" />
+                                <span @click="openProfile(msg.sender)"
+                                    class="font-bold text-gray-700 dark:text-gray-200 cursor-pointer hover:underline">
+                                    {{ msg.sender?.username }}
+                                </span>
+                                <span class="ml-1">{{ t("haveRemovedYouFromGroup") }}</span>
+                            </template>
+                        </span>
+                    </template>
+
                     <template v-else-if="systemType === SystemMetadataEnum.UPDATE_GROUP_NAME">
                         <span @click="openProfile(msg.sender)"
                             class="font-bold cursor-pointer hover:underline text-gray-700 dark:text-gray-200">
@@ -61,7 +90,7 @@
                         </span>
                         <span class="mx-1">{{ t(msg.content) }}</span>
                         <span class="font-bold text-gray-700 dark:text-gray-200">"{{ msg.systemMetadata?.groupName
-                            }}"</span>
+                        }}"</span>
                     </template>
 
                     <template v-else-if="systemType === SystemMetadataEnum.UPDATE_GROUP_AVATAR">
@@ -104,6 +133,7 @@ import FriendProfileUI from "../FriendProfileUI.vue";
 import { MessageType, UserType } from "@/types/entities";
 import { SystemMetadataEnum } from "@/types/enum";
 import { style } from "@/assets/tailwindcss";
+import CircleAvatar from "@/components/Avatar/CircleAvatar.vue";
 
 const props = defineProps<{
     msg: MessageType;
@@ -169,6 +199,4 @@ const formattedAddedList = computed(() => {
 
     return result;
 });
-
-console.log(props.msg.systemMetadata)
 </script>

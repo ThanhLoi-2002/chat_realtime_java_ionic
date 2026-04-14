@@ -34,13 +34,20 @@ onMounted(() => {
       }
     }
 
-    messageStorage.addNewMessage(mess)
+    if (conv.id == conversationStorage.conversation?.id) {
+      messageStorage.addNewMessage(mess)
+    }
+
     conversationStorage.updateConversation(conv)
   })
 
   sub = socketSubscribe(`/user/queue/chat.updateMessages`, (msg: any) => {
     messageStorage.updateMessage(JSON.parse(msg.body).message)
     conversationStorage.updateConversationLastMessage(JSON.parse(msg.body).message)
+  })
+
+  sub = socketSubscribe(`/user/queue/chat.conversation.kickMember.${userStorage.user?.id}`, (msg: any) => {
+    conversationStorage.kickedFromGroupRealtime(JSON.parse(msg.body).conversationId)
   })
 })
 

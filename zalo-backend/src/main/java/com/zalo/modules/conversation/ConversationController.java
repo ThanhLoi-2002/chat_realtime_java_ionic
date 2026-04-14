@@ -1,12 +1,14 @@
 package com.zalo.modules.conversation;
 
 import com.zalo.common.configuration.anotation.conversationMember.CheckConversationMember;
+import com.zalo.common.configuration.anotation.conversationMember.RequireMemberRole;
 import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
 import com.zalo.common.filter.ConversationFilter;
 import com.zalo.modules.conversation.dto.request.CreateGroupRequest;
 import com.zalo.modules.conversation.dto.respone.ConversationInfoResponse;
 import com.zalo.modules.conversation.dto.respone.ConversationResponse;
 import com.zalo.modules.conversation.entities.Conversation;
+import com.zalo.modules.conversation.entities.MemberRole;
 import com.zalo.modules.media.dtos.requests.MediaRequest;
 import com.zalo.modules.user.entities.User;
 import com.zalo.modules.conversation.service.ConversationService;
@@ -43,10 +45,10 @@ public class ConversationController {
         return conversationService.findAll(user.getId(), filter);
     }
 
-     @GetMapping("/{id}")
-     public Long getReadLastMessageId(@PathVariable Long id, @CurrentUser User user) {
-         return conversationService.getReadLastMessageId(id, user.getId());
-     }
+    @GetMapping("/{id}")
+    public Long getReadLastMessageId(@PathVariable Long id, @CurrentUser User user) {
+        return conversationService.getReadLastMessageId(id, user.getId());
+    }
 
     @GetMapping("/{id}/info")
     public ConversationInfoResponse getInfo(@CurrentUser User user, @PathVariable Long id) {
@@ -73,6 +75,12 @@ public class ConversationController {
     @CheckConversationMember
     public void leaveGroup(@PathVariable Long conversationId, @CurrentUser User user) {
         conversationService.leaveGroup(conversationId, user.getId());
+    }
+
+    @DeleteMapping("/{conversationId}/kick-member/{memberId}")
+    @RequireMemberRole(memberRoles = {MemberRole.GOLDEN_KEY, MemberRole.SILVER_KEY})
+    public void kickMember(@PathVariable Long conversationId, @CurrentUser User user, @PathVariable Long memberId) {
+        conversationService.kickMember(conversationId, user.getId(), memberId);
     }
 
     @DeleteMapping("/{conversationId}/disband-group")

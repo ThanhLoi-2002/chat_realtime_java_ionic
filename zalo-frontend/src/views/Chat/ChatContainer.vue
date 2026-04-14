@@ -295,23 +295,30 @@ const reset = async () => {
 }
 
 const resetSubscribe = () => {
-    subReaction = socketSubscribe(`/user/queue/chat.conversation.${conversationStorage.conversation?.id}.addReaction`, (msg: any) => {
+    const convId = conversationStorage.conversation?.id
+    subReaction = socketSubscribe(`/user/queue/chat.conversation.${convId}.addReaction`, (msg: any) => {
         const data = JSON.parse(msg.body).reaction
         messageStorage.addReactionRealtime(data)
     })
 
-    subReaction = socketSubscribe(`/user/queue/chat.conversation.${conversationStorage.conversation?.id}.reactions`, (msg: any) => {
+    subReaction = socketSubscribe(`/user/queue/chat.conversation.${convId}.reactions`, (msg: any) => {
         const data = JSON.parse(msg.body)
         messageStorage.reloadReactions(data.messageId, data.reactions)
     })
 
-    sub = socketSubscribe(`/user/queue/chat.conversation.${conversationStorage.conversation?.id}.leaveGroup`, (msg: any) => {
+    sub = socketSubscribe(`/user/queue/chat.conversation.${convId}.leaveGroup`, (msg: any) => {
         const userId = JSON.parse(msg.body).userId
 
         conversationStorage.leaveGroupRealtime(userId, userStorage.user?.id == userId)
     })
 
-    sub = socketSubscribe(`/user/queue/chat.conversation.${conversationStorage.conversation?.id}.addMembers`, (msg: any) => {
+    sub = socketSubscribe(`/user/queue/chat.conversation.${convId}.kickMember`, (msg: any) => {
+        const userId = JSON.parse(msg.body).userId
+
+        conversationStorage.kickMemberRealtime(userId)
+    })
+
+    sub = socketSubscribe(`/user/queue/chat.conversation.${convId}.addMembers`, (msg: any) => {
         conversationStorage.addMembersRealtime(JSON.parse(msg.body).members)
     })
 }

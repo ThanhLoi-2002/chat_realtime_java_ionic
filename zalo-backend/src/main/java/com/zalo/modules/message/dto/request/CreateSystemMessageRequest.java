@@ -1,6 +1,5 @@
 package com.zalo.modules.message.dto.request;
 
-import com.zalo.common.entity.SystemMetadata;
 import com.zalo.modules.message.entity.SystemMessageType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

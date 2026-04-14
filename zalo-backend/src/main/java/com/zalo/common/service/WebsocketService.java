@@ -94,6 +94,21 @@ public class WebsocketService {
         }
     }
 
+    public void kickMember(Long conversationId, Long memberId){
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("userId", memberId);
+        payload.put("conversationId", conversationId);
+
+        //Realtime for members in the group
+        realtimeToConversation(conversationId, payload, "/queue/chat.conversation." + conversationId + ".kickMember");
+
+        //Realtime for user who leaved the group
+        Set<String> sessions = userOnlineStorage.getSessions(memberId);
+        for (String sessionId : sessions) {
+            messagingTemplate.convertAndSendToUser(sessionId, "/queue/chat.conversation.kickMember." + memberId, payload, userOnlineStorage.createHeaders(sessionId));
+        }
+    }
+
     public void addMembers(Long conversationId, List<MemberResponse> memberResponses){
         Map<String, Object> payload = new HashMap<>();
         payload.put("members", memberResponses);

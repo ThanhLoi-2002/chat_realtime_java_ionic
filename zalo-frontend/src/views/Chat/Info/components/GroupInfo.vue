@@ -146,19 +146,11 @@ const onLeaveGroup = async () => {
     const success = await conversationStorage.leaveGroup();
 
     showConfirmLeaveGroup.value = false
-
-    if (success) {
-        conversationStorage.selectConversation()
-    }
 }
 
 const onDisbandGroup = async () => {
     const success = await conversationStorage.leaveGroup();
 
     showConfirmLeaveGroup.value = false
-
-    if (success) {
-        conversationStorage.selectConversation()
-    }
 }
 </script>

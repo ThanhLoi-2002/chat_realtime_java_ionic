@@ -92,6 +92,7 @@ export type SystemMetadataType = {
     addedUsersToGroup: UserType[]
     groupName: string
     groupAvatar: MediaType
+    user: UserType
 }
 
 export type MediaType = BaseType & {

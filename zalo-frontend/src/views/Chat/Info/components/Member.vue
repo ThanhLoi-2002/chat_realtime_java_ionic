@@ -61,8 +61,15 @@
                     </div>
                 </div>
 
+                <button v-if="userStorage.user?.id != user.id && isAdmin(userStorage.user!) && !isAdmin(user)"
+                    class="bg-red-500 hover:bg-red-600 text-xs px-3 py-1 rounded-md cursor-pointer"
+                    @click="onSelectKickMember(user)">
+                    {{ t('kickMember') }}
+                </button>
+
                 <!-- ACTION -->
-                <button v-if="!isFriend(user.id)" class="bg-blue-500 hover:bg-blue-600 text-xs px-3 py-1 rounded-md"
+                <button v-if="!isFriend(user.id)"
+                    class="bg-blue-500 hover:bg-blue-600 text-xs px-3 py-1 rounded-md cursor-pointer"
                     @click="openModal(user)">
                     {{ t('addFriend') }}
                 </button>
@@ -83,6 +90,9 @@
         <Modal ref="addMemberModal" :title="t('addMember')">
             <AddMember />
         </Modal>
+
+        <ConfirmModal v-model:showConfirm="showConfirm" :onOk="onKickMember" :message="t('kickMember')"
+            :header="t('kickMember')" />
     </div>
 </template>
 
@@ -97,10 +107,12 @@ import { normalizeText } from '@/utils/helper'
 import AddFriendRequestUI from '@/views/Friend/component/AddFriendRequestUI.vue'
 import { computed, onMounted, ref } from 'vue'
 import FriendProfileUI from '../../component/FriendProfileUI.vue'
-import { UserType } from '@/types/entities'
+import { MemberType, UserType } from '@/types/entities'
 import Key from '@/components/Key/Key.vue'
 import Modal from '@/components/Modal/Modal.vue'
 import AddMember from '../../component/Member/AddMember.vue'
+import ConfirmModal from '@/components/Modal/ConfirmModal.vue'
+import { MemberRoleEnum } from '@/types/enum'
 
 const props = defineProps<{
     isShowBackButton: boolean
@@ -111,6 +123,7 @@ const emit = defineEmits(['back'])
 const convStorage = useConversationStore()
 const friendStorage = useFriendshipStore()
 const userStorage = useUserStore()
+const showConfirm = ref(false)
 
 const modalRef = ref()
 const addMemberModal = ref()
@@ -119,7 +132,13 @@ const pages = {
     addFriend: AddFriendRequestUI,
     friendProfile: FriendProfileUI
 }
+
 const selectedUser = ref<UserType | undefined>(undefined)
+
+const isAdmin = (user: UserType) => {
+    const member = convStorage.conversation?.members.find((m: MemberType) => m.id == user.id)
+    return member?.role == MemberRoleEnum.GOLDEN_KEY || member?.role == MemberRoleEnum.SILVER_KEY
+}
 
 const openModal = (user: UserType) => {
     selectedUser.value = user
@@ -141,6 +160,18 @@ const filteredMembers = computed(() => {
 
 const isFriend = (userId: number) => {
     return friendStorage.friends.some(f => f.id == userId) || userId == userStorage.user?.id
+}
+
+const onSelectKickMember = (user: UserType) => {
+    selectedUser.value = user
+    showConfirm.value = true
+}
+
+const onKickMember = async () => {
+    if (selectedUser.value) {
+        const success = await convStorage.kickMember(selectedUser.value?.id)
+        if (success) showConfirm.value = false
+    }
 }
 
 onMounted(() => {

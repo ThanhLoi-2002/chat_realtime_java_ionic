@@ -246,15 +246,35 @@ public class ConversationService implements ConversationInterface {
 
         memberRepo.delete(member);
 
-        CreateSystemMessageRequest createSystemMessageRequest = new CreateSystemMessageRequest();
-        createSystemMessageRequest.conversationId = conversationId;
-        createSystemMessageRequest.senderId = userId;
-        createSystemMessageRequest.content = "leaveTheGroup";
-        createSystemMessageRequest.systemMessageType = SystemMessageType.LEAVE_GROUP;
+        CreateSystemMessageRequest dto = new CreateSystemMessageRequest();
+        dto.conversationId = conversationId;
+        dto.senderId = userId;
+        dto.content = "leaveTheGroup";
+        dto.systemMessageType = SystemMessageType.LEAVE_GROUP;
 
-        systemMessageInterface.createSystemMessage(createSystemMessageRequest);
+        systemMessageInterface.createSystemMessage(dto);
 
         websocketService.leaveGroup(conversationId, userId);
+    }
+
+    public void kickMember(Long conversationId, Long userId, Long memberId) {
+        System.out.println("conversationId: " + conversationId + " memberId: " + memberId);
+        ConversationMember member = memberRepo.findByConversationIdAndUserId(conversationId, memberId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
+
+        memberRepo.delete(member);
+
+        CreateSystemMessageRequest dto = new CreateSystemMessageRequest();
+        dto.conversationId = conversationId;
+        dto.senderId = userId;
+        dto.content = "kickMember";
+        dto.systemMessageType = SystemMessageType.REMOVE_MEMBER;
+        dto.info = Map.of(
+                "userId", memberId
+        );
+
+        systemMessageInterface.createSystemMessage(dto);
+
+        websocketService.kickMember(conversationId, memberId);
     }
 
     public void disbandGroup(Long conversationId) {

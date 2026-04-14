@@ -3,58 +3,93 @@ import axios from "./axios";
 import { ConversationType, MediaType, UserType } from "@/types/entities";
 
 const createPrivate = async (data: UserType) => {
-    return await axios.post<IResponse<ConversationType>>(`/conversations/private?otherId=${data.id}`);
-}
+  return await axios.post<IResponse<ConversationType>>(
+    `/conversations/private?otherId=${data.id}`,
+  );
+};
 
 const createGroup = async (data: any) => {
-    return await axios.post<IResponse<ConversationType>>(`/conversations/group`, data);
-}
+  return await axios.post<IResponse<ConversationType>>(
+    `/conversations/group`,
+    data,
+  );
+};
 
 const getList = async (filter: ConversationFilter) => {
-    const { page, limit = 20 } = filter
-    return await axios.get<IResponse<ConversationType>>(`/conversations?page=${page}&limit=${limit}`);
-}
+  const { page, limit = 20 } = filter;
+  return await axios.get<IResponse<ConversationType>>(
+    `/conversations?page=${page}&limit=${limit}`,
+  );
+};
 
 const getConversationInfo = async (id: number) => {
-    return await axios.get<IResponse>(`/conversations/${id}/info`);
-}
+  return await axios.get<IResponse>(`/conversations/${id}/info`);
+};
 
 const getGroups = async () => {
-    return await axios.get<IResponse>(`/conversations/get-groups`);
-}
+  return await axios.get<IResponse>(`/conversations/get-groups`);
+};
 
 const leaveGroup = async (id: number) => {
-    return await axios.delete<IResponse>(`/conversations/${id}/leave-group`);
-}
+  return await axios.delete<IResponse>(`/conversations/${id}/leave-group`);
+};
+
+const kickMember = async (id: number, memberId: number) => {
+  return await axios.delete<IResponse>(
+    `/conversations/${id}/kick-member/${memberId}`,
+  );
+};
 
 const disbandGroup = async (id: number) => {
-    return await axios.delete<IResponse>(`/conversations/${id}/disband-group`);
-}
+  return await axios.delete<IResponse>(`/conversations/${id}/disband-group`);
+};
 
 const addMembers = async (id: number, memberIds: number[]) => {
-    return await axios.post<IResponse>(`/conversations/${id}/add-members`, memberIds);
-}
+  return await axios.post<IResponse>(
+    `/conversations/${id}/add-members`,
+    memberIds,
+  );
+};
 
 const fetchGroupByCode = async (inviteCode: string) => {
-    return await axios.get<IResponse>(`/conversations/by-code/${inviteCode}`);
-}
+  return await axios.get<IResponse>(`/conversations/by-code/${inviteCode}`);
+};
 
 const updateAvatar = async (conversationId: number, media: MediaType) => {
-    return await axios.put<IResponse>(`/conversations/${conversationId}/update-avatar`, media);
-}
+  return await axios.put<IResponse>(
+    `/conversations/${conversationId}/update-avatar`,
+    media,
+  );
+};
 
 const updateName = async (conversationId: number, name: string) => {
-    return await axios.put<IResponse>(`/conversations/${conversationId}/update-name`, name, {
-        headers: {
-            'Content-Type': 'text/plain',
-        },
-    });
-}
+  return await axios.put<IResponse>(
+    `/conversations/${conversationId}/update-name`,
+    name,
+    {
+      headers: {
+        "Content-Type": "text/plain",
+      },
+    },
+  );
+};
 
 const getReadLastMessageId = async (conversationId: number) => {
-    return await axios.get<IResponse>(`/conversations/${conversationId}`);
-}
+  return await axios.get<IResponse>(`/conversations/${conversationId}`);
+};
 
 export const conversationApi = {
-    createPrivate, getList, createGroup, getConversationInfo, getGroups, leaveGroup, addMembers, fetchGroupByCode, disbandGroup, updateAvatar, updateName, getReadLastMessageId
-}
+  createPrivate,
+  getList,
+  createGroup,
+  getConversationInfo,
+  getGroups,
+  leaveGroup,
+  kickMember,
+  addMembers,
+  fetchGroupByCode,
+  disbandGroup,
+  updateAvatar,
+  updateName,
+  getReadLastMessageId,
+};

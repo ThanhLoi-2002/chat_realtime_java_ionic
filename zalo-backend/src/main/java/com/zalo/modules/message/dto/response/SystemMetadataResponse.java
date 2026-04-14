@@ -19,6 +19,7 @@ public class SystemMetadataResponse {
     SystemMessageType type;
     List<UserResponse> addedUsersToGroup;
     String groupName;
+    UserResponse user;
     MediaResponse groupAvatar;
 
     public SystemMetadataResponse(SystemMetadata s) {

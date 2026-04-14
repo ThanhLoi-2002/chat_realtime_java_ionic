@@ -177,8 +177,8 @@ export const useConversationStore = defineStore('conversation', {
         },
 
         updateUnreadCount(id: number, unreadCount: number) {
-            if(this.conversation) this.conversation.unread = unreadCount
-            
+            if (this.conversation) this.conversation.unread = unreadCount
+
             const index = this.conversations.findIndex(c => c.id === id);
 
             if (index !== -1) {
@@ -226,6 +226,42 @@ export const useConversationStore = defineStore('conversation', {
             }
         },
 
+        async kickMember(memberId: number) {
+            try {
+                const result: any = await conversationApi.kickMember(this.conversation!.id, memberId);
+
+                return true
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return false
+            }
+        },
+
+        kickMemberRealtime(userId: number) {
+            if (this.conversation?.members) {
+                this.conversation.members = this.conversation.members.filter(u => u.id !== userId);
+            }
+        },
+
+        kickedFromGroupRealtime(conversationId: number) {
+            const idx = this.conversations.findIndex(c => c.id == conversationId)
+
+            if (idx !== -1) {
+                // Xóa 1 phần tử tại vị trí idx
+                this.conversations.splice(idx, 1);
+            }
+
+            if (this.conversation?.id == conversationId) this.selectConversation()
+
+            toast({
+                color: "primary",
+                message: "youHaveBeenRemovedFromGroup"
+            })
+        },
+
         async disbandGroup() {
             try {
                 const result: any = await conversationApi.disbandGroup(this.conversation!.id);
@@ -256,6 +292,12 @@ export const useConversationStore = defineStore('conversation', {
                 if (idx !== -1) {
                     // Xóa 1 phần tử tại vị trí idx
                     this.conversations.splice(idx, 1);
+                    this.selectConversation()
+
+                    toast({
+                        color: "primary",
+                        message: "leftTheGroup"
+                    })
                 }
             }
         },
