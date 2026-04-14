@@ -86,9 +86,6 @@
 
                     <!-- Message Input -->
                     <div class="flex gap-2">
-                        <!-- <input ref="inputRef" v-model="message" @keyup.enter="sendMessage" @input="sendTyping"
-                            :placeholder="t('typeMessage')"
-                            class="flex-1 bg-transparent outline-none text-xs md:text-base dark:text-slate-200 placeholder-gray-400 dark:placeholder-gray-500" /> -->
                         <div class="relative flex-1 bg-gray-100 dark:bg-gray-800 rounded-2xl px-4 py-2">
                             <div ref="inputRef" contenteditable="true"
                                 class="outline-none text-xs md:text-base dark:text-slate-200 min-h-[1.5em] max-h-32 overflow-y-auto wrap-break-word"
@@ -252,15 +249,13 @@ const sendMessage = async () => {
 
     // Tìm tất cả các thẻ span.mention-tag mà bạn đã chèn vào trước đó
     const tags = tempDiv.querySelectorAll('.mention-tag');
-    
+
     tags.forEach(tag => {
         const userId = tag.getAttribute('data-user-id');
         const username = tag.textContent;
         // Thay thế node bằng chuỗi văn bản có cấu trúc
         tag.outerHTML = `[mention:${userId}]${username}[/mention]`;
     });
-
-    console.log(tempDiv.textContent)
 
     // 3. QUAN TRỌNG: Dùng textContent để lấy chuỗi đã biến đổi
     // Lúc này outerHTML đã biến thành text thường trong tempDiv

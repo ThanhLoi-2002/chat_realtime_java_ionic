@@ -76,7 +76,7 @@ const { t } = useTranslate()
 const { getTime, formatSeparatorTime } = useDateTime()
 const { onScroll, scrollToBottom } = useScroll()
 const unreadCount = ref(0) // Số tin nhắn mới chưa đọc khi đang cuộn lên trên
-const unreadMessageId = ref<number | undefined>(undefined);
+const unreadMessageId = ref<number>(conversationStorage.userLastMessageId);
 
 const roles = ref<Record<number, MemberRoleEnum>>()
 
@@ -205,11 +205,11 @@ const checkReadMessages = async () => {
             unreadCount.value = 0
             conversationStorage.updateUnreadCount(conversationStorage.conversation.id, 0)
             lastMessageId = conversationStorage.conversation.lastMessageId
+
+            conversationStorage.updateIsMentionFalse(conversationStorage.conversation.id)
         }
 
         conversationStorage.getReadLastMessageId(lastMessageId);
-
-        conversationStorage.updateIsMentionFalse(conversationStorage.conversation.id)
     }
 }
 
@@ -267,6 +267,7 @@ const waitForImages = async () => {
 const reset = async () => {
     sysStorage.setShowBottomMenu(false)
     messageStorage.resetPagination()
+    unreadMessageId.value = conversationStorage.userLastMessageId
 
     roles.value = conversationStorage.conversation?.members?.reduce((acc, member) => {
         // Chỉ lấy những người là GOLDEN_KEY hoặc SILVER_KEY
@@ -277,7 +278,7 @@ const reset = async () => {
     }, {} as Record<number, MemberRoleEnum>) || {};
 
     if (conversationStorage.conversation) {
-        unreadMessageId.value = conversationStorage.conversation.lastMessage?.id
+        unreadMessageId.value = conversationStorage.conversation.lastMessage?.id ?? 0
         const options: MessageFilter = {
             conversationId: conversationStorage.conversation!.id,
         }
@@ -327,12 +328,13 @@ watch(() => conversationStorage.conversation?.id, async () => {
     resetSubscribe()
 })
 
-watch(() => messageStorage.messages.length, (newLen, oldLen) => {
+watch(() => messageStorage.messages.length, () => {
     if (!showScrollDownButton.value) {
         handleScrollBottom(true)
     } else {
-        unreadCount.value += (newLen - oldLen)
-        conversationStorage.updateConversation({ ...conversationStorage.conversation!, unread: unreadCount.value})
+        const unreadMessages = messageStorage.messages.filter(m => m.id > unreadMessageId.value)
+        unreadCount.value = unreadMessages.length
+        conversationStorage.updateConversation({ ...conversationStorage.conversation!, unread: unreadCount.value })
     }
 })
 
