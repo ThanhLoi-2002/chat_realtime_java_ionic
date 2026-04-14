@@ -2,7 +2,7 @@
     <div class="w-full relative">
         <!-- Typing indicator (giữ nguyên) -->
         <div v-if="typingUsers.size > 0"
-            class="absolute bottom-full left-2 text-sm text-gray-600 dark:text-gray-400 px-4 pb-2 flex items-center gap-1">
+            class="absolute bottom-[95%] left-2 text-sm text-gray-600 dark:text-gray-400 px-4 pb-2 flex items-center gap-1">
             <span>
                 <span v-for="([id, user], index) in typingUsers" :key="id">
                     <span v-if="index > 0">, </span>{{ user.username }}
@@ -309,7 +309,7 @@ onUnmounted(() => {
     subTyping?.unsubscribe()
 })
 
-watch(() => conversationStorage.conversation, async () => {
+watch(() => conversationStorage.conversation?.id, async () => {
     subTyping?.unsubscribe()
     resetSubscribe()
 })

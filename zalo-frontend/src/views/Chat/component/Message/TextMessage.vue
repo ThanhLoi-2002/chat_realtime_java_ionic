@@ -33,7 +33,7 @@
     </div>
 
     <!-- TIME -->
-    <span v-if="message.showTime" :class="['text-[10px] md:text-xs text-slate-500 dark:text-slate-400']">
+    <span v-if="message.showTime" :class="['text-[10px] md:text-xs text-slate-300 dark:text-slate-400']">
       {{ formatTime(message.ct) }}
     </span>
 

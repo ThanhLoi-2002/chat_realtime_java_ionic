@@ -1,16 +1,11 @@
 package com.zalo.modules.conversation.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zalo.common.base.BaseEntity;
-import com.zalo.common.configuration.json.G;
-import com.zalo.common.entity.SystemMetadata;
 import com.zalo.common.filter.ConversationFilter;
 import com.zalo.common.filter.UserFilter;
 import com.zalo.modules.conversation.dto.IsMentionDto;
 import com.zalo.modules.conversation.dto.request.CreateGroupRequest;
 import com.zalo.modules.media.dtos.requests.MediaRequest;
-import com.zalo.modules.media.dtos.responses.MediaResponse;
 import com.zalo.modules.media.entities.Media;
 import com.zalo.modules.media.entities.MediaType;
 import com.zalo.modules.media.service.MediaInterface;
@@ -32,7 +27,6 @@ import com.zalo.common.service.WebsocketService;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;

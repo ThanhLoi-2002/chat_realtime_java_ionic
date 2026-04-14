@@ -10,7 +10,6 @@ import com.zalo.modules.user.entities.User;
 import com.zalo.modules.message.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -20,7 +19,6 @@ import java.io.IOException;
 @RequestMapping("/conversations/{conversationId}/messages")
 public class MessageController {
     private final MessageService messageService;
-    private final SimpMessagingTemplate messagingTemplate;
 
     @PostMapping
     @CheckConversationMember

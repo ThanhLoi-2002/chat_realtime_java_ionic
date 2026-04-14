@@ -17,7 +17,7 @@ public interface LangRepository extends JpaRepository<Lang, Long> {
     boolean existsByCode(String code);
 
     @Query("""
-              SELECT\s
+              SELECT
                   l.code as code,
                   CASE\s
                       WHEN :lang = 'vi' THEN l.vi

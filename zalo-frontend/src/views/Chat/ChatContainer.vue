@@ -160,7 +160,8 @@ const vObserveVisibility = {
             },
             {
                 root: null, // Sử dụng viewport của trình duyệt hoặc container
-                threshold: 0.5, // 50% tin nhắn phải hiện ra thì mới tính là đã xem
+                threshold: 1.0, // 100% tin nhắn phải hiện ra thì mới tính là đã xem
+                rootMargin: '0px 0px -20px 0px' // Offset 20px từ dưới lên để tránh mép dưới quá nhạy
             }
         );
         observer.observe(el);
@@ -174,17 +175,16 @@ const vObserveVisibility = {
 const handleMessageVisible = (msg: MessageType, entry: IntersectionObserverEntry) => {
     // 1. Chỉ xử lý nếu tin nhắn này chưa được đánh dấu là đã đọc (tùy thuộc vào dữ liệu của bạn)
     // 2. Chỉ xử lý nếu tin nhắn đó là từ người khác gửi đến (sender.id !== userStorage.user.id)
-    console.log(msg)
+
     if (entry.isIntersecting && msg.sender?.id !== userStorage.user?.id) {
-        
         // Cập nhật ID mới nhất: 
         // Giả sử tin nhắn sau có ID lớn hơn hoặc thời gian ct lớn hơn
         if (!unreadMessageId.value || msg.id > unreadMessageId.value) {
             unreadMessageId.value = msg.id;
-        }
 
-        // Kích hoạt debounce (hàm này sẽ chờ 500ms rồi mới chạy sendReadRequest)
-        debouncedRead();
+            // Kích hoạt debounce (hàm này sẽ chờ 500ms rồi mới chạy sendReadRequest)
+            debouncedRead();
+        }
     }
 };
 
@@ -196,9 +196,9 @@ const checkReadMessages = async () => {
         conversationStorage.conversation.lastMessageId) {
         let lastMessageId = 0;
         if (showScrollDownButton.value && conversationStorage.userLastMessageId < (unreadMessageId.value ?? 0)) {
-            const unreadCount = await messageStorage.readMessage(unreadMessageId.value ?? 0, conversationStorage.conversation.id)
+            const result = await messageStorage.readMessage(unreadMessageId.value ?? 0, conversationStorage.conversation.id)
             lastMessageId = unreadMessageId.value ?? 0
-            unreadCount.value = unreadCount
+            unreadCount.value = result
             conversationStorage.updateUnreadCount(conversationStorage.conversation.id, unreadCount.value)
         } else {
             await messageStorage.readMessage(conversationStorage.conversation.lastMessageId, conversationStorage.conversation.id)
@@ -237,8 +237,6 @@ const checkScrollAtBottom = () => {
     const distanceFromBottom = scrollHeight - scrollTop - clientHeight
 
     showScrollDownButton.value = distanceFromBottom > 50
-
-    // checkReadMessages()
 }
 
 const handleScrollBottom = (smooth: boolean) => {
@@ -333,11 +331,13 @@ watch(() => messageStorage.messages.length, (newLen, oldLen) => {
     if (!showScrollDownButton.value) {
         handleScrollBottom(true)
     } else {
-        // unreadCount.value += (newLen - oldLen)
+        unreadCount.value += (newLen - oldLen)
+        conversationStorage.updateConversation({ ...conversationStorage.conversation!, unread: unreadCount.value})
     }
 })
 
-watch(() => conversationStorage.conversation, () => {
-    unreadCount.value = conversationStorage.conversation?.unread ?? 0
+// update unreadMessageId
+watch(() => conversationStorage.userLastMessageId, () => {
+    unreadMessageId.value = conversationStorage.userLastMessageId
 })
 </script>
