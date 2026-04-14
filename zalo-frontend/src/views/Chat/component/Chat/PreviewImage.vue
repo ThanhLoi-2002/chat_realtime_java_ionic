@@ -10,23 +10,37 @@
 
     <div class="flex flex-1 overflow-hidden mt-12">
 
-      <div class="flex-1 flex items-center justify-center p-6 relative" @click.stop>
-
-        <img :src="messStorage.previewImage?.secureUrl"
-          class="max-w-[90%] max-h-[90%] object-contain transition duration-300 shadow-2xl" />
+      <div class="flex-1 flex items-center justify-center p-6 relative overflow-hidden" @click.stop
+        @wheel.prevent="handleWheel"> <img :src="messStorage.previewImage?.secureUrl" @dblclick="handleDoubleClick"
+          class="max-w-[90%] max-h-[90%] object-contain shadow-2xl transition-transform duration-200 ease-out cursor-zoom-in"
+          :style="{
+            transform: `scale(${scale})`,
+            transformOrigin: transformOrigin
+          }" />
 
         <div class="absolute right-2 md:right-4 z-50 space-y-2">
-          <button v-if="currentIndex > 0" @click="navigateImage(-1)"
-            class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full text-white transition-all backdrop-blur-sm cursor-pointer">
-            <i class="fa fa-chevron-up text-base md:text-xl" />
-          </button>
-
-          <button v-if="currentIndex < imageList.length - 1" @click="navigateImage(1)"
-            class="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full text-white transition-all backdrop-blur-base cursor-pointer">
-            <i class="fa fa-chevron-down text-base md:text-xl" />
-          </button>
         </div>
 
+        <div
+          class="absolute top-0 left-1/2 -translate-x-1/2 flex items-center gap-4 px-4 py-2 bg-black/50 backdrop-blur-md rounded-full border border-white/10 z-50">
+          <button @click="zoom(-0.5)" class="text-white hover:text-blue-400 p-1 transition-colors cursor-pointer">
+            <i class="fa fa-minus-circle text-lg" />
+          </button>
+
+          <span class="text-white text-xs font-mono min-w-10 text-center">
+            {{ Math.round(scale * 100) }}%
+          </span>
+
+          <button @click="zoom(0.5)" class="text-white hover:text-blue-400 p-1 transition-colors cursor-pointer">
+            <i class="fa fa-plus-circle text-lg" />
+          </button>
+
+          <div class="w-px h-4 bg-white/20 mx-1"></div>
+
+          <button @click="scale = 1" class="text-white hover:text-red-400 p-1 transition-colors cursor-pointer" title="Reset">
+            <i class="fa fa-undo text-sm" />
+          </button>
+        </div>
       </div>
 
       <div ref="scroll"
@@ -80,9 +94,8 @@ import CircleAvatar from "@/components/Avatar/CircleAvatar.vue";
 import { useDateTime } from "@/composables/useDateTime";
 import { useConversationStore } from "@/stores/conversation.storage";
 import { useMessageStore } from "@/stores/message.storage";
-import { MediaType, MessageType } from "@/types/entities";
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
-import { style } from "@/assets/tailwindcss";
+import { MediaType } from "@/types/entities";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useScroll } from "@/composables/useScroll";
 import { MessageFilter } from "@/types/common";
 import { MessageEnum } from "@/types/enum";
@@ -95,7 +108,7 @@ const isCollapse = ref(true);
 const messStorage = useMessageStore();
 const convStorage = useConversationStore();
 const { formatSeparatorTime } = useDateTime();
-const { scrollToBottom, onScroll } = useScroll();
+const { onScroll } = useScroll();
 
 const closePreview = () => {
   messStorage.setPreviewImage(undefined);
@@ -180,6 +193,56 @@ const scrollToActiveThumb = (retries = 5) => {
   });
 };
 
+// --- THÊM VÀO PHẦN SCRIPT SETUP ---
+const scale = ref(1);
+const transformOrigin = ref('center center');
+
+// Reset zoom khi đổi ảnh
+watch(() => messStorage.previewImage, () => {
+  scale.value = 1;
+  transformOrigin.value = 'center center';
+});
+
+// Hàm điều chỉnh zoom thủ công
+const zoom = (delta: number) => {
+  const newScale = scale.value + delta;
+  if (newScale >= 1 && newScale <= 5) {
+    scale.value = newScale;
+  }
+};
+
+// Zoom theo vị trí chuột khi Scroll
+const handleWheel = (e: WheelEvent) => {
+  if (e.ctrlKey || e.metaKey) return; // Cho phép zoom mặc định của trình duyệt nếu cần
+
+  const zoomStep = 0.2;
+  const delta = e.deltaY > 0 ? -zoomStep : zoomStep;
+  const newScale = Math.min(Math.max(scale.value + delta, 1), 5);
+
+  if (newScale !== scale.value) {
+    // Tính toán tâm zoom dựa trên vị trí chuột
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+    transformOrigin.value = `${x}% ${y}%`;
+    scale.value = newScale;
+  }
+};
+
+// Double click để toggle zoom nhanh
+const handleDoubleClick = (e: MouseEvent) => {
+  if (scale.value > 1) {
+    scale.value = 1;
+  } else {
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    transformOrigin.value = `${x}% ${y}%`;
+    scale.value = 2.5;
+  }
+};
+
 
 watch(() => messStorage.previewImage, async (newVal) => {
   isCollapse.value = true;
@@ -202,8 +265,4 @@ onMounted(() => {
     scrollToActiveThumb();
   }
 });
-
-// watch(() => scroll.value, () => {
-//     scrollToBottom(scroll.value, true)
-// })
 </script>
