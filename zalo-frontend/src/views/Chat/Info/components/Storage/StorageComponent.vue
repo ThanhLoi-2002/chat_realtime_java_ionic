@@ -30,15 +30,16 @@
             <file-container v-for="(media, index) in messStorage.files.slice(0, 4)" :key="index" :media="media" />
 
             <ion-button class="btn mt-2 mx-auto w-full normal-case" @click="goTo('storage/file')">{{ t("seeAll")
-                }}</ion-button>
+            }}</ion-button>
         </collapse>
 
         <!-- LINK -->
         <section class="p-4 border-b border-gray-200 dark:border-slate-700">
             <div class="font-medium mb-2 dark:text-white">{{ t("link") }}</div>
-            <div class="text-gray-400 text-sm">
-                {{ t("noLinkShared") }}
-            </div>
+            <link-container v-for="(link, index) in messStorage.links.slice(0, 4)" :key="index" :message="link" />
+
+            <ion-button class="btn mt-2 mx-auto w-full normal-case" @click="goTo('storage/link')">{{ t("seeAll")
+            }}</ion-button>
         </section>
 
 
@@ -55,6 +56,7 @@ import { onMounted, reactive, watch } from 'vue';
 import FileContainer from './FileContainer.vue';
 import Collapse from '@/components/collapse/Collapse.vue';
 import { useMedia } from '@/composables/useMedia';
+import LinkContainer from './LinkContainer.vue';
 
 const { isVideo } = useMedia()
 const emit = defineEmits<{
@@ -68,7 +70,6 @@ const goTo = (view: string) => {
 const convStorage = useConversationStore()
 const messStorage = useMessageStore()
 const { t } = useTranslate()
-const openFile = () => console.log('open file')
 
 const open = reactive({
     media: true,
@@ -82,7 +83,7 @@ const handlePreviewImage = (pi: MediaType) => {
 const fetchImages = () => {
     const options: MessageFilter = {
         conversationId: convStorage.conversation!.id,
-        limit: 30,
+        limit: 8,
         lastId: messStorage.images.at(-1)?.id ?? undefined,
         contentType: MessageEnum.IMAGE
     }
@@ -92,11 +93,22 @@ const fetchImages = () => {
 const fetchFiles = () => {
     const options: MessageFilter = {
         conversationId: convStorage.conversation!.id,
-        limit: 30,
-        lastId: messStorage.images.at(-1)?.id ?? undefined,
+        limit: 4,
+        lastId: messStorage.files.at(-1)?.id ?? undefined,
         contentType: MessageEnum.FILE
     }
     messStorage.getFileMessages(options)
+}
+
+const fetchLinks = () => {
+    const options: MessageFilter = {
+        conversationId: convStorage.conversation!.id,
+        limit: 4,
+        lastId: messStorage.links.at(-1)?.id ?? undefined,
+        contentType: MessageEnum.TEXT,
+        linkMetadata: true
+    }
+    messStorage.getLinkMessages(options)
 }
 
 onMounted(() => {
@@ -107,10 +119,15 @@ onMounted(() => {
     if (messStorage.files.length == 0 && convStorage.conversation) {
         fetchFiles()
     }
+
+    if (messStorage.links.length == 0 && convStorage.conversation) {
+        fetchLinks()
+    }
 })
 
 watch(() => convStorage.conversation?.id, () => {
     fetchImages()
     fetchFiles()
+    fetchLinks()
 })
 </script>

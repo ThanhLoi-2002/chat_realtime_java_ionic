@@ -4,8 +4,8 @@ import { useDateTime } from "./useDateTime";
 export function useMedia() {
     const { formatDate } = useDateTime()
 
-    const groupedMediaByTime = (filtereds: MediaType[]) => {
-        const map: Record<string, MediaType[]> = {};
+    const groupedMediaByTime = (filtereds: any[]) => {
+        const map: Record<string, any[]> = {};
 
         filtereds.forEach((item) => {
             const ct = formatDate(item.ct);

@@ -1,5 +1,6 @@
 package com.zalo.modules.message.dto.request;
 
+import com.zalo.modules.message.dto.response.LinkPreviewResponse;
 import com.zalo.modules.message.entity.MessageType;
 import com.zalo.modules.media.dtos.requests.MediaRequest;
 import lombok.*;
@@ -18,4 +19,5 @@ public class CreateMessageRequest {
     MessageType contentType = MessageType.TEXT;
     Long replyToId;
     List<MediaRequest> attachments;
+    LinkPreviewResponse linkMetadata;
 }

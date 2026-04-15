@@ -5,6 +5,7 @@ import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
 import com.zalo.common.filter.MessageFilter;
 import com.zalo.modules.message.dto.request.AddReactionRequest;
 import com.zalo.modules.message.dto.request.CreateMessageRequest;
+import com.zalo.modules.message.dto.response.LinkPreviewResponse;
 import com.zalo.modules.message.dto.response.MessageResponse;
 import com.zalo.modules.user.entities.User;
 import com.zalo.modules.message.service.MessageService;
@@ -19,6 +20,11 @@ import java.io.IOException;
 @RequestMapping("/conversations/{conversationId}/messages")
 public class MessageController {
     private final MessageService messageService;
+
+    @GetMapping("/preview-link")
+    public LinkPreviewResponse getLinkPreview(@RequestParam("link") String link) {
+        return messageService.getLinkPreview(link);
+    }
 
     @PostMapping
     @CheckConversationMember
@@ -35,7 +41,7 @@ public class MessageController {
     @PostMapping("/{messageId}/read")
     @CheckConversationMember
     public Long markRead(@PathVariable Long conversationId, @PathVariable Long messageId, @CurrentUser User user) {
-       return messageService.markRead(conversationId, user.getId(), messageId);
+        return messageService.markRead(conversationId, user.getId(), messageId);
     }
 
     @DeleteMapping("/{messageId}")

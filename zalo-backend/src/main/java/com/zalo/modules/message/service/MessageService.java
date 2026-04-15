@@ -8,6 +8,7 @@ import com.zalo.modules.media.dtos.responses.MediaResponse;
 import com.zalo.modules.media.entities.Media;
 import com.zalo.modules.message.dto.request.AddReactionRequest;
 import com.zalo.modules.message.dto.request.CreateMessageRequest;
+import com.zalo.modules.message.dto.response.LinkPreviewResponse;
 import com.zalo.modules.message.dto.response.MessageReactionResponse;
 import com.zalo.modules.message.dto.response.MessageResponse;
 import com.zalo.modules.conversation.dto.respone.ConversationResponse;
@@ -26,6 +27,9 @@ import jakarta.persistence.EntityManager;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -67,23 +71,23 @@ public class MessageService {
             if (fileCount > 1) {
                 // Gửi tin nhắn TEXT trước (nếu có nội dung)
                 if (dto.content != null && !dto.content.trim().isEmpty()) {
-                    saveAndNotifyMessage(conversationId, senderId, dto.content, MessageType.TEXT, null, dto.replyToId);
+                    saveAndNotifyMessage(conversationId, senderId, dto.content, MessageType.TEXT, null, dto.replyToId, dto.linkMetadata);
                 }
                 // Gửi tin nhắn MEDIA chứa toàn bộ list ảnh (content lúc này thường để null hoặc tùy bạn)
-                saveAndNotifyMessage(conversationId, senderId, null, MessageType.IMAGE, attachments, null);
+                saveAndNotifyMessage(conversationId, senderId, null, MessageType.IMAGE, attachments, null, null);
             }
             // TRƯỜNG HỢP 2: 1 file hoặc 0 file -> Gộp chung
             else {
                 MessageType type = fileCount == 1 ? MessageType.IMAGE : MessageType.TEXT;
-                saveAndNotifyMessage(conversationId, senderId, dto.content, type, attachments, dto.replyToId);
+                saveAndNotifyMessage(conversationId, senderId, dto.content, type, attachments, dto.replyToId, dto.linkMetadata);
             }
         } else {
-            saveAndNotifyMessage(conversationId, senderId, dto.content, MessageType.FILE, attachments, dto.replyToId);
+            saveAndNotifyMessage(conversationId, senderId, dto.content, MessageType.FILE, attachments, dto.replyToId, null);
         }
     }
 
     private void saveAndNotifyMessage(Long conversationId, Long senderId, String content,
-                                      MessageType type, List<MediaRequest> attachments, Long replyId) {
+                                      MessageType type, List<MediaRequest> attachments, Long replyId, LinkPreviewResponse linkMetadata) {
         if (content == null && attachments.isEmpty()) return;
 
         // 1. Lưu Message chính
@@ -92,6 +96,7 @@ public class MessageService {
                 .senderId(senderId)
                 .content(content)
                 .contentType(type)
+                .linkMetadata(linkMetadata)
                 .replyToMessageId(replyId)
                 .build();
         Message newMess = messageRepo.save(m);
@@ -276,5 +281,28 @@ public class MessageService {
 
         List<MessageReaction> mrs = messageReactionRepository.findByMessageId(messageId);
         websocketService.removeAllReactionByUserId(conversationId, messageId, mrs);
+    }
+
+    public LinkPreviewResponse getLinkPreview(String url) {
+        try {
+            Document doc = Jsoup.connect(url)
+                    .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+                    .timeout(5000)
+                    .followRedirects(true)
+                    .get();
+            return LinkPreviewResponse.builder()
+                    .title(getMetaTag(doc, "og:title") != null ? getMetaTag(doc, "og:title") : doc.title())
+                    .description(getMetaTag(doc, "og:description"))
+                    .image(getMetaTag(doc, "og:image"))
+                    .url(url)
+                    .build();
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    private String getMetaTag(Document doc, String attr) {
+        Element element = doc.select("meta[property=" + attr + "]").first();
+        return element != null ? element.attr("content") : null;
     }
 }

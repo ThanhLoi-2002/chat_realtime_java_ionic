@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class='w-full h-full'>
         <!-- SEARCH -->
         <div class="p-3">
             <div class="flex items-center bg-[#374151] rounded-full px-3 py-2">
@@ -26,9 +26,9 @@
         </div>
 
         <!-- LIST -->
-        <div class="flex-1 overflow-y-auto px-3 pb-4 space-y-5">
+        <div class="flex-1 overflow-y-auto px-3 pb-4 space-y-4 w-full h-[80%]" ref="scrollRef" @scroll="handleScroll">
 
-            <div v-for="group in groupedLinks" :key="group.date">
+            <div v-for="group in groupedMedia" :key="group.date">
 
                 <!-- DATE -->
                 <div class="text-gray-400 text-sm font-semibold mb-2">
@@ -37,30 +37,7 @@
 
                 <!-- ITEMS -->
                 <div class="space-y-3">
-                    <div v-for="item in group.items" :key="item.id" class="flex items-center gap-3 cursor-pointer">
-
-                        <!-- THUMB / ICON -->
-                        <div class="w-12 h-12 rounded-lg overflow-hidden bg-[#374151] flex items-center justify-center">
-
-                            <!-- nếu có thumbnail -->
-                            <img v-if="item.thumbnail" :src="item.thumbnail" class="w-full h-full object-cover" />
-
-                            <!-- fallback icon -->
-                            <i v-else class="fa fa-link text-gray-300"></i>
-                        </div>
-
-                        <!-- INFO -->
-                        <div class="flex-1 min-w-0">
-                            <div class="text-sm font-medium truncate">
-                                {{ item.title }}
-                            </div>
-
-                            <div class="text-xs text-blue-400 truncate mt-1">
-                                {{ item.domain }}
-                            </div>
-                        </div>
-
-                    </div>
+                    <LinkContainer v-for="item in group.items" :key="item.id" :message="item" />
                 </div>
 
             </div>
@@ -69,72 +46,85 @@
     </div>
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useDateTime } from '@/composables/useDateTime'
+import { useMedia } from '@/composables/useMedia';
+import { useMessageStore } from '@/stores/message.storage';
+import { useConversationStore } from '@/stores/conversation.storage';
+import { MessageFilter } from '@/types/common';
+import { MessageEnum } from '@/types/enum';
+import LinkContainer from './LinkContainer.vue';
 
-const { formatDate } = useDateTime()
+const { groupedMediaByTime } = useMedia();
+const messStorage = useMessageStore();
+const convStorage = useConversationStore();
+const scrollRef = ref<HTMLElement | null>(null);
 
 const filterUser = ref('')
 const filterDate = ref('')
 
-const links = [
-    {
-        id: 1,
-        title: 'tại Đà Nẵng – My Blog',
-        domain: 'hongngay.com',
-        ct: new Date(),
-        thumbnail: null,
-        isMe: true
-    },
-    {
-        id: 2,
-        title: 'Hướng dẫn tân thủ',
-        domain: 'docs.google.com',
-        ct: new Date(),
-        thumbnail: 'https://via.placeholder.com/100',
-        isMe: false
+const groupedMedia = computed(() => {
+    return groupedMediaByTime(filtered.value);
+});
+
+const filtered = computed(() => {
+    return messStorage.links.filter((item) => {
+        // filter user
+        // if (filterUser.value === 'me' && !item.isMe) return false
+        // if (filterUser.value === 'other' && item.isMe) return false
+
+        // filter date
+        const now = new Date();
+        const itemDate = new Date(item.ct);
+
+        if (filterDate.value === "today") {
+            if (itemDate.toDateString() !== now.toDateString()) return false;
+        }
+
+        if (filterDate.value === "week") {
+            const diff = (now.getTime() - itemDate.getTime()) / (1000 * 60 * 60 * 24);
+            if (diff > 7) return false;
+        }
+
+        if (filterDate.value === "month") {
+            const diff = (now.getTime() - itemDate.getTime()) / (1000 * 60 * 60 * 24);
+            if (diff > 30) return false;
+        }
+
+        return true;
+    });
+});
+
+const fetchLinkMessages = () => {
+    if (!messStorage.linksHasMore) return;
+
+    const lastId = messStorage.links.at(-1)?.id ?? undefined;
+    const options: MessageFilter = {
+        conversationId: convStorage.conversation!.id,
+        limit: 10,
+        lastId,
+        contentType: MessageEnum.TEXT,
+        linkMetadata: true
+    };
+
+    messStorage.getLinkMessages(options);
+};
+
+// Xử lý sự kiện cuộn
+const handleScroll = () => {
+    // Vì đây là danh sách Media (dạng Grid), thường người dùng cuộn XUỐNG để xem ảnh cũ hơn
+    // Bạn cần kiểm tra xem scroll container đã gần tới ĐÁY chưa
+    const el = scrollRef.value;
+    if (!el) return;
+
+    // Logic: Nếu khoảng cách tới đáy < 150px thì tải thêm
+    const isBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 150;
+    if (isBottom) {
+        fetchLinkMessages();
     }
-]
+};
 
-const filteredLinks = computed(() => {
-    return links.filter(item => {
-
-        if (filterUser.value === 'me' && !item.isMe) return false
-        if (filterUser.value === 'other' && item.isMe) return false
-
-        const now = new Date()
-        const d = new Date(item.ct)
-
-        if (filterDate.value === 'today' && d.toDateString() !== now.toDateString()) {
-            return false
-        }
-
-        if (filterDate.value === 'week') {
-            const diff = (now.getTime() - d.getTime()) / 86400000
-            if (diff > 7) return false
-        }
-
-        if (filterDate.value === 'month') {
-            const diff = (now.getTime() - d.getTime()) / 86400000
-            if (diff > 30) return false
-        }
-
-        return true
-    })
-})
-
-const groupedLinks = computed(() => {
-    const map: Record<string, any[]> = {}
-
-    filteredLinks.value.forEach(item => {
-        const date = formatDate(item.ct)
-        if (!map[date]) map[date] = []
-        map[date].push(item)
-    })
-
-    return Object.keys(map).map(date => ({
-        date,
-        items: map[date]
-    }))
-})
+onMounted(() => {
+    fetchLinkMessages();
+});
 </script>

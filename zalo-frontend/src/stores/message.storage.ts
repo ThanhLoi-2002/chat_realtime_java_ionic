@@ -14,6 +14,8 @@ interface State {
     previewImage: MediaType | undefined,
     files: MediaType[],
     filesHasMore: boolean,
+    links: MessageType[],
+    linksHasMore: boolean,
 }
 
 export const useMessageStore = defineStore('message', {
@@ -25,7 +27,9 @@ export const useMessageStore = defineStore('message', {
         hasMore: true,
         previewImage: undefined,
         files: [],
-        filesHasMore: false,
+        filesHasMore: true,
+        links: [],
+        linksHasMore: true,
     }),
     actions: {
         setPreviewImage(previewImage?: MediaType) {
@@ -71,6 +75,7 @@ export const useMessageStore = defineStore('message', {
                 content.forEach((m: MessageType) => {
                     this.addImage(m)
                     this.addFile(m)
+                    this.addLink(m)
                 })
             } catch (e: any) {
                 toast({
@@ -110,6 +115,24 @@ export const useMessageStore = defineStore('message', {
                 })
 
                 if (totalElements <= size) this.filesHasMore = false
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+            }
+        },
+
+        async getLinkMessages(options: MessageFilter) {
+            try {
+                const result: any = await messageApi.getMessages(options);
+                const { content, page: { size, totalElements } } = result.result
+
+                content.forEach((i: MessageType) => {
+                    this.addLink(i)
+                })
+
+                if (totalElements <= size) this.linksHasMore = false
             } catch (e: any) {
                 toast({
                     color: "danger",
@@ -163,6 +186,19 @@ export const useMessageStore = defineStore('message', {
             }
         },
 
+        async previewLink(link: string) {
+            try {
+                const result: any = await messageApi.previewLink(link);
+                return result.result
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return null;
+            }
+        },
+
         reloadReactions(messageId: number, reactions: ReactionType[]) {
             const idx = this.messages.findIndex(m => m.id === messageId);
             if (idx !== -1) {
@@ -177,7 +213,11 @@ export const useMessageStore = defineStore('message', {
             }
 
             if (data.contentType == MessageEnum.FILE) {
-                this.files.unshift({...data.attachments[0], createdBy: data.sender})
+                this.files.unshift({ ...data.attachments[0], createdBy: data.sender })
+            }
+
+            if (data.contentType == MessageEnum.TEXT && data.linkMetadata) {
+                this.links.unshift(data)
             }
         },
         updateMessage(data: MessageType) {
@@ -201,6 +241,15 @@ export const useMessageStore = defineStore('message', {
 
                     if (idx !== -1) {
                         this.files.splice(idx, 1)
+                    }
+                }
+
+                if (data.contentType == MessageEnum.TEXT && data.linkMetadata) {
+
+                    idx = this.links.findIndex(i => i.id == data.id)
+
+                    if (idx !== -1) {
+                        this.links.splice(idx, 1)
                     }
                 }
 
@@ -248,6 +297,15 @@ export const useMessageStore = defineStore('message', {
             }
         },
 
+        addLink(m: MessageType) {
+            if (m.stt == 1 && m.linkMetadata) {
+                const isExisted = this.links.some(mess => mess.id === m.id);
+
+                if (!isExisted) {
+                    this.links.push(m);
+                }
+            }
+        },
 
         resetPagination() {
             this.hasMore = true
@@ -256,7 +314,6 @@ export const useMessageStore = defineStore('message', {
             this.filesHasMore = true
             this.files = []
             this.messages = []
-            console.log('reset')
         }
     }
 })

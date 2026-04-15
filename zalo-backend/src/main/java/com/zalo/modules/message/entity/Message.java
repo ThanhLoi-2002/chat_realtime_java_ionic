@@ -6,6 +6,7 @@ import com.zalo.common.entity.File;
 import com.zalo.common.covert.FileConverter;
 import com.zalo.common.entity.SystemMetadata;
 import com.zalo.modules.media.entities.Media;
+import com.zalo.modules.message.dto.response.LinkPreviewResponse;
 import com.zalo.modules.user.entities.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -39,6 +40,11 @@ public class Message extends BaseEntity {
 //    @Column(columnDefinition = "json")
     @ColumnTransformer(write = "?")// Ép Hibernate ghi thẳng giá trị, không dùng CAST(? as json)
     private SystemMetadata systemMetadata;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+//    @Column(columnDefinition = "json")
+    @ColumnTransformer(write = "?")// Ép Hibernate ghi thẳng giá trị, không dùng CAST(? as json)
+    private LinkPreviewResponse linkMetadata;
 
     @Enumerated(EnumType.STRING)
     MessageType contentType = MessageType.TEXT;

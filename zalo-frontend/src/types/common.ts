@@ -24,12 +24,20 @@ export type SettingPageType = "setting" | "profile"
 export type SearchFriendPageType = "addFriend" | "friendProfile"
 export type FriendMenuType = "friendList" | "groupList" | "friendInvitation" | "groupInvitation"
 
+export type LinkMetadataType = {
+  title: string
+  description: string
+  image: string
+  url: string
+}
+
 export type SendMessageType = {
   content?: string | null
   conversationId?: number
   replyToId?: number
   contentType: MessageEnum
   attachments?: MediaType[]
+  linkMetadata?: LinkMetadataType
 }
 
 export type SendAddFriendRequestType = {
@@ -46,6 +54,7 @@ export type BaseFilter = {
 export type MessageFilter = BaseFilter & {
   conversationId: number
   contentType?: MessageEnum
+  linkMetadata?: boolean
 }
 
 export type ConversationFilter = BaseFilter

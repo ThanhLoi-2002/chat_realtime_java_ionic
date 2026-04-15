@@ -100,17 +100,17 @@ const filtered = computed(() => {
 });
 
 const fetchFileMessages = () => {
-  if (!messStorage.imagesHasMore) return;
+  if (!messStorage.filesHasMore) return;
 
-  const lastId = messStorage.images.at(-1)?.moduleId ?? undefined;
+  const lastId = messStorage.files.at(-1)?.moduleId ?? undefined;
   const options: MessageFilter = {
     conversationId: convStorage.conversation!.id,
     limit: 20,
     lastId,
-    contentType: MessageEnum.IMAGE,
+    contentType: MessageEnum.FILE,
   };
 
-  messStorage.getImageMessages(options);
+  messStorage.getFileMessages(options);
 };
 
 // Xử lý sự kiện cuộn
@@ -121,7 +121,7 @@ const handleScroll = () => {
   if (!el) return;
 
   // Logic: Nếu khoảng cách tới đáy < 150px thì tải thêm
-  const isBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 1050;
+  const isBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 150;
   if (isBottom) {
     fetchFileMessages();
   }

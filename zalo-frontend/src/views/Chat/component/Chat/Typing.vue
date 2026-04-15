@@ -46,7 +46,7 @@
             </div>
         </div>
 
-        <div class="relative">
+        <div class="relative w-full">
             <div v-if="mentionSuggestions.length > 0" class="absolute bg-white dark:bg-gray-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-2xl z-9999 max-h-48 overflow-y-auto 
                 w-fit min-w-50 bottom-full left-8">
                 <div v-for="(user, index) in mentionSuggestions" :key="user.id" @mousedown.prevent="insertMention(user)"
@@ -58,6 +58,39 @@
                         @{{ user.username }}
                     </span>
                 </div>
+            </div>
+
+            <div v-if="previewLink"
+                class="relative flex items-center w-full max-w-full border rounded-xl overflow-hidden bg-slate-50 dark:bg-gray-900 mt-2 shadow-sm group px-2">
+
+                <div v-if="previewLink.image"
+                    class="w-16 h-16 sm:w-24 sm:h-16 shrink-0 overflow-hidden rounded-lg my-2">
+                    <img :src="previewLink.image" class="w-full h-full object-cover"
+                        @error="(e: any) => e.target.style.display = 'none'" />
+                </div>
+
+                <div class="p-2 flex-1 min-w-0">
+                    <p class="font-bold text-[13px] line-clamp-1 text-slate-800 dark:text-white leading-tight">
+                        {{ previewLink.title || 'No title available' }}
+                    </p>
+
+                    <p v-if="previewLink.description"
+                        class="text-[11px] text-slate-500 dark:text-gray-400 line-clamp-1 mt-0.5 italic">
+                        {{ previewLink.description }}
+                    </p>
+
+                    <div class="flex items-center gap-1 mt-1">
+                        <i class="fa-solid fa-link text-[8px] text-blue-500"></i>
+                        <span class="text-[10px] text-blue-500 truncate font-bold">
+                            {{ formatHostname(previewLink.url) }}
+                        </span>
+                    </div>
+                </div>
+
+                <button @click="previewLink = undefined"
+                    class="absolute top-1 right-1 bg-black/40 text-white rounded-full w-4 h-4 flex items-center justify-center text-[8px] z-10 opacity-0 group-hover:opacity-100 transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
 
             <!-- INPUT BAR -->
@@ -100,7 +133,7 @@
                         </div>
 
                         <base-button v-else icon="fa-solid fa-paper-plane text-blue-500 text-xs md:text-xl"
-                            @click="sendMessage" class="ml-1"/>
+                            @click="sendMessage" class="ml-1" />
                     </div>
                 </div>
             </div>
@@ -114,13 +147,14 @@ import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
 import EmojiPicker from '@/components/Emoji/EmojiPicker.vue';
 import LoadingSpinner from '@/components/Loading/LoadingSpinner.vue';
 import { useDebounce } from '@/composables/useDebounce';
+import { useMessage } from '@/composables/useMessage';
 import { useScroll } from '@/composables/useScroll';
 import { useTranslate } from '@/composables/useTranslate';
 import { useUpload } from '@/composables/useUpload';
 import { useConversationStore } from '@/stores/conversation.storage';
 import { useMessageStore } from '@/stores/message.storage';
 import { useUserStore } from '@/stores/user.storage';
-import { SendMessageType, UploadFileRequest, UploadFileType } from '@/types/common';
+import { LinkMetadataType, SendMessageType, UploadFileRequest, UploadFileType } from '@/types/common';
 import { MessageEnum, ModuleEnum, ResourceEnum } from '@/types/enum';
 import { socketSubscribe, sockJSSendMessage } from '@/utils/websocket';
 import { StompSubscription } from '@stomp/stompjs';
@@ -147,6 +181,18 @@ const selectedRawFiles = ref<File[]>([])
 const previewFiles = ref<{ url: string, type: ResourceEnum, name?: string }[]>([])
 const showEmoji = ref(false)
 const isLoadingSendMessage = ref(false)
+const previewLink = ref<LinkMetadataType | undefined>(undefined)
+const { formatHostname, onPreviewLink } = useMessage()
+const { debounced: showPreviewLink } = useDebounce(async () => {
+    previewLink.value = await onPreviewLink(message.value)
+    console.log(previewLink.value)
+}, 500)
+
+watch(() => (inputRef.value as any)?.innerText, () => {
+    showPreviewLink()
+    console.log("change")
+})
+
 // State lưu trữ tiến độ upload để hiển thị UI
 const uploadProgress = ref<Record<number, number>>({});
 
@@ -274,7 +320,7 @@ const sendImages = async () => {
     }
 
     const data = await uploadFiles(dto)
-    
+
     // clear
     selectedRawFiles.value = []
     previewFiles.value = []
@@ -352,7 +398,8 @@ const sendMessage = async () => {
         content: finalContent,
         conversationId: conversationStorage.conversation?.id,
         contentType: filesData && filesData.length > 1 ? MessageEnum.IMAGE : MessageEnum.TEXT,
-        attachments: filesData ? filesData : []
+        attachments: filesData ? filesData : [],
+        linkMetadata: previewLink.value
     }
 
     const success = await messageStorage.sendMessage(payload);
@@ -364,6 +411,7 @@ const sendMessage = async () => {
         }
         message.value = ''; // Reset biến message
         uploadProgress.value = {};
+        previewLink.value = undefined
         scrollToBottom(props.scrollContainer, true);
     }
 
@@ -533,6 +581,7 @@ const onInput = (e: Event) => {
     message.value = target.innerText;
     checkMention();
     sendTyping()
+    showPreviewLink()
 };
 
 const resetSubscribe = () => {

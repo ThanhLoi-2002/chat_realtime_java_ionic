@@ -29,6 +29,29 @@
         <span :class="isOwner ? 'text-white' : 'text-slate-800 dark:text-slate-100'" v-html="formattedContent"
           @click="handleContentClick">
         </span>
+
+        <div v-if="linkPreview" @click="openLink(linkPreview.url)"
+          class="mt-1 flex flex-col w-full max-w-full border rounded-xl overflow-hidden bg-white/10 dark:bg-gray-900/50 shadow-sm cursor-pointer hover:bg-black/5 transition">
+
+          <div v-if="linkPreview.image" class="w-full h-32 md:h-40 overflow-hidden border-b border-black/5">
+            <img :src="linkPreview.image" class="w-full h-full object-cover" />
+          </div>
+
+          <div class="p-2 min-w-0">
+            <p class="font-bold text-[13px] line-clamp-1 text-inherit leading-tight">
+              {{ linkPreview.title }}
+            </p>
+            <p v-if="linkPreview.description" class="text-[11px] opacity-80 line-clamp-2 mt-1">
+              {{ linkPreview.description }}
+            </p>
+            <div class="flex items-center gap-1 mt-1.5">
+              <i class="fa-solid fa-link text-[8px] opacity-70"></i>
+              <span class="text-[10px] uppercase font-bold tracking-wider opacity-70">
+                {{ formatHostname(linkPreview.url) }}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -70,7 +93,7 @@ const { t } = useTranslate();
 const convStorage = useConversationStore()
 const profileModal = ref()
 const emit = defineEmits(['visible']);
-const { formattedContentWithTag } = useMessage()
+const { formattedContentWithTag, formatHostname } = useMessage()
 let observer: IntersectionObserver | null = null;
 
 const el = ref<HTMLElement | null>(null);
@@ -106,6 +129,26 @@ const handleContentClick = (event: MouseEvent) => {
       })
     }
   }
+};
+
+// Thêm computed này vào phần script
+const linkPreview = computed(() => {
+  if (!props.message.linkMetadata) return null;
+
+  // Nếu là string thì parse, nếu là object rồi thì dùng luôn
+  try {
+    return typeof props.message.linkMetadata === 'string'
+      ? JSON.parse(props.message.linkMetadata)
+      : props.message.linkMetadata;
+  } catch (e) {
+    console.error("Lỗi parse linkMetadata:", e);
+    return null;
+  }
+});
+
+// Hàm để mở link khi click vào card
+const openLink = (url: string) => {
+  if (url) window.open(url, '_blank');
 };
 
 onMounted(() => {

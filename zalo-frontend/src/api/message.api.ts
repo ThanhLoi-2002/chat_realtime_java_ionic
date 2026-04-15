@@ -40,6 +40,10 @@ const deleteAllReaction = async (id: number, conversationId: number) => {
     return await axios.delete<IResponse>(`/conversations/${conversationId}/messages/reaction/remove-all?messageId=${id}`);
 }
 
+const previewLink = async (link: string) => {
+    return await axios.get<IResponse>(`/conversations/1/messages/preview-link?link=${link}`);
+}
+
 export const messageApi = {
-    sendMessage, getMessages, deleteMessage, readMessage, addReaction, deleteAllReaction
+    sendMessage, getMessages, deleteMessage, readMessage, addReaction, deleteAllReaction, previewLink
 }

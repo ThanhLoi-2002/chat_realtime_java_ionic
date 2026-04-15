@@ -19,6 +19,7 @@ public class MessageFilter extends BaseFilter {
     private Long lastId;
     private MessageType contentType;
     private Integer stt;
+    private Boolean linkMetadata;
 
 
     @Override
@@ -61,6 +62,11 @@ public class MessageFilter extends BaseFilter {
             specs.add((root, query, cb) ->
                     cb.equal(root.get("stt"), 1)
             );
+        }
+
+        if(linkMetadata != null && linkMetadata) {
+            specs.add((root, query, cb) ->
+                    cb.isNotNull(root.get("linkMetadata")));
         }
 
         return specs.stream()

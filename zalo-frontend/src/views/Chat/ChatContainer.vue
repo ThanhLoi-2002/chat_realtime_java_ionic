@@ -281,6 +281,7 @@ const reset = async () => {
         unreadMessageId.value = conversationStorage.conversation.lastMessage?.id ?? 0
         const options: MessageFilter = {
             conversationId: conversationStorage.conversation!.id,
+            limit: 15
         }
         await messageStorage.getMessages(options)
 

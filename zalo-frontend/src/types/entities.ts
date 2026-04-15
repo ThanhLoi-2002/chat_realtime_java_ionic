@@ -1,4 +1,4 @@
-import { FileType } from "./common"
+import { FileType, LinkMetadataType } from "./common"
 import { ConversationEnum, DeliveryStatusEnum, FriendshipStatusEnum, MemberRoleEnum, MessageEnum, ModuleEnum, ReactionEnum, SystemMetadataEnum } from "./enum"
 
 export type BaseType = {
@@ -52,6 +52,7 @@ export type MessageType = BaseType & {
     reactions: ReactionType[]
     systemMetadata: SystemMetadataType
     attachments: MediaType[]
+    linkMetadata: LinkMetadataType
 }
 
 export type ConversationMemberType = BaseType & {

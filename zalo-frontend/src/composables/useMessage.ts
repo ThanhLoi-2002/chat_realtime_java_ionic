@@ -1,4 +1,7 @@
+import { useMessageStore } from "@/stores/message.storage";
+
 export function useMessage() {
+    const messStorage = useMessageStore()
 
     //format text with tag
     const formattedContentWithTag = (content: string, isOwner: boolean) => {
@@ -31,7 +34,27 @@ export function useMessage() {
         return content.replace(mentionRegex, '$1');
     };
 
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+    const onPreviewLink = async (text: string) => {
+        const match = text?.match(urlRegex);
+        if (match && match.length > 0) {
+            // Gọi API Backend để lấy preview cho match[0]
+            return await messStorage.previewLink(match[0]);
+        }
+        return null
+    };
+
+    const formatHostname = (url: string) => {
+        try {
+            const host = new URL(url).hostname;
+            return host.replace('www.', ''); // Bỏ www cho gọn giống Zalo
+        } catch (e) {
+            return url;
+        }
+    }
+
     return {
-        formattedContentWithTag, stripMentionTag
+        formattedContentWithTag, stripMentionTag, onPreviewLink, formatHostname
     }
 }
