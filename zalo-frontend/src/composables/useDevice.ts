@@ -34,7 +34,9 @@ export function useDevice() {
 
   const logDeviceInfo = async () => {
     const info = await Device.getInfo();
-    console.log(info);
+    console.log("info: ",info);
+    console.log("window.innerWidth: ", window.innerWidth)
+    console.log("window.innerHeight: ", window.innerHeight)
   };
 
   onMounted(() => {

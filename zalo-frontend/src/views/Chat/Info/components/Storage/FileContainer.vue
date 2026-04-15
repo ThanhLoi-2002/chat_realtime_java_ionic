@@ -2,7 +2,7 @@
     <div ref="el" :class="[
         'text-sm flex flex-col relative min-w-12 rounded-lg w-full',
         'px-2 py-1',
-    ]" :data-id="media.id" class="max-w-70 md:max-w-105 flex flex-col gap-2 cursor-pointer">
+    ]" :data-id="media.id" class="w-full flex flex-col gap-2 cursor-pointer">
         <div
             class="flex flex-col items-center gap-3 p-3 w-full rounded-lg border bg-gray-50 dark:bg-gray-900/50 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition shadow-sm">
 

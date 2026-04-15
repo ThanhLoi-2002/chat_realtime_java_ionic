@@ -235,7 +235,7 @@ export const useMessageStore = defineStore('message', {
         addFile(m: MessageType) {
             if (m.contentType == MessageEnum.FILE && m.stt == 1) {
                 m.attachments.forEach((item: MediaType) => {
-                    const isExisted = this.images.some(img => img.id === item.id);
+                    const isExisted = this.files.some(img => img.id === item.id);
 
                     if (!isExisted && item.stt == 1) {
                         const media: MediaType = {

@@ -12,7 +12,7 @@
                 <LoadingSpinner />
             </div>
 
-            <div v-for="msg in messagesWithMeta" :key="msg.id">
+            <div v-for="msg in messagesWithMeta" :key="msg.id" class="mx-3">
                 <div v-if="msg.showTimeSeparator"
                     class="text-center text-[10px] md:text-xs text-slate-500 dark:text-gray-400 my-6 bg-gray-100 dark:bg-slate-700 w-fit mx-auto py-0.5 px-2 rounded-sm">
                     {{ formatSeparatorTime(msg.ct) }}
