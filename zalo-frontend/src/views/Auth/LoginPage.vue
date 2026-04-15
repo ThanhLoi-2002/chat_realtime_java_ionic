@@ -25,7 +25,7 @@ const onSubmit = handleSubmit((values) => {
 </script>
 
 <template>
-    <div class="w-full max-w-md">
+    <div class="w-full max-w-xl">
         <!-- TITLE -->
         <h2 class="text-3xl font-bold mb-2 text-gray-900 dark:text-white">
             Welcome Back

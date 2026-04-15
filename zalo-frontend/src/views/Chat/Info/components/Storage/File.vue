@@ -105,7 +105,7 @@ const fetchFileMessages = () => {
   const lastId = messStorage.images.at(-1)?.moduleId ?? undefined;
   const options: MessageFilter = {
     conversationId: convStorage.conversation!.id,
-    limit: 10,
+    limit: 20,
     lastId,
     contentType: MessageEnum.IMAGE,
   };
@@ -120,8 +120,8 @@ const handleScroll = () => {
   const el = scrollRef.value;
   if (!el) return;
 
-  // Logic: Nếu khoảng cách tới đáy < 50px thì tải thêm
-  const isBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 150;
+  // Logic: Nếu khoảng cách tới đáy < 150px thì tải thêm
+  const isBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 1050;
   if (isBottom) {
     fetchFileMessages();
   }

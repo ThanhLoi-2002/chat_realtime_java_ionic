@@ -274,7 +274,7 @@ const sendImages = async () => {
     }
 
     const data = await uploadFiles(dto)
-
+    
     // clear
     selectedRawFiles.value = []
     previewFiles.value = []

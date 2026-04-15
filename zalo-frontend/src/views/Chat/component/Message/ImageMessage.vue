@@ -3,7 +3,7 @@
         'text-sm flex flex-col relative min-w-12 rounded-lg',
         'px-2 py-2',
         isOwner && message.content ? 'bg-blue-400 text-white' : !isOwner && message.content ? 'bg-white dark:bg-gray-800 dark:text-slate-100' : '',
-        (role && role != MemberRoleEnum.MEMBER && message.attachments?.length <=1 && !isOwner)
+        (role && role != MemberRoleEnum.MEMBER && message.attachments?.length <= 1 && !isOwner)
             ? 'border-blue-500 border' // Nếu có role đặc biệt
             : (isOwner ? 'border-blue-500' : 'border-slate-300 dark:border-gray-700') // Border mặc định
     ]" :data-id="message.id">
@@ -34,7 +34,16 @@
                                 'flex-auto h-25 md:h-32.5 min-w-[30%] aspect-auto',
                                 message.attachments.length === 1 ? 'rounded-xl h-auto max-h-80 aspect-auto' : ''
                             ]">
-                            <img :src="img.secureUrl" @click="handlePreviewImage(message, +index)"
+
+                            <div v-if="isVideo(img.secureUrl)" class="relative h-full w-full" @click="handlePreviewImage(message, +index)">
+                                <img :src="img.secureUrl.replace(/\.[^/.]+$/, '.jpg')"
+                                    class="w-full h-full object-cover opacity-80" />
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <i class="fa-solid fa-circle-play text-white text-3xl shadow-lg"></i>
+                                </div>
+                            </div>
+
+                            <img v-else :src="img.secureUrl" @click="handlePreviewImage(message, +index)"
                                 class="w-full h-full object-cover" />
                         </div>
                     </div>
@@ -69,6 +78,7 @@ import { useMessageStore } from '@/stores/message.storage';
 import Reactions from '../Reaction/Reactions.vue';
 import { MediaType, MessageType } from '@/types/entities';
 import { MemberRoleEnum } from '@/types/enum';
+import { useMedia } from '@/composables/useMedia';
 
 const props = defineProps<{
     setBubbleRef?: (el: HTMLElement | null) => void
@@ -77,6 +87,7 @@ const props = defineProps<{
     role?: MemberRoleEnum;
 }>()
 
+const { isVideo } = useMedia()
 const { formatTime } = useDateTime()
 const messStorage = useMessageStore()
 const { t } = useTranslate()

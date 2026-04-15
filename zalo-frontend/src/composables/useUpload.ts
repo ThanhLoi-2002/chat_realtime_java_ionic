@@ -78,20 +78,23 @@ export const useUpload = () => {
         const uploadTasks = params.map((item, index) => {
             // Bọc toàn bộ logic async vào trong limit()
             return limit(async () => {
-                const sig = result.presignedUrls[index];
-                const file = item.file;
-
-                const formData = new FormData();
-                formData.append("file", file);
-                formData.append("api_key", result.apiKey);
-                formData.append("timestamp", sig.timestamp);
-                formData.append("signature", sig.signature);
-                formData.append("folder", sig.folder);
-                if (sig.eager) formData.append("eager", sig.eager);
-
-                const url = `https://api.cloudinary.com/v1_1/${result.cloudName}/${item.resourceType.toLowerCase()}/upload`;
 
                 try {
+                    const sig = result.presignedUrls[index];
+                    const file = item.file;
+
+                    const formData = new FormData();
+                    formData.append("file", file);
+                    formData.append("api_key", result.apiKey);
+                    formData.append("timestamp", sig.timestamp);
+                    formData.append("signature", sig.signature);
+                    formData.append("folder", sig.folder);
+                    if (sig.eager) formData.append("eager", sig.eager);
+                    if (sig.eager_async) formData.append("eager_async", "true");
+
+                    const url = `https://api.cloudinary.com/v1_1/${result.cloudName}/${item.resourceType.toLowerCase()}/upload`;
+
+
                     const { data } = await axios.post(url, formData, {
                         onUploadProgress: (progressEvent) => {
                             const percent = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 100));

@@ -1,10 +1,10 @@
 <template>
 
-    <div class="flex gap-2 items-start relative group max-w-full lg:max-w-[60%]"
+    <div class="flex gap-2 items-start relative group max-w-[90%] lg:max-w-[70%]"
         :class="[isOwner ? 'ml-auto flex-row-reverse' : '', message.reactions?.length > 0 && 'mb-4']" ref="rootRef">
 
         <!-- AVATAR -->
-        <div v-if="!isOwner && message.showAvatar" class="relative">
+        <div v-if="!isOwner && message.showAvatar" class="relative shrink-0">
             <circle-avatar :user="message.sender" size="size-10" />
             <key v-if="roles" :role="roles[message?.sender?.id]" />
         </div>

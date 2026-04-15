@@ -3,6 +3,7 @@
     <ion-content :fullscreen="true" :scroll-y="false">
 
       <div class="flex min-h-full bg-white dark:bg-slate-800">
+        <!-- :class="[!isSmartDevice() && 'my-6']" -->
         <sidebar />
 
         <main
@@ -24,5 +25,5 @@ import { defineAsyncComponent } from 'vue';
 
 const Sidebar = defineAsyncComponent(() => import('../components/Sidebar/Sidebar.vue'));
 
-const { isMobile } = useDevice()
+const { isMobile, isSmartDevice } = useDevice()
 </script>

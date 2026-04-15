@@ -3,7 +3,7 @@ import { useDateTime } from "./useDateTime";
 
 export function useMedia() {
     const { formatDate } = useDateTime()
-    
+
     const groupedMediaByTime = (filtereds: MediaType[]) => {
         const map: Record<string, MediaType[]> = {};
 
@@ -19,7 +19,14 @@ export function useMedia() {
         }));
     };
 
+    const isVideo = (url: string) => {
+        if (!url) return false;
+        // Kiểm tra các đuôi file video phổ biến
+        const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.m4v'];
+        return videoExtensions.some(ext => url.toLowerCase().endsWith(ext)) || url.includes('/video/upload/');
+    };
+
     return {
-        groupedMediaByTime
+        groupedMediaByTime, isVideo
     }
 }

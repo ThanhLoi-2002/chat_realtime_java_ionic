@@ -10,8 +10,18 @@
 
     <div class="flex flex-1 overflow-hidden mt-12">
 
-      <div class="flex-1 flex items-center justify-center p-6 relative overflow-hidden" @click.stop
-        @wheel.prevent="handleWheel"> <img :src="messStorage.previewImage?.secureUrl" @dblclick="handleDoubleClick"
+      <div v-if="isVideo(messStorage.previewImage!.secureUrl)" class="relative h-full w-full">
+        <!-- <img :src="messStorage.previewImage?.secureUrl.replace(/\.[^/.]+$/, '.jpg')" class="w-full h-full object-cover opacity-80" />
+        <div class="absolute inset-0 flex items-center justify-center">
+          <i class="fa-solid fa-circle-play text-white text-3xl shadow-lg"></i>
+        </div> -->
+        <video :src="getRawUrl(messStorage.previewImage!.secureUrl)" class="w-full h-full object-contain bg-black" controls
+          autoplay></video>
+      </div>
+
+      <div v-else class="flex-1 flex items-center justify-center p-6 relative overflow-hidden" @click.stop
+        @wheel.prevent="handleWheel">
+        <img :src="messStorage.previewImage?.secureUrl" @dblclick="handleDoubleClick"
           class="max-w-[90%] max-h-[90%] object-contain shadow-2xl transition-transform duration-200 ease-out cursor-zoom-in"
           :style="{
             transform: `scale(${scale})`,
@@ -37,7 +47,8 @@
 
           <div class="w-px h-4 bg-white/20 mx-1"></div>
 
-          <button @click="scale = 1" class="text-white hover:text-red-400 p-1 transition-colors cursor-pointer" title="Reset">
+          <button @click="scale = 1" class="text-white hover:text-red-400 p-1 transition-colors cursor-pointer"
+            title="Reset">
             <i class="fa fa-undo text-sm" />
           </button>
         </div>
@@ -52,7 +63,15 @@
             <div v-for="img in group" :key="img.id" :id="'thumb-' + img.id" @click="handlePreviewImage(img)"
               class="relative w-24 h-24 rounded-lg overflow-hidden cursor-pointer transition-all border-2"
               :class="img.id === messStorage.previewImage?.id ? 'border-blue-500 scale-105 shadow-lg' : 'border-transparent opacity-50 hover:opacity-100'">
-              <img :src="img.secureUrl" class="w-full h-full object-cover" loading="lazy" />
+
+              <div v-if="isVideo(img.secureUrl)" class="relative h-full w-full">
+                <img :src="img.secureUrl.replace(/\.[^/.]+$/, '.jpg')" class="w-full h-full object-cover opacity-80" />
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <i class="fa-solid fa-circle-play text-white text-3xl shadow-lg"></i>
+                </div>
+              </div>
+
+              <img v-else :src="img.secureUrl" class="w-full h-full object-cover" loading="lazy" />
               <div v-if="img.messageContent"
                 class="absolute bottom-0 left-0 right-0 bg-black/60 text-[10px] text-white px-1 py-0.5 truncate">
 
@@ -100,15 +119,24 @@ import { useScroll } from "@/composables/useScroll";
 import { MessageFilter } from "@/types/common";
 import { MessageEnum } from "@/types/enum";
 import { useTranslate } from "@/composables/useTranslate";
+import { useMedia } from "@/composables/useMedia";
 
 const { t } = useTranslate()
 const scroll = ref<HTMLElement | null>(null);
 const isCollapse = ref(true);
+const { isVideo } = useMedia()
 
 const messStorage = useMessageStore();
 const convStorage = useConversationStore();
 const { formatSeparatorTime } = useDateTime();
 const { onScroll } = useScroll();
+
+const getRawUrl = (url: string) => {
+  if (!url) return '';
+  // Regex này tìm phần nằm sau '/upload/' và trước 'v' + dãy số (version) hoặc folder
+  // Nó sẽ giữ lại phần đầu domain và phần public_id phía sau
+  return url.replace(/\/upload\/(.*?)\/v/, '/upload/v');
+}
 
 const closePreview = () => {
   messStorage.setPreviewImage(undefined);

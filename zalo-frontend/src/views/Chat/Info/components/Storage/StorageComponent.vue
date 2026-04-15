@@ -3,9 +3,21 @@
         <!-- MEDIA -->
         <collapse v-model:isOpen="open.media" :title="`${t('image')}/${t('video')}`">
             <div class="grid grid-cols-4 gap-2">
-                <img v-for="(i, index) in messStorage.images.slice(0, 8)" :key="index" :src="i.secureUrl"
+                <div v-for="(i, index) in messStorage.images.slice(0, 8)" :key="index"
                     class="aspect-square rounded bg-gray-200 dark:bg-slate-700 hover:scale-105 transition cursor-pointer"
-                    @click="handlePreviewImage(i)" />
+                    @click="handlePreviewImage(i)">
+
+                    <div v-if="isVideo(i.secureUrl)" class="relative h-full w-full">
+                        <img :src="i.secureUrl.replace(/\.[^/.]+$/, '.jpg')"
+                            class="w-full h-full object-cover opacity-80" />
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="fa-solid fa-circle-play text-white text-3xl shadow-lg"></i>
+                        </div>
+                    </div>
+
+                    <img v-else :src="i.secureUrl"
+                        class="aspect-square rounded bg-gray-200 dark:bg-slate-700 hover:scale-105 transition cursor-pointer" />
+                </div>
             </div>
 
             <ion-button class="btn mx-auto w-full normal-case" @click="goTo('storage/image')">
@@ -18,7 +30,7 @@
             <file-container v-for="(media, index) in messStorage.files.slice(0, 4)" :key="index" :media="media" />
 
             <ion-button class="btn mt-2 mx-auto w-full normal-case" @click="goTo('storage/file')">{{ t("seeAll")
-            }}</ion-button>
+                }}</ion-button>
         </collapse>
 
         <!-- LINK -->
@@ -42,7 +54,9 @@ import { MessageEnum } from '@/types/enum';
 import { onMounted, reactive, watch } from 'vue';
 import FileContainer from './FileContainer.vue';
 import Collapse from '@/components/collapse/Collapse.vue';
+import { useMedia } from '@/composables/useMedia';
 
+const { isVideo } = useMedia()
 const emit = defineEmits<{
     (e: 'update:currentView', value: string): void
 }>()
