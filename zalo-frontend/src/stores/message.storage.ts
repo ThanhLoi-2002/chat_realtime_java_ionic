@@ -191,15 +191,16 @@ export const useMessageStore = defineStore('message', {
 
                     idx = this.images.findIndex(i => i.id == data.id)
                     if (idx !== -1) {
-                        this.images = this.images.filter(i => i.id != data.id)
+                        this.images.splice(idx, 1)
                     }
                 }
 
                 if (data.contentType == MessageEnum.FILE) {
 
-                    idx = this.files.findIndex(i => i.id == data.id)
+                    idx = this.files.findIndex(i => i.moduleId == data.id)
+
                     if (idx !== -1) {
-                        this.files = this.files.filter(i => i.id != data.id)
+                        this.files.splice(idx, 1)
                     }
                 }
 

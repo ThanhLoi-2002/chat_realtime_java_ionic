@@ -40,7 +40,7 @@ export function useConversation() {
     }
 
     const conversationName = (conversation?: ConversationType) => isGroup(conversation) ? conversation?.name : getRecipient(conversation!)?.username
-    const conversationAvatar = (conversation?: ConversationType) => isGroup(conversation) ? conversation?.avatar?.url : getRecipient(conversation!)?.avatar?.url
+    const conversationAvatar = (conversation?: ConversationType) => isGroup(conversation) ? conversation?.avatar?.secureUrl : getRecipient(conversation!)?.avatar?.url
 
     return {
         isGroup, getRecipient, getUserNameFromLastMessage, conversationName, conversationAvatar, isGoldenKey

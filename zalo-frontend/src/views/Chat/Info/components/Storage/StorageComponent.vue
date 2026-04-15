@@ -68,7 +68,7 @@ const handlePreviewImage = (pi: MediaType) => {
 const fetchImages = () => {
     const options: MessageFilter = {
         conversationId: convStorage.conversation!.id,
-        limit: 8,
+        limit: 30,
         lastId: messStorage.images.at(-1)?.id ?? undefined,
         contentType: MessageEnum.IMAGE
     }
@@ -78,7 +78,7 @@ const fetchImages = () => {
 const fetchFiles = () => {
     const options: MessageFilter = {
         conversationId: convStorage.conversation!.id,
-        limit: 4,
+        limit: 30,
         lastId: messStorage.images.at(-1)?.id ?? undefined,
         contentType: MessageEnum.FILE
     }

@@ -130,7 +130,7 @@ const fetchImageMessages = () => {
     const lastId = messStorage.images.at(-1)?.moduleId ?? undefined;
     const options: MessageFilter = {
         conversationId: convStorage.conversation!.id,
-        limit: 10,
+        limit: 20,
         lastId,
         contentType: MessageEnum.IMAGE,
     };

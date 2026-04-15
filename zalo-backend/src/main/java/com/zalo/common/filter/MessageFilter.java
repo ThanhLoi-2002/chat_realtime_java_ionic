@@ -18,6 +18,7 @@ public class MessageFilter extends BaseFilter {
     private Long conversationId;
     private Long lastId;
     private MessageType contentType;
+    private Integer stt;
 
 
     @Override
@@ -33,6 +34,11 @@ public class MessageFilter extends BaseFilter {
         if (lastId != null) {
             specs.add((root, query, cb) ->
                     cb.lessThan(root.get("id"), lastId));
+        }
+
+        if (stt != null) {
+            specs.add((root, query, cb) ->
+                    cb.equal(root.get("stt"), stt));
         }
 
         if (contentType != null) {

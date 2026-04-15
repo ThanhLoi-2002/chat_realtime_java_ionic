@@ -166,6 +166,10 @@ public class MessageService {
     public Page<MessageResponse> fetchMessages(Long conversationId, MessageFilter filter) {
         filter.setConversationId(conversationId);
 
+        if(filter.getContentType() == MessageType.FILE || filter.getContentType() == MessageType.IMAGE) {
+            filter.setStt(1);
+        }
+
         Pageable pageable = filter.toScrollable("ct", Sort.Direction.DESC);
 
         Page<Message> page = messageRepo.findAll(filter.toSpecification(), pageable);
