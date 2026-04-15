@@ -11,11 +11,7 @@
     <div class="flex flex-1 overflow-hidden mt-12">
 
       <div v-if="isVideo(messStorage.previewImage!.secureUrl)" class="relative h-full w-full">
-        <!-- <img :src="messStorage.previewImage?.secureUrl.replace(/\.[^/.]+$/, '.jpg')" class="w-full h-full object-cover opacity-80" />
-        <div class="absolute inset-0 flex items-center justify-center">
-          <i class="fa-solid fa-circle-play text-white text-3xl shadow-lg"></i>
-        </div> -->
-        <video :src="getRawUrl(messStorage.previewImage!.secureUrl)" class="w-full h-full object-contain bg-black" controls
+        <video :src="messStorage.previewImage!.secureUrl" class="w-full h-full object-contain bg-black" controls
           autoplay></video>
       </div>
 
@@ -130,13 +126,6 @@ const messStorage = useMessageStore();
 const convStorage = useConversationStore();
 const { formatSeparatorTime } = useDateTime();
 const { onScroll } = useScroll();
-
-const getRawUrl = (url: string) => {
-  if (!url) return '';
-  // Regex này tìm phần nằm sau '/upload/' và trước 'v' + dãy số (version) hoặc folder
-  // Nó sẽ giữ lại phần đầu domain và phần public_id phía sau
-  return url.replace(/\/upload\/(.*?)\/v/, '/upload/v');
-}
 
 const closePreview = () => {
   messStorage.setPreviewImage(undefined);

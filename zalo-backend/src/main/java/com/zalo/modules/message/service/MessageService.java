@@ -152,7 +152,7 @@ public class MessageService {
                     .collect(Collectors.groupingBy(
                             Media::getModuleId,
                             Collectors.mapping(
-                                    MediaResponse::new,
+                                    media -> new MediaResponse(media, "createdBy"),
                                     Collectors.toList()
                             )
                     ));

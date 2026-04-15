@@ -10,5 +10,6 @@ public interface MediaInterface {
     Media save(MediaRequest dto, Long userId);
     void saveAll(List<MediaRequest> dtos, Long userId);
 
+
     List<Media> findByModuleIdInAndModuleType(List<Long> moduleIds, MediaType type);
 }

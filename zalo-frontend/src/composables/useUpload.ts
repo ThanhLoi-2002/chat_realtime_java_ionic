@@ -103,7 +103,7 @@ export const useUpload = () => {
                     });
 
                     return {
-                        secureUrl: data.eager ? data.eager[0].secure_url : data.secure_url,
+                        secureUrl: data.secure_url,
                         publicId: data.public_id,
                         moduleType,
                         resourceType: item.resourceType,
