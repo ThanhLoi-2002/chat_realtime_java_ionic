@@ -1,123 +1,26 @@
 <template>
     <div class="w-full relative">
-        <!-- Typing indicator (giữ nguyên) -->
-        <div v-if="typingUsers.size > 0"
-            class="absolute bottom-[95%] left-2 text-sm text-gray-600 dark:text-gray-400 px-4 pb-2 flex items-center gap-1">
-            <span>
-                <span v-for="([id, user], index) in typingUsers" :key="id">
-                    <span v-if="index > 0">, </span>{{ user.username }}
-                </span>
-                {{ t("typing") }}
-            </span>
-            <span class="flex gap-1 ml-1">
-                <span class="dot"></span>
-                <span class="dot"></span>
-                <span class="dot"></span>
-            </span>
-        </div>
+        <!-- Typing indicator -->
+        <TypingIndicator :users="typingUsers" />
 
         <div ref="emojiWrapper">
             <EmojiPicker v-show="showEmoji" class="fixed bottom-30" @select="handleSelectEmoji" />
         </div>
 
-        <div class="w-[97%] overflow-x-auto">
-            <div v-if="previewFiles.length > 0"
-                class="flex flex-nowrap gap-3 p-3 w-1/2 border-t border-gray-200 dark:border-slate-700 bg-gray-50/50 dark:bg-gray-900/50 scrollbar-hide">
-
-                <div v-for="(file, index) in previewFiles" :key="index"
-                    class="relative w-20 h-20 shrink-0 border border-gray-200 dark:border-slate-700 rounded-lg bg-white dark:bg-gray-800 flex flex-col items-center justify-center overflow-hidden">
-
-                    <template v-if="file.type === ResourceEnum.IMAGE || file.type === ResourceEnum.VIDEO">
-                        <img v-if="file.type === ResourceEnum.IMAGE" :src="file.url"
-                            class="w-full h-full object-cover" />
-                        <video v-else :src="file.url" class="w-full h-full object-cover" />
-                    </template>
-
-                    <template v-else>
-                        <span class="text-2xl">{{ getFileIcon(file.name) }}</span>
-                        <span class="text-[10px] px-1 truncate w-full text-center dark:text-gray-300">
-                            {{ file.name }}
-                        </span>
-                    </template>
-
-                    <button @click="removeImage(index)" class="absolute top-0.5 right-0.5 ...">✕</button>
-
-                </div>
-            </div>
-        </div>
+        <FilePreview :files="previewFiles" @remove="removeImage" />
 
         <div class="relative w-full">
-            <div v-if="mentionSuggestions.length > 0" class="absolute bg-white dark:bg-gray-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-2xl z-9999 max-h-48 overflow-y-auto 
-                w-fit min-w-50 bottom-full left-8">
-                <div v-for="(user, index) in mentionSuggestions" :key="user.id" @mousedown.prevent="insertMention(user)"
-                    class="flex items-center gap-2 px-4 py-3 cursor-pointer border-b border-gray-100 dark:border-slate-700 last:border-0"
-                    :class="{ 'bg-blue-100 dark:bg-slate-700': index === selectedIndex }">
-                    <CircleAvatar :user="user" :is-disabled="true" size="w-8 h-8" />
-                    <span class="text-xs dark:text-slate-200"
-                        :class="{ 'font-bold text-blue-600': index === selectedIndex }">
-                        @{{ user.username }}
-                    </span>
-                </div>
-            </div>
+            <MentionSuggestions :suggestions="mentionSuggestions" :selected-index="selectedIndex"
+                @select="insertMention" />
 
-            <div v-if="previewLink"
-                class="relative flex items-center w-full max-w-full border rounded-xl overflow-hidden bg-slate-50 dark:bg-gray-900 mt-2 shadow-sm group px-2">
-
-                <div v-if="previewLink.image"
-                    class="w-16 h-16 sm:w-24 sm:h-16 shrink-0 overflow-hidden rounded-lg my-2">
-                    <img :src="previewLink.image" class="w-full h-full object-cover"
-                        @error="(e: any) => e.target.style.display = 'none'" />
-                </div>
-
-                <div class="p-2 flex-1 min-w-0">
-                    <p class="font-bold text-[13px] line-clamp-1 text-slate-800 dark:text-white leading-tight">
-                        {{ previewLink.title || 'No title available' }}
-                    </p>
-
-                    <p v-if="previewLink.description"
-                        class="text-[11px] text-slate-500 dark:text-gray-400 line-clamp-1 mt-0.5 italic">
-                        {{ previewLink.description }}
-                    </p>
-
-                    <div class="flex items-center gap-1 mt-1">
-                        <i class="fa-solid fa-link text-[8px] text-blue-500"></i>
-                        <span class="text-[10px] text-blue-500 truncate font-bold">
-                            {{ formatHostname(previewLink.url) }}
-                        </span>
-                    </div>
-                </div>
-
-                <button @click="previewLink = undefined"
-                    class="absolute top-1 right-1 bg-black/40 text-white rounded-full w-4 h-4 flex items-center justify-center text-[8px] z-10 opacity-0 group-hover:opacity-100 transition">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
+            <LinkPreview v-if="previewLink" :metadata="previewLink" @close="previewLink = undefined" />
 
             <!-- INPUT BAR -->
             <div class="p-1 md:p-3 border-t border-gray-200 dark:border-slate-700 dark:bg-gray-900">
                 <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-800 rounded-2xl px-2 py-0.5 md:px-4 md:py-1.5">
                     <!-- Left icons -->
-                    <div class="flex gap-2 border-b pb-1" :class="[style.border.primary]">
-                        <button @click.stop="toggleEmoji"
-                            class="text-sm md:text-xl text-gray-500 dark:text-gray-400 hover:text-blue-500 transition cursor-pointer">
-                            🙂
-                        </button>
-
-                        <input type="file" ref="fileInput" multiple accept="image/*,video/*" class="hidden"
-                            @change="handleSelectImages" />
-
-                        <button @click="fileInput?.click()"
-                            class="text-sm md:text-xl text-gray-500 dark:text-gray-400 cursor-pointer">
-                            📎
-                        </button>
-
-                        <input type="file" ref="docInput" multiple accept=".doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf,.txt"
-                            class="hidden" @change="handleDirectUploadAndSend" />
-
-                        <button @click="docInput?.click()"
-                            class="text-sm md:text-xl text-gray-500 dark:text-gray-400 hover:text-blue-500 cursor-pointer transition">
-                            <i class="fa-solid fa-file-lines"></i> </button>
-                    </div>
+                    <InputActions @toggle-emoji="toggleEmoji" @select-media="handleSelectImages"
+                        @select-doc="handleDirectUploadAndSend" />
 
                     <!-- Message Input -->
                     <div class="flex gap-2 items-center">
@@ -142,8 +45,6 @@
     </div>
 </template>
 <script setup lang="ts">
-import { style } from '@/assets/tailwindcss';
-import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
 import EmojiPicker from '@/components/Emoji/EmojiPicker.vue';
 import LoadingSpinner from '@/components/Loading/LoadingSpinner.vue';
 import { useDebounce } from '@/composables/useDebounce';
@@ -159,6 +60,11 @@ import { MessageEnum, ModuleEnum, ResourceEnum } from '@/types/enum';
 import { socketSubscribe, sockJSSendMessage } from '@/utils/websocket';
 import { StompSubscription } from '@stomp/stompjs';
 import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
+import LinkPreview from './LinkPreview.vue';
+import MentionSuggestions from './MentionSuggestions.vue';
+import InputActions from './InputActions.vue';
+import FilePreview from './FilePreview.vue';
+import TypingIndicator from './TypingIndicator.vue';
 
 const props = defineProps<{
     scrollContainer: HTMLElement | null
@@ -176,16 +82,14 @@ const inputRef = ref(null)
 const typingUsers = ref<Map<number, any>>(new Map())
 const emojiWrapper = ref<any>(null)
 
-const fileInput = ref<HTMLInputElement | null>(null)
 const selectedRawFiles = ref<File[]>([])
 const previewFiles = ref<{ url: string, type: ResourceEnum, name?: string }[]>([])
 const showEmoji = ref(false)
 const isLoadingSendMessage = ref(false)
 const previewLink = ref<LinkMetadataType | undefined>(undefined)
-const { formatHostname, onPreviewLink } = useMessage()
+const { onPreviewLink } = useMessage()
 const { debounced: showPreviewLink } = useDebounce(async () => {
     previewLink.value = await onPreviewLink(message.value)
-    console.log(previewLink.value)
 }, 500)
 
 watch(() => (inputRef.value as any)?.innerText, () => {
@@ -197,20 +101,6 @@ watch(() => (inputRef.value as any)?.innerText, () => {
 const uploadProgress = ref<Record<number, number>>({});
 
 const mentionSuggestions = ref<any[]>([]);
-
-const docInput = ref<HTMLInputElement | null>(null);
-
-// Hàm hỗ trợ lấy icon nhanh dựa trên đuôi file
-const getFileIcon = (fileName?: string) => {
-    const ext = fileName?.split('.').pop()?.toLowerCase();
-    switch (ext) {
-        case 'doc': case 'docx': return '📄';
-        case 'xls': case 'xlsx': return '📊';
-        case 'ppt': case 'pptx': return '📽️';
-        case 'pdf': return '📕';
-        default: return '📁';
-    }
-};
 
 const handleDirectUploadAndSend = async (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -340,27 +230,39 @@ const { debounced: sendTyping } = useDebounce(() => {
     }, "chat.typing")
 }, 300)
 
-const handleSelectEmoji = (emoji: any) => {
-    const input: any = inputRef.value
-    if (!input) return
+const handleSelectEmoji = (emoji: string) => {
+    const inputElement: any = inputRef.value;
+    if (!inputElement) return;
 
-    const start = input.selectionStart
-    const end = input.selectionEnd
+    // Đảm bảo input đang focus
+    inputElement.focus();
 
-    const text = message.value
+    const selection = window.getSelection();
+    if (!selection || !selection.rangeCount) return;
 
-    // 👉 chèn emoji vào đúng vị trí cursor
-    message.value =
-        text.slice(0, start) +
-        emoji +
-        text.slice(end)
+    const range = selection.getRangeAt(0);
 
-    // 👉 giữ focus + set lại cursor
-    nextTick(() => {
-        input.focus()
-        input.selectionStart = input.selectionEnd = start + emoji.length
-    })
-}
+    // 1. Xóa nội dung đang chọn (nếu có)
+    range.deleteContents();
+
+    // 2. Tạo một Text Node chứa emoji
+    const emojiNode = document.createTextNode(emoji);
+
+    // 3. Chèn emoji vào vị trí con trỏ
+    range.insertNode(emojiNode);
+
+    // 4. Di chuyển con trỏ ra sau emoji vừa chèn
+    range.setStartAfter(emojiNode);
+    range.setEndAfter(emojiNode);
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    // 5. Cập nhật lại giá trị biến message
+    message.value = inputElement.innerText;
+
+    // Đóng picker
+    showEmoji.value = false;
+};
 
 const sendMessage = async () => {
 
@@ -617,59 +519,11 @@ const handleTyping = (data: any) => {
 </script>
 
 <style>
-.dot {
-    width: 4px;
-    height: 4px;
-    background-color: currentColor;
-    border-radius: 50%;
-    animation: bounce 1.4s infinite;
-}
-
-/* delay từng dot */
-.dot:nth-child(1) {
-    animation-delay: 0s;
-}
-
-.dot:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.dot:nth-child(3) {
-    animation-delay: 0.4s;
-}
-
-@keyframes bounce {
-
-    0%,
-    80%,
-    100% {
-        transform: scale(0);
-        opacity: 0.3;
-    }
-
-    40% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
 [contenteditable=true]:empty:before {
     content: attr(placeholder);
     pointer-events: none;
     display: block;
     /* For Firefox */
     color: #9ca3af;
-}
-
-/* Style cho thẻ tag bên trong input */
-.mention-tag {
-    color: #3b82f6;
-    /* Blue-500 */
-    font-weight: bold;
-    background-color: rgba(59, 130, 246, 0.1);
-    padding: 0 4px;
-    border-radius: 4px;
-    user-select: all;
-    /* Chọn cả cụm khi click */
 }
 </style>
