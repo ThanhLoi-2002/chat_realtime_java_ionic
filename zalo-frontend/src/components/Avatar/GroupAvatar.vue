@@ -1,5 +1,5 @@
 <template>
-    <div class="cursor-pointer" :onClick="() => !isDisabled && groupProfileModal?.present()">
+    <div class="cursor-pointer" :onClick="openGroupModal">
         <div v-if="hasConversationAvatar" :class="size ?? 'w-10 h-10'">
             <img :src="conversation.avatar?.secureUrl" class="w-full h-full object-cover rounded-full" />
         </div>
@@ -63,7 +63,7 @@
         <transition name="slide">
             <GroupProfile v-if="view == 'groupInfo'" :conversation="conversation" @update:view="view = $event" />
 
-            <Member v-else-if="view == 'member'" @back="view = 'groupInfo'" :is-show-back-button="true" />
+            <Member v-else-if="view == 'member'" @back="view = 'groupInfo'" :is-show-back-button="true" :members="conversation.members" />
         </transition>
     </Modal>
 </template>
@@ -74,6 +74,7 @@ import { ConversationType } from "@/types/entities";
 import { RANDOM_AVATAR } from "@/utils/constant";
 import { useTranslate } from "@/composables/useTranslate";
 import Modal from "../Modal/Modal.vue";
+import { useConversationStore } from "@/stores/conversation.storage";
 
 const GroupProfile = defineAsyncComponent(() => import('../../views/Chat/component/GroupProfile.vue'));
 const Member = defineAsyncComponent(() => import('../../views/Chat/Info/components/Member.vue'));
@@ -87,6 +88,7 @@ const props = defineProps<{
 const { t } = useTranslate()
 const groupProfileModal = ref()
 const view = ref<'groupInfo' | 'member'>('groupInfo')
+const convStorage = useConversationStore()
 
 // ✅ Kiểm tra xem có avatar của cuộc hội thoại (Group Avatar) không
 const hasConversationAvatar = computed(() => !!props.conversation.avatar?.secureUrl);
@@ -99,4 +101,11 @@ const handleImgError = (e: Event) => {
     const target = e.target as HTMLImageElement;
     target.src = RANDOM_AVATAR;
 };
+
+const openGroupModal = () => {
+    if (!props.isDisabled) {
+        groupProfileModal.value?.present()
+        // convStorage.selectConversation(props.conversation)
+    }
+}
 </script>

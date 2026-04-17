@@ -112,6 +112,7 @@ import MemberManagement from './MemberManagement/MemberManagement.vue'
 
 const props = defineProps<{
     isShowBackButton: boolean
+    members?: MemberType[]
 }>()
 const keyword = ref('')
 const { t } = useTranslate()
@@ -132,8 +133,21 @@ const pages = {
 
 const selectedUser = ref<MemberType | undefined>(undefined)
 
+const memberList = computed(() => {
+    if(props.members) return props.members || []
+    else return convStorage.conversation?.members || []
+})
+
+const filteredMembers = computed(() => {
+    if (!keyword.value) return memberList.value
+
+    return memberList.value.filter(u =>
+        normalizeText(u.username).toLowerCase().includes(normalizeText(keyword.value).toLowerCase())
+    )
+})
+
 const isAdmin = () => {
-    const me = convStorage.conversation?.members.find((m: MemberType) => m.id == userStorage.user?.id)
+    const me = memberList.value.find((m: MemberType) => m.id == userStorage.user?.id)
     return me?.role == MemberRoleEnum.GOLDEN_KEY || me?.role == MemberRoleEnum.SILVER_KEY
 }
 
@@ -158,14 +172,6 @@ const closeMemberManagementModal = () => {
 const goPage = (page: 'addFriend' | 'friendProfile') => {
     pageModal.value = page
 }
-
-const filteredMembers = computed(() => {
-    if (!keyword.value) return convStorage.conversation?.members
-
-    return convStorage.conversation?.members.filter(u =>
-        normalizeText(u.username).toLowerCase().includes(normalizeText(keyword.value).toLowerCase())
-    )
-})
 
 const isFriend = (userId: number) => {
     return friendStorage.friends.some(f => f.id == userId) || userId == userStorage.user?.id

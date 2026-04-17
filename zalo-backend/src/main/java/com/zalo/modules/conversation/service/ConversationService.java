@@ -173,17 +173,10 @@ public class ConversationService implements ConversationInterface {
             List<Long> conversationIds = memberRepo.findCommonConversationIds(userId, Objects.equals(c.getRecipientId(), userId) ? c.getCu() : c.getRecipientId());
             List<Conversation> conversations = conversationRepo.findByIdInAndType(conversationIds, ConversationType.GROUP);
 
-            List<ConversationResponse> conversationResponses = conversations.stream().map(ConversationResponse::new).toList();
+            List<ConversationResponse> conversationResponses = conversations.stream().map(e -> new ConversationResponse(e, "avatar")).toList();
 
             for (ConversationResponse conv : conversationResponses) {
-
-                if (conv.getAvatar() == null) {
-
-                    List<ConversationMember> members = memberRepo.findTop3ByConversationIdOrderByCtDesc(conv.getId());
-
-                    List<MemberResponse> memberResponses = memberService.convertMembersToMemberResponses(members);
-                    conv.setMembers(memberResponses);
-                }
+                conv.setMembers(memberService.getMembers(conv.getId()));
             }
 
             conversationInfo.generalGroup = conversationResponses;
