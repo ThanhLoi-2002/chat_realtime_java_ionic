@@ -4,15 +4,15 @@
     'px-2 py-2',
 
     // Logic cho Background và Text
-    isOwner ? 'bg-blue-900 text-white' : 'bg-white dark:bg-gray-800 dark:text-slate-100',
+    isOwner ? 'bg-blue-400 dark:bg-blue-900 text-white' : 'bg-white dark:bg-gray-800 dark:text-slate-100',
 
     // Logic Padding dựa trên reaction
     message.reactions?.length > 0 ? 'pt-2 pb-4' : 'py-0.5 md:py-2',
 
     // Logic riêng cho Border (Quan trọng)
     (role && role != MemberRoleEnum.MEMBER)
-      ? 'border-blue-900 border' // Nếu có role đặc biệt
-      : (isOwner ? 'border-blue-900' : 'border-slate-300 dark:border-gray-700') // Border mặc định
+      ? 'border-blue-400 dark:border-blue-900 border' // Nếu có role đặc biệt
+      : (isOwner ? 'border-blue-400 dark:border-blue-900' : 'border-slate-300 dark:border-gray-700') // Border mặc định
   ]" :data-id="message.id">
     <!-- USERNAME -->
     <span v-if="message.isFirst && !isOwner" class="text-xs text-slate-400 dark:text-slate-300">
@@ -26,7 +26,7 @@
       </span>
 
       <div v-else class="flex flex-col gap-2">
-        <ReplyingMessage v-if="message.replyToMessage" :replying-message="message.replyToMessage"/>
+        <ReplyingMessage v-if="message.replyToMessage" :replying-message="message.replyToMessage" />
 
         <span :class="isOwner ? 'text-white' : 'text-slate-800 dark:text-slate-100'" v-html="formattedContent"
           @click="handleContentClick">
@@ -101,12 +101,31 @@ let observer: IntersectionObserver | null = null;
 const el = ref<HTMLElement | null>(null);
 const selectedUser = ref<UserType | undefined>(undefined)
 
-const formattedContent = computed(() =>
-  formattedContentWithTag(props.message.content, props.isOwner)
+const formattedContent = computed(() => {
+  // Lấy nội dung đã được xử lý tag từ composable của bạn
+  const content = formattedContentWithTag(props.message.content, props.isOwner);
+
+  // Regex để tìm URL (http, https, www)
+  const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/g;
+
+  // Thay thế URL thành thẻ <a> hoặc <span> có class để handle click
+  // Ở đây dùng class 'chat-url' để tô màu và handle click qua event delegation
+  return content.replace(urlRegex, (url) => {
+    const href = url.startsWith('http') ? url : `https://${url}`;
+    return `<span class="text-blue-400 chat-url cursor-pointer underline break-all" data-url="${href}">${url}</span>`;
+  });
+}
 );
 
 const handleContentClick = (event: MouseEvent) => {
   const target = event.target as HTMLElement;
+
+  // XỬ LÝ CLICK URL (Mới)
+  if (target.classList.contains('chat-url')) {
+    const url = target.getAttribute('data-url');
+    if (url) window.open(url, '_blank');
+    return; // Dừng lại không chạy logic mention bên dưới
+  }
 
   // Kiểm tra xem phần tử bị click có class 'mention-link' hay không
   if (target.classList.contains('mention-link')) {

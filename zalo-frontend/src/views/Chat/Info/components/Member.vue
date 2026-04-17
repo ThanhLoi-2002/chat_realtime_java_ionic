@@ -103,7 +103,7 @@ import { normalizeText } from '@/utils/helper'
 import AddFriendRequestUI from '@/views/Friend/component/AddFriendRequestUI.vue'
 import { computed, onMounted, ref } from 'vue'
 import FriendProfileUI from '../../component/FriendProfileUI.vue'
-import { MemberType, UserType } from '@/types/entities'
+import { MemberType } from '@/types/entities'
 import Key from '@/components/Key/Key.vue'
 import Modal from '@/components/Modal/Modal.vue'
 import AddMember from '../../component/Member/AddMember.vue'
@@ -120,7 +120,6 @@ const emit = defineEmits(['back'])
 const convStorage = useConversationStore()
 const friendStorage = useFriendshipStore()
 const userStorage = useUserStore()
-const showConfirm = ref(false)
 
 const modalRef = ref()
 const addMemberModal = ref()
