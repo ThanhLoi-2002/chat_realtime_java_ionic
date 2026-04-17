@@ -1,7 +1,8 @@
 <template>
 
-    <div class="flex gap-2 items-start relative group max-w-[90%] lg:max-w-[70%]"
-        :class="[isOwner ? 'ml-auto flex-row-reverse' : '', message.reactions?.length > 0 && 'mb-4']" ref="rootRef">
+    <div class="flex gap-2 items-start relative group w-full px-6"
+        :class="[isOwner ? 'ml-auto flex-row-reverse' : '', message.reactions?.length > 0 && 'mb-4']" ref="rootRef"
+        :id="`msg-${message.id}`">
 
         <!-- AVATAR -->
         <div v-if="!isOwner && message.showAvatar" class="relative shrink-0">
@@ -28,7 +29,7 @@
         <!-- ACTIONS -->
         <div class="flex items-center gap-1
          opacity-0 transition my-auto" :class="[message.stt != -1 && 'group-hover:opacity-100']">
-            <button ref="moreBtnRef" @click.stop="toggleMenu"
+            <button ref="moreBtnRef" @click.stop="setReplyingMessage(message)"
                 class="px-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 dark:bg-gray-800 dark:text-white text-center cursor-pointer">
                 <i class="fa-solid fa-quote-right text-[10px] leading-none"></i>
             </button>
@@ -97,6 +98,7 @@ import FileMessage from '../Message/FileMessage.vue';
 const props = defineProps<{
     message: MessageType & any
     roles: Record<number, MemberRoleEnum> | undefined
+    setReplyingMessage: (m: MessageType | null) => void
 }>()
 
 const { t } = useTranslate()

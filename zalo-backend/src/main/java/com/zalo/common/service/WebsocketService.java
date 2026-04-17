@@ -122,16 +122,12 @@ public class WebsocketService {
         realtimeToConversation(conversationId, payload, "/queue/chat.conversation." + conversationId + ".disbandGroup");
     }
 
-//    public void updateGroupAvatarOrName(Conversation conv, String type) {
-//        // type = "updateAvatar", "updateName"
-//        ConversationResponse convResponse = new ConversationResponse(conv, "recipient", "lastMessage", "createdBy", "avatar");
-//
-//        Map<String, Object> payload = new HashMap<>();
-//        payload.put("conversation", convResponse);
-//        payload.put("message", convResponse.getLastMessage());
-//
-//        realtimeToConversation(convResponse.id, payload, "/queue/chat.conversation." + convResponse.id + "." + type);
-//    }
+    public void updateMemberList(Long conversationId, List<MemberResponse> members) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("members", members);
+
+        realtimeToConversation(conversationId, payload, "/queue/chat.conversation." + conversationId + ".updateMemberList");
+    }
 
     public void realtimeToConversation(Long conversationId, Object payload, String destination){
         List<ConversationMember> members = memberRepo.findByConversationId(conversationId);
@@ -149,6 +145,11 @@ public class WebsocketService {
     }
 
     public void broadcastStatus(Long userId, boolean online) {
-        messagingTemplate.convertAndSend("/topic/user.status", (Object) Map.of("userId", userId, "online", online));
+        if(online){
+            System.out.println("Send online truetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetrue");
+        }else{
+            System.out.println("Send online falsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalse");
+        }
+        messagingTemplate.convertAndSend("/topic/user.status." + userId, (Object) Map.of("userId", userId, "online", online));
     }
 }

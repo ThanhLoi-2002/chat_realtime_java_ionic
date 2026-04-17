@@ -7,12 +7,12 @@
     <div class="flex-1 relative overflow-hidden">
         <AddFriendBar />
         <!-- Phần cuộn tin nhắn -->
-        <div ref="scrollContainer" class="h-full overflow-y-auto px-1 pt-2 pb-5 space-y-2 md:p-6" @scroll="scrollMore">
+        <div ref="scrollContainer" class="h-full w-full overflow-y-auto pt-2 pb-5 space-y-2 md:py-6" @scroll="scrollMore">
             <div v-if="messageStorage.isLoading" class="text-center text-gray-400 text-sm py-4">
                 <LoadingSpinner />
             </div>
 
-            <div v-for="msg in messagesWithMeta" :key="msg.id" class="mx-3">
+            <div v-for="msg in messagesWithMeta" :key="msg.id" class="w-full">
                 <div v-if="msg.showTimeSeparator"
                     class="text-center text-[10px] md:text-xs text-slate-500 dark:text-gray-400 my-6 bg-gray-100 dark:bg-slate-700 w-fit mx-auto py-0.5 px-2 rounded-sm">
                     {{ formatSeparatorTime(msg.ct) }}
@@ -20,7 +20,7 @@
 
                 <SystemMessage v-if="msg.contentType === MessageEnum.SYSTEM" :msg="msg" />
 
-                <MessageContainer v-else :message="msg" :roles="roles"
+                <MessageContainer v-else :message="msg" :roles="roles" :setReplyingMessage="setReplyingMessage"
                     v-observe-visibility="(entry: IntersectionObserverEntry) => handleMessageVisible(msg, entry)" />
             </div>
         </div>
@@ -40,7 +40,8 @@
         </button>
     </div>
 
-    <Typing :scrollContainer="scrollContainer" />
+    <Typing :scrollContainer="scrollContainer" :replyingMessage="replyingMessage"
+        :setReplyingMessage="setReplyingMessage" />
 </template>
 <script setup lang="ts">
 import { useTranslate } from '@/composables/useTranslate';
@@ -87,6 +88,12 @@ let subReaction: StompSubscription | undefined
 let sub: StompSubscription | undefined
 
 const emit = defineEmits(['update:isShowInfoSection'])
+
+const replyingMessage = ref<MessageType | null>(null);
+
+const setReplyingMessage = (msg: MessageType | null) => {
+    replyingMessage.value = msg;
+};
 
 const TIME_GAP = 5 * 60 * 1000 // 5 phút
 const LONG_GAP = 60 * 60 * 1000 // 1 giờ
@@ -322,6 +329,10 @@ const resetSubscribe = () => {
     sub = socketSubscribe(`/user/queue/chat.conversation.${convId}.addMembers`, (msg: any) => {
         conversationStorage.addMembersRealtime(JSON.parse(msg.body).members)
     })
+
+    sub = socketSubscribe(`/user/queue/chat.conversation.${convId}.updateMemberList`, (msg: any) => {
+        conversationStorage.updateMemberListRealtime(JSON.parse(msg.body).members)
+    })
 }
 
 onMounted(async () => {
@@ -351,3 +362,19 @@ watch(() => conversationStorage.userLastMessageId, () => {
     unreadMessageId.value = conversationStorage.userLastMessageId
 })
 </script>
+
+<style>
+@keyframes highlight {
+    0% {
+        background-color: rgba(59, 130, 246, 0.5);
+    }
+
+    100% {
+        background-color: transparent;
+    }
+}
+
+.animate-highlight {
+    animation: highlight 2s ease-out;
+}
+</style>

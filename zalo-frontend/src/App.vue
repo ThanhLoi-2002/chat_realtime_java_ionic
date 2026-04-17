@@ -66,11 +66,16 @@ watch(() => window.matchMedia('(prefers-color-scheme: dark)').matches, (prefersD
   }
 })
 
-watch(() => userStorage.user, () => {
-  if (userStorage.user) {
-    connectSocket(getKey(ACCESS_TOKEN) || '')
-  } else {
-    disconnectSocket()
-  }
-}, { immediate: true })
+watch(() => userStorage.user, async (newVal, oldVal) => {
+    if (newVal) {
+        // Nếu trước đó đã có user (đổi user mà không qua bước null)
+        // thì phải ngắt cái cũ trước
+        if (oldVal) {
+            await disconnectSocket();
+        }
+        await connectSocket();
+    } else {
+        await disconnectSocket();
+    }
+}, { immediate: true });
 </script>

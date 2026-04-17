@@ -18,6 +18,7 @@ declare module 'vue' {
     EmojiPicker: typeof import('./src/components/Emoji/EmojiPicker.vue')['default']
     FormInput: typeof import('./src/components/Input/FormInput.vue')['default']
     GroupAvatar: typeof import('./src/components/Avatar/GroupAvatar.vue')['default']
+    ImageOrVideo: typeof import('./src/components/Media/ImageOrVideo.vue')['default']
     IonAlert: typeof import('@ionic/vue')['IonAlert']
     IonApp: typeof import('@ionic/vue')['IonApp']
     IonBackButton: typeof import('@ionic/vue')['IonBackButton']

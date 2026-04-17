@@ -7,16 +7,7 @@
                     class="aspect-square rounded bg-gray-200 dark:bg-slate-700 hover:scale-105 transition cursor-pointer"
                     @click="handlePreviewImage(i)">
 
-                    <div v-if="isVideo(i.secureUrl)" class="relative h-full w-full">
-                        <img :src="i.secureUrl.replace(/\.[^/.]+$/, '.jpg')"
-                            class="w-full h-full object-cover opacity-80" />
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <i class="fa-solid fa-circle-play text-white text-3xl shadow-lg"></i>
-                        </div>
-                    </div>
-
-                    <img v-else :src="i.secureUrl"
-                        class="aspect-square rounded bg-gray-200 dark:bg-slate-700 hover:scale-105 transition cursor-pointer" />
+                    <image-or-video :media="i" />
                 </div>
             </div>
 
@@ -30,7 +21,7 @@
             <file-container v-for="(media, index) in messStorage.files.slice(0, 4)" :key="index" :media="media" />
 
             <ion-button class="btn mt-2 mx-auto w-full normal-case" @click="goTo('storage/file')">{{ t("seeAll")
-            }}</ion-button>
+                }}</ion-button>
         </collapse>
 
         <!-- LINK -->
@@ -39,7 +30,7 @@
             <link-container v-for="(link, index) in messStorage.links.slice(0, 4)" :key="index" :message="link" />
 
             <ion-button class="btn mt-2 mx-auto w-full normal-case" @click="goTo('storage/link')">{{ t("seeAll")
-            }}</ion-button>
+                }}</ion-button>
         </section>
 
 
@@ -55,10 +46,9 @@ import { MessageEnum } from '@/types/enum';
 import { onMounted, reactive, watch } from 'vue';
 import FileContainer from './FileContainer.vue';
 import Collapse from '@/components/collapse/Collapse.vue';
-import { useMedia } from '@/composables/useMedia';
 import LinkContainer from './LinkContainer.vue';
+import ImageOrVideo from '@/components/Media/ImageOrVideo.vue';
 
-const { isVideo } = useMedia()
 const emit = defineEmits<{
     (e: 'update:currentView', value: string): void
 }>()
@@ -84,7 +74,7 @@ const fetchImages = () => {
     const options: MessageFilter = {
         conversationId: convStorage.conversation!.id,
         limit: 8,
-        lastId: messStorage.images.at(-1)?.id ?? undefined,
+        lastId: messStorage.images.at(-1)?.moduleId ?? undefined,
         contentType: MessageEnum.IMAGE
     }
     messStorage.getImageMessages(options)
@@ -94,7 +84,7 @@ const fetchFiles = () => {
     const options: MessageFilter = {
         conversationId: convStorage.conversation!.id,
         limit: 4,
-        lastId: messStorage.files.at(-1)?.id ?? undefined,
+        lastId: messStorage.files.at(-1)?.moduleId ?? undefined,
         contentType: MessageEnum.FILE
     }
     messStorage.getFileMessages(options)
@@ -112,17 +102,11 @@ const fetchLinks = () => {
 }
 
 onMounted(() => {
-    if (messStorage.images.length == 0 && convStorage.conversation) {
-        fetchImages()
-    }
+    fetchImages()
 
-    if (messStorage.files.length == 0 && convStorage.conversation) {
-        fetchFiles()
-    }
+    fetchFiles()
 
-    if (messStorage.links.length == 0 && convStorage.conversation) {
-        fetchLinks()
-    }
+    fetchLinks()
 })
 
 watch(() => convStorage.conversation?.id, () => {

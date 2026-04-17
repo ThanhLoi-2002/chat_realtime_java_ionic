@@ -40,11 +40,11 @@
 
             <div v-for="user in filteredMembers" :key="user.id"
                 class="flex items-center gap-3 p-2 rounded-lg transition cursor-pointer"
-                :class="[style.text.secondary]">
+                :class="[style.text.secondary, isAdmin() && style.bg.hover]" @click="isAdmin() && openMemberManagementModal(user)">
 
                 <div class="relative">
                     <!-- AVATAR -->
-                    <CircleAvatar :user="user" />
+                    <CircleAvatar :user="user" :is-disabled="isAdmin()" />
 
                     <Key :role="user.role" />
                 </div>
@@ -60,12 +60,6 @@
                         {{ t('addedBy') }}: {{ user.addBy.username }}
                     </div>
                 </div>
-
-                <button v-if="userStorage.user?.id != user.id && isAdmin(userStorage.user!) && !isAdmin(user)"
-                    class="bg-red-500 hover:bg-red-600 text-xs px-3 py-1 rounded-md cursor-pointer"
-                    @click="onSelectKickMember(user)">
-                    {{ t('kickMember') }}
-                </button>
 
                 <!-- ACTION -->
                 <button v-if="!isFriend(user.id)"
@@ -91,8 +85,10 @@
             <AddMember />
         </Modal>
 
-        <ConfirmModal v-model:showConfirm="showConfirm" :onOk="onKickMember" :message="t('kickMember')"
-            :header="t('kickMember')" />
+        <Modal ref="memberManagementModal" :title="t('memberManagement')">
+            <MemberManagement v-if="selectedUser" :user="selectedUser"
+                :setSelectedUser="setSelectedUser" :closeMemberManagementModal="closeMemberManagementModal" />
+        </Modal>
     </div>
 </template>
 
@@ -111,8 +107,8 @@ import { MemberType, UserType } from '@/types/entities'
 import Key from '@/components/Key/Key.vue'
 import Modal from '@/components/Modal/Modal.vue'
 import AddMember from '../../component/Member/AddMember.vue'
-import ConfirmModal from '@/components/Modal/ConfirmModal.vue'
 import { MemberRoleEnum } from '@/types/enum'
+import MemberManagement from './MemberManagement/MemberManagement.vue'
 
 const props = defineProps<{
     isShowBackButton: boolean
@@ -127,23 +123,36 @@ const showConfirm = ref(false)
 
 const modalRef = ref()
 const addMemberModal = ref()
+const memberManagementModal = ref()
 const pageModal = ref<'addFriend' | 'friendProfile'>('addFriend')
 const pages = {
     addFriend: AddFriendRequestUI,
     friendProfile: FriendProfileUI
 }
 
-const selectedUser = ref<UserType | undefined>(undefined)
+const selectedUser = ref<MemberType | undefined>(undefined)
 
-const isAdmin = (user: UserType) => {
-    const member = convStorage.conversation?.members.find((m: MemberType) => m.id == user.id)
-    return member?.role == MemberRoleEnum.GOLDEN_KEY || member?.role == MemberRoleEnum.SILVER_KEY
+const isAdmin = () => {
+    const me = convStorage.conversation?.members.find((m: MemberType) => m.id == userStorage.user?.id)
+    return me?.role == MemberRoleEnum.GOLDEN_KEY || me?.role == MemberRoleEnum.SILVER_KEY
 }
 
-const openModal = (user: UserType) => {
-    selectedUser.value = user
+const openModal = (user: MemberType) => {
+    setSelectedUser(user)
     goPage('addFriend')
     modalRef.value?.present()
+}
+
+const openMemberManagementModal = (user: MemberType) => {
+    if (user.id != userStorage.user?.id) {
+        setSelectedUser(user)
+        memberManagementModal.value?.present()
+    }
+}
+
+const closeMemberManagementModal = () => {
+    setSelectedUser()
+    memberManagementModal.value?.dismiss()
 }
 
 const goPage = (page: 'addFriend' | 'friendProfile') => {
@@ -162,16 +171,8 @@ const isFriend = (userId: number) => {
     return friendStorage.friends.some(f => f.id == userId) || userId == userStorage.user?.id
 }
 
-const onSelectKickMember = (user: UserType) => {
+const setSelectedUser = (user?: MemberType) => {
     selectedUser.value = user
-    showConfirm.value = true
-}
-
-const onKickMember = async () => {
-    if (selectedUser.value) {
-        const success = await convStorage.kickMember(selectedUser.value?.id)
-        if (success) showConfirm.value = false
-    }
 }
 
 onMounted(() => {

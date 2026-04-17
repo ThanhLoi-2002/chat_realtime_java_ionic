@@ -16,27 +16,30 @@
             <LinkPreview v-if="previewLink" :metadata="previewLink" @close="previewLink = undefined" />
 
             <!-- INPUT BAR -->
-            <div class="p-1 md:p-3 border-t border-gray-200 dark:border-slate-700 dark:bg-gray-900">
+            <div class="w-full p-1 md:p-3 border-t border-gray-200 dark:border-slate-700 dark:bg-gray-900">
                 <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-800 rounded-2xl px-2 py-0.5 md:px-4 md:py-1.5">
                     <!-- Left icons -->
                     <InputActions @toggle-emoji="toggleEmoji" @select-media="handleSelectImages"
                         @select-doc="handleDirectUploadAndSend" />
 
                     <!-- Message Input -->
-                    <div class="flex gap-2 items-center">
-                        <div class="relative flex-1 bg-gray-100 dark:bg-gray-800 rounded-2xl px-4 py-2">
-                            <div ref="inputRef" contenteditable="true"
-                                class="outline-none text-xs md:text-base dark:text-slate-200 min-h-[1.5em] max-h-32 overflow-y-auto wrap-break-word"
-                                :placeholder="t('typeMessage')" @input="onInput" @keydown="onKeyDown">
+                    <div class="flex flex-col w-full gap-2 items-center">
+                        <ReplyingMessage v-if="replyingMessage" :replyingMessage="replyingMessage" :setReplyingMessage="setReplyingMessage"/>
+
+                        <div class="flex gap-2 w-full">
+                            <div class="relative flex-1 bg-gray-100 dark:bg-gray-800 rounded-2xl px-1 py-2">
+                                <div ref="inputRef" contenteditable="true"
+                                    class="outline-none text-xs md:text-base dark:text-slate-200 min-h-[1.5em] max-h-[3em] overflow-y-auto wrap-break-word"
+                                    :placeholder="t('typeMessage')" @input="onInput" @keydown="onKeyDown" />
                             </div>
-                        </div>
 
-                        <div v-if="isLoadingSendMessage">
-                            <LoadingSpinner />
-                        </div>
+                            <div v-if="isLoadingSendMessage">
+                                <LoadingSpinner />
+                            </div>
 
-                        <base-button v-else icon="fa-solid fa-paper-plane text-blue-500 text-xs md:text-xl"
-                            @click="sendMessage" class="ml-1" />
+                            <base-button v-else icon="fa-solid fa-paper-plane text-blue-500 text-xs md:text-xl"
+                                @click="sendMessage" class="ml-1" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -65,9 +68,13 @@ import MentionSuggestions from './MentionSuggestions.vue';
 import InputActions from './InputActions.vue';
 import FilePreview from './FilePreview.vue';
 import TypingIndicator from './TypingIndicator.vue';
+import { MessageType, UserType } from '@/types/entities';
+import ReplyingMessage from '../Message/ReplyingMessage.vue';
 
 const props = defineProps<{
     scrollContainer: HTMLElement | null
+    replyingMessage: MessageType | null
+    setReplyingMessage: (m: MessageType | null) => void
 }>()
 
 const { t } = useTranslate()
@@ -88,13 +95,13 @@ const showEmoji = ref(false)
 const isLoadingSendMessage = ref(false)
 const previewLink = ref<LinkMetadataType | undefined>(undefined)
 const { onPreviewLink } = useMessage()
+
 const { debounced: showPreviewLink } = useDebounce(async () => {
     previewLink.value = await onPreviewLink(message.value)
 }, 500)
 
 watch(() => (inputRef.value as any)?.innerText, () => {
     showPreviewLink()
-    console.log("change")
 })
 
 // State lưu trữ tiến độ upload để hiển thị UI
@@ -301,7 +308,8 @@ const sendMessage = async () => {
         conversationId: conversationStorage.conversation?.id,
         contentType: filesData && filesData.length > 1 ? MessageEnum.IMAGE : MessageEnum.TEXT,
         attachments: filesData ? filesData : [],
-        linkMetadata: previewLink.value
+        linkMetadata: previewLink.value,
+        replyToId: props.replyingMessage?.id
     }
 
     const success = await messageStorage.sendMessage(payload);
@@ -314,6 +322,7 @@ const sendMessage = async () => {
         message.value = ''; // Reset biến message
         uploadProgress.value = {};
         previewLink.value = undefined
+        props.setReplyingMessage(null)
         scrollToBottom(props.scrollContainer, true);
     }
 
@@ -430,7 +439,7 @@ const checkMention = () => {
 };
 
 // 3. Hàm chèn tên khi click vào danh sách
-const insertMention = (user: any) => {
+const insertMention = (user: UserType) => {
     const selection = window.getSelection();
     if (!selection || !selection.rangeCount) return;
 
@@ -456,7 +465,7 @@ const insertMention = (user: any) => {
         tagNode.style.color = '#3b82f6'; // Thêm màu trực tiếp nếu ko muốn dùng CSS file
         tagNode.style.fontWeight = 'bold';
 
-        tagNode.setAttribute('data-user-id', user.id);
+        tagNode.setAttribute('data-user-id', user.id.toString());
 
         // 3. Chèn vào văn bản
         range.insertNode(tagNode);
@@ -476,6 +485,46 @@ const insertMention = (user: any) => {
     mentionSuggestions.value = []; // Phải clear list
     selectedIndex.value = 0;       // Reset index
 };
+
+const insertReplyMention = (user: UserType) => {
+    const inputElement: any = inputRef.value;
+    if (!inputElement) return;
+
+    // 1. Focus vào input
+    inputElement.focus();
+
+    // 2. Tạo thẻ tag (giống định dạng bạn đang dùng cho @mention)
+    const tagNode = document.createElement('span');
+    tagNode.className = 'mention-tag';
+    tagNode.contentEditable = 'false';
+    tagNode.innerText = `@${user.username}`;
+    tagNode.style.color = '#3b82f6';
+    tagNode.style.fontWeight = 'bold';
+    tagNode.setAttribute('data-user-id', user.id.toString());
+
+    // 3. Chèn vào đầu input hoặc vị trí con trỏ
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        
+        // Nếu input đang trống, chèn vào đầu. Nếu có chữ, chèn tại vị trí caret.
+        range.insertNode(tagNode);
+        
+        // Tạo dấu cách sau tag
+        const space = document.createTextNode('\u00A0');
+        tagNode.after(space);
+
+        // Đưa con trỏ ra sau dấu cách để người dùng gõ tiếp
+        range.setStartAfter(space);
+        range.setEndAfter(space);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+};
+
+watch(() => props.replyingMessage, () => {
+    if(props.replyingMessage && props.replyingMessage.sender.id != userStorage.user?.id) insertReplyMention(props.replyingMessage.sender)
+})
 
 const onInput = (e: Event) => {
     const target = e.target as HTMLElement;

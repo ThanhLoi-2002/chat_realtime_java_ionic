@@ -94,4 +94,19 @@ public class WebSocketEventListener {
         }
         System.out.println("Send queue: /queue/chat.typing." + conversationId);
     }
+
+    @MessageMapping("/check.userOnline")
+    public void checkUserOnline(Map<String, Object> payload) {
+        long recipientId = Long.parseLong(payload.get("recipientId").toString());
+
+        Set<String> recipientSessions = userOnlineStorage.getSessions(recipientId);
+        websocketService.broadcastStatus(recipientId, !recipientSessions.isEmpty());
+//
+//        messagingTemplate.convertAndSend(
+//                "/queue/userOnline." + recipientId,
+//                (Object) Map.of(
+//                        "isOnline", !recipientSessions.isEmpty()
+//                )
+//        );
+    }
 }

@@ -111,6 +111,12 @@
                         <span class="ml-1">{{ t(msg.content) }}</span>
                     </template>
 
+                    <SystemChangeKeyContent v-else-if="
+                        systemType == SystemMetadataEnum.ORDAIN_SILVER_KEY ||
+                        systemType == SystemMetadataEnum.REVOKE_SILVER_KEY ||
+                        systemType == SystemMetadataEnum.TRANSFER_GOLDEN_KEY
+                    " :msg="msg" :isMeAction="isMeAction" :openProfile="openProfile" />
+
                     <template v-else>
                         {{ t(msg.content) }}
                     </template>
@@ -134,6 +140,7 @@ import { MessageType, UserType } from "@/types/entities";
 import { SystemMetadataEnum } from "@/types/enum";
 import { style } from "@/assets/tailwindcss";
 import CircleAvatar from "@/components/Avatar/CircleAvatar.vue";
+import SystemChangeKeyContent from "./SystemChangeKeyContent.vue";
 
 const props = defineProps<{
     msg: MessageType;

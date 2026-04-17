@@ -1,6 +1,7 @@
 package com.zalo.modules.conversation.service;
 
 import com.zalo.common.base.BaseEntity;
+import com.zalo.common.configuration.json.G;
 import com.zalo.common.filter.ConversationFilter;
 import com.zalo.common.filter.UserFilter;
 import com.zalo.modules.conversation.dto.IsMentionDto;
@@ -15,6 +16,7 @@ import com.zalo.modules.conversation.dto.respone.ConversationResponse;
 import com.zalo.modules.conversation.dto.respone.MemberResponse;
 import com.zalo.modules.conversation.entities.ConversationType;
 import com.zalo.modules.conversation.entities.MemberRole;
+import com.zalo.modules.message.entity.MessageType;
 import com.zalo.modules.message.entity.SystemMessageType;
 import com.zalo.modules.conversation.entities.Conversation;
 import com.zalo.modules.conversation.entities.ConversationMember;
@@ -153,6 +155,10 @@ public class ConversationService implements ConversationInterface {
 
             conv.setUnread(mapUnread.getOrDefault(c.getId(), 0L));
             conv.setIsMention(mapIsMention.getOrDefault(c.getId(), 0) == 1);
+
+            if (c.getLastMessage().getContentType() == MessageType.SYSTEM) {
+                systemMessageInterface.getSystemMetadata(c.getLastMessage(), conv.getLastMessage());
+            }
 
             return conv;
         });
@@ -350,5 +356,98 @@ public class ConversationService implements ConversationInterface {
         );
 
         return data.getLastReadMessageId();
+    }
+
+    public void ordainSilverKey(Long conversationId, Long userId, Long memberId) {
+        ConversationMember member = memberRepo.findByConversationIdAndUserId(conversationId, memberId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
+
+        if (member.getRole() == MemberRole.GOLDEN_KEY) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot ordain the owner");
+        }
+
+        member.setRole(MemberRole.SILVER_KEY);
+        memberRepo.save(member);
+
+        CreateSystemMessageRequest dto = new CreateSystemMessageRequest();
+        dto.conversationId = conversationId;
+        dto.content = "haveRecentAppointedGroupDeputyTo";
+        dto.senderId = userId;
+        dto.systemMessageType = SystemMessageType.ORDAIN_SILVER_KEY;
+        dto.info = Map.of(
+                "userId", memberId
+        );
+
+        systemMessageInterface.createSystemMessage(dto);
+
+        websocketService.updateMemberList(conversationId, memberService.getMembers(conversationId));
+    }
+
+    /**
+     * 2. Tước Silver Key (Hạ cấp xuống MEMBER)
+     */
+    public void revokeSilverKey(Long conversationId, Long userId, Long memberId) {
+        ConversationMember member = memberRepo.findByConversationIdAndUserId(conversationId, memberId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
+
+        if (member.getRole() == MemberRole.GOLDEN_KEY) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot revoke role from owner");
+        }
+
+        member.setRole(MemberRole.MEMBER);
+        memberRepo.save(member);
+
+        CreateSystemMessageRequest dto = new CreateSystemMessageRequest();
+        dto.conversationId = conversationId;
+        dto.content = "haveRecentRevokeGroupDeputyOf";
+        dto.senderId = userId;
+        dto.systemMessageType = SystemMessageType.REVOKE_SILVER_KEY;
+        dto.info = Map.of(
+                "userId", memberId
+        );
+
+        systemMessageInterface.createSystemMessage(dto);
+
+        websocketService.updateMemberList(conversationId, memberService.getMembers(conversationId));
+    }
+
+    /**
+     * 3. Chuyển nhượng nhóm trưởng (Transfer GoldenKey)
+     */
+    public void transferGoldenKey(Long conversationId, Long userId, Long memberId) {
+        Conversation conversation = conversationRepo.findById(conversationId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
+
+        Long oldOwnerId = conversation.getOwnerId();
+
+        // 1. Cập nhật vai trò cho chủ cũ (xuống MEMBER hoặc giữ ADMIN tùy bạn)
+        ConversationMember oldOwnerMember = memberRepo.findByConversationIdAndUserId(conversationId, oldOwnerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
+        oldOwnerMember.setRole(MemberRole.MEMBER);
+
+        // 2. Cập nhật vai trò cho chủ mới (lên OWNER)
+        ConversationMember newOwnerMember = memberRepo.findByConversationIdAndUserId(conversationId, memberId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
+        newOwnerMember.setRole(MemberRole.GOLDEN_KEY);
+
+        // 3. Cập nhật ownerId trong bảng Conversation
+        conversation.setOwnerId(memberId);
+
+        memberRepo.save(oldOwnerMember);
+        memberRepo.save(newOwnerMember);
+        conversationRepo.save(conversation);
+
+        CreateSystemMessageRequest dto = new CreateSystemMessageRequest();
+        dto.conversationId = conversationId;
+        dto.content = "haveRecentTransferGroupLeaderTo";
+        dto.senderId = userId;
+        dto.systemMessageType = SystemMessageType.TRANSFER_GOLDEN_KEY;
+        dto.info = Map.of(
+                "userId", memberId
+        );
+
+        systemMessageInterface.createSystemMessage(dto);
+
+        websocketService.updateMemberList(conversationId, memberService.getMembers(conversationId));
     }
 }

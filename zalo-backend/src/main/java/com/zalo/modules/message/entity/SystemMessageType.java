@@ -8,5 +8,9 @@ public enum SystemMessageType {
     LEAVE_GROUP,
     REMOVE_MEMBER,
 
+    ORDAIN_SILVER_KEY,
+    REVOKE_SILVER_KEY,
+    TRANSFER_GOLDEN_KEY,
+
     ADD_FRIEND
 }

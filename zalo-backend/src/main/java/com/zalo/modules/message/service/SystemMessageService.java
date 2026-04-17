@@ -61,7 +61,8 @@ public class SystemMessageService implements SystemMessageInterface {
 
             case UPDATE_GROUP_AVATAR -> metadata.setGroupAvatar((Media) dto.info.get("groupAvatar"));
 
-            case REMOVE_MEMBER -> metadata.setUserId((Long) dto.info.get("userId"));
+            case REMOVE_MEMBER, ORDAIN_SILVER_KEY, REVOKE_SILVER_KEY, TRANSFER_GOLDEN_KEY ->
+                    metadata.setUserId((Long) dto.info.get("userId"));
 
 //            default ->
 //                    throw new IllegalArgumentException("Unsupported system message type: " + dto.systemMessageType);
@@ -118,7 +119,7 @@ public class SystemMessageService implements SystemMessageInterface {
                 metadataResponse.setGroupAvatar(new MediaResponse(e.getSystemMetadata().getGroupAvatar()));
             }
 
-            if (e.getSystemMetadata().getType() == SystemMessageType.REMOVE_MEMBER) {
+            if (e.getSystemMetadata().getUserId() != null) {
                 List<User> users = userService.findByIdIn(List.of(e.getSystemMetadata().getUserId()));
                 metadataResponse.setUser(new UserResponse(users.get(0)));
             }

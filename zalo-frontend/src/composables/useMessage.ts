@@ -4,7 +4,8 @@ export function useMessage() {
     const messStorage = useMessageStore()
 
     //format text with tag
-    const formattedContentWithTag = (content: string, isOwner: boolean) => {
+    const formattedContentWithTag = (content: string | undefined, isOwner: boolean) => {
+        if (!content) return ''
         // 1. Bảo mật: Escape HTML để tránh XSS
         const div = document.createElement('div');
         div.textContent = content;
@@ -54,7 +55,41 @@ export function useMessage() {
         }
     }
 
+    const jumpToMessage = async (messageId: number) => {
+        // 1. Tìm trong danh sách hiện tại
+        const element = document.getElementById(`msg-${messageId}`);
+
+        if (element) {
+            // Nếu tìm thấy ngay
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            highlightMessage(element);
+        } else {
+            // 2. Nếu chưa load, gọi API lấy data xung quanh ID đó
+            // isLoading.value = true;
+            // try {
+            //     // Giả sử hàm này gọi API nạp lại messageStore
+            //     await messageStorage.fetchMessagesAround(messageId);
+
+            //     // Đợi Vue render lại DOM
+            //     await nextTick();
+
+            //     const newElement = document.getElementById(`msg-${messageId}`);
+            //     if (newElement) {
+            //         newElement.scrollIntoView({ behavior: 'auto', block: 'center' });
+            //         highlightMessage(newElement);
+            //     }
+            // } finally {
+            //     isLoading.value = false;
+            // }
+        }
+    };
+
+    const highlightMessage = (el: HTMLElement) => {
+        el.classList.add('animate-highlight');
+        setTimeout(() => el.classList.remove('animate-highlight'), 2000);
+    };
+
     return {
-        formattedContentWithTag, stripMentionTag, onPreviewLink, formatHostname
+        formattedContentWithTag, stripMentionTag, onPreviewLink, formatHostname, jumpToMessage, highlightMessage
     }
 }

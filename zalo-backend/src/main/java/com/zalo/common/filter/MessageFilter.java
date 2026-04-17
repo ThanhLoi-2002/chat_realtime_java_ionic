@@ -37,10 +37,10 @@ public class MessageFilter extends BaseFilter {
                     cb.lessThan(root.get("id"), lastId));
         }
 
-        if (stt != null) {
-            specs.add((root, query, cb) ->
-                    cb.equal(root.get("stt"), stt));
-        }
+//        if (stt != null) {
+//            specs.add((root, query, cb) ->
+//                    cb.equal(root.get("stt"), stt));
+//        }
 
         if (contentType != null) {
             if (contentType == MessageType.IMAGE) {

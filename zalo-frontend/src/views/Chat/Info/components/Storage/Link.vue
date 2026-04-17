@@ -36,7 +36,7 @@
                 </div>
 
                 <!-- ITEMS -->
-                <div class="space-y-3">
+                <div class="space-y-1">
                     <LinkContainer v-for="item in group.items" :key="item.id" :message="item" />
                 </div>
 
@@ -47,7 +47,6 @@
 </template>
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useDateTime } from '@/composables/useDateTime'
 import { useMedia } from '@/composables/useMedia';
 import { useMessageStore } from '@/stores/message.storage';
 import { useConversationStore } from '@/stores/conversation.storage';

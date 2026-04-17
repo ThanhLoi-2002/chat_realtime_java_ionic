@@ -1,5 +1,5 @@
 import { FileType, LinkMetadataType } from "./common"
-import { ConversationEnum, DeliveryStatusEnum, FriendshipStatusEnum, MemberRoleEnum, MessageEnum, ModuleEnum, ReactionEnum, SystemMetadataEnum } from "./enum"
+import { ConversationEnum, DeliveryStatusEnum, FriendshipStatusEnum, MemberRoleEnum, MessageEnum, ModuleEnum, ReactionEnum, ResourceEnum, SystemMetadataEnum } from "./enum"
 
 export type BaseType = {
     id: number
@@ -102,10 +102,10 @@ export type MediaType = BaseType & {
     publicId: string
     moduleType: ModuleEnum
     moduleId: number
-    resourceType: string
+    resourceType: ResourceEnum
     format: string
     bytes: number
     width: number
     height: number
-    messageContent?: string
+    messageContent?: string// content của message 
 }

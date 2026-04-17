@@ -1,6 +1,6 @@
 <template>
   <div ref="el" :class="[
-    'text-sm flex flex-col relative min-w-12 px-2 md:px-4 border rounded-lg',
+    'text-sm flex flex-col relative min-w-12 px-2 md:px-3 border rounded-lg',
     'px-2 py-2',
 
     // Logic cho Background và Text
@@ -26,6 +26,8 @@
       </span>
 
       <div v-else class="flex flex-col gap-2">
+        <ReplyingMessage v-if="message.replyToMessage" :replying-message="message.replyToMessage"/>
+
         <span :class="isOwner ? 'text-white' : 'text-slate-800 dark:text-slate-100'" v-html="formattedContent"
           @click="handleContentClick">
         </span>
@@ -68,7 +70,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import { style } from "@/assets/tailwindcss";
 import { useDateTime } from "@/composables/useDateTime";
 import { useTranslate } from "@/composables/useTranslate";
 import { ref, onMounted, onBeforeUnmount, computed, nextTick } from "vue";
@@ -80,6 +81,7 @@ import { MemberType, UserType } from "@/types/entities";
 import { useConversationStore } from "@/stores/conversation.storage";
 import { toast } from "@/utils/toast";
 import { useMessage } from "@/composables/useMessage";
+import ReplyingMessage from "./ReplyingMessage.vue";
 
 const props = defineProps<{
   setBubbleRef?: (el: HTMLElement | null) => void;
@@ -112,7 +114,7 @@ const handleContentClick = (event: MouseEvent) => {
 
     // Tìm thông tin user trong list members của cuộc trò chuyện
     const foundMember = convStorage.conversation?.members?.find(
-      (m: MemberType) => m.id.toString() === userId
+      (m: MemberType) => m.id.toString() == userId
     );
 
     if (foundMember) {

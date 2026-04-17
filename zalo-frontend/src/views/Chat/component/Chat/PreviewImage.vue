@@ -10,43 +10,57 @@
 
     <div class="flex flex-1 overflow-hidden mt-12">
 
-      <div v-if="isVideo(messStorage.previewImage!.secureUrl)" class="relative h-full w-full">
-        <video :src="messStorage.previewImage!.secureUrl" class="w-full h-full object-contain bg-black" controls
-          autoplay></video>
-      </div>
+      <div class="relative w-full">
+        <div class="flex flex-col gap-2 absolute top-1/2 right-0">
+          <button v-if="currentIndex > 0" @click="navigateImage(-1)"
+            class="z-60 w-10 h-10 flex items-center justify-center rounded-full bg-slate-800 hover:bg-slate-700 text-white transition-all group cursor-pointer">
+            <i class="fa fa-chevron-up text-2xl group-hover:scale-110" />
+          </button>
 
-      <div v-else class="flex-1 flex items-center justify-center p-6 relative overflow-hidden" @click.stop
-        @wheel.prevent="handleWheel">
-        <img :src="messStorage.previewImage?.secureUrl" @dblclick="handleDoubleClick"
-          class="max-w-[90%] max-h-[90%] object-contain shadow-2xl transition-transform duration-200 ease-out cursor-zoom-in"
-          :style="{
-            transform: `scale(${scale})`,
-            transformOrigin: transformOrigin
-          }" />
-
-        <div class="absolute right-2 md:right-4 z-50 space-y-2">
+          <button v-if="currentIndex < imageList.length - 1" @click="navigateImage(1)"
+            class="z-60 w-10 h-10 flex items-center justify-center rounded-full bg-slate-800 hover:bg-slate-700 text-white transition-all group cursor-pointer">
+            <i class="fa fa-chevron-down text-2xl group-hover:scale-110" />
+          </button>
         </div>
 
-        <div
-          class="absolute top-0 left-1/2 -translate-x-1/2 flex items-center gap-4 px-4 py-2 bg-black/50 backdrop-blur-md rounded-full border border-white/10 z-50">
-          <button @click="zoom(-0.5)" class="text-white hover:text-blue-400 p-1 transition-colors cursor-pointer">
-            <i class="fa fa-minus-circle text-lg" />
-          </button>
+        <div v-if="isVideo(messStorage.previewImage!.secureUrl)" class="relative h-full w-full">
+          <video :src="messStorage.previewImage!.secureUrl" class="w-full h-full object-contain bg-black" controls
+            autoplay></video>
+        </div>
 
-          <span class="text-white text-xs font-mono min-w-10 text-center">
-            {{ Math.round(scale * 100) }}%
-          </span>
+        <div v-else class="flex-1 flex items-center justify-center p-6 relative overflow-hidden h-full w-full"
+          @click.stop @wheel.prevent="handleWheel">
+          <img :src="messStorage.previewImage?.secureUrl" @dblclick="handleDoubleClick"
+            class="max-w-[90%] max-h-[90%] object-contain shadow-2xl transition-transform duration-200 ease-out cursor-zoom-in"
+            :style="{
+              transform: `scale(${scale})`,
+              transformOrigin: transformOrigin
+            }" />
 
-          <button @click="zoom(0.5)" class="text-white hover:text-blue-400 p-1 transition-colors cursor-pointer">
-            <i class="fa fa-plus-circle text-lg" />
-          </button>
+          <div class="absolute right-2 md:right-4 z-50 space-y-2">
+          </div>
 
-          <div class="w-px h-4 bg-white/20 mx-1"></div>
+          <div
+            class="absolute top-0 left-1/2 -translate-x-1/2 flex items-center gap-4 px-4 py-2 bg-black/50 backdrop-blur-md rounded-full border border-white/10 z-50">
+            <button @click="zoom(-0.5)" class="text-white hover:text-blue-400 p-1 transition-colors cursor-pointer">
+              <i class="fa fa-minus-circle text-lg" />
+            </button>
 
-          <button @click="scale = 1" class="text-white hover:text-red-400 p-1 transition-colors cursor-pointer"
-            title="Reset">
-            <i class="fa fa-undo text-sm" />
-          </button>
+            <span class="text-white text-xs font-mono min-w-10 text-center">
+              {{ Math.round(scale * 100) }}%
+            </span>
+
+            <button @click="zoom(0.5)" class="text-white hover:text-blue-400 p-1 transition-colors cursor-pointer">
+              <i class="fa fa-plus-circle text-lg" />
+            </button>
+
+            <div class="w-px h-4 bg-white/20 mx-1"></div>
+
+            <button @click="scale = 1" class="text-white hover:text-red-400 p-1 transition-colors cursor-pointer"
+              title="Reset">
+              <i class="fa fa-undo text-sm" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -150,8 +164,8 @@ const navigateImage = (step: number) => {
 // Cập nhật handleKey để dùng phím mũi tên
 const handleKey = (e: KeyboardEvent) => {
   if (e.key === "Escape") closePreview();
-  if (e.key === "ArrowLeft") navigateImage(-1); // Phím mũi tên trái
-  if (e.key === "ArrowRight") navigateImage(1); // Phím mũi tên phải
+  if (e.key === "ArrowUp") navigateImage(-1);
+  if (e.key === "ArrowDown") navigateImage(1);
 };
 
 const handleScroll = () => {
@@ -160,7 +174,7 @@ const handleScroll = () => {
     const options: MessageFilter = {
       conversationId: convStorage.conversation.id,
       limit: 20,
-      lastId: messStorage.images.at(-1)?.id ?? undefined,
+      lastId: messStorage.images.at(-1)?.moduleId ?? undefined,
       contentType: MessageEnum.IMAGE,
     };
     onScroll(scroll.value, () => messStorage.getImageMessages(options));

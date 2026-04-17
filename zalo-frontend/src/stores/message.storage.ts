@@ -96,7 +96,9 @@ export const useMessageStore = defineStore('message', {
                     this.addImage(i)
                 })
 
-                if (totalElements <= size) this.imagesHasMore = false
+                if (totalElements <= size) {
+                    this.imagesHasMore = false
+                }
             } catch (e: any) {
                 toast({
                     color: "danger",
@@ -313,6 +315,8 @@ export const useMessageStore = defineStore('message', {
             this.images = []
             this.filesHasMore = true
             this.files = []
+            this.links = []
+            this.linksHasMore = true
             this.messages = []
         }
     }

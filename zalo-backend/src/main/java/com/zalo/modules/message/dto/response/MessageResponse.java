@@ -26,6 +26,7 @@ public class MessageResponse extends BaseResponse {
 
     MessageResponse replyToMessage;
 
+    Long senderId;
     UserResponse sender;
 
     List<MessageReactionResponse> reactions = List.of();
@@ -43,7 +44,7 @@ public class MessageResponse extends BaseResponse {
 
         if (rels.contains("replyToMessage")) {
             if (m.getReplyToMessage() != null) {
-                this.replyToMessage = new MessageResponse(m.getReplyToMessage());
+                this.replyToMessage = new MessageResponse(m.getReplyToMessage(), "sender");
             }
         }
 

@@ -71,7 +71,6 @@ import { useConversationStore } from '@/stores/conversation.storage';
 import { useUserStore } from '@/stores/user.storage';
 import { SearchFriendPageType } from '@/types/common';
 import { UserType } from '@/types/entities';
-import { ConversationEnum } from '@/types/enum';
 import { RANDOM_AVATAR, ROUTE } from '@/utils/constant';
 import { modalController } from '@ionic/vue';
 import { useRouter } from 'vue-router';

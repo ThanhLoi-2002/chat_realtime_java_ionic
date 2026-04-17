@@ -150,8 +150,8 @@ public class MessageService {
             convRes.setMembers(memberService.getMembers(conv.getId()));
         }
 
-        MessageResponse messageResponse = new MessageResponse(finalMsg, "sender");
-        if(finalMsg.getContentType() == MessageType.FILE || finalMsg.getContentType() == MessageType.IMAGE){
+        MessageResponse messageResponse = new MessageResponse(finalMsg, "sender", "replyToMessage");
+        if (finalMsg.getContentType() == MessageType.FILE || finalMsg.getContentType() == MessageType.IMAGE) {
             List<Media> medias = mediaInterface.findByModuleIdInAndModuleType(List.of(finalMsg.getId()), MediaType.MESSAGE);
             Map<Long, List<MediaResponse>> mapAttachment = medias.stream()
                     .collect(Collectors.groupingBy(
@@ -171,7 +171,7 @@ public class MessageService {
     public Page<MessageResponse> fetchMessages(Long conversationId, MessageFilter filter) {
         filter.setConversationId(conversationId);
 
-        if(filter.getContentType() == MessageType.FILE || filter.getContentType() == MessageType.IMAGE) {
+        if (filter.getContentType() == MessageType.FILE || filter.getContentType() == MessageType.IMAGE || filter.getContentType() == MessageType.LINK) {
             filter.setStt(1);
         }
 

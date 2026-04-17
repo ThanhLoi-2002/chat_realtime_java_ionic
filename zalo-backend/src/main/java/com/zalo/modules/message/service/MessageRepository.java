@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long>, JpaSpecificationExecutor<Message> {
-    @EntityGraph(attributePaths = {"sender", "replyToMessage"})
+    @EntityGraph(attributePaths = {"sender", "replyToMessage", "replyToMessage.sender"})
     Page<Message> findAll(Specification<Message> spec, Pageable pageable);
 
     @Query("""
@@ -25,6 +25,7 @@ public interface MessageRepository extends JpaRepository<Message, Long>, JpaSpec
                 FROM Message m
                 LEFT JOIN FETCH m.sender
                 LEFT JOIN FETCH m.replyToMessage
+                LEFT JOIN FETCH m.replyToMessage.sender
                 WHERE m.conversationId = :conversationId AND m.id = :id
             """)
     Optional<Message> findOneWithRelationShip(

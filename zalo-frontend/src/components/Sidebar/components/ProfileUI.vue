@@ -66,7 +66,6 @@
 </template>
 
 <script setup lang="ts">
-import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
 import LoadingSpinner from '@/components/Loading/LoadingSpinner.vue';
 import { useTranslate } from '@/composables/useTranslate'
 import { useUserStore } from '@/stores/user.storage';

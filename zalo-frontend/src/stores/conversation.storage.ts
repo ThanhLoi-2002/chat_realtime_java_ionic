@@ -212,6 +212,12 @@ export const useConversationStore = defineStore('conversation', {
             }
         },
 
+        updateMemberListRealtime(members: MemberType[]) {
+            if (this.conversation) {
+                this.conversation.members = members;
+            }
+        },
+
         async leaveGroup() {
             try {
                 const result: any = await conversationApi.leaveGroup(this.conversation!.id);
@@ -229,6 +235,48 @@ export const useConversationStore = defineStore('conversation', {
         async kickMember(memberId: number) {
             try {
                 const result: any = await conversationApi.kickMember(this.conversation!.id, memberId);
+
+                return true
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return false
+            }
+        },
+
+        async ordainSilverKey(memberId: number) {
+            try {
+                const result: any = await conversationApi.ordainSilverKey(this.conversation!.id, memberId);
+
+                return true
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return false
+            }
+        },
+
+        async revokeSilverKey(memberId: number) {
+            try {
+                const result: any = await conversationApi.revokeSilverKey(this.conversation!.id, memberId);
+
+                return true
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return false
+            }
+        },
+
+        async transferGoldenKey(memberId: number) {
+            try {
+                const result: any = await conversationApi.transferGoldenKey(this.conversation!.id, memberId);
 
                 return true
             } catch (e: any) {

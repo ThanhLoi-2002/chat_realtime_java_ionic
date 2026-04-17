@@ -100,4 +100,22 @@ public class ConversationController {
     public void updateName(@PathVariable Long conversationId, @CurrentUser User user, @RequestBody String name) {
         conversationService.updateGroupName(conversationId, user.getId(), name);
     }
+
+    @PutMapping("/{conversationId}/ordain-silver-key/{memberId}")
+    @RequireMemberRole(memberRoles = {MemberRole.GOLDEN_KEY})
+    public void ordainSilverKey(@PathVariable Long conversationId, @CurrentUser User user, @PathVariable Long memberId) {
+        conversationService.ordainSilverKey(conversationId, user.getId(), memberId);
+    }
+
+    @PutMapping("/{conversationId}/revoke-silver-key/{memberId}")
+    @RequireMemberRole(memberRoles = {MemberRole.GOLDEN_KEY})
+    public void revokeSilverKey(@PathVariable Long conversationId, @CurrentUser User user, @PathVariable Long memberId) {
+        conversationService.revokeSilverKey(conversationId, user.getId(), memberId);
+    }
+
+    @PutMapping("/{conversationId}/transfer-golden-key/{memberId}")
+    @RequireMemberRole(memberRoles = {MemberRole.GOLDEN_KEY})
+    public void transferGoldenKey(@PathVariable Long conversationId, @CurrentUser User user, @PathVariable Long memberId) {
+        conversationService.transferGoldenKey(conversationId, user.getId(), memberId);
+    }
 }

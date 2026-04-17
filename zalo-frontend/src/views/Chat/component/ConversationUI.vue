@@ -85,34 +85,50 @@ const lastMessageContent = computed(() => {
 
   // 1. Xử lý tin nhắn bị thu hồi
   if (lastMessage.stt == -1) {
-    return `${senderName}: ${t("messageHasBeenWithdrawn")}`
+    return `${senderName} ${t("messageHasBeenWithdrawn")}`
   }
 
   // 2. Xử lý tin nhắn hệ thống (Khớp với tin nhắn bạn vừa viết)
   if (lastMessage.contentType == MessageEnum.SYSTEM) {
     const type = lastMessage.systemMetadata?.type
+    const targetUser = lastMessage.systemMetadata?.user
+    const targetName = targetUser?.id === userStorage.user?.id ? t("you") : targetUser?.username
 
     switch (type) {
       case SystemMetadataEnum.ADD_USERS_TO_GROUP:
-        return `${senderName}: ${t("addedMembersToGroup")}`
+        return `${senderName} ${t("addedMembersToGroup")}`
 
       case SystemMetadataEnum.UPDATE_GROUP_NAME:
-        return `${senderName}: ${t("haveRecentUpdatedGroupNameTo")} "${lastMessage.systemMetadata?.groupName}"`
+        return `${senderName} ${t("haveRecentUpdatedGroupNameTo")} "${lastMessage.systemMetadata?.groupName}"`
 
       case SystemMetadataEnum.UPDATE_GROUP_AVATAR:
-        return `${senderName}: ${t("updatedGroupAvatar")}`
+        return `${senderName} ${t("updatedGroupAvatar")}`
 
       case SystemMetadataEnum.LEAVE_GROUP:
-        return `${senderName}: ${t("leftTheGroup")}`
+        return `${senderName} ${t("leftTheGroup")}`
 
       case SystemMetadataEnum.REMOVE_MEMBER:
-        return `${senderName}: ${t("removedMember")}`
+        return `${senderName} ${t("removedMember")}`
 
       case SystemMetadataEnum.CREATE_GROUP:
-        return `${senderName}: ${t("createdTheGroup")}`
+        return `${senderName} ${t("createdTheGroup")}`
+
+      // --- Change key ---
+      case SystemMetadataEnum.ORDAIN_SILVER_KEY:
+        // Ví dụ: "Admin: đã phong chức Nhóm phó cho [Tên]"
+        return `${senderName} ${t(lastMessage.content)} ${targetName}`
+
+      case SystemMetadataEnum.REVOKE_SILVER_KEY:
+        // Ví dụ: "Admin: đã tước quyền Nhóm phó của [Tên]"
+        return `${senderName} ${t(lastMessage.content)} ${targetName}`
+
+      case SystemMetadataEnum.TRANSFER_GOLDEN_KEY:
+        // Ví dụ: "Nhóm trưởng: đã chuyển nhượng quyền Nhóm trưởng cho [Tên]"
+        return `${senderName} ${t(lastMessage.content)} ${targetName}`
+      // -------------------------------
 
       default:
-        return `${senderName}: ${t(lastMessage.content || '')}`
+        return `${senderName} ${t(lastMessage.content || '')}`
     }
   }
 

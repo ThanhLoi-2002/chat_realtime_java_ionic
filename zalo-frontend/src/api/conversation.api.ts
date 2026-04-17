@@ -78,6 +78,20 @@ const getReadLastMessageId = async (conversationId: number) => {
   return await axios.get<IResponse>(`/conversations/${conversationId}`);
 };
 
+const ordainSilverKey = async (conversationId: number, memberId: number) => {
+  return await axios.put<IResponse>(`/conversations/${conversationId}/ordain-silver-key/${memberId}`);
+};
+
+
+const revokeSilverKey = async (conversationId: number, memberId: number) => {
+  return await axios.put<IResponse>(`/conversations/${conversationId}/revoke-silver-key/${memberId}`);
+};
+
+const transferGoldenKey = async (conversationId: number, memberId: number) => {
+  return await axios.put<IResponse>(`/conversations/${conversationId}/transfer-golden-key/${memberId}`);
+};
+
+
 export const conversationApi = {
   createPrivate,
   getList,
@@ -92,4 +106,7 @@ export const conversationApi = {
   updateAvatar,
   updateName,
   getReadLastMessageId,
+  ordainSilverKey,
+  revokeSilverKey,
+  transferGoldenKey
 };

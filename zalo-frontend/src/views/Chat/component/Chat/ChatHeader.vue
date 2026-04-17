@@ -17,8 +17,7 @@
                         {{ conversationName(conversationStorage.conversation!) }}
                     </span>
 
-                    <span class="text-xs bg-green-400 rounded-full w-2.5 h-2.5"
-                        :class="[isOnline ? 'bg-green-400' : 'bg-gray-400']"
+                    <span class="text-xs rounded-full w-2.5 h-2.5" :class="[isOnline ? 'bg-green-400' : 'bg-gray-400']"
                         v-if="!isGroup(conversationStorage.conversation!)">
                     </span>
                     <div v-else class="flex gap-2 items-center">
@@ -55,6 +54,8 @@ import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
 import Modal from '@/components/Modal/Modal.vue';
 import Member from '../../Info/components/Member.vue';
 import { onMounted, ref, watch } from 'vue';
+import { StompSubscription } from '@stomp/stompjs';
+import { socketSubscribe, sockJSSendMessage } from '@/utils/websocket';
 
 const props = defineProps<{
     isShowInfoSection: boolean
@@ -67,6 +68,8 @@ const { t } = useTranslate()
 const memberModal = ref()
 const isOnline = ref(false)
 
+let sub: StompSubscription | undefined
+
 const emit = defineEmits(['update:isShowInfoSection'])
 
 const onBack = () => {
@@ -74,21 +77,37 @@ const onBack = () => {
     systemStorage.setShowBottomMenu(true)
 }
 
-const checkUserOnline = () => {
-    if (!isGroup(conversationStorage.conversation)) {
-        if (systemStorage.userIdsOnline[getRecipient(conversationStorage.conversation)!.id]) {
-            isOnline.value = true
-        } else {
-            isOnline.value = false
-        }
-    }
+// const checkUserOnline = () => {
+//     if (!isGroup(conversationStorage.conversation)) {
+//         if (systemStorage.userIdsOnline[getRecipient(conversationStorage.conversation)!.id]) {
+//             isOnline.value = true
+//         } else {
+//             isOnline.value = false
+//         }
+//     }
+// }
+
+const resetSubscribe = () => {
+    sub = socketSubscribe(`/topic/user.status.${getRecipient(conversationStorage.conversation)?.id}`, (msg: any) => {
+        isOnline.value = JSON.parse(msg.body).online
+        console.log(JSON.parse(msg.body))
+    })
+}
+
+const emitCheckUserOnline = () => {
+    sockJSSendMessage({
+        recipientId: getRecipient(conversationStorage.conversation)?.id,
+    }, "check.userOnline")
 }
 
 onMounted(() => {
-    checkUserOnline()
+    resetSubscribe()
+    emitCheckUserOnline()
 })
 
-watch(() => conversationStorage.conversation, async () => {
-    checkUserOnline()
+watch(() => conversationStorage.conversation?.id, async () => {
+    sub?.unsubscribe()
+    resetSubscribe()
+    emitCheckUserOnline()
 })
 </script>

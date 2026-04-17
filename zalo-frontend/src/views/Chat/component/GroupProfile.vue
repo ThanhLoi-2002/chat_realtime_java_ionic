@@ -88,9 +88,11 @@
                 <span>{{ t("image/video") }}</span>
                 <div v-if="messStorage.images.length > 0">
                     <div class="grid grid-cols-4 gap-2">
-                        <img v-for="(i, index) in messStorage.images.slice(0, 4)" :key="index" :src="i.secureUrl"
+                        <div v-for="(i, index) in messStorage.images.slice(0, 4)" :key="index"
                             class="aspect-square rounded bg-gray-200 dark:bg-slate-700 hover:scale-105 transition cursor-pointer"
-                            @click="messStorage.setPreviewImage(i)" />
+                            @click="messStorage.setPreviewImage(i)">
+                            <image-or-video :media="i" />
+                        </div>
                     </div>
                 </div>
                 <div v-else class="px-4 py-6 text-center text-gray-500 text-wrap dark:text-gray-400 text-sm">
@@ -157,6 +159,7 @@ import { ModuleEnum, ResourceEnum } from '@/types/enum';
 import { qrCodeUrl, ROUTE } from '@/utils/constant';
 import { inject, nextTick, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import ImageOrVideo from '@/components/Media/ImageOrVideo.vue';
 
 const props = defineProps<{
     conversation: ConversationType;
