@@ -53,6 +53,7 @@ import { useConversationStore } from '@/stores/conversation.storage';
 import { MessageFilter } from '@/types/common';
 import { MessageEnum } from '@/types/enum';
 import LinkContainer from './LinkContainer.vue';
+import { appLimit } from '@/utils/constant';
 
 const { groupedMediaByTime } = useMedia();
 const messStorage = useMessageStore();
@@ -100,7 +101,7 @@ const fetchLinkMessages = () => {
     const lastId = messStorage.links.at(-1)?.id ?? undefined;
     const options: MessageFilter = {
         conversationId: convStorage.conversation!.id,
-        limit: 10,
+        limit: appLimit.links,
         lastId,
         contentType: MessageEnum.TEXT,
         linkMetadata: true

@@ -1,5 +1,6 @@
 import { ACCESS_TOKEN, LANG, REFRESH_TOKEN } from "@/utils/constant";
 import { deleteKey, getKey, setKey } from "@/utils/local";
+import { Network } from "@capacitor/network";
 import axiosClient from "axios";
 import axios from "axios";
 
@@ -15,6 +16,12 @@ let queue: any[] = []; // để đợi refresh xong retry
 // Add a request interceptor
 instance.interceptors.request.use(
     async function (config: any) {
+        const status = await Network.getStatus();
+        if (!status.connected) {
+            console.log("OFFLINE")
+            return Promise.reject(new Error('OFFLINE'));
+        }
+
         const accessToken = getKey(ACCESS_TOKEN);
 
         if (accessToken)
@@ -59,10 +66,10 @@ instance.interceptors.response.use(
                 const res = await axios.post(import.meta.env.VITE_API_URL + '/api/auth/refresh', {
                     refreshToken: getKey(REFRESH_TOKEN),
                 });
-                
+
                 console.log(res)
                 const newToken = res.data.result.token;
-                setKey(ACCESS_TOKEN,newToken);
+                setKey(ACCESS_TOKEN, newToken);
 
                 // Update Authorization cho request đầu
                 originalRequest.headers.Authorization = `Bearer ${newToken}`;
@@ -77,7 +84,7 @@ instance.interceptors.response.use(
             } catch (err) {
                 isRefreshing = false;
                 queue = [];
-                
+
                 deleteKey(ACCESS_TOKEN)
                 deleteKey(REFRESH_TOKEN)
 

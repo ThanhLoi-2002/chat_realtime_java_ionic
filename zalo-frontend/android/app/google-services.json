@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "17916521262",
+    "firebase_url": "https://all-project-b8088-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "all-project-b8088",
+    "storage_bucket": "all-project-b8088.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:17916521262:android:541f88cdacb9cc7219a8bf",
+        "android_client_info": {
+          "package_name": "com.game2d"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7iJYcENMmH6Wk-5TrxItueoJVZRNZUVk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:17916521262:android:6548312240c769e319a8bf",
+        "android_client_info": {
+          "package_name": "com.zalo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7iJYcENMmH6Wk-5TrxItueoJVZRNZUVk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

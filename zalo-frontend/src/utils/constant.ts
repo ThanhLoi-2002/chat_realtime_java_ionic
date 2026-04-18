@@ -36,3 +36,14 @@ export const EMOJI_MAP = {
 
 export type ReactionKey = keyof typeof EMOJI_MAP;
 export const qrCodeUrl = import.meta.env.VITE_QR_CODE_URL
+
+export const appLimit = {
+    conversations: 15,
+    messages: 20,
+    imageVideosFirst: 8,
+    imageVideos: 20,
+    filesFirst: 4,
+    files: 20,
+    linksFirst: 4,
+    links: 20
+}

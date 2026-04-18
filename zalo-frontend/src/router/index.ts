@@ -91,8 +91,10 @@ router.beforeEach(async (to) => {
   const userStore = useUserStore()
   const accessToken = getKey(ACCESS_TOKEN)
 
+  if(!userStore.user) await userStore.loadUserLocal()
+
   if (accessToken && !userStore.user) {
-    await userStore.getMe();
+    userStore.getMe();
   }
 
   // 1. Guest only (signin/signup)
@@ -123,6 +125,10 @@ router.beforeEach(async (to) => {
   // if (to.path == "/" && user.value?.role == RoleEnum.ADMIN) {
   //   return { name: "admin-statistics" };
   // }
+});
+
+router.onError((error) => {
+  console.log(error.message)
 });
 
 export default router;

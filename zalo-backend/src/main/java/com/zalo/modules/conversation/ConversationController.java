@@ -55,6 +55,11 @@ public class ConversationController {
         return conversationService.getInfo(id, user.getId());
     }
 
+    @GetMapping("/{id}/get-one")
+    public ConversationResponse getOne(@CurrentUser User user, @PathVariable Long id) {
+        return new ConversationResponse(conversationService.findByIdWithRelationShip(id), "createdBy", "lastMessage", "recipient", "owner", "avatar");
+    }
+
     @GetMapping("/get-groups")
     public List<ConversationResponse> getGroups(@CurrentUser User user) {
         return conversationService.getGroups(user.getId());

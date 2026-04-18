@@ -23,7 +23,7 @@
                 :role="roles ? roles[message.sender?.id] : undefined" />
 
             <file-message :message="message" :setBubbleRef="setBubbleRef" v-if="message.contentType == MessageEnum.FILE"
-                :isOwner="isOwner" :role="roles ? roles[message.sender?.id] : undefined" :showReaction="true"/>
+                :isOwner="isOwner" :role="roles ? roles[message.sender?.id] : undefined" :showReaction="true" />
         </div>
 
         <!-- ACTIONS -->
@@ -94,6 +94,7 @@ import { MessageType } from '@/types/entities';
 import Key from '@/components/Key/Key.vue';
 import ConfirmModal from '@/components/Modal/ConfirmModal.vue';
 import FileMessage from '../Message/FileMessage.vue';
+import { toast } from '@/utils/toast';
 
 const props = defineProps<{
     message: MessageType & any
@@ -187,10 +188,52 @@ const positionMenu = () => {
 }
 
 // Actions (placeholders — replace with your actual logic)
-const onCopy = () => {
-    navigator.clipboard?.writeText(props.message.content || '')
-    showMenu.value = false
-}
+const onCopy = async () => {
+    const textToCopy = props.message.content || '';
+
+    if (!textToCopy) return;
+
+    // Cách 1: Dùng Clipboard API (Hiện đại)
+    if (navigator.clipboard && window.isSecureContext) {
+        try {
+            await navigator.clipboard.writeText(textToCopy);
+            toast({ message: t("copied"), color: "success" }); // Thông báo thành công
+        } catch (err) {
+            fallbackCopy(textToCopy);
+        }
+    } else {
+        // Cách 2: Fallback cho HTTP hoặc trình duyệt cũ
+        fallbackCopy(textToCopy);
+    }
+
+    showMenu.value = false;
+};
+
+// Hàm bổ trợ copy thủ công
+const fallbackCopy = (text: string) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+
+    // Tránh bị scroll trang khi append
+    textArea.style.position = "fixed";
+    textArea.style.left = "-9999px";
+    textArea.style.top = "0";
+
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            toast({ message: t("copied"), color: "success" });
+        }
+    } catch (err) {
+        console.error('Fallback copy failed', err);
+    }
+
+    document.body.removeChild(textArea);
+};
 
 const onMark = () => {
     // implement marking logic

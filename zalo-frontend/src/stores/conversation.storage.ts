@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import { ConversationType, MediaType, MemberType, MessageType, UserType } from '@/types/entities'
 import { conversationApi } from '@/api/conversation.api'
 import { toast } from '@/utils/toast'
+import { appLimit } from '@/utils/constant'
+import { storage } from '@/services/storage.service.'
 
 interface ConversationState {
     isLoading: boolean,
@@ -24,6 +26,20 @@ export const useConversationStore = defineStore('conversation', {
         userLastMessageId: 0
     }),
     actions: {
+        // 1. Lưu danh sách vào máy
+        async saveConversationsLocal(list: ConversationType[]) {
+            // this.conversations = list;
+            await storage.set('conversations', list);
+        },
+
+        // 2. Load danh sách khi mở app hoặc vào trang Inbox
+        async loadConversationsLocal() {
+            const saved = await storage.get<ConversationType[]>('conversations');
+            if (saved) {
+                this.conversations = saved;
+            }
+        },
+
         selectConversation(data?: ConversationType) {
             this.conversation = data
         },
@@ -40,6 +56,20 @@ export const useConversationStore = defineStore('conversation', {
                 return false
             }
         },
+
+        async getConversation(conversationId: number) {
+            try {
+                const result: any = await conversationApi.getConversation(conversationId);
+                return result.result
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return undefined
+            }
+        },
+
         async getReadLastMessageId(lastMessageId?: number) {
             if (lastMessageId) {
                 this.userLastMessageId = lastMessageId
@@ -73,12 +103,14 @@ export const useConversationStore = defineStore('conversation', {
             }
         },
         async getConversations() {
+            await this.loadConversationsLocal()
+
             try {
                 this.isLoading = true
 
                 this.page += 1
 
-                const result: any = await conversationApi.getList({ page: this.page });
+                const result: any = await conversationApi.getList({ page: this.page, limit: appLimit.conversations });
 
                 const { content, page } = result.result
 
@@ -102,6 +134,8 @@ export const useConversationStore = defineStore('conversation', {
                 // 3. Convert lại array + sort
                 this.sortConversation()
 
+                await this.saveConversationsLocal(this.conversations)
+
                 if ((page.totalPages - 1) == this.page) this.hasMore = false
             } catch (e: any) {
                 toast({
@@ -120,7 +154,7 @@ export const useConversationStore = defineStore('conversation', {
             })
         },
 
-        updateConversation(conv: ConversationType) {
+        async updateConversation(conv: ConversationType) {
             const index = this.conversations.findIndex(c => c.id === conv.id);
 
             if (index !== -1) {
@@ -135,14 +169,18 @@ export const useConversationStore = defineStore('conversation', {
             if (conv.id == this.conversation?.id) {
                 this.conversation = conv
             }
+
+            await this.saveConversationsLocal(this.conversations);
         },
 
-        updateConversationLastMessage(mess: MessageType) {
+        async updateConversationLastMessage(mess: MessageType) {
             const index = this.conversations.findIndex(c => c.id === mess.conversationId);
 
             if (index !== -1 && this.conversations[index].lastMessage?.id == mess.id) {
                 this.conversations[index].lastMessage = mess;
             }
+
+            await this.saveConversationsLocal(this.conversations)
         },
 
         async getConversationInfo() {
@@ -176,7 +214,7 @@ export const useConversationStore = defineStore('conversation', {
             }
         },
 
-        updateUnreadCount(id: number, unreadCount: number) {
+        async updateUnreadCount(id: number, unreadCount: number) {
             if (this.conversation) this.conversation.unread = unreadCount
 
             const index = this.conversations.findIndex(c => c.id === id);
@@ -184,6 +222,8 @@ export const useConversationStore = defineStore('conversation', {
             if (index !== -1) {
                 this.conversations[index].unread = unreadCount;
             }
+
+            await this.saveConversationsLocal(this.conversations)
         },
 
         async addMembers(memberIds: number[]) {
@@ -210,6 +250,8 @@ export const useConversationStore = defineStore('conversation', {
                     this.conversations[idx].members = members
                 }
             }
+
+            this.saveConversationsLocal(this.conversations)
         },
 
         updateMemberListRealtime(members: MemberType[]) {
@@ -291,6 +333,7 @@ export const useConversationStore = defineStore('conversation', {
         kickMemberRealtime(userId: number) {
             if (this.conversation?.members) {
                 this.conversation.members = this.conversation.members.filter(u => u.id !== userId);
+                this.saveConversationsLocal(this.conversations)
             }
         },
 
@@ -308,6 +351,8 @@ export const useConversationStore = defineStore('conversation', {
                 color: "primary",
                 message: "youHaveBeenRemovedFromGroup"
             })
+
+            this.saveConversationsLocal(this.conversations)
         },
 
         async disbandGroup() {
@@ -348,6 +393,8 @@ export const useConversationStore = defineStore('conversation', {
                     })
                 }
             }
+
+            this.saveConversationsLocal(this.conversations)
         },
 
         async updateAvatar(media: MediaType) {
@@ -406,6 +453,8 @@ export const useConversationStore = defineStore('conversation', {
             if (idx !== -1) {
                 this.conversations[idx].isMention = false;
             }
+
+            this.saveConversationsLocal(this.conversations)
         },
 
         reset() {

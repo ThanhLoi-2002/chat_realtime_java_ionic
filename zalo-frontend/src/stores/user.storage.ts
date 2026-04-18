@@ -1,5 +1,6 @@
 import { userApi } from '@/api/user.api'
 import router from '@/router'
+import { storage } from '@/services/storage.service.'
 import { UserType } from '@/types/entities'
 import { ACCESS_TOKEN, ROUTE } from '@/utils/constant'
 import { deleteKey } from '@/utils/local'
@@ -19,12 +20,23 @@ export const useUserStore = defineStore('user', {
         user: undefined
     }),
     actions: {
+        async loadUserLocal(): Promise<void> {
+            // Gọi hàm get với kiểu UserProfile
+            const saved = await storage.get<UserType>('user');
+            if (saved) {
+                this.user = saved;
+            }
+        },
+
         async getMe(isGoToChat?: boolean) {
             try {
                 this.isAuthLoading = true
 
                 const result: any = await userApi.getMe();
                 this.user = result.result
+                await storage.set('user', result.result);
+
+                await this.loadUserLocal()
 
                 this.isAuthLoading = false
                 isGoToChat && router.push(ROUTE.CHATS)
@@ -65,7 +77,7 @@ export const useUserStore = defineStore('user', {
                 })
             }
         },
-        async searchByPhone(phone: string): Promise<UserType | undefined>{
+        async searchByPhone(phone: string): Promise<UserType | undefined> {
             try {
                 const result: any = await userApi.searchByPhone(phone);
                 return result.result
@@ -77,8 +89,9 @@ export const useUserStore = defineStore('user', {
                 return undefined
             }
         },
-        logout() {
+        async logout() {
             this.user = undefined
+            await storage.remove('user');
             deleteKey(ACCESS_TOKEN)
             router.push(ROUTE.LOGIN)
         }

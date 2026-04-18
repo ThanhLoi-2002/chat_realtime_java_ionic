@@ -1,6 +1,10 @@
 package com.zalo.modules.message.service;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.zalo.common.base.BaseEntity;
+import com.zalo.common.configuration.json.G;
+import com.zalo.common.gateway.UserOnlineStorage;
+import com.zalo.common.service.PushNotificationService;
 import com.zalo.common.service.WebsocketService;
 import com.zalo.common.filter.MessageFilter;
 import com.zalo.modules.conversation.service.*;
@@ -23,6 +27,8 @@ import com.zalo.modules.conversation.entities.ConversationMember;
 import com.zalo.modules.media.dtos.requests.MediaRequest;
 import com.zalo.modules.media.entities.MediaType;
 import com.zalo.modules.media.service.MediaInterface;
+import com.zalo.modules.user.entities.User;
+import com.zalo.modules.user.service.UserRepository;
 import jakarta.persistence.EntityManager;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +46,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,6 +66,9 @@ public class MessageService {
     MemberService memberService;
     MediaInterface mediaInterface;
     SystemMessageInterface systemMessageInterface;
+    UserOnlineStorage userOnlineStorage;
+    PushNotificationService pushNotificationService;
+    UserRepository userRepository;
 
     public void sendMessage(Long conversationId, Long senderId, CreateMessageRequest dto) throws IOException {
         // optional check replyTo exists
@@ -166,6 +177,54 @@ public class MessageService {
         }
 
         websocketService.sendMessage(messageResponse, convRes, members);
+
+        if (content != null) {
+            processMentionAndSendNotify(content, convRes.getName(), conversationId);
+        }
+    }
+
+    public void processMentionAndSendNotify(String rawContent, String groupName, Long conversationId) {
+        // 1. Lấy danh sách ID từ chuỗi [mention:ID]
+        Set<Long> mentionedIds = extractMentionedIds(rawContent);
+
+        List<Long> offlineIds = mentionedIds.stream()
+                .filter(id -> !userOnlineStorage.isOnline(id))
+                .toList();
+
+        if (!offlineIds.isEmpty()) {
+            // 2. Truy vấn tất cả User offline trong 1 câu lệnh SQL duy nhất
+            List<User> offlineUsers = userRepository.findAllById(offlineIds);
+
+            // 3. Duyệt qua danh sách User để gửi thông báo
+            offlineUsers.forEach(user -> {
+                String token = user.getFcmToken();
+                System.out.println("user.getDeviceId(): " +user.getDeviceId());
+                System.out.println("user.getFcmToken(): " +user.getFcmToken());
+                if (token != null && !token.isEmpty()) {
+                    pushNotificationService.sendAdvancedNotification(
+                            token,
+                            groupName,
+                            "Bạn vừa được nhắc đến trong nhóm",
+                            conversationId,
+                            "tagMessage"
+                    );
+                }
+            });
+        }
+    }
+
+    private Set<Long> extractMentionedIds(String content) {
+        Set<Long> ids = new HashSet<>();
+        //(\d+): Group 1 để lấy ID (chỉ lấy số).
+        String regex = "\\[mention:(\\d+)\\]";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(content);
+
+        while (matcher.find()) {
+            ids.add(Long.parseLong(matcher.group(1)));
+        }
+
+        return ids;
     }
 
     public Page<MessageResponse> fetchMessages(Long conversationId, MessageFilter filter) {

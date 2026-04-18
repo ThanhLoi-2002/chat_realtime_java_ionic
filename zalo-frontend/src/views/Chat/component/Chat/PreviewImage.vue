@@ -130,6 +130,7 @@ import { MessageFilter } from "@/types/common";
 import { MessageEnum } from "@/types/enum";
 import { useTranslate } from "@/composables/useTranslate";
 import { useMedia } from "@/composables/useMedia";
+import { appLimit } from "@/utils/constant";
 
 const { t } = useTranslate()
 const scroll = ref<HTMLElement | null>(null);
@@ -173,7 +174,7 @@ const handleScroll = () => {
   if (messStorage.imagesHasMore && convStorage.conversation) {
     const options: MessageFilter = {
       conversationId: convStorage.conversation.id,
-      limit: 20,
+      limit: appLimit.imageVideos,
       lastId: messStorage.images.at(-1)?.moduleId ?? undefined,
       contentType: MessageEnum.IMAGE,
     };

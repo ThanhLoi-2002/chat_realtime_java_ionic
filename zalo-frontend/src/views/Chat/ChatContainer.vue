@@ -64,6 +64,7 @@ import { useUserStore } from '@/stores/user.storage';
 import SystemMessage from './component/Message/SystemMessage.vue';
 import { MessageType } from '@/types/entities';
 import { useDebounce } from '@/composables/useDebounce';
+import { appLimit } from '@/utils/constant';
 
 const props = defineProps<{
     isShowInfoSection: boolean
@@ -182,8 +183,7 @@ const vObserveVisibility = {
 const handleMessageVisible = (msg: MessageType, entry: IntersectionObserverEntry) => {
     // 1. Chỉ xử lý nếu tin nhắn này chưa được đánh dấu là đã đọc (tùy thuộc vào dữ liệu của bạn)
     // 2. Chỉ xử lý nếu tin nhắn đó là từ người khác gửi đến (sender.id !== userStorage.user.id)
-
-    if (entry.isIntersecting && msg.sender?.id !== userStorage.user?.id) {
+    if (entry.isIntersecting) {//&& msg.sender?.id !== userStorage.user?.id
         // Cập nhật ID mới nhất: 
         // Giả sử tin nhắn sau có ID lớn hơn hoặc thời gian ct lớn hơn
         if (!unreadMessageId.value || msg.id > unreadMessageId.value) {
@@ -288,7 +288,7 @@ const reset = async () => {
         unreadMessageId.value = conversationStorage.conversation.lastMessage?.id ?? 0
         const options: MessageFilter = {
             conversationId: conversationStorage.conversation!.id,
-            limit: 15
+            limit: appLimit.messages
         }
         await messageStorage.getMessages(options)
 

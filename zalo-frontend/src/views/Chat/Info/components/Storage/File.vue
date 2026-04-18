@@ -58,6 +58,7 @@ import { MediaType } from "@/types/entities";
 import { MessageEnum } from "@/types/enum";
 import { computed, onMounted, ref } from "vue";
 import FileContainer from "./FileContainer.vue";
+import { appLimit } from "@/utils/constant";
 
 const convStorage = useConversationStore();
 const messStorage = useMessageStore();
@@ -105,7 +106,7 @@ const fetchFileMessages = () => {
   const lastId = messStorage.files.at(-1)?.moduleId ?? undefined;
   const options: MessageFilter = {
     conversationId: convStorage.conversation!.id,
-    limit: 20,
+    limit: appLimit.files,
     lastId,
     contentType: MessageEnum.FILE,
   };

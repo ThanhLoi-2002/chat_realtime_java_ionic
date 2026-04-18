@@ -48,6 +48,7 @@ import FileContainer from './FileContainer.vue';
 import Collapse from '@/components/collapse/Collapse.vue';
 import LinkContainer from './LinkContainer.vue';
 import ImageOrVideo from '@/components/Media/ImageOrVideo.vue';
+import { appLimit } from '@/utils/constant';
 
 const emit = defineEmits<{
     (e: 'update:currentView', value: string): void
@@ -73,7 +74,7 @@ const handlePreviewImage = (pi: MediaType) => {
 const fetchImages = () => {
     const options: MessageFilter = {
         conversationId: convStorage.conversation!.id,
-        limit: 8,
+        limit: appLimit.imageVideosFirst,
         lastId: messStorage.images.at(-1)?.moduleId ?? undefined,
         contentType: MessageEnum.IMAGE
     }
@@ -83,7 +84,7 @@ const fetchImages = () => {
 const fetchFiles = () => {
     const options: MessageFilter = {
         conversationId: convStorage.conversation!.id,
-        limit: 4,
+        limit: appLimit.filesFirst,
         lastId: messStorage.files.at(-1)?.moduleId ?? undefined,
         contentType: MessageEnum.FILE
     }
@@ -93,7 +94,7 @@ const fetchFiles = () => {
 const fetchLinks = () => {
     const options: MessageFilter = {
         conversationId: convStorage.conversation!.id,
-        limit: 4,
+        limit: appLimit.linksFirst,
         lastId: messStorage.links.at(-1)?.id ?? undefined,
         contentType: MessageEnum.TEXT,
         linkMetadata: true
@@ -103,9 +104,7 @@ const fetchLinks = () => {
 
 onMounted(() => {
     fetchImages()
-
     fetchFiles()
-
     fetchLinks()
 })
 

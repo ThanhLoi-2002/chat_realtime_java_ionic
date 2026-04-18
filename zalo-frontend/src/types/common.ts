@@ -75,3 +75,5 @@ export type UploadFileRequest = {
   updateProgress?: (index: number, percent: number) => void
   moduleType: ModuleEnum
 }
+
+export type SaveFcmTokenType = { deviceId: string, fcmToken: string }

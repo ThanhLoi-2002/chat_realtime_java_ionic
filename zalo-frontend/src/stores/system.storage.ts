@@ -1,16 +1,17 @@
 import { defineStore } from 'pinia'
+import { Network } from '@capacitor/network';
 
 interface ConversationState {
     isShowBottomMenu: boolean
     isDarkMode: boolean
-    // userIdsOnline: Record<number, boolean>
+    networkStatus: boolean
 }
 
 export const useSystemStore = defineStore('system', {
     state: (): ConversationState => ({
         isShowBottomMenu: false,
         isDarkMode: false,
-        // userIdsOnline: {}
+        networkStatus: false
     }),
     actions: {
         setShowBottomMenu(value: boolean) {
@@ -19,12 +20,10 @@ export const useSystemStore = defineStore('system', {
         setIsDarkMode(value: boolean) {
             this.isDarkMode = value
         },
-        // updateUserIdsOnline(id: number, value: boolean) {
-        //     if (value) {
-        //         this.userIdsOnline[id] = true
-        //     } else {
-        //         delete this.userIdsOnline[id]
-        //     }
-        // }
+        async checkNetworkStatus() {
+            const status = await Network.getStatus();
+
+            this.networkStatus = status.connected
+        },
     }
 })

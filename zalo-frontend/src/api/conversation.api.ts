@@ -26,6 +26,10 @@ const getConversationInfo = async (id: number) => {
   return await axios.get<IResponse>(`/conversations/${id}/info`);
 };
 
+const getConversation = async (id: number) => {
+  return await axios.get<IResponse>(`/conversations/${id}/get-one`);
+};
+
 const getGroups = async () => {
   return await axios.get<IResponse>(`/conversations/get-groups`);
 };
@@ -108,5 +112,6 @@ export const conversationApi = {
   getReadLastMessageId,
   ordainSilverKey,
   revokeSilverKey,
+  getConversation,
   transferGoldenKey
 };

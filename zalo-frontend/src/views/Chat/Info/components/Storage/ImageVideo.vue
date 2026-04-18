@@ -58,6 +58,7 @@ import { useMessageStore } from "@/stores/message.storage";
 import { MessageFilter } from "@/types/common";
 import { MediaType } from "@/types/entities";
 import { MessageEnum } from "@/types/enum";
+import { appLimit } from "@/utils/constant";
 import { computed, onMounted, ref } from "vue";
 
 const convStorage = useConversationStore();
@@ -123,7 +124,7 @@ const fetchImageMessages = () => {
   const lastId = messStorage.images.at(-1)?.moduleId ?? undefined;
   const options: MessageFilter = {
     conversationId: convStorage.conversation!.id,
-    limit: 20,
+    limit: appLimit.imageVideos,
     lastId,
     contentType: MessageEnum.IMAGE,
   };

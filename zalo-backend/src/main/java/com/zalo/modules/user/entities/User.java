@@ -36,6 +36,12 @@ public class User extends BaseEntity implements UserDetails {
     @Column(columnDefinition = "LONGTEXT")
     File cover;
 
+    @Column(unique = true)
+    private String deviceId;    // ID duy nhất của điện thoại (UUID)
+
+    @Column(columnDefinition = "TEXT")
+    private String fcmToken;    // Token dài do Firebase cấp
+
 //    List<String> roles;
 
     @Override
