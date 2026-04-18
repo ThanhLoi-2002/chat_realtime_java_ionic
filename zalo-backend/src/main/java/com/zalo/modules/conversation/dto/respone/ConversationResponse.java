@@ -31,6 +31,8 @@ public class ConversationResponse extends BaseResponse {
     UserResponse owner;
 
     MessageResponse lastMessage;
+
+    Long recipientId;
     UserResponse recipient;
 
     List<MemberResponse> members;

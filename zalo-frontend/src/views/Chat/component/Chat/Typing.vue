@@ -24,7 +24,8 @@
 
                     <!-- Message Input -->
                     <div class="flex flex-col w-full gap-2 items-center">
-                        <ReplyingMessage v-if="replyingMessage" :replyingMessage="replyingMessage" :setReplyingMessage="setReplyingMessage"/>
+                        <ReplyingMessage v-if="replyingMessage" :replyingMessage="replyingMessage"
+                            :setReplyingMessage="setReplyingMessage" />
 
                         <div class="flex gap-2 w-full">
                             <div class="relative flex-1 bg-gray-100 dark:bg-gray-800 rounded-2xl px-1 py-2">
@@ -351,6 +352,16 @@ onUnmounted(() => {
 })
 
 watch(() => conversationStorage.conversation?.id, async () => {
+    message.value = ''
+    const inputElement: any = inputRef.value
+    if (inputElement) {
+        inputElement.innerHTML = '' // 🔥 QUAN TRỌNG
+    }
+
+    previewFiles.value = []
+    selectedRawFiles.value = []
+    previewLink.value = undefined
+    props.setReplyingMessage(null)
     subTyping?.unsubscribe()
     resetSubscribe()
 })
@@ -506,10 +517,10 @@ const insertReplyMention = (user: UserType) => {
     const selection = window.getSelection();
     if (selection && selection.rangeCount > 0) {
         const range = selection.getRangeAt(0);
-        
+
         // Nếu input đang trống, chèn vào đầu. Nếu có chữ, chèn tại vị trí caret.
         range.insertNode(tagNode);
-        
+
         // Tạo dấu cách sau tag
         const space = document.createTextNode('\u00A0');
         tagNode.after(space);
@@ -523,7 +534,7 @@ const insertReplyMention = (user: UserType) => {
 };
 
 watch(() => props.replyingMessage, () => {
-    if(props.replyingMessage && props.replyingMessage.sender.id != userStorage.user?.id) insertReplyMention(props.replyingMessage.sender)
+    if (props.replyingMessage && props.replyingMessage.sender.id != userStorage.user?.id) insertReplyMention(props.replyingMessage.sender)
 })
 
 const onInput = (e: Event) => {

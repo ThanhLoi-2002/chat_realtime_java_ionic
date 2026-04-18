@@ -131,6 +131,14 @@ public class ConversationService implements ConversationInterface {
         return conversationRepo.findOneWithRelationShipById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
     }
 
+    public ConversationResponse findByIdWithRelationShipAndMember(Long id) {
+        ConversationResponse conv = new ConversationResponse(findByIdWithRelationShip(id), "recipient", "lastMessage", "createdBy", "avatar");
+        if(conv.getType() == ConversationType.GROUP || conv.getType() == ConversationType.COMMUNITY){
+            conv.setMembers(memberService.getMembers(id));
+        }
+        return conv;
+    }
+
     public Conversation findById(Long id) {
         return conversationRepo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
     }
@@ -149,7 +157,7 @@ public class ConversationService implements ConversationInterface {
 
         return page.map(c -> {
             ConversationResponse conv = new ConversationResponse(c, "recipient", "lastMessage", "createdBy", "avatar");
-            if (c.getType() == ConversationType.GROUP) {
+            if (c.getType() == ConversationType.GROUP || conv.getType() == ConversationType.COMMUNITY) {
                 conv.setMembers(memberService.getMembers(c.getId()));
             }
 

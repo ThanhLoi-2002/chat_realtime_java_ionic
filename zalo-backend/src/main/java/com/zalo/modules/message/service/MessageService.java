@@ -179,11 +179,29 @@ public class MessageService {
         websocketService.sendMessage(messageResponse, convRes, members);
 
         if (content != null) {
-            processMentionAndSendNotify(content, convRes.getName(), conversationId);
+            if (convRes.getAvatar() != null) {
+                processMentionAndSendNotify(content, convRes.getName(), convRes.getAvatar().getSecureUrl(), conversationId);
+            } else {
+                processMentionAndSendNotify(content, convRes.getName(), "", conversationId);
+            }
         }
+
+        String avatar = "";
+        if (convRes.getType() == ConversationType.PRIVATE) {
+            if (convRes.cu == senderId) {
+                avatar = convRes.getRecipient().getAvatar() != null ? convRes.getRecipient().getAvatar().getUrl() : "";
+            } else {
+                avatar = convRes.getCreatedBy().getAvatar() != null ? convRes.getCreatedBy().getAvatar().getUrl() : "";
+            }
+        } else {
+            avatar = convRes.getAvatar() != null ? convRes.getAvatar().getSecureUrl() : "";
+        }
+        processBubbleNotify(messageResponse, avatar, conversationId, members.stream()
+                .map(ConversationMember::getUserId) // Hoặc .map(member -> member.getUserId())
+                .collect(Collectors.toList()));
     }
 
-    public void processMentionAndSendNotify(String rawContent, String groupName, Long conversationId) {
+    public void processMentionAndSendNotify(String rawContent, String groupName, String imageUrl, Long conversationId) {
         // 1. Lấy danh sách ID từ chuỗi [mention:ID]
         Set<Long> mentionedIds = extractMentionedIds(rawContent);
 
@@ -198,14 +216,13 @@ public class MessageService {
             // 3. Duyệt qua danh sách User để gửi thông báo
             offlineUsers.forEach(user -> {
                 String token = user.getFcmToken();
-                System.out.println("user.getDeviceId(): " +user.getDeviceId());
-                System.out.println("user.getFcmToken(): " +user.getFcmToken());
                 if (token != null && !token.isEmpty()) {
                     pushNotificationService.sendAdvancedNotification(
                             token,
                             groupName,
                             "Bạn vừa được nhắc đến trong nhóm",
                             conversationId,
+                            imageUrl,
                             "tagMessage"
                     );
                 }
@@ -225,6 +242,31 @@ public class MessageService {
         }
 
         return ids;
+    }
+
+    public void processBubbleNotify(MessageResponse mess, String imageUrl, Long conversationId, List<Long> memberIds) {
+        List<Long> offlineIds = memberIds.stream()
+                .filter(id -> !userOnlineStorage.isOnline(id))
+                .toList();
+
+        if (!offlineIds.isEmpty()) {
+            // 2. Truy vấn tất cả User offline trong 1 câu lệnh SQL duy nhất
+            List<User> offlineUsers = userRepository.findAllById(offlineIds);
+
+            // 3. Duyệt qua danh sách User để gửi thông báo
+            offlineUsers.forEach(user -> {
+                String token = user.getFcmToken();
+                if (token != null && !token.isEmpty()) {
+                    pushNotificationService.sendBubbleNotification(
+                            token,
+                            mess.getSender().getUsername(),
+                            mess.getSender().getUsername() + ": " + mess.getContent(),
+                            conversationId,
+                            imageUrl
+                    );
+                }
+            });
+        }
     }
 
     public Page<MessageResponse> fetchMessages(Long conversationId, MessageFilter filter) {

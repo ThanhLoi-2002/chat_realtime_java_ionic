@@ -57,7 +57,7 @@ public class ConversationController {
 
     @GetMapping("/{id}/get-one")
     public ConversationResponse getOne(@CurrentUser User user, @PathVariable Long id) {
-        return new ConversationResponse(conversationService.findByIdWithRelationShip(id), "createdBy", "lastMessage", "recipient", "owner", "avatar");
+        return conversationService.findByIdWithRelationShipAndMember(id);
     }
 
     @GetMapping("/get-groups")

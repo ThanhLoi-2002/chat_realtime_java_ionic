@@ -96,6 +96,8 @@ watch(() => userStorage.user, async (newVal, oldVal) => {
     if (oldVal) {
       await disconnectSocket();
     }
+
+    initPush()
     await connectSocket();
   } else {
     await disconnectSocket();
