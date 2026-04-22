@@ -1,4 +1,4 @@
-package com.zalo;
+package com.zalo.utils;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import com.zalo.ui.main.MainActivity;
 import com.zalo.R;
 
 public class NotificationHelper {

@@ -1,11 +1,15 @@
-package com.zalo;
+package com.zalo.data.remote.fcm;
 
 import android.util.Log;
-import com.google.firebase.messaging.FirebaseMessagingService;
+
+import androidx.annotation.NonNull;
+
 import com.google.firebase.messaging.RemoteMessage;
+import com.zalo.utils.NotificationHelper;
+
 import java.util.Map;
 
-public class MyFirebaseMessagingService extends FirebaseMessagingService {
+public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -34,7 +38,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }
 
     @Override
-    public void onNewToken(String token) {
+    public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
         // In token ra để bạn copy vào Server Spring Boot test cho chuẩn
         Log.d("FCM_DEBUG", "Token mới của máy: " + token);

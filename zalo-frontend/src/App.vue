@@ -26,6 +26,7 @@ import { useSystemStore } from './stores/system.storage';
 import { Network } from '@capacitor/network';
 import { toast } from './utils/toast';
 import { usePushNotification } from './composables/usePushNotification';
+import { storage } from './services/storage.service.';
 
 const route: any = useRoute();
 const langStore = useLangStore()
@@ -76,6 +77,14 @@ onMounted(async () => {
       }, 2500);
     }
   });
+
+  storage.checkTotalQuota()
+  // Sử dụng
+  let size = await storage.getStorageSize('conversations');
+  console.log(`Dung lượng danh sách chat: ${size}`);
+
+  size = await storage.getStorageSize('user');
+  console.log(`Dung lượng user: ${size}`);
 })
 
 // Optional: theo dõi system thay đổi

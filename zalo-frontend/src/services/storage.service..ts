@@ -44,6 +44,7 @@ export const storage = {
   },
 
   async checkTotalQuota() {
+    console.log(navigator)
     if (navigator.storage && navigator.storage.estimate) {
       const estimate = await navigator.storage.estimate();
 
@@ -53,10 +54,6 @@ export const storage = {
       const usedMB = (estimate.usage! / (1024 * 1024)).toFixed(2);
       const quotaMB = (estimate.quota! / (1024 * 1024)).toFixed(2);
       const percent = ((estimate.usage! / estimate.quota!) * 100).toFixed(2);
-
-      // Sử dụng
-      const size = await this.getStorageSize('conversations');
-      console.log(`Dung lượng danh sách chat: ${size}`);
 
       console.log(`Đã dùng: ${usedMB} MB / Tổng: ${quotaMB} MB (${percent}%)`);
     } else {
