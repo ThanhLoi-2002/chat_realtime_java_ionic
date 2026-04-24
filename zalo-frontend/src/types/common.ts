@@ -77,3 +77,5 @@ export type UploadFileRequest = {
 }
 
 export type SaveFcmTokenType = { deviceId: string, fcmToken: string }
+
+export type UpdateClassificationPositionType = { id: number, position: number }

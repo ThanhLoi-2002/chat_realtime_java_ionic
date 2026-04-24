@@ -60,4 +60,39 @@ export const storage = {
       console.warn("Storage Manager API không hỗ trợ trên trình duyệt này.");
     }
   },
+
+  /**
+   * Liệt kê và tính toán dung lượng của TẤT CẢ các key trong app
+   */
+  async calculateAllKeysSize(): Promise<void> {
+    await initStorage();
+    const keys = await store.keys();
+    let totalBytes = 0;
+
+    console.log("--- Báo cáo dung lượng chi tiết ---");
+
+    for (const key of keys) {
+      const data = await store.get(key);
+      const stringData = JSON.stringify(data);
+      const sizeInBytes = new Blob([stringData]).size;
+
+      console.log(`Key: [${key}] | Size: ${formatSize(sizeInBytes)}`);
+      totalBytes += sizeInBytes;
+    }
+
+    console.log("-----------------------------------");
+    console.log(`===> Tổng dung lượng dữ liệu: ${formatSize(totalBytes)}`);
+  }
+};
+
+/**
+ * Hàm tiện ích để định dạng byte sang đơn vị đọc được (KB, MB)
+ */
+const formatSize = (bytes: number): string => {
+  if (bytes === 0) return "0 KB";
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  // Chỉ dùng 2 chữ số thập phân cho KB trở lên
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };

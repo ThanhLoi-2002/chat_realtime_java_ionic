@@ -3,30 +3,24 @@
         <!-- BODY -->
         <div class="flex-1 overflow-hidden flex flex-col px-4 py-3 rounded-lg h-full">
 
-            <!-- GROUP NAME -->
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                    <i class="fa fa-camera"></i>
-                </div>
-
-                <input :placeholder="t('enterGroupName') + '...'" class="flex-1 border-b bg-transparent outline-none
-                 border-gray-300 dark:border-gray-600
-                 pb-1" v-model="groupName"/>
-            </div>
-
             <!-- SEARCH -->
-            <div class="mt-3">
-                <input placeholder="Nhập tên, số điện thoại..." class="w-full px-4 py-2 rounded-full
+            <div class="mt-3 relative flex items-center">
+                <i class="fa fa-search text-xs absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none"
+                    :class="[style.text.muted]"></i>
+                <input :placeholder="t('search')" class="w-full pl-8 pr-4 py-2 rounded-full text-sm
                  bg-gray-100 dark:bg-gray-800
-                 outline-none" v-model="keyword"/>
+                 outline-none" v-model="keyword" />
             </div>
-            <!-- LIST -->
-            <div class="flex-1 mt-4 pr-1 h-full">
 
-                <p class="text-sm text-gray-500 mb-2">{{ t("recentChat") }}</p>
+            <div class="py-1">
+                <classification-chip />
+            </div>
+
+            <!-- LIST -->
+            <div class="flex-1 pr-1 h-full border-t border-slate-600">
 
                 <div class="flex gap-2 h-full">
-                    <!-- Recent users list: cố định chiều cao, scroll riêng -->
+                    <!-- conv list: cố định chiều cao, scroll riêng -->
                     <div class="flex-1">
                         <div class="h-[80%] overflow-y-auto bg-white dark:bg-gray-900 rounded">
                             <div v-for="(group, letter) in groupedFriends" :key="letter">
@@ -35,16 +29,16 @@
                                     {{ letter }}
                                 </div>
 
-                                <!-- USERS -->
-                                <div v-for="user in group" :key="user.id"
+                                <!-- CONVERSATIONS -->
+                                <div v-for="conv in group" :key="conv.id"
                                     class="flex items-center gap-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 rounded pl-2"
-                                    @click="selectUser(user)">
+                                    @click="selectConv(conv)">
                                     <span
                                         class="w-4 h-4 rounded-full flex justify-center items-center border-slate-400 border"
-                                        :class="isSelected(user) ? 'bg-blue-400' : 'dark:bg-slate-600'"><i
-                                            class="fa fa-check" v-show="isSelected(user)" /></span>
-                                    <img :src="user.avatar.url" class="w-10 h-10 rounded-full object-cover" />
-                                    <span class="truncate text-base">{{ user.username }}</span>
+                                        :class="isSelected(conv) ? 'bg-blue-400' : 'dark:bg-slate-600'"><i
+                                            class="fa fa-check" v-show="isSelected(conv)" /></span>
+                                    <img :src="conv.avatar.url" class="w-10 h-10 rounded-full object-cover" />
+                                    <span class="truncate text-base">{{ conv.username }}</span>
                                 </div>
                             </div>
 
@@ -52,18 +46,18 @@
                     </div>
 
                     <!-- Selected users list: cũng có scroll riêng; ẩn nếu rỗng -->
-                    <div v-if="selectedUsers.length > 0" class="w-40">
-                        <span class="dark:text-slate-400 text-sm">{{ t('selected') }} {{ selectedUsers.length
-                        }}/100</span>
+                    <div v-if="selectedConvs.length > 0" class="w-40">
+                        <span class="dark:text-slate-400 text-sm">{{ t('selected') }} {{ selectedConvs.length
+                            }}/100</span>
                         <div class="h-[85%] overflow-y-auto bg-white dark:bg-gray-900 rounded flex flex-col gap-2 mt-2">
-                            <div v-for="user in selectedUsers" :key="user.id"
+                            <div v-for="conv in selectedConvs" :key="conv.id"
                                 class="flex items-center justify-between gap-2 py-1 cursor-pointer bg-blue-500 rounded-full px-2">
                                 <div class="flex gap-2 items-center">
-                                    <img :src="user.avatar.url" class="w-6 h-6 rounded-full object-cover" />
-                                    <span class="truncate text-sm">{{ user.username }}</span>
+                                    <img :src="conversationAvatar(conv)" class="w-6 h-6 rounded-full object-cover" />
+                                    <span class="truncate text-sm">{{ conversationName(conv) }}</span>
                                 </div>
                                 <i class="fa fa-close mr-2 dark:hover:text-slate-300 text-sm"
-                                    @click="removeUser(user)"></i>
+                                    @click="removeConv(conv)"></i>
                             </div>
                         </div>
                     </div>
@@ -78,8 +72,9 @@
                 @click="dismiss">
                 {{ t("cancel") }}
             </button>
-            <ion-button class="rounded cursor-pointer" :disabled="selectedUsers.length < 2 || groupName.length == 0" @click="createGroup">
-                {{ t("createGroup") }}
+            <ion-button class="rounded cursor-pointer" :disabled="selectedConvs.length < 2 || groupName.length == 0"
+                @click="add">
+                {{ t("add") }}
             </ion-button>
         </div>
 
@@ -87,30 +82,32 @@
 </template>
 
 <script setup lang="ts">
+import { style } from '@/assets/tailwindcss';
+import ClassificationChip from '@/components/Chip/ClassificationChip.vue';
+import { useConversation } from '@/composables/useConversation';
 import { useTranslate } from '@/composables/useTranslate';
 import { useConversationStore } from '@/stores/conversation.storage';
-import { useFriendshipStore } from '@/stores/friendship.storage';
-import { UserType } from '@/types/entities';
+import { ConversationType, UserType } from '@/types/entities';
 import { normalizeText } from '@/utils/helper';
-import { computed, inject, onMounted, ref } from 'vue';
+import { computed, inject, ref } from 'vue';
 
 const dismiss = inject<() => void>("modalDismiss")
 const { t } = useTranslate()
 const keyword = ref("");
 const groupName = ref("");
-const friendshipStorage = useFriendshipStore()
 const convStorage = useConversationStore()
-const users = ref<UserType[]>([
+const { conversationAvatar, conversationName, } = useConversation()
+const convs = ref<ConversationType[]>([
 
 ])
 
-const selectedUsers = ref<UserType[]>([
+const selectedConvs = ref<ConversationType[]>([
 ])
 
 // filter
 const filtered = computed(() =>
-    users.value.filter((f) =>
-        normalizeText(f.username)
+    convStorage.conversations.filter((f) =>
+        normalizeText(conversationName(f)!)
             .toLowerCase()
             .includes(normalizeText(keyword.value).toLowerCase()),
     ),
@@ -120,7 +117,7 @@ const groupedFriends = computed(() => {
     const groups: any = {};
 
     filtered.value.forEach((u) => {
-        const letter = u.username.charAt(0).toUpperCase();
+        const letter = conversationName(u)!.charAt(0).toUpperCase();
         if (!groups[letter]) groups[letter] = [];
         groups[letter].push(u);
     });
@@ -128,33 +125,28 @@ const groupedFriends = computed(() => {
     return groups;
 });
 
-const isSelected = (user: UserType) => {
-    return selectedUsers.value.some(u => u.id === user.id)
+const isSelected = (conv: ConversationType) => {
+    return selectedConvs.value.some(u => u.id === conv.id)
 }
 
-const selectUser = (user: UserType) => {
-    const exists = isSelected(user)
+const selectConv = (conv: ConversationType) => {
+    const exists = isSelected(conv)
     if (!exists) {
-        selectedUsers.value.push(user)
+        selectedConvs.value.push(conv)
     } else {
-        removeUser(user)
+        removeConv(conv)
     }
 }
 
-const removeUser = (user: UserType) => {
-    selectedUsers.value = selectedUsers.value.filter(u => u.id !== user.id)
+const removeConv = (conv: ConversationType) => {
+    selectedConvs.value = selectedConvs.value.filter(u => u.id !== conv.id)
 }
 
-const createGroup = async () => {
+const add = async () => {
     const isSuccess = await convStorage.createGroup({
         name: groupName.value,
-        participantIds: selectedUsers.value.map(u => u.id)
+        participantIds: selectedConvs.value.map(u => u.id)
     })
     isSuccess && dismiss?.()
 }
-
-onMounted(async () => {
-    await friendshipStorage.getFriends()
-    users.value = friendshipStorage.friends
-})
 </script>

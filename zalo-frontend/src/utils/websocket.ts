@@ -1,73 +1,91 @@
-import SockJS from "sockjs-client"
-import { Client } from "@stomp/stompjs"
-import { getKey } from "./local"
-import { ACCESS_TOKEN } from "./constant"
-
-// const socket = new SockJS(`${import.meta.env.VITE_API_URL}/api/ws`)
+import SockJS from "sockjs-client";
+import { Client, IFrame } from "@stomp/stompjs";
+import { getKey } from "./local";
+import { ACCESS_TOKEN } from "./constant";
 
 export const stompClient: Client = new Client({
-  // Sử dụng webSocketFactory để tạo mới SockJS mỗi lần kết nối
   webSocketFactory: () => {
+    // Luôn sử dụng URL từ biến môi trường
     return new SockJS(`${import.meta.env.VITE_API_URL}/api/ws`);
   },
-  reconnectDelay: 5000
-})
+  reconnectDelay: 5000,
+  heartbeatIncoming: 4000,
+  heartbeatOutgoing: 4000,
+});
+
+// Debug log để theo dõi trạng thái
+stompClient.onConnect = (frame: IFrame) => {
+  console.log("STOMP: Connected", frame.headers['user-name'] || '');
+};
+
+stompClient.onStompError = (frame) => {
+  console.error("STOMP: Error", frame.body);
+};
 
 export const connectSocket = async () => {
   const token = getKey(ACCESS_TOKEN);
-  if (!token) return;
+  if (!token) {
+    console.warn("STOMP: No token found, skipping connection.");
+    return;
+  }
 
-  // Cập nhật headers mới nhất
+  // Nếu đang trong quá trình ngắt kết nối hoặc đang active, đợi một chút
+  if (stompClient.active) {
+    console.log("STOMP: Socket is already active.");
+    return; // Không cần deactivate rồi activate lại liên tục
+  }
+
+  // Cập nhật headers
   stompClient.connectHeaders = {
     Authorization: `Bearer ${token}`
   };
 
-  // Nếu đang active (do login nhanh quá hoặc chưa ngắt xong)
-  if (stompClient.active) {
-    console.log("Socket is already active, deactivating first...");
-    await stompClient.deactivate();
+  try {
+    console.log('STOMP: Activating...');
+    stompClient.activate();
+  } catch (err) {
+    console.error("STOMP: Activation error", err);
   }
-
-  console.log('STOMP: Activating...');
-  stompClient.activate();
 };
 
 export const disconnectSocket = async () => {
-  if (stompClient) {
+  if (stompClient.active) {
     console.log("STOMP: Deactivating...");
-    await stompClient.deactivate();
-
-    // Quan trọng: Xóa headers để tránh dùng token cũ cho lần sau nếu login user khác
-    stompClient.connectHeaders = {};
+    try {
+      await stompClient.deactivate();
+      stompClient.connectHeaders = {};
+      console.log("STOMP: Deactivated successfully");
+    } catch (err) {
+      console.error("STOMP: Deactivation error", err);
+    }
   }
 };
 
 export const sockJSSendMessage = (data: any, destination: string) => {
-
   if (stompClient && stompClient.connected) {
     stompClient.publish({
       destination: `/app/${destination}`,
       body: JSON.stringify(data)
-    })
+    });
   } else {
-    console.warn("STOMP chưa kết nối. Không thể gửi tin nhắn đến:", destination);
+    console.warn("STOMP: Not connected. Cannot send to:", destination);
   }
+};
 
-}
-
-export const socketSubscribe = (destination: string, callback: any) => {
+/**
+ * Cải tiến Subscribe: Tránh dùng setInterval gây tốn tài nguyên
+ */
+export const socketSubscribe = (destination: string, callback: (message: any) => void) => {
+  // Nếu đã kết nối thì subscribe ngay
   if (stompClient.connected) {
-    console.log(`${destination}`)
-    return stompClient.subscribe(`${destination}`, callback)
+    return stompClient.subscribe(destination, callback);
   }
 
-  const interval = setInterval(() => {
-
-    if (stompClient.connected) {
-      clearInterval(interval)
-      stompClient.subscribe(`${destination}`, callback)
-    }
-
-  }, 100)
-
-}
+  // Nếu chưa kết nối, sử dụng callback onConnect để tự động subscribe khi vừa connect xong
+  const originalOnConnect = stompClient.onConnect;
+  stompClient.onConnect = (frame) => {
+    if (originalOnConnect) originalOnConnect(frame);
+    console.log(`STOMP: Auto-subscribing to ${destination}`);
+    stompClient.subscribe(destination, callback);
+  };
+};

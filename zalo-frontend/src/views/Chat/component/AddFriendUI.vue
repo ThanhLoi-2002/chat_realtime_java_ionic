@@ -1,5 +1,5 @@
 <template>
-    <div class="px-4 bg-white dark:bg-gray-800 h-[85%] flex flex-col">
+    <div class="px-4 bg-white dark:bg-gray-800 h-full flex flex-col">
         <!-- Input -->
         <input v-model="phone" :placeholder="t('phone')"
             class="border-b p-2 outline-none bg-transparent dark:placeholder:text-slate-400 dark:text-slate-300" />

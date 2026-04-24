@@ -27,11 +27,13 @@ import { Network } from '@capacitor/network';
 import { toast } from './utils/toast';
 import { usePushNotification } from './composables/usePushNotification';
 import { storage } from './services/storage.service.';
+import { useClassificationCardStore } from './stores/classificationCard.storage';
 
 const route: any = useRoute();
 const langStore = useLangStore()
 const userStorage = useUserStore()
 const systemStorage = useSystemStore()
+const classificationCardStorage = useClassificationCardStore()
 const { initPush } = usePushNotification()
 const { isMobile, logDeviceInfo, isSmartDevice } = useDevice()
 
@@ -85,6 +87,10 @@ onMounted(async () => {
 
   size = await storage.getStorageSize('user');
   console.log(`Dung lượng user: ${size}`);
+
+  await storage.calculateAllKeysSize()
+
+  classificationCardStorage.getList()
 })
 
 // Optional: theo dõi system thay đổi

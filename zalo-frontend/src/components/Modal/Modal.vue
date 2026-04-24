@@ -1,7 +1,6 @@
 <template>
-    <ion-modal ref="modal" :enter-animation="enterAnimation" :leave-animation="leaveAnimation"
-        class="custom-modal">
-        <ion-content class="" :scroll-y="false">
+    <ion-modal ref="modal" :enter-animation="enterAnimation" :leave-animation="leaveAnimation" class="custom-modal">
+        <ion-content class="ion-content-layout" :scroll-y="false">
             <ion-toolbar class="px-4">
                 <!-- BACK BUTTON -->
                 <ion-buttons slot="start" v-if="isDisplayBackButton && isShowBackButton">
@@ -17,7 +16,7 @@
             </ion-toolbar>
 
             <!-- body slot: nội dung truyền từ bên ngoài -->
-            <div class="px-4 h-full">
+            <div class="px-4 pb-4 body-wrapper">
                 <slot />
             </div>
 
@@ -61,7 +60,7 @@ defineExpose({
 provide("modalDismiss", dismiss)
 
 const titlesNotDisplayBackButton = computed(() => [
-    t("setting"), t("addFriend"), t("createGroup")
+    t("setting"), t("addFriend"), t("createGroup"), t("classificationTagManagement")
 ])
 
 const enterAnimation = (baseEl: any) => {
@@ -95,6 +94,8 @@ watch(() => props.title, () => {
     } else {
         isShowBackButton.value = false
     }
+
+    console.log(props.title)
 })
 </script>
 
@@ -104,5 +105,28 @@ watch(() => props.title, () => {
     /* 👈 chỉnh ở đây */
     --width: 500px;
     --border-radius: 12px;
+}
+
+/* Hoặc đơn giản hơn là ép div bọc slot */
+ion-content::part(container) {
+    height: 100%;
+}
+
+/* Ép inner content của Ionic sử dụng Flexbox */
+.ion-content-layout::part(scroll) {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    /* Ngăn scroll ở cấp độ này */
+}
+
+.body-wrapper {
+    flex: 1;
+    /* Chiếm toàn bộ phần còn lại sau khi trừ toolbar */
+    min-height: 0;
+    /* Quan trọng: để flex child có thể scroll */
+    display: flex;
+    flex-direction: column;
 }
 </style>

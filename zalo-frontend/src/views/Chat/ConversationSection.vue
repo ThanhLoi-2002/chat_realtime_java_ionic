@@ -1,18 +1,18 @@
 <template>
-  <div class="p-4 dark:text-white flex flex-col gap-3">
-    <div class="flex justify-between gap-2">
-      <span class="text-xl font-light">
+  <div class="px-4 py-3 dark:text-white flex flex-col gap-3">
+    <div class="flex justify-between items-center gap-2">
+      <span class="text-lg font-light">
         {{ t('message') }}
       </span>
       <div class="flex gap-2">
-        <ion-button @click="goScan">
-          <i class="fas fa-qrcode"></i>
+        <ion-button @click="goScan" size="medium">
+          <i class="fas fa-qrcode text-[10px]"></i>
         </ion-button>
-        <ion-button :onClick="() => openModal('addFriend')">
-          <i class="fas fa-user-plus"></i>
+        <ion-button :onClick="() => openModal('addFriend')" size="medium">
+          <i class="fas fa-user-plus text-[10px]"></i>
         </ion-button>
-        <ion-button :onClick="() => openModal('createGroup')">
-          <i class="fa-solid fa-users-line"></i>
+        <ion-button :onClick="() => openModal('createGroup')" size="medium">
+          <i class="fa-solid fa-users-line text-[10px]"></i>
         </ion-button>
       </div>
     </div>
@@ -28,12 +28,14 @@
     </modal>
 
     <input :placeholder="t('search') + '...'" class="w-full px-4 py-2 rounded-lg
-         bg-white text-gray-800
+         bg-white text-gray-800 text-base
          dark:bg-gray-800 dark:text-gray-200
          placeholder-gray-400 dark:placeholder-gray-500
          border border-gray-200 dark:border-gray-700
          focus:outline-none focus:ring-1 focus:ring-blue-400" />
   </div>
+
+  <header-filter v-if="!isSmartDevice()"/>
 
   <div ref="conversationRef" class="flex-1 overflow-y-auto max-h-[73%] sm:max-h-full" @scroll="scrollMore">
     <conversation-u-i v-for="item in conversationStorage.conversations" :key="item.id" @click="selectConversation(item)"
@@ -51,6 +53,7 @@ import { ConversationType, UserType } from '@/types/entities';
 import { useScroll } from '@/composables/useScroll';
 import { useRouter } from 'vue-router';
 import { useDevice } from '@/composables/useDevice';
+import HeaderFilter from './component/HeaderFilter.vue';
 
 const CreateGroupUI = defineAsyncComponent(() => import('./component/CreateGroupUI.vue'));
 const AddFriendUI = defineAsyncComponent(() => import('./component/AddFriendUI.vue'));
@@ -58,6 +61,7 @@ const FriendProfileUI = defineAsyncComponent(() => import('./component/FriendPro
 
 const { t } = useTranslate()
 const { onScroll } = useScroll()
+const { isSmartDevice } = useDevice()
 
 const conversationStorage = useConversationStore()
 const selectedUser = ref<UserType | null>(null)

@@ -109,3 +109,9 @@ export type MediaType = BaseType & {
     height: number
     messageContent?: string// content của message 
 }
+
+export type ClassificationCardType = BaseType & {
+    name: string
+    color: string
+    position: number
+}
