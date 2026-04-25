@@ -100,6 +100,29 @@ export const useClassificationCardStore = defineStore('classificationCard', {
                 })
                 return undefined
             }
+        },
+
+        async assignConvToCard(id: number, convId: number, type: string) {
+            try {
+                const result: any = await classificationCardApi.assignConvToCard(id, convId, type);
+
+                if (type == "remove") {
+                    const idx = this.cards.findIndex(c => c.id == id)
+
+                    if (idx != -1) {
+                        this.cards[idx].conversationIds = this.cards[idx].conversationIds.filter(i => i != convId)
+                    }
+                } 
+                // else {
+                    
+                // }
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return undefined
+            }
         }
     }
 })

@@ -27,10 +27,15 @@
 
         <!-- Bottom -->
         <div class="flex justify-between items-center">
-          <p class="text-sm truncate
+          <div class="flex gap-1">
+            <ClassificationCard :conv="conversation" />
+
+            <p class="text-sm truncate
                  text-gray-500 dark:text-gray-400">
-            {{ lastMessageContent }}
-          </p>
+              {{ lastMessageContent }}
+            </p>
+          </div>
+
 
           <div class="flex gap-2 ml-2">
             <span v-if="conversation.isMention" class="flex items-center justify-center min-w-7 h-5 px-1
@@ -55,6 +60,8 @@
 <script setup lang="ts">
 import { style } from '@/assets/tailwindcss';
 import GroupAvatar from '@/components/Avatar/GroupAvatar.vue';
+import ClassificationCard from '@/components/Classification/ClassificationCard.vue';
+import { useClassCard } from '@/composables/useClassCard';
 import { useConversation } from '@/composables/useConversation';
 import { useDateTime } from '@/composables/useDateTime';
 import { useMessage } from '@/composables/useMessage';
@@ -74,6 +81,7 @@ const userStorage = useUserStore()
 const { getUserNameFromLastMessage, conversationAvatar, conversationName, isGroup } = useConversation()
 const { timeAgo } = useDateTime()
 const { stripMentionTag } = useMessage()
+const { getClassCard } = useClassCard()
 
 const MAX_UNREAD = 5;
 

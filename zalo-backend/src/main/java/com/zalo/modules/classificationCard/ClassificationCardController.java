@@ -1,6 +1,7 @@
 package com.zalo.modules.classificationCard;
 
 import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
+import com.zalo.modules.classificationCard.dto.request.AssignClassificationCard;
 import com.zalo.modules.classificationCard.dto.request.ClassificationCardRequest;
 import com.zalo.modules.classificationCard.dto.request.PositionUpdateRequest;
 import com.zalo.modules.classificationCard.dto.response.ClassificationCardResponse;
@@ -15,7 +16,7 @@ import java.util.List;
 @RequestMapping("/classification-card")
 @RequiredArgsConstructor
 public class ClassificationCardController {
-    private  final ClassificationCardService service;
+    private final ClassificationCardService service;
 
     @GetMapping
     public List<ClassificationCardResponse> getAll(@CurrentUser User user) {
@@ -40,5 +41,14 @@ public class ClassificationCardController {
     @PutMapping("/update-positions")
     public void updatePositions(@RequestBody List<PositionUpdateRequest> updates) {
         service.updatePositions(updates);
+    }
+
+    @PatchMapping("/{id}/assign-card")
+    public void assignCard(
+            @PathVariable Long id,
+            @RequestBody AssignClassificationCard dto,
+            @CurrentUser User user) {
+
+        service.assignCardToConversation(id, dto, user.getId());
     }
 }

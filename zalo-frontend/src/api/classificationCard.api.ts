@@ -14,6 +14,10 @@ const updatePositions = async (data: UpdateClassificationPositionType[]) => {
     return await axios.put<IResponse>(`/classification-card/update-positions`, data);
 }
 
+const assignConvToCard = async (id: number, convId: number, type: string) => {
+    return await axios.patch<IResponse>(`/classification-card/${id}/assign-card`, { convId, type });
+}
+
 const getAll = async () => {
     return await axios.get<IResponse>(`/classification-card`);
 }
@@ -23,5 +27,5 @@ const remove = async (id: number) => {
 }
 
 export const classificationCardApi = {
-    create, update, getAll, remove, updatePositions
+    create, update, getAll, remove, updatePositions, assignConvToCard
 }

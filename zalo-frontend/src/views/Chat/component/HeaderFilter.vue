@@ -7,7 +7,7 @@
         <span class="text-gray-600 hover:text-gray-400 dark:text-gray-400 dark:hover:text-gray-200 cursor-pointer">{{
             t("haveNotReadYet") }}</span>
 
-        <div id="tag-menu-trigger"
+        <div id="open-class-card"
             class="flex items-center gap-1 ml-auto cursor-pointer text-gray-500 hover:text-slate-400 dark:text-gray-300 dark:hover:text-white">
             <span>{{ t("classify") }}</span>
             <ion-icon :icon="chevronDownOutline" class="text-xs"></ion-icon>
@@ -16,7 +16,7 @@
         <ion-icon :icon="ellipsisHorizontalOutline"
             class="text-gray-500 hover:text-slate-400 dark:text-gray-400 cursor-pointer dark:hover:text-white text-lg"></ion-icon>
 
-        <ion-popover ref="popoverRef" trigger="tag-menu-trigger" trigger-action="click" :dismiss-on-select="false"
+        <ion-popover ref="popoverRef" trigger="open-class-card" trigger-action="click" :dismiss-on-select="false"
             class="custom-popover">
             <div class="dark:text-gray-200 w-56 py-2 shadow-xl border border-gray-500 dark:border-gray-700 rounded-lg"
                 :class="[style.bg.primary]">
@@ -44,9 +44,7 @@
         <modal ref="classificationTagRef" :title="t(pageModal)" :go-back="() => goPage('classificationTagManagement')"
             :isDisplayBackButton="pageModal != Object.keys(pages)[0]">
             <transition name="slide" mode="out-in">
-                <!-- <KeepAlive> -->
                 <component :is="pages[pageModal]" :key="pageModal" :goPage="goPage" />
-                <!-- </KeepAlive> -->
             </transition>
         </modal>
     </div>
@@ -86,7 +84,6 @@ const openManager = () => {
 
 const goPage = (page: ComponentKey) => {
     pageModal.value = page
-    console.log(pageModal.value)
 }
 
 const filterByTag = (item: ClassificationCardType) => {

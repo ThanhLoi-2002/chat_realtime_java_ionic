@@ -20,8 +20,13 @@ public class ClassificationConversation {
     @Column(name = "conversation_id")
     private Long conversationId;
 
-    public ClassificationConversation(Long classificationId, Long conversationId) {
+    @Id
+    @Column(name = "user_id")
+    private Long userId;
+
+    public ClassificationConversation(Long classificationId, Long conversationId, Long userId) {
         this.classificationId = classificationId;
         this.conversationId = conversationId;
+        this.userId = userId;
     }
 }

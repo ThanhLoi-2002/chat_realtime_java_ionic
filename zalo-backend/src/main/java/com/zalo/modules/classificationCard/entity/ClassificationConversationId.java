@@ -8,4 +8,5 @@ import java.io.Serializable;
 public class ClassificationConversationId implements Serializable {
     private Long classificationId;
     private Long conversationId;
+    private Long userId;
 }
