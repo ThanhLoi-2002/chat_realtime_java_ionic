@@ -21,7 +21,7 @@ export const useClassificationCardStore = defineStore('classificationCard', {
         async create(data: ClassificationCardFormType) {
             try {
                 const result: any = await classificationCardApi.create(data);
-                this.cards.push(result.result)
+                this.cards.push({ ...result.result, conversationIds: data.conversationIds })
 
                 toast({
                     color: "success",
@@ -43,7 +43,7 @@ export const useClassificationCardStore = defineStore('classificationCard', {
 
                 const idx = this.cards.findIndex(i => i.id == id)
 
-                if (idx != -1) this.cards[idx] = result.result
+                if (idx != -1) this.cards[idx] = { ...result.result, conversationIds: data.conversationIds }
 
                 toast({
                     color: "success",

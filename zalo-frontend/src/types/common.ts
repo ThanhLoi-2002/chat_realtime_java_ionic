@@ -57,7 +57,10 @@ export type MessageFilter = BaseFilter & {
   linkMetadata?: boolean
 }
 
-export type ConversationFilter = BaseFilter
+export type ConversationFilter = BaseFilter & {
+  name?: string
+  convIds?: number[]
+}
 
 export type GetPresignedUrlType = {
   folder: string

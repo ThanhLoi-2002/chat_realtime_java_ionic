@@ -20,10 +20,12 @@
             class="custom-popover">
             <div class="dark:text-gray-200 w-56 py-2 shadow-xl border border-gray-500 dark:border-gray-700 rounded-lg"
                 :class="[style.bg.primary]">
-                <div v-for="tag in classificationCardStorage.cards" :key="tag.id" @click="filterByTag(tag.id)"
+                <div v-for="tag in classificationCardStorage.cards" :key="tag.id" @click="filterByTag(tag)"
                     class="flex items-center px-4 py-2.5 hover:bg-gray-300/30 dark:hover:bg-gray-700 cursor-pointer transition-colors">
 
-                    <input type="checkbox" :value="tag.id" v-model="selectedTagIds" @click.stop class="mr-3 pointer-events-none rounded border-gray-300 text-blue-600 focus:ring-blue-500 
+                    <input type="checkbox" :value="tag.id"
+                        :checked="selectedClassCards.some(c => c.id === tag.id)"
+                        class="mr-3 pointer-events-none rounded border-gray-300 text-blue-600 focus:ring-blue-500 
                         dark:border-gray-600 dark:bg-gray-700 dark:checked:bg-blue-500" />
 
                     <i class="fas fa-tag w-3 h-3 rounded-sm mr-3" :style="{ color: tag.color }"></i>
@@ -59,12 +61,14 @@ import Modal from '@/components/Modal/Modal.vue';
 import { useClassificationCardStore } from '@/stores/classificationCard.storage';
 import ClassificationCards from '@/views/ClassificationCard/ClassificationCards.vue';
 import AddOrUpdateClassificationCard from '@/views/ClassificationCard/AddOrUpdateClassificationCard.vue';
+import { ClassificationCardType } from '@/types/entities';
+
+const selectedClassCards = defineModel<ClassificationCardType[]>({ default: [] })
 
 const { t } = useTranslate()
 const classificationCardStorage = useClassificationCardStore()
 const classificationTagRef = ref<any>(null)
 const popoverRef = ref<any>(null);
-const selectedTagIds = ref<number[]>([]);
 
 const pageModal = ref<ComponentKey>("classificationTagManagement")
 const pages = {
@@ -73,20 +77,6 @@ const pages = {
 }
 
 type ComponentKey = keyof typeof pages;
-
-const filterByTag = (tagId: number) => {
-    const index = selectedTagIds.value.indexOf(tagId);
-    if (index > -1) {
-        // Nếu đã có thì xóa đi (uncheck)
-        selectedTagIds.value.splice(index, 1);
-    } else {
-        // Nếu chưa có thì thêm vào (check)
-        selectedTagIds.value.push(tagId);
-    }
-
-    // Gọi logic filter dữ liệu của bạn ở đây nếu cần
-    console.log("Tags đã chọn:", selectedTagIds.value);
-};
 
 const openManager = () => {
     goPage('classificationTagManagement')
@@ -97,6 +87,19 @@ const openManager = () => {
 const goPage = (page: ComponentKey) => {
     pageModal.value = page
     console.log(pageModal.value)
+}
+
+const filterByTag = (item: ClassificationCardType) => {
+    const idx = selectedClassCards.value.findIndex(c => c.id == item.id)
+
+    if (idx != -1) {
+        // Nếu đã có trong danh sách -> Xóa phần tử tại vị trí idx
+        selectedClassCards.value.splice(idx, 1)
+    } else {
+        // Nếu chưa có -> Thêm vào mảng
+        selectedClassCards.value.push(item)
+    }
+
 }
 </script>
 

@@ -4,7 +4,6 @@ import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
 import com.zalo.modules.classificationCard.dto.request.ClassificationCardRequest;
 import com.zalo.modules.classificationCard.dto.request.PositionUpdateRequest;
 import com.zalo.modules.classificationCard.dto.response.ClassificationCardResponse;
-import com.zalo.modules.classificationCard.entity.ClassificationCard;
 import com.zalo.modules.classificationCard.service.ClassificationCardService;
 import com.zalo.modules.user.entities.User;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,7 @@ public class ClassificationCardController {
 
     @GetMapping
     public List<ClassificationCardResponse> getAll(@CurrentUser User user) {
-        return service.getAll(user.getId()).stream().map(e -> new ClassificationCardResponse(e, "createdBy")).toList();
+        return service.getAll(user.getId());
     }
 
     @PostMapping

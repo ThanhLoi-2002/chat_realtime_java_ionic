@@ -6,6 +6,9 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.BeanUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @EqualsAndHashCode(callSuper = true)
 @Getter
 @Setter
@@ -14,6 +17,7 @@ public class ClassificationCardResponse extends BaseResponse {
     String name;
     String color;
     int position;
+    List<Long> conversationIds = new ArrayList<>();;
 
     public ClassificationCardResponse(ClassificationCard e, String... relations) {
         super(e, relations);

@@ -2,7 +2,10 @@ package com.zalo.modules.classificationCard.service;
 
 import com.zalo.modules.classificationCard.dto.request.ClassificationCardRequest;
 import com.zalo.modules.classificationCard.dto.request.PositionUpdateRequest;
+import com.zalo.modules.classificationCard.dto.response.ClassificationCardResponse;
 import com.zalo.modules.classificationCard.entity.ClassificationCard;
+import com.zalo.modules.classificationCard.entity.ClassificationConversation;
+import com.zalo.modules.conversation.entities.Conversation;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -11,9 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,9 +25,37 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ClassificationCardService {
     ClassificationCardRepository classificationCardRepo;
+    ClassificationConversationRepository classificationConversationRepo;
 
-    public List<ClassificationCard> getAll(Long userId) {
-        return classificationCardRepo.findAllByCuAndSttOrderByPositionAsc(userId, 1);
+    public List<ClassificationCardResponse> getAll(Long userId) {
+        // 1. Lấy tất cả các thẻ của user
+        List<ClassificationCard> cards = classificationCardRepo.findAllByCuAndSttOrderByPositionAsc(userId, 1);
+
+        if (cards.isEmpty()) return new ArrayList<>();
+
+        List<Long> cardIds = cards.stream().map(ClassificationCard::getId).collect(Collectors.toList());
+
+        // 2. Lấy tất cả các bản ghi trung gian kèm theo thông tin Conversation
+        List<ClassificationConversation> relations = classificationConversationRepo.findByClassificationIdIn(cardIds);
+
+        // --- BẮT ĐẦU GHÉP MẢNG ---
+
+        // 3. Gom nhóm ConversationId theo ClassificationId: Map<Long, List<Long>>
+        Map<Long, List<Long>> convIdsByCardId = relations.stream()
+                .collect(Collectors.groupingBy(
+                        ClassificationConversation::getClassificationId,
+                        Collectors.mapping(ClassificationConversation::getConversationId, Collectors.toList())
+                ));
+
+        return cards.stream().map(card -> {
+            ClassificationCardResponse dto = new ClassificationCardResponse(card);
+
+            // Lấy danh sách ID conv thuộc card này từ Map
+            List<Long> convIds = convIdsByCardId.getOrDefault(card.getId(), new ArrayList<>());
+
+            dto.setConversationIds(convIds);
+            return dto;
+        }).collect(Collectors.toList());
     }
 
     public ClassificationCard create(ClassificationCardRequest card, Long userId) {
@@ -38,7 +69,20 @@ public class ClassificationCardService {
         e.setPosition(card.position);
         e.setCu(userId);
 
-        return classificationCardRepo.save(e);
+        classificationCardRepo.save(e);
+
+        // 2. Lưu trực tiếp vào bảng trung gian bằng ID
+        if (card.conversationIds != null && !card.conversationIds.isEmpty()) {
+            Long cardId = e.getId();
+
+            List<ClassificationConversation> relations = card.conversationIds.stream()
+                    .map(convId -> new ClassificationConversation(cardId, convId))
+                    .collect(Collectors.toList());
+
+            classificationConversationRepo.saveAll(relations);
+        }
+
+        return e;
     }
 
     public ClassificationCard update(Long id, ClassificationCardRequest card, Long userId) {
@@ -61,7 +105,39 @@ public class ClassificationCardService {
         e.setColor(card.color);
         e.setPosition(card.position);
 
-        return classificationCardRepo.save(e);
+        classificationCardRepo.save(e);
+
+        if (card.conversationIds != null && !card.conversationIds.isEmpty()) {
+            updateClassificationConvs(id, card.conversationIds);
+        }
+
+        return e;
+    }
+
+    public void updateClassificationConvs(Long cardId, List<Long> newConvIds) {
+        // Lấy danh sách ID hiện tại từ DB
+        List<Long> currentIds = classificationConversationRepo.findConversationIdsByCardId(cardId);
+
+        // Những ID cần xóa: Có trong DB nhưng không có trong danh sách mới
+        List<Long> idsToRemove = currentIds.stream()
+                .filter(id -> !newConvIds.contains(id))
+                .collect(Collectors.toList());
+
+        // Những ID cần thêm: Có trong danh sách mới nhưng chưa có trong DB
+        List<Long> idsToAdd = newConvIds.stream()
+                .filter(id -> !currentIds.contains(id))
+                .toList();
+
+        if (!idsToRemove.isEmpty()) {
+            classificationConversationRepo.deleteByClassificationIdAndConversationIdIn(cardId, idsToRemove);
+        }
+
+        if (!idsToAdd.isEmpty()) {
+            List<ClassificationConversation> relations = idsToAdd.stream()
+                    .map(convId -> new ClassificationConversation(cardId, convId))
+                    .collect(Collectors.toList());
+            classificationConversationRepo.saveAll(relations);
+        }
     }
 
     public void delete(Long id) {

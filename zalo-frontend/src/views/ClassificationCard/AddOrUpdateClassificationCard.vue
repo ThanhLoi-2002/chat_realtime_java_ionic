@@ -11,6 +11,10 @@ import LoadingSpinner from '@/components/Loading/LoadingSpinner.vue';
 import { ConversationType } from '@/types/entities';
 import Modal from '@/components/Modal/Modal.vue';
 import AddDialogue from './component/AddDialogue.vue';
+import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
+import { useConversation } from '@/composables/useConversation';
+import GroupAvatar from '@/components/Avatar/GroupAvatar.vue';
+import { useConversationStore } from '@/stores/conversation.storage';
 
 const props = defineProps<{
     goPage: (value: "classificationTagManagement" | "detail") => void
@@ -26,12 +30,15 @@ interface ColorOption {
 const colorPickerRef = ref(null);
 const tagTitle = ref('');
 const classCardStorage = useClassificationCardStore()
+const convStorage = useConversationStore()
 const showColorPicker = ref(false);
 const selectedColor = ref('#EF4444'); // Màu đỏ mặc định
 const isLoading = ref(false)
 const selectedConvs = ref<ConversationType[]>([])
 const isUpdate = ref(false)
 const modalRef = ref()
+
+const { isGroup, getRecipient, conversationName } = useConversation()
 
 const colors: ColorOption[] = [
     { id: 1, hex: '#EF4444' }, // Red
@@ -52,6 +59,11 @@ const selectColor = (color: string) => {
     selectedColor.value = color;
     showColorPicker.value = false;
 };
+
+const removeConv = (id: number) => {
+    const idx = selectedConvs.value.findIndex(c => c.id == id)
+    if (idx != -1) selectedConvs.value.splice(idx, 1)
+}
 
 onClickOutside(colorPickerRef, () => {
     showColorPicker.value = false;
@@ -91,6 +103,10 @@ watch(
             tagTitle.value = newVal.name
             selectedColor.value = newVal.color
             isUpdate.value = true
+
+            const convs = convStorage.conversations;
+            const idSet = new Set(newVal.conversationIds);
+            selectedConvs.value = convs.filter(conv => idSet.has(conv.id));
         } else {// create
             tagTitle.value = ''
             selectedColor.value = '#EF4444'
@@ -126,17 +142,22 @@ watch(
                     <label class="text-sm text-slate-400">{{ t('taggedConversations') }}</label>
 
                     <button
-                        class="flex items-center text-blue-400 hover:text-blue-300 font-medium transition-colors cursor-pointer" @click="() => modalRef?.present()">
+                        class="flex items-center text-blue-400 hover:text-blue-300 font-medium transition-colors cursor-pointer"
+                        @click="() => modalRef?.present()">
                         <ion-icon :icon="addOutline" class="text-xl mr-1" />
                         {{ t('addDialogue') }}
                     </button>
 
-                    <div class="flex items-center space-x-3 bg-transparent">
-                        <div class="w-10 h-10 rounded-full overflow-hidden border border-slate-700 shadow-lg">
-                            <img src="https://vfiles.alphacoders.com/985/985338.jpg" alt="Avatar"
-                                class="w-full h-full object-cover" />
+                    <div v-for="conv in selectedConvs" :key="conv.id"
+                        class="flex items-center justify-between space-x-3 bg-transparent cursor-pointer">
+                        <div class="flex items-center gap-2">
+                            <CircleAvatar v-if="!isGroup(conv)" :user="getRecipient(conv)" :is-disabled="true"
+                                size="size-9" />
+                            <GroupAvatar v-else :conversation="conv" :is-disabled="true" size="size-9" />
+                            <span class="font-medium text-sm">{{ conversationName(conv) }}</span>
                         </div>
-                        <span class="font-medium">Buubuu Au</span>
+
+                        <i class="fa fa-trash text-red-500 hover:text-red-400" @click="removeConv(conv.id)" />
                     </div>
                 </div>
             </div>
@@ -169,7 +190,7 @@ watch(
         </div>
 
         <Modal ref="modalRef" :title="t('addDialogue')">
-            <AddDialogue/>
+            <AddDialogue v-model="selectedConvs" />
         </Modal>
     </div>
 </template>

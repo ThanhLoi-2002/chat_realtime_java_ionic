@@ -114,4 +114,5 @@ export type ClassificationCardType = BaseType & {
     name: string
     color: string
     position: number
+    conversationIds: number[]
 }

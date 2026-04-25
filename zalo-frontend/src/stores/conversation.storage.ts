@@ -4,10 +4,14 @@ import { conversationApi } from '@/api/conversation.api'
 import { toast } from '@/utils/toast'
 import { appLimit } from '@/utils/constant'
 import { storage } from '@/services/storage.service.'
+import { ConversationFilter } from '@/types/common'
+import { useConversation } from '@/composables/useConversation'
+import { normalizeText } from '@/utils/helper'
 
 interface ConversationState {
     isLoading: boolean,
     conversations: ConversationType[],
+    filteredConvs: ConversationType[],
     conversation?: ConversationType,
     page: number
     hasMore: boolean
@@ -19,6 +23,7 @@ export const useConversationStore = defineStore('conversation', {
     state: (): ConversationState => ({
         isLoading: false,
         conversations: [],
+        filteredConvs: [],
         conversation: undefined,
         page: -1,
         hasMore: true,
@@ -455,6 +460,30 @@ export const useConversationStore = defineStore('conversation', {
             }
 
             this.saveConversationsLocal(this.conversations)
+        },
+
+        setFilter(options?: ConversationFilter) {
+            if (!options) {
+                this.filteredConvs = []
+            } else {
+                const { convIds, name } = options
+                const { conversationName } = useConversation()
+
+                // Chuyển convIds thành Set để kiểm tra (has) với tốc độ O(1) thay vì O(n)
+                const idSet = new Set(convIds || []);
+                const searchKeyword = normalizeText(name || "");
+
+                this.filteredConvs = this.conversations.filter((conv) => {
+                    // 1. Kiểm tra xem ID có nằm trong danh sách cho phép không (nếu convIds có dữ liệu)
+                    const matchesId = idSet.has(conv.id);
+
+                    // 2. Lấy tên hội thoại thông qua helper và kiểm tra keyword
+                    const cName = normalizeText(conversationName(conv) || "");
+                    const matchesName = cName.includes(searchKeyword);
+
+                    return matchesId && matchesName;
+                });
+            }
         },
 
         reset() {
