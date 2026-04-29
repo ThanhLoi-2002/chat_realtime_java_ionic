@@ -126,4 +126,18 @@ public interface ConversationRepository extends JpaRepository<Conversation, Long
             @Param("ids") List<Long> ids,
             @Param("userId") Long userId
     );
+
+    @Query(value = """
+            select c from Conversation c
+            LEFT JOIN FETCH c.recipient r
+            LEFT JOIN FETCH c.createdBy cr
+            where c.type = :type
+              and ((c.recipientId in :userIds and c.cu = :userId) or (c.recipientId = :userId and c.cu in :userIds))
+              and c.stt = 1
+            """)
+    List<Conversation> findByUserIdsAndTypePrivate(
+            @Param("userIds") List<Long> userIds,
+            @Param("userId") Long userId,
+            @Param("type") ConversationType type
+    );
 }

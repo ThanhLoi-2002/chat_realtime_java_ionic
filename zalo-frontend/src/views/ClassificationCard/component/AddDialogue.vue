@@ -95,11 +95,12 @@ import GroupAvatar from '@/components/Avatar/GroupAvatar.vue';
 import ClassificationChip from '@/components/Chip/ClassificationChip.vue';
 import { useConversation } from '@/composables/useConversation';
 import { useTranslate } from '@/composables/useTranslate';
+import { useClassificationCardStore } from '@/stores/classificationCard.storage';
 import { useConversationStore } from '@/stores/conversation.storage';
 import { ConversationType } from '@/types/entities';
 import { ConversationEnum } from '@/types/enum'
 import { normalizeText } from '@/utils/helper';
-import { computed, inject, ref } from 'vue';
+import { computed, inject, onMounted, ref } from 'vue';
 
 const selectedConvs = defineModel<ConversationType[]>({ default: [] });
 
@@ -107,14 +108,28 @@ const dismiss = inject<() => void>("modalDismiss")
 const { t } = useTranslate()
 const keyword = ref("");
 const convStorage = useConversationStore()
+const classCardStorage = useClassificationCardStore()
 const { conversationName, getRecipient } = useConversation()
 
 // Filter logic
 const filtered = computed(() => {
     const search = normalizeText(keyword.value).toLowerCase();
+    const activeId = classCardStorage.activeCardId; // Lấy ID đang chọn từ store
+
     return convStorage.conversations.filter((f) => {
         const name = conversationName(f) || "";
-        return normalizeText(name).toLowerCase().includes(search);
+        const matchesSearch = normalizeText(name).toLowerCase().includes(search);
+
+        // 2. Lọc theo Tag (Classification Card)
+        let matchesTag = true;
+        if (activeId !== 0) { // Nếu activeId = 0 là "Tất cả"
+            // Tìm card tương ứng trong store
+            const currentCard = classCardStorage.cards.find(c => c.id === activeId);
+            // Kiểm tra xem convId có nằm trong danh sách conversationIds của card đó không
+            matchesTag = currentCard?.conversationIds?.includes(f.id) || false;
+        }
+
+        return matchesSearch && matchesTag;
     });
 });
 
@@ -167,6 +182,10 @@ const removeConv = (conv: ConversationType) => {
 const add = async () => {
     dismiss?.()
 }
+
+onMounted(() => {
+    classCardStorage.setActiveCard(0)
+})
 </script>
 
 <style scoped>

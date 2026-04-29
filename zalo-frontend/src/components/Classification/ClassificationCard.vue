@@ -9,8 +9,9 @@
 </template>
 <script setup lang="ts">
 import { useClassCard } from '@/composables/useClassCard';
+import { useClassificationCardStore } from '@/stores/classificationCard.storage';
 import { ConversationType } from '@/types/entities';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps<{
     conv?: ConversationType
@@ -20,6 +21,15 @@ const props = defineProps<{
     isChatHeader?: boolean
 }>()
 
+const classCardStorage = useClassificationCardStore()
+
 const { getClassCard } = useClassCard()
-const isDisplay = ref(props.isChatHeader || getClassCard(props.conv?.id)?.color || props.color)
+
+const checkDisplay = () => getClassCard(props.conv?.id)?.color || props.isChatHeader || props.color
+
+const isDisplay = ref(checkDisplay())
+
+watch(() => classCardStorage.cards, () => {
+    isDisplay.value = checkDisplay()
+}, { deep: true })
 </script>

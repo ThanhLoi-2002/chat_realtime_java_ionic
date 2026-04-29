@@ -5,17 +5,11 @@ import { useTranslate } from '@/composables/useTranslate';
 import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
 import { useClassificationCardStore } from '@/stores/classificationCard.storage';
 
-interface Tag {
-    id: number;
-    name: string;
-}
-
 const classCardStorage = useClassificationCardStore()
 const { t } = useTranslate()
-const activeTagId = ref(0);
 
 const selectTag = (id: number) => {
-    activeTagId.value = id;
+    classCardStorage.setActiveCard(id);
 };
 
 const scrollContainer = ref<HTMLElement | null>(null);
@@ -47,7 +41,7 @@ const scroll = (direction: 'left' | 'right') => {
             <button @click="selectTag(0)"
                 class="px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200 border"
                 :class="[
-                    activeTagId === 0
+                    classCardStorage.activeCardId === 0
                         ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-500/30'
                         : 'bg-slate-100 dark:bg-[#2a2f36] border-transparent text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:bg-[#363c44]'
                 ]">
@@ -57,7 +51,7 @@ const scroll = (direction: 'left' | 'right') => {
             <button v-for="tag in classCardStorage.cards" :key="tag.id" @click="selectTag(tag.id)"
                 class="px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200 border"
                 :class="[
-                    activeTagId === tag.id
+                    classCardStorage.activeCardId === tag.id
                         ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-500/30'
                         : 'bg-slate-100 dark:bg-[#2a2f36] border-transparent text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:bg-[#363c44]'
                 ]">

@@ -55,6 +55,13 @@ const addMembers = async (id: number, memberIds: number[]) => {
   );
 };
 
+const findByUserIdsAndTypePrivate = async (userIds: number[]) => {
+  return await axios.post<IResponse>(
+    `/conversations/get-by-userIds`,
+    userIds,
+  );
+};
+
 const fetchGroupByCode = async (inviteCode: string) => {
   return await axios.get<IResponse>(`/conversations/by-code/${inviteCode}`);
 };
@@ -113,5 +120,6 @@ export const conversationApi = {
   ordainSilverKey,
   revokeSilverKey,
   getConversation,
-  transferGoldenKey
+  transferGoldenKey,
+  findByUserIdsAndTypePrivate
 };

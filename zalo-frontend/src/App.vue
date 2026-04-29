@@ -28,12 +28,14 @@ import { toast } from './utils/toast';
 import { usePushNotification } from './composables/usePushNotification';
 import { storage } from './services/storage.service.';
 import { useClassificationCardStore } from './stores/classificationCard.storage';
+import { useFriendshipStore } from './stores/friendship.storage';
 
 const route: any = useRoute();
 const langStore = useLangStore()
 const userStorage = useUserStore()
 const systemStorage = useSystemStore()
 const classificationCardStorage = useClassificationCardStore()
+const friendshipStorage = useFriendshipStore()
 const { initPush } = usePushNotification()
 const { isMobile, logDeviceInfo, isSmartDevice } = useDevice()
 
@@ -91,6 +93,7 @@ onMounted(async () => {
   await storage.calculateAllKeysSize()
 
   classificationCardStorage.getList()
+  friendshipStorage.getFriends()
 })
 
 // Optional: theo dõi system thay đổi

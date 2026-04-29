@@ -8,6 +8,7 @@ import { defineStore } from 'pinia'
 interface State {
     cards: ClassificationCardType[]
     card: ClassificationCardType | undefined
+    activeCardId: number
     isLoading: boolean
 }
 
@@ -15,9 +16,14 @@ export const useClassificationCardStore = defineStore('classificationCard', {
     state: (): State => ({
         cards: [],
         card: undefined,
+        activeCardId: 0,
         isLoading: false,
     }),
     actions: {
+        setActiveCard(value?: number) {
+            if (value) this.activeCardId = value
+            else this.activeCardId = 0
+        },
         async create(data: ClassificationCardFormType) {
             try {
                 const result: any = await classificationCardApi.create(data);
@@ -112,10 +118,10 @@ export const useClassificationCardStore = defineStore('classificationCard', {
                     if (idx != -1) {
                         this.cards[idx].conversationIds = this.cards[idx].conversationIds.filter(i => i != convId)
                     }
-                } 
-                // else {
-                    
-                // }
+                }
+                else {
+                    this.getList()
+                }
             } catch (e: any) {
                 toast({
                     color: "danger",

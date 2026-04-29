@@ -486,6 +486,20 @@ export const useConversationStore = defineStore('conversation', {
             }
         },
 
+        async findByUserIdsAndTypePrivate(userIds: number[]) {
+            try {
+                const result: any = await conversationApi.findByUserIdsAndTypePrivate(userIds);
+
+                return result.result
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return []
+            }
+        },
+
         reset() {
             this.conversations = []
             this.conversation = undefined

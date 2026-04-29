@@ -1,6 +1,6 @@
 <template>
     <ProfileUI v-if="userStorage.user?.id == user?.id" :go-page="() => goPage?.('addFriend')" />
-    <div v-else class="h-[85%]">
+    <div v-else class="h-full">
         <div class="relative">
             <div class="h-36 cursor-pointer">
                 <img :src="user?.cover?.url ?? RANDOM_AVATAR" class="w-full h-full rounded-lg" />

@@ -70,6 +70,12 @@ public class ConversationController {
         return conversationService.getByInviteCode(code);
     }
 
+    @PostMapping("/get-by-userIds")
+    public List<ConversationResponse> findByUserIdsAndTypePrivate(@RequestBody List<Long> userIds, @CurrentUser User user) {
+        return conversationService.findByUserIdsAndTypePrivate(userIds, user.getId())
+                .stream().map(c -> new ConversationResponse(c, "recipient", "createdBy")).toList();
+    }
+
     @PostMapping("/{conversationId}/add-members")
     @CheckConversationMember
     public void addMembers(@PathVariable Long conversationId, @CurrentUser User user, @RequestBody List<Long> memberIds) {

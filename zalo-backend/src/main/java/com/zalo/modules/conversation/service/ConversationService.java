@@ -451,4 +451,8 @@ public class ConversationService implements ConversationInterface {
 
         websocketService.updateMemberList(conversationId, memberService.getMembers(conversationId));
     }
+
+    public List<Conversation> findByUserIdsAndTypePrivate(List<Long> userIds, Long userId) {
+        return conversationRepo.findByUserIdsAndTypePrivate(userIds, userId, ConversationType.PRIVATE);
+    }
 }

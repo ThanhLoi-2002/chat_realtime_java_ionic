@@ -15,6 +15,7 @@ public interface ClassificationConversationRepository extends JpaRepository<Clas
     void deleteByClassificationIdAndConversationIdIn(Long cardId, List<Long> convIds);
 
     void deleteByConversationIdInAndUserId(List<Long> convIds, Long userId);
+    void deleteByClassificationIdAndUserId(Long cardId, Long userId);
 
     List<ClassificationConversation> findByClassificationIdIn(List<Long> cardIds);
 

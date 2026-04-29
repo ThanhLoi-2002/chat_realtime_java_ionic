@@ -60,7 +60,7 @@ import { useConversationStore } from '@/stores/conversation.storage';
 import { useMessageStore } from '@/stores/message.storage';
 import { useUserStore } from '@/stores/user.storage';
 import { LinkMetadataType, SendMessageType, UploadFileRequest, UploadFileType } from '@/types/common';
-import { MessageEnum, ModuleEnum, ResourceEnum } from '@/types/enum';
+import { ConversationEnum, MessageEnum, ModuleEnum, ResourceEnum } from '@/types/enum';
 import { socketSubscribe, sockJSSendMessage } from '@/utils/websocket';
 import { StompSubscription } from '@stomp/stompjs';
 import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
@@ -418,7 +418,7 @@ const onKeyDown = (e: KeyboardEvent) => {
 // 2. Hàm xử lý khi gõ phím để tìm @
 const checkMention = () => {
     const selection = window.getSelection();
-    if (!selection || !selection.rangeCount) return;
+    if (!selection || !selection.rangeCount || conversationStorage.conversation?.type == ConversationEnum.PRIVATE) return;
 
     const range = selection.getRangeAt(0);
     const textBeforeCaret = range.startContainer.textContent?.slice(0, range.startOffset) || '';

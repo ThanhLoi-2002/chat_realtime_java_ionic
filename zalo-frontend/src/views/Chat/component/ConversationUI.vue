@@ -61,7 +61,6 @@
 import { style } from '@/assets/tailwindcss';
 import GroupAvatar from '@/components/Avatar/GroupAvatar.vue';
 import ClassificationCard from '@/components/Classification/ClassificationCard.vue';
-import { useClassCard } from '@/composables/useClassCard';
 import { useConversation } from '@/composables/useConversation';
 import { useDateTime } from '@/composables/useDateTime';
 import { useMessage } from '@/composables/useMessage';
@@ -81,7 +80,6 @@ const userStorage = useUserStore()
 const { getUserNameFromLastMessage, conversationAvatar, conversationName, isGroup } = useConversation()
 const { timeAgo } = useDateTime()
 const { stripMentionTag } = useMessage()
-const { getClassCard } = useClassCard()
 
 const MAX_UNREAD = 5;
 

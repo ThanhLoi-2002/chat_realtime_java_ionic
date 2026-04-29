@@ -101,7 +101,7 @@ public class ClassificationCardService {
 
         classificationCardRepo.save(e);
 
-        if (card.conversationIds != null && !card.conversationIds.isEmpty()) {
+        if (card.conversationIds != null) {
             removeAndAddClassConvs(id, card.conversationIds, userId);
         }
 
@@ -110,14 +110,18 @@ public class ClassificationCardService {
 
     public void removeAndAddClassConvs(Long cardId, List<Long> convIds, Long userId) {
         System.out.println(G.toJson(convIds));
+
+        classificationConversationRepo.deleteByClassificationIdAndUserId(cardId, userId);
+        if (!convIds.isEmpty()) {
         // xóa trước thêm sau
-        classificationConversationRepo.deleteByConversationIdInAndUserId(convIds, userId);
+        //  classificationConversationRepo.deleteByConversationIdInAndUserId(convIds, userId);
 
-        List<ClassificationConversation> relations = convIds.stream()
-                .map(convId -> new ClassificationConversation(cardId, convId, userId))
-                .collect(Collectors.toList());
+            List<ClassificationConversation> relations = convIds.stream()
+                    .map(convId -> new ClassificationConversation(cardId, convId, userId))
+                    .collect(Collectors.toList());
+            classificationConversationRepo.saveAll(relations);
+        }
 
-        classificationConversationRepo.saveAll(relations);
     }
 
     public void delete(Long id) {
@@ -160,7 +164,8 @@ public class ClassificationCardService {
 
             e.ifPresent(classificationConversationRepo::delete);
         } else {
-            removeAndAddClassConvs(id, Collections.singletonList(dto.convId), userId);
+            classificationConversationRepo.deleteByConversationIdInAndUserId(Collections.singletonList(dto.convId), userId);
+            classificationConversationRepo.save(new ClassificationConversation(id, dto.convId, userId));
         }
     }
 }
