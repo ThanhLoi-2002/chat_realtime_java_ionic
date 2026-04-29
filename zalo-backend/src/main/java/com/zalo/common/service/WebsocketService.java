@@ -1,5 +1,6 @@
 package com.zalo.common.service;
 
+import com.zalo.common.configuration.json.G;
 import com.zalo.modules.conversation.dto.IsMentionDto;
 import com.zalo.modules.conversation.dto.respone.MemberResponse;
 import com.zalo.modules.conversation.entities.Conversation;
@@ -48,7 +49,6 @@ public class WebsocketService {
                 Map<String, Object> payload = new HashMap<>();
                 payload.put("message", message);
                 payload.put("conversation", conv);
-
                 for (String sessionId : sessions) {
                     messagingTemplate.convertAndSendToUser(sessionId, "/queue/chat.newMessages", payload, userOnlineStorage.createHeaders(sessionId));
                 }

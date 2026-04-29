@@ -61,7 +61,7 @@
 
     <Modal ref="groupProfileModal" :title="t('groupProfile')">
         <transition name="slide">
-            <GroupProfile v-if="view == 'groupInfo'" :conversation="conversation" @update:view="view = $event" />
+            <GroupProfile v-if="view == 'groupInfo'" :conversation="conversation" @update:view="view = $event" :is-member="true"/>
 
             <Member v-else-if="view == 'member'" @back="view = 'groupInfo'" :is-show-back-button="true" :members="conversation.members" />
         </transition>

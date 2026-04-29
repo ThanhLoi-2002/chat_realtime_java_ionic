@@ -293,7 +293,7 @@ public class ConversationService implements ConversationInterface {
 
     public ConversationResponse getByInviteCode(String code) {
         Conversation conv = conversationRepo.findByInviteCode(code).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
-        ConversationResponse conversationResponse = new ConversationResponse(conv, "owner", "avatar");
+        ConversationResponse conversationResponse = new ConversationResponse(conv, "owner", "avatar", "lastMessage");
         conversationResponse.setMembers(memberService.getMembers(conv.getId()));
         return conversationResponse;
     }

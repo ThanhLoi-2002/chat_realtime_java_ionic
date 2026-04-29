@@ -1,6 +1,6 @@
 <template>
 
-    <div class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 h-[90%] flex flex-col rounded-md">
+    <div class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 h-full flex flex-col rounded-md">
 
         <!-- BODY -->
         <div class="flex-1 overflow-y-auto overflow-x-hidden">
@@ -43,10 +43,16 @@
                     </div>
                 </div>
 
-                <button
+                <button v-if="isMember"
                     class="mt-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 px-6 py-2 rounded-sm text-sm cursor-pointer w-[90%] transition"
                     @click="goToMessage">
                     {{ t("message") }}
+                </button>
+
+                <button v-else
+                    class="mt-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 px-6 py-2 rounded-sm text-sm cursor-pointer w-[90%] transition"
+                    @click="requestToJoinTheGroup">
+                    {{ t("requestToJoinTheGroup") }}
                 </button>
             </div>
 
@@ -84,7 +90,7 @@
             </div>
 
             <!-- MEDIA -->
-            <div class="flex flex-col gap-2 px-4 py-3 border-t-2 border-gray-200 dark:border-gray-800">
+            <div v-if="isMember" class="flex flex-col gap-2 px-4 py-3 border-t-2 border-gray-200 dark:border-gray-800">
                 <span>{{ t("image/video") }}</span>
                 <div v-if="messStorage.images.length > 0">
                     <div class="grid grid-cols-4 gap-2">
@@ -127,7 +133,7 @@
             </div>
 
             <!-- ACTIONS -->
-            <div class="border-t-2 border-gray-200 dark:border-gray-800">
+            <div v-if="isMember" class="border-t-2 border-gray-200 dark:border-gray-800">
                 <div class="px-4 py-3 flex items-center gap-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
                     <i class="fas fa-cog"></i>
                     <span>Quản lý nhóm</span>
@@ -157,12 +163,13 @@ import { UploadFileType } from '@/types/common';
 import { ConversationType } from '@/types/entities';
 import { ModuleEnum, ResourceEnum } from '@/types/enum';
 import { qrCodeUrl, ROUTE } from '@/utils/constant';
-import { inject, nextTick, ref } from 'vue';
+import { computed, inject, nextTick, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import ImageOrVideo from '@/components/Media/ImageOrVideo.vue';
 
 const props = defineProps<{
     conversation: ConversationType;
+    isMember: boolean
 }>();
 
 const { t } = useTranslate()
@@ -239,11 +246,17 @@ const goToMessage = () => {
     dismiss?.()
 }
 
+const requestToJoinTheGroup = () => {
+    convStorage.selectConversation(props.conversation)
+    router.push(ROUTE.CHATS)
+    dismiss?.()
+}
+
 // Hàm xử lý Copy
 const handleCopy = async () => {
     try {
         await navigator.clipboard.writeText(inviteUrl);
-        alert('Đã sao chép liên kết vào bộ nhớ tạm!');
+        // alert('Đã sao chép liên kết vào bộ nhớ tạm!');
         // Thay alert bằng toast của bạn nếu có: toast.success('Copied!')
     } catch (err) {
         console.error('Không thể copy:', err);

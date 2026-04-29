@@ -47,6 +47,7 @@ export const useConversationStore = defineStore('conversation', {
 
         selectConversation(data?: ConversationType) {
             this.conversation = data
+            // console.log(data)
         },
         async createPrivate(user: UserType) {
             try {

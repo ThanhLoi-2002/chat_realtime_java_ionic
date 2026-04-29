@@ -34,7 +34,7 @@
                             <template v-if="isMeAction">
                                 <span class="font-bold text-gray-700 dark:text-gray-200">{{
                                     t("you")
-                                }}</span>
+                                    }}</span>
                                 <template v-if="msg.sender?.id !== myId">
                                     <span class="mx-1">{{ t("removed") }}</span>
                                     <span @click="openProfile(msg.sender)"
@@ -62,7 +62,7 @@
                             <template v-if="isMeAction">
                                 <span class="font-bold text-gray-700 dark:text-gray-200">{{
                                     t("you")
-                                }}</span>
+                                    }}</span>
                                 <span class="mx-1">{{ t("haveRemoved") }}</span>
                                 <CircleAvatar :user="msg.systemMetadata.user" size="w-6 h-6 mr-1" />
                                 <span @click="openProfile(msg.systemMetadata.user)"
@@ -90,7 +90,7 @@
                         </span>
                         <span class="mx-1">{{ t(msg.content) }}</span>
                         <span class="font-bold text-gray-700 dark:text-gray-200">"{{ msg.systemMetadata?.groupName
-                        }}"</span>
+                            }}"</span>
                     </template>
 
                     <template v-else-if="systemType === SystemMetadataEnum.UPDATE_GROUP_AVATAR">

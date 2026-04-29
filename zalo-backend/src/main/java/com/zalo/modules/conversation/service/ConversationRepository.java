@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ConversationRepository extends JpaRepository<Conversation, Long>, JpaSpecificationExecutor<Conversation> {
+    @EntityGraph(attributePaths = {"lastMessage", "lastMessage.sender", "owner", "avatar"})
     Optional<Conversation> findByInviteCode(String inviteCode);
 
     // Find a private conversation that includes two users.

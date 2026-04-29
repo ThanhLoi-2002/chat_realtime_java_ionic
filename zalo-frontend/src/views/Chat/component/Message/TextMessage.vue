@@ -67,6 +67,10 @@
     <Modal ref="profileModal" :title="t('profile')">
       <FriendProfileUI :user="selectedUser" />
     </Modal>
+
+    <Modal ref="groupInfoModal" :title="t('groupProfile')">
+      <GroupProfile v-if="group" :conversation="group" :isMember="isMember" />
+    </Modal>
   </div>
 </template>
 <script setup lang="ts">
@@ -77,11 +81,14 @@ import Reactions from "../Reaction/Reactions.vue";
 import { MemberRoleEnum } from "@/types/enum";
 import Modal from "@/components/Modal/Modal.vue";
 import FriendProfileUI from "../FriendProfileUI.vue";
-import { MemberType, UserType } from "@/types/entities";
+import { ConversationType, MemberType, UserType } from "@/types/entities";
 import { useConversationStore } from "@/stores/conversation.storage";
 import { toast } from "@/utils/toast";
 import { useMessage } from "@/composables/useMessage";
 import ReplyingMessage from "./ReplyingMessage.vue";
+import { qrCodeUrl } from "@/utils/constant";
+import GroupProfile from "../GroupProfile.vue";
+import { useUserStore } from "@/stores/user.storage";
 
 const props = defineProps<{
   setBubbleRef?: (el: HTMLElement | null) => void;
@@ -93,7 +100,11 @@ const props = defineProps<{
 const { formatTime } = useDateTime();
 const { t } = useTranslate();
 const convStorage = useConversationStore()
+const userStorage = useUserStore()
 const profileModal = ref()
+const groupInfoModal = ref()
+const group = ref<ConversationType | undefined>(undefined)
+const isMember = ref(false)
 const emit = defineEmits(['visible']);
 const { formattedContentWithTag, formatHostname } = useMessage()
 let observer: IntersectionObserver | null = null;
@@ -117,13 +128,29 @@ const formattedContent = computed(() => {
 }
 );
 
-const handleContentClick = (event: MouseEvent) => {
+const handleContentClick = async (event: MouseEvent) => {
   const target = event.target as HTMLElement;
 
   // XỬ LÝ CLICK URL (Mới)
   if (target.classList.contains('chat-url')) {
     const url = target.getAttribute('data-url');
-    if (url) window.open(url, '_blank');
+    if (url) {
+      // open group info popup
+      if (url.startsWith(qrCodeUrl)) {
+        const code = url.split('/').at(-1)
+        if (code) {
+          group.value = await convStorage.fetchGroupByCode(code)
+
+          if (group.value) {
+            isMember.value = group.value.members.some(u => u.id == userStorage.user?.id)
+            groupInfoModal.value?.present()
+            console.log(group.value)
+          }
+
+        }
+      } else
+        window.open(url, '_blank');
+    }
     return; // Dừng lại không chạy logic mention bên dưới
   }
 

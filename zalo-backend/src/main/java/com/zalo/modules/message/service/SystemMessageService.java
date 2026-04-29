@@ -1,5 +1,6 @@
 package com.zalo.modules.message.service;
 
+import com.zalo.common.configuration.json.G;
 import com.zalo.common.service.WebsocketService;
 import com.zalo.modules.media.dtos.responses.MediaResponse;
 import com.zalo.modules.media.entities.Media;
