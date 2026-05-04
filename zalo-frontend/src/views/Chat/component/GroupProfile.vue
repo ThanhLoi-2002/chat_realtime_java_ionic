@@ -163,9 +163,10 @@ import { UploadFileType } from '@/types/common';
 import { ConversationType } from '@/types/entities';
 import { ModuleEnum, ResourceEnum } from '@/types/enum';
 import { qrCodeUrl, ROUTE } from '@/utils/constant';
-import { computed, inject, nextTick, ref } from 'vue';
+import { inject, nextTick, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import ImageOrVideo from '@/components/Media/ImageOrVideo.vue';
+import { showZaloToast, toast } from '@/utils/toast';
 
 const props = defineProps<{
     conversation: ConversationType;
@@ -247,8 +248,8 @@ const goToMessage = () => {
 }
 
 const requestToJoinTheGroup = () => {
-    convStorage.selectConversation(props.conversation)
-    router.push(ROUTE.CHATS)
+    // convStorage.selectConversation(props.conversation)
+    // router.push(ROUTE.CHATS)
     dismiss?.()
 }
 
@@ -258,6 +259,7 @@ const handleCopy = async () => {
         await navigator.clipboard.writeText(inviteUrl);
         // alert('Đã sao chép liên kết vào bộ nhớ tạm!');
         // Thay alert bằng toast của bạn nếu có: toast.success('Copied!')
+        toast({message: 'Copied'})
     } catch (err) {
         console.error('Không thể copy:', err);
     }

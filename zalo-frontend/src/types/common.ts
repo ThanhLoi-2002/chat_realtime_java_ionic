@@ -79,6 +79,13 @@ export type UploadFileRequest = {
   moduleType: ModuleEnum
 }
 
+export interface ToastType {
+    message: string
+    color?: 'success' | 'danger' | 'warning' | 'primary'
+    duration?: number
+    position?: "top" | "bottom" | "middle" | undefined
+}
+
 export type SaveFcmTokenType = { deviceId: string, fcmToken: string }
 
 export type UpdateClassificationPositionType = { id: number, position: number }

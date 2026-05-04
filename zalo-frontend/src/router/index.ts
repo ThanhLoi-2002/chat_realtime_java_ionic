@@ -1,6 +1,8 @@
+import { useDevice } from '@/composables/useDevice';
 import { useUserStore } from '@/stores/user.storage';
 import { ACCESS_TOKEN, ROUTE } from '@/utils/constant';
 import { getKey } from '@/utils/local';
+import { isPlatform } from '@ionic/vue';
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
 
@@ -90,11 +92,12 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const userStore = useUserStore()
   const accessToken = getKey(ACCESS_TOKEN)
+  // const { isSmartDevice } = useDevice()
 
-  if(!userStore.user) await userStore.loadUserLocal()
+  if (!userStore.user && isPlatform('hybrid')) await userStore.loadUserLocal()
 
   if (accessToken && !userStore.user) {
-    userStore.getMe();
+    await userStore.getMe();
   }
 
   // 1. Guest only (signin/signup)

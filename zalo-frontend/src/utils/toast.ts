@@ -1,4 +1,5 @@
 import { useTranslate } from '@/composables/useTranslate'
+import { ToastType } from '@/types/common'
 import { toastController } from '@ionic/vue'
 import { addIcons } from 'ionicons'
 import {
@@ -6,35 +7,55 @@ import {
     closeCircle,
     alertCircle,
     informationCircle,
-    close
+    close,
+    alertCircleOutline
 } from 'ionicons/icons'
 
-interface ToastType {
-    message: string
-    color?: 'success' | 'danger' | 'warning' | 'primary'
-    duration?: number
-    position?: "top" | "bottom" | "middle" | undefined
-}
 export const toast = async (options: ToastType) => {
-    const { message, color = 'success', duration = 2000, position = 'top' } = options
+    const { message, color = 'success', duration = 2000, position = 'middle' } = options
     const { t } = useTranslate()
     const toast = await toastController.create({
         message: t(message),
         duration,
-        color,
+        // color,
         position,
-        icon: getIcon(color),
-        cssClass: 'app-toast',
+        cssClass: 'zalo-style-toast', // Class tùy chỉnh trong global css
         buttons: [
             {
-                icon: close,
-                role: 'cancel'
-            }
-        ]
+                side: 'start',
+                icon: alertCircleOutline, // Icon dấu chấm than giống hình
+            },
+        ],
+        // icon: getIcon(color),
+        // cssClass: 'app-toast',
+        // buttons: [
+        //     {
+        //         icon: close,
+        //         role: 'cancel'
+        //     }
+        // ]
     })
 
     await toast.present()
 }
+
+export const showZaloToast = async (options: ToastType) => {
+    const { message, color = 'success', duration = 2000000, position = 'middle' } = options
+    const toast = await toastController.create({
+        message,
+        duration,
+        position,
+        cssClass: 'zalo-style-toast', // Class tùy chỉnh trong global css
+        buttons: [
+            {
+                side: 'start',
+                icon: alertCircleOutline, // Icon dấu chấm than giống hình
+            },
+        ],
+    });
+
+    await toast.present();
+};
 
 addIcons({
     checkmarkCircle,

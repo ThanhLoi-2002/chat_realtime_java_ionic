@@ -27,10 +27,10 @@
 
         <!-- Bottom -->
         <div class="flex justify-between items-center">
-          <div class="flex gap-1">
+          <div class="flex gap-1 flex-1 min-w-0">
             <ClassificationCard :conv="conversation" />
 
-            <p class="text-sm truncate
+            <p class="min-w-0 text-sm truncate w-full
                  text-gray-500 dark:text-gray-400">
               {{ lastMessageContent }}
             </p>

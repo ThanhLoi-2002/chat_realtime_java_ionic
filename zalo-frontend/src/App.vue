@@ -91,9 +91,6 @@ onMounted(async () => {
   console.log(`Dung lượng user: ${size}`);
 
   await storage.calculateAllKeysSize()
-
-  classificationCardStorage.getList()
-  friendshipStorage.getFriends()
 })
 
 // Optional: theo dõi system thay đổi
@@ -117,8 +114,11 @@ watch(() => userStorage.user, async (newVal, oldVal) => {
 
     initPush()
     await connectSocket();
+    classificationCardStorage.getList()
+    friendshipStorage.getFriends()
   } else {
     await disconnectSocket();
+    // userStorage.logout()
   }
 }, { immediate: true });
 </script>
