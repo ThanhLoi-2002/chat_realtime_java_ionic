@@ -45,6 +45,13 @@ public class ConversationController {
         return conversationService.findAll(user.getId(), filter);
     }
 
+    @GetMapping("/no-pagination")
+    public List<ConversationResponse> findAllNoPagination(
+            @CurrentUser User user
+    ) {
+        return conversationService.findAllNoPagination(user.getId());
+    }
+
     @GetMapping("/{id}")
     public Long getReadLastMessageId(@PathVariable Long id, @CurrentUser User user) {
         return conversationService.getReadLastMessageId(id, user.getId());

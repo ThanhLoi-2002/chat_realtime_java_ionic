@@ -21,12 +21,12 @@
                     <span :class="[
                         'text-[10px] md:text-xs left-0 w-full',
                         style.text.secondary
-                    ]">
+                    ]" v-if="isShowAction">
                         {{ formatSeparatorTime(media.ct) }}
                     </span>
                 </div>
 
-                <div class="flex">
+                <div class="flex" v-if="isShowAction">
                     <a :href="media.secureUrl" target="_blank" v-if="getFileExt() == 'PDF'"
                         class="p-2 rounded-full bg-yellow-500 hover:bg-yellow-600 text-white transition-transform active:scale-90">
                         <i class="fa-solid fa-folder text-yellow-500"></i>
@@ -48,6 +48,7 @@ import { useDateTime } from '@/composables/useDateTime';
 
 const props = defineProps<{
     media: MediaType
+    isShowAction: boolean
 }>()
 
 const { formatSeparatorTime } = useDateTime()

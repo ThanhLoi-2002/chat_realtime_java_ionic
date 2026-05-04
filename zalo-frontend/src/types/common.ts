@@ -40,6 +40,14 @@ export type SendMessageType = {
   linkMetadata?: LinkMetadataType
 }
 
+export type ShareMessageType = {
+  messageId?: number
+  conversationId?: number
+  conversationIds?: number[]
+  isAttachDesc?: boolean
+  content?: string
+}
+
 export type SendAddFriendRequestType = {
   content?: string
   toId?: number

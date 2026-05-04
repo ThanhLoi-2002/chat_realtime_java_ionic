@@ -18,7 +18,7 @@
 
         <!-- FILE -->
         <collapse v-model:isOpen="open.file" :title="t('File')" customClass="gap-0!">
-            <file-container v-for="(media, index) in messStorage.files.slice(0, 4)" :key="index" :media="media" />
+            <file-container v-for="(media, index) in messStorage.files.slice(0, 4)" :key="index" :media="media" :isShowAction="true"/>
 
             <ion-button class="btn mt-2 mx-auto w-full normal-case" @click="goTo('storage/file')">{{ t("seeAll")
                 }}</ion-button>

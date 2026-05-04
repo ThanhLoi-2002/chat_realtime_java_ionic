@@ -59,6 +59,19 @@ public interface ConversationRepository extends JpaRepository<Conversation, Long
     @Query("""
                 SELECT c
                 FROM Conversation c
+                LEFT JOIN FETCH c.avatar a
+                LEFT JOIN FETCH c.recipient r
+                LEFT JOIN FETCH c.createdBy cr
+                WHERE (:ids IS NULL OR c.id IN :ids)
+                AND c.stt = 1 AND c.lastMessageId IS NOT NULL
+            """)
+    List<Conversation> findAllNoPagination(
+            @Param("ids") List<Long> ids
+    );
+
+    @Query("""
+                SELECT c
+                FROM Conversation c
                 LEFT JOIN FETCH c.lastMessage m
                 LEFT JOIN FETCH c.avatar a
                 LEFT JOIN FETCH c.recipient r

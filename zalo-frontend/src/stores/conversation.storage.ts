@@ -154,8 +154,8 @@ export const useConversationStore = defineStore('conversation', {
         },
         sortConversation() {
             this.conversations = this.conversations.sort((a, b) => {
-                const t1 = new Date(b.lastMessage?.ct || 0).getTime()
-                const t2 = new Date(a.lastMessage?.ct || 0).getTime()
+                const t1 = new Date(b.et || 0).getTime()
+                const t2 = new Date(a.et || 0).getTime()
                 return t1 - t2
             })
         },
@@ -490,6 +490,20 @@ export const useConversationStore = defineStore('conversation', {
         async findByUserIdsAndTypePrivate(userIds: number[]) {
             try {
                 const result: any = await conversationApi.findByUserIdsAndTypePrivate(userIds);
+
+                return result.result
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return []
+            }
+        },
+
+        async getAllConversations() {
+            try {
+                const result: any = await conversationApi.getAllConversations();
 
                 return result.result
             } catch (e: any) {

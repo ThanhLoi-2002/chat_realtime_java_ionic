@@ -34,7 +34,7 @@
                 <i class="fa-solid fa-quote-right text-[10px] leading-none"></i>
             </button>
 
-            <button ref="moreBtnRef" @click.stop="toggleMenu"
+            <button ref="moreBtnRef" @click.stop="openShareModal"
                 class="px-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 dark:bg-gray-800 dark:text-white text-center cursor-pointer">
                 <i class="fas fa-share text-[10px] leading-none"></i>
             </button>
@@ -75,6 +75,10 @@
             </div>
         </teleport>
 
+        <modal ref="shareModal" :title="t('share')">
+            <share-message-u-i :message="message"/>
+        </modal>
+
         <confirm-modal v-model:showConfirm="showConfirm" :onOk="onDelete" :message="t('deleteMessage')"
             :header="t('deleteMessage')" />
     </div>
@@ -95,6 +99,8 @@ import Key from '@/components/Key/Key.vue';
 import ConfirmModal from '@/components/Modal/ConfirmModal.vue';
 import FileMessage from '../Message/FileMessage.vue';
 import { toast } from '@/utils/toast';
+import Modal from '@/components/Modal/Modal.vue';
+import ShareMessageUI from '../Message/ShareMessageUI.vue';
 
 const props = defineProps<{
     message: MessageType & any
@@ -106,6 +112,7 @@ const { t } = useTranslate()
 
 const userStorage = useUserStore()
 const messageStorage = useMessageStore()
+const shareModal = ref()
 
 const isOwner = props.message.sender.id === userStorage.user?.id
 
@@ -123,17 +130,24 @@ function setBubbleRef(el: HTMLElement | null) {
     bubbleRef.value = el
 }
 
+const openShareModal = () => {
+    shareModal.value.present()
+} 
+
 const toggleMenu = async () => {
-    showMenu.value = !showMenu.value
-    if (showMenu.value) {
-        await nextTick()
-        positionMenu()
-        // small fade in
+    if (!showMenu.value) {
+        // Trước khi mở, gửi thông báo đóng tất cả các menu khác
+        // Bạn có thể dùng mitt hoặc window.dispatchEvent
+        window.dispatchEvent(new CustomEvent('close-all-menus', { detail: props.message.id }));
+        
+        showMenu.value = true;
+        await nextTick();
+        positionMenu();
         requestAnimationFrame(() => {
-            menuInlineStyle.value.opacity = '1'
-        })
+            menuInlineStyle.value.opacity = '1';
+        });
     } else {
-        menuInlineStyle.value.opacity = '0'
+        showMenu.value = false;
     }
 }
 
@@ -273,15 +287,24 @@ const handleScrollOrResize = () => {
     if (showMenu.value) nextTick(positionMenu)
 }
 
+const handleGlobalMenuClose = (e: any) => {
+    // Nếu ID nhận được khác với ID của tin nhắn này, thì đóng menu
+    if (e.detail !== props.message.id) {
+        showMenu.value = false;
+    }
+};
+
 onMounted(() => {
     document.addEventListener('click', handleClickOutside)
     window.addEventListener('resize', handleScrollOrResize)
     window.addEventListener('scroll', handleScrollOrResize, true) // capture scroll on ancestors
+    window.addEventListener('close-all-menus', handleGlobalMenuClose);
 })
 
 onBeforeUnmount(() => {
     document.removeEventListener('click', handleClickOutside)
     window.removeEventListener('resize', handleScrollOrResize)
     window.removeEventListener('scroll', handleScrollOrResize, true)
+    window.removeEventListener('close-all-menus', handleGlobalMenuClose);
 })
 </script>

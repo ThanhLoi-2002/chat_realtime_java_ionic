@@ -42,6 +42,7 @@
             :key="item.id"
             class="flex items-center gap-3"
             :media="item"
+            :isShowAction="true"
           />
         </div>
       </div>
@@ -49,15 +50,12 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useDateTime } from "@/composables/useDateTime";
 import { useMedia } from "@/composables/useMedia";
 import { useConversationStore } from "@/stores/conversation.storage";
 import { useMessageStore } from "@/stores/message.storage";
 import { MessageFilter } from "@/types/common";
-import { MediaType } from "@/types/entities";
 import { MessageEnum } from "@/types/enum";
 import { computed, onMounted, ref } from "vue";
-import FileContainer from "./FileContainer.vue";
 import { appLimit } from "@/utils/constant";
 
 const convStorage = useConversationStore();

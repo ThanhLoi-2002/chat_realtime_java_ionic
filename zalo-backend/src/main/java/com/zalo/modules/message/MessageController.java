@@ -5,6 +5,7 @@ import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
 import com.zalo.common.filter.MessageFilter;
 import com.zalo.modules.message.dto.request.AddReactionRequest;
 import com.zalo.modules.message.dto.request.CreateMessageRequest;
+import com.zalo.modules.message.dto.request.ShareMessageRequest;
 import com.zalo.modules.message.dto.response.LinkPreviewResponse;
 import com.zalo.modules.message.dto.response.MessageResponse;
 import com.zalo.modules.user.entities.User;
@@ -30,6 +31,12 @@ public class MessageController {
     @CheckConversationMember
     public void send(@PathVariable Long conversationId, @CurrentUser User user, @RequestBody CreateMessageRequest dto) throws IOException {
         messageService.sendMessage(conversationId, user.getId(), dto);
+    }
+
+    @PostMapping("/share")
+//    @CheckConversationMember
+    public void share(@CurrentUser User user, @RequestBody ShareMessageRequest dto) throws IOException {
+        messageService.shareMessage(user.getId(), dto);
     }
 
     @GetMapping

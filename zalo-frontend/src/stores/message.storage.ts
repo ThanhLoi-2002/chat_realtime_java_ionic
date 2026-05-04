@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { MediaType, MessageType, ReactionType } from '@/types/entities'
-import { MessageFilter, SendMessageType } from '@/types/common';
+import { MessageFilter, SendMessageType, ShareMessageType } from '@/types/common';
 import { messageApi } from '@/api/message.api';
 import { toast } from '@/utils/toast';
 import { MessageEnum, ReactionEnum } from '@/types/enum';
@@ -191,6 +191,19 @@ export const useMessageStore = defineStore('message', {
         async previewLink(link: string) {
             try {
                 const result: any = await messageApi.previewLink(link);
+                return result.result
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return null;
+            }
+        },
+
+        async shareMessage(data: ShareMessageType) {
+            try {
+                const result: any = await messageApi.shareMessage(data);
                 return result.result
             } catch (e: any) {
                 toast({

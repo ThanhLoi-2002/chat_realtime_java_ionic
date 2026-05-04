@@ -46,6 +46,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SettingsUI: typeof import('./src/components/Sidebar/components/SettingsUI.vue')['default']
     Sidebar: typeof import('./src/components/Sidebar/Sidebar.vue')['default']
+    Switch: typeof import('./src/components/Switch/Switch.vue')['default']
     ThemeToggle: typeof import('./src/components/Toggle/ThemeToggle.vue')['default']
   }
 }

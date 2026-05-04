@@ -14,7 +14,6 @@ import java.util.List;
 @Builder
 @FieldDefaults(level = AccessLevel.PUBLIC)
 public class CreateMessageRequest {
-    String name;
     String content;
     MessageType contentType = MessageType.TEXT;
     Long replyToId;

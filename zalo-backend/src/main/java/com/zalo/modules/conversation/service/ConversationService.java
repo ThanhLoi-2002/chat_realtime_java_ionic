@@ -172,6 +172,21 @@ public class ConversationService implements ConversationInterface {
         });
     }
 
+    public List<ConversationResponse> findAllNoPagination(Long userId) {
+        List<Long> conversationIds = memberRepo.findConversationIdsByUserId(userId);
+
+        List<Conversation> list = conversationRepo.findAllNoPagination(conversationIds);
+
+        return list.stream().map(c -> {
+            ConversationResponse conv = new ConversationResponse(c, "recipient", "avatar", "createdBy");
+            if (c.getType() == ConversationType.GROUP || conv.getType() == ConversationType.COMMUNITY) {
+                conv.setMembers(memberService.getMembers(c.getId()));
+            }
+
+            return conv;
+        }).toList();
+    }
+
     public ConversationInfoResponse getInfo(Long conversationId, Long userId) {
         Conversation c = findById(conversationId);
 

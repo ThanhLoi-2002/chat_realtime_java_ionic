@@ -12,6 +12,7 @@ import com.zalo.modules.media.dtos.responses.MediaResponse;
 import com.zalo.modules.media.entities.Media;
 import com.zalo.modules.message.dto.request.AddReactionRequest;
 import com.zalo.modules.message.dto.request.CreateMessageRequest;
+import com.zalo.modules.message.dto.request.ShareMessageRequest;
 import com.zalo.modules.message.dto.response.LinkPreviewResponse;
 import com.zalo.modules.message.dto.response.MessageReactionResponse;
 import com.zalo.modules.message.dto.response.MessageResponse;
@@ -405,5 +406,67 @@ public class MessageService {
     private String getMetaTag(Document doc, String attr) {
         Element element = doc.select("meta[property=" + attr + "]").first();
         return element != null ? element.attr("content") : null;
+    }
+
+    public void shareMessage(Long senderId, ShareMessageRequest dto) {
+        // 1. Tìm tin nhắn gốc
+        Message originalMsg = findByIdWithRelationShip(dto.messageId, dto.conversationId);
+
+        // 2. Lấy danh sách media của tin nhắn gốc (nếu có)
+        List<Media> originalMedias;
+        if (originalMsg.getContentType() == MessageType.IMAGE || originalMsg.getContentType() == MessageType.FILE) {
+            originalMedias = mediaInterface.findByModuleIdInAndModuleType(
+                    Collections.singletonList(originalMsg.getId()),
+                    MediaType.MESSAGE
+            );
+        } else {
+            originalMedias = new ArrayList<>();
+        }
+
+        //create message dto
+        CreateMessageRequest createMessageRequest = new CreateMessageRequest();
+        createMessageRequest.contentType = originalMsg.getContentType();
+        createMessageRequest.linkMetadata = originalMsg.getLinkMetadata();
+        createMessageRequest.attachments = originalMedias.stream().map(m -> {
+            MediaRequest req = new MediaRequest();
+            req.secureUrl = m.getSecureUrl();
+            req.publicId = m.getPublicId();
+            req.moduleId = m.getModuleId();
+            req.moduleType = m.getModuleType();
+            req.name = m.getName();
+            req.bytes = m.getBytes();
+            req.format = m.getFormat();
+            req.width = m.getWidth();
+            req.height = m.getHeight();
+            req.resourceType = m.getResourceType();
+            return req;
+        }).toList();
+
+        // if be imaged -> isAttachDesc must equal true
+        if(dto.isAttachDesc && originalMsg.getContentType() == MessageType.IMAGE){
+            createMessageRequest.content = originalMsg.getContent();
+        }
+
+        if(originalMsg.getContentType() != MessageType.IMAGE){
+            createMessageRequest.content = originalMsg.getContent();
+        }
+
+        CreateMessageRequest createMessageRequest2 = new CreateMessageRequest();
+        if(!dto.content.isEmpty()){
+            createMessageRequest2.content = dto.content;
+            createMessageRequest2.contentType = MessageType.TEXT;
+        }
+
+        // 3. Lặp qua danh sách các hội thoại được chia sẻ đến
+        dto.conversationIds.forEach(targetConvId -> {
+            try {
+                sendMessage(targetConvId, senderId, createMessageRequest);
+                if(!dto.content.isEmpty()){
+                    sendMessage(targetConvId, senderId, createMessageRequest2);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }

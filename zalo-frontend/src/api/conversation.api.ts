@@ -22,6 +22,12 @@ const getList = async (filter: ConversationFilter) => {
   );
 };
 
+const getAllConversations = async () => {
+  return await axios.get<IResponse<ConversationType>>(
+    `/conversations/no-pagination`,
+  );
+};
+
 const getConversationInfo = async (id: number) => {
   return await axios.get<IResponse>(`/conversations/${id}/info`);
 };
@@ -106,6 +112,7 @@ const transferGoldenKey = async (conversationId: number, memberId: number) => {
 export const conversationApi = {
   createPrivate,
   getList,
+  getAllConversations,
   createGroup,
   getConversationInfo,
   getGroups,

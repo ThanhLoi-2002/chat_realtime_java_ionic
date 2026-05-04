@@ -1,4 +1,4 @@
-import { IResponse, MessageFilter, SendMessageType } from "@/types/common";
+import { IResponse, MessageFilter, SendMessageType, ShareMessageType } from "@/types/common";
 import axios from "./axios";
 import { MessageType } from "@/types/entities";
 import { ReactionEnum } from "@/types/enum";
@@ -8,6 +8,10 @@ const sendMessage = async (data: SendMessageType) => {
     const { conversationId, ...rest } = data
 
     return await axios.post<IResponse<MessageType>>(`/conversations/${conversationId}/messages`, rest);
+}
+
+const shareMessage = async (data: ShareMessageType) => {
+    return await axios.post<IResponse<MessageType>>(`/conversations/id/messages/share`, data);
 }
 
 const getMessages = async (options: MessageFilter) => {
@@ -45,5 +49,5 @@ const previewLink = async (link: string) => {
 }
 
 export const messageApi = {
-    sendMessage, getMessages, deleteMessage, readMessage, addReaction, deleteAllReaction, previewLink
+    sendMessage, getMessages, deleteMessage, readMessage, addReaction, deleteAllReaction, previewLink, shareMessage
 }
