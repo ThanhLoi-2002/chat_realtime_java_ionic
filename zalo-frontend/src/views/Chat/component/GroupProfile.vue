@@ -166,7 +166,7 @@ import { qrCodeUrl, ROUTE } from '@/utils/constant';
 import { inject, nextTick, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import ImageOrVideo from '@/components/Media/ImageOrVideo.vue';
-import { showZaloToast, toast } from '@/utils/toast';
+import { toast } from '@/utils/toast';
 
 const props = defineProps<{
     conversation: ConversationType;

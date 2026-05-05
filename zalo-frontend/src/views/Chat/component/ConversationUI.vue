@@ -50,6 +50,9 @@
                  bg-blue-500 text-white">
               {{ conversation.unread > MAX_UNREAD ? `+${MAX_UNREAD}` : conversation.unread }}
             </span>
+
+            <i v-if="conversation.unread == 0"
+              :class="[conversation?.pinAt && 'fas fa-thumbtack', 'text-white']" />
           </div>
 
         </div>

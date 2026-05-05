@@ -152,12 +152,30 @@ export const useConversationStore = defineStore('conversation', {
                 this.isLoading = false
             }
         },
+        // sortConversation() {
+        //     this.conversations = this.conversations.sort((a, b) => {
+        //         const t1 = new Date(b.et || 0).getTime()
+        //         const t2 = new Date(a.et || 0).getTime()
+        //         return t1 - t2
+        //     })
+        // },
         sortConversation() {
             this.conversations = this.conversations.sort((a, b) => {
-                const t1 = new Date(b.et || 0).getTime()
-                const t2 = new Date(a.et || 0).getTime()
-                return t1 - t2
-            })
+                // 1. Chuyển đổi giá trị ghim về timestamp để so sánh
+                // Nếu không ghim thì gán bằng 0
+                const pinA = a.pinAt ? new Date(a.pinAt).getTime() : 0;
+                const pinB = b.pinAt ? new Date(b.pinAt).getTime() : 0;
+
+                // 2. Ưu tiên hội thoại được ghim (pinAt > 0)
+                if (pinA !== pinB) {
+                    return pinB - pinA; // Ghim gần nhất (thời gian lớn hơn) sẽ lên đầu
+                }
+
+                // 3. Nếu cả hai cùng ghim hoặc cùng không ghim, so sánh theo thời gian tin nhắn (et)
+                const t1 = new Date(b.et || 0).getTime();
+                const t2 = new Date(a.et || 0).getTime();
+                return t1 - t2;
+            });
         },
 
         async updateConversation(conv: ConversationType) {
@@ -512,6 +530,29 @@ export const useConversationStore = defineStore('conversation', {
                     message: e.message
                 })
                 return []
+            }
+        },
+
+        async pin(id: number) {
+            try {
+                const result: any = await conversationApi.pin(id);
+
+                if (this.conversation?.id == id) {
+                    this.conversation.pinAt = result.result
+                }
+
+                const idx = this.conversations.findIndex(c => c.id == id)
+                if (idx != -1) {
+                    this.conversations[idx].pinAt = result.result
+                }
+
+                this.sortConversation()
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return undefined
             }
         },
 

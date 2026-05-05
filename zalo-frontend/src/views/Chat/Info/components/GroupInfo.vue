@@ -91,13 +91,13 @@
         <ConfirmModal v-model:showConfirm="showConfirmLeaveGroup" :onOk="onLeaveGroup" :message="t('leaveTheGroup')"
             :header="t('leaveTheGroup')" />
 
-        <ConfirmModal v-model:showConfirm="showConfirmDisbandGroup" :onOk="onDisbandGroup" :message="t('disbandTheGroup')"
-            :header="t('disbandTheGroup')" />
+        <ConfirmModal v-model:showConfirm="showConfirmDisbandGroup" :onOk="onDisbandGroup"
+            :message="t('disbandTheGroup')" :header="t('disbandTheGroup')" />
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useConversationStore } from '@/stores/conversation.storage'
 import { useConversation } from '@/composables/useConversation'
 import { useTranslate } from '@/composables/useTranslate'
@@ -120,18 +120,22 @@ const showConfirmDisbandGroup = ref(false)
 
 /* ACTION */
 const toggleMute = () => console.log('mute')
-const togglePin = () => console.log('pin')
+const togglePin = async () => {
+    if (conversationStorage.conversation) {
+        await conversationStorage.pin(conversationStorage.conversation.id)
+    }
+}
 const createGroup = () => console.log('create group')
 const onEditName = () => console.log('edit name')
 
-const actions = [
+const actions = computed(() => [
     {
         icon: 'fa fa-bell',
         title: 'turnOffNotifications',
         onClick: toggleMute
     },
     {
-        icon: 'fas fa-thumbtack',
+        icon: conversationStorage.conversation?.pinAt ? 'fas fa-unlink' : 'fas fa-thumbtack',
         title: 'conversationPins',
         onClick: togglePin
     },
@@ -140,7 +144,7 @@ const actions = [
         title: 'createGroup',
         onClick: createGroup
     }
-]
+])
 
 const onLeaveGroup = async () => {
     const success = await conversationStorage.leaveGroup();

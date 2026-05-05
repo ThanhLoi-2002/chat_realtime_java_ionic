@@ -12,6 +12,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.BeanUtils;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @EqualsAndHashCode(callSuper = true)
@@ -38,6 +39,8 @@ public class ConversationResponse extends BaseResponse {
     List<MemberResponse> members;
     Long unread;
     Boolean isMention;
+
+    LocalDateTime pinAt;
 
     public ConversationResponse(Conversation c, String... relations) {
         super(c, relations);

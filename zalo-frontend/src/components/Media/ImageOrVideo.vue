@@ -1,6 +1,6 @@
 <template>
-    <div v-if="isVideo(media.secureUrl)" class="relative">
-        <img :src="media.secureUrl.replace(/\.[^/.]+$/, '.jpg')" class="object-cover opacity-80" />
+    <div v-if="isVideo(media.secureUrl)" class="relative w-full h-full">
+        <img :src="media.secureUrl.replace(/\.[^/.]+$/, '.jpg')" class="object-cover opacity-80 w-full h-full" />
         <div class="absolute inset-0 flex items-center justify-center">
             <i class="fa-solid fa-circle-play text-white text-3xl shadow-lg"></i>
         </div>

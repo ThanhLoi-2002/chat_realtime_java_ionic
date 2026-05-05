@@ -6,6 +6,7 @@ import com.zalo.common.filter.ConversationFilter;
 import com.zalo.common.filter.UserFilter;
 import com.zalo.modules.conversation.dto.IsMentionDto;
 import com.zalo.modules.conversation.dto.request.CreateGroupRequest;
+import com.zalo.modules.conversation.entities.*;
 import com.zalo.modules.media.dtos.requests.MediaRequest;
 import com.zalo.modules.media.entities.Media;
 import com.zalo.modules.media.entities.MediaType;
@@ -14,12 +15,8 @@ import com.zalo.modules.message.dto.request.CreateSystemMessageRequest;
 import com.zalo.modules.conversation.dto.respone.ConversationInfoResponse;
 import com.zalo.modules.conversation.dto.respone.ConversationResponse;
 import com.zalo.modules.conversation.dto.respone.MemberResponse;
-import com.zalo.modules.conversation.entities.ConversationType;
-import com.zalo.modules.conversation.entities.MemberRole;
 import com.zalo.modules.message.entity.MessageType;
 import com.zalo.modules.message.entity.SystemMessageType;
-import com.zalo.modules.conversation.entities.Conversation;
-import com.zalo.modules.conversation.entities.ConversationMember;
 import com.zalo.modules.message.service.SystemMessageInterface;
 import com.zalo.modules.user.entities.User;
 import com.zalo.modules.user.service.UserRepository;
@@ -38,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -55,6 +53,7 @@ public class ConversationService implements ConversationInterface {
     MemberService memberService;
     MediaInterface mediaInterface;
     SystemMessageInterface systemMessageInterface;
+    ConversationPinRepository conversationPinRepository;
 
     public Conversation createPrivateConversation(Long creatorId, Long otherUserId) {
         // try find existing
@@ -133,7 +132,7 @@ public class ConversationService implements ConversationInterface {
 
     public ConversationResponse findByIdWithRelationShipAndMember(Long id) {
         ConversationResponse conv = new ConversationResponse(findByIdWithRelationShip(id), "recipient", "lastMessage", "createdBy", "avatar");
-        if(conv.getType() == ConversationType.GROUP || conv.getType() == ConversationType.COMMUNITY){
+        if (conv.getType() == ConversationType.GROUP || conv.getType() == ConversationType.COMMUNITY) {
             conv.setMembers(memberService.getMembers(id));
         }
         return conv;
@@ -155,6 +154,13 @@ public class ConversationService implements ConversationInterface {
         Map<Long, Long> mapUnread = getUnreadFromIds(ids, userId);
         Map<Long, Integer> mapIsMention = isMentionFromIds(ids, userId);
 
+        //get pin
+        List<ConversationPin> pins = conversationPinRepository.findAllByConversationIdInAndUserId(ids, userId);
+        Map<Long, LocalDateTime> mapPin = pins.stream().collect(Collectors.toMap(
+                ConversationPin::getConversationId,  // key
+                ConversationPin::getCt            // value
+        ));
+
         return page.map(c -> {
             ConversationResponse conv = new ConversationResponse(c, "recipient", "lastMessage", "createdBy", "avatar");
             if (c.getType() == ConversationType.GROUP || conv.getType() == ConversationType.COMMUNITY) {
@@ -163,6 +169,7 @@ public class ConversationService implements ConversationInterface {
 
             conv.setUnread(mapUnread.getOrDefault(c.getId(), 0L));
             conv.setIsMention(mapIsMention.getOrDefault(c.getId(), 0) == 1);
+            conv.setPinAt(mapPin.getOrDefault(c.getId(), null));
 
             if (c.getLastMessage().getContentType() == MessageType.SYSTEM) {
                 systemMessageInterface.getSystemMetadata(c.getLastMessage(), conv.getLastMessage());
@@ -469,5 +476,20 @@ public class ConversationService implements ConversationInterface {
 
     public List<Conversation> findByUserIdsAndTypePrivate(List<Long> userIds, Long userId) {
         return conversationRepo.findByUserIdsAndTypePrivate(userIds, userId, ConversationType.PRIVATE);
+    }
+
+    public LocalDateTime pin(Long id, Long userId) {
+        ConversationPin pin = conversationPinRepository.findByConversationIdAndUserId(id, userId);
+
+        if (pin != null) {
+            conversationPinRepository.delete(pin);
+            return null;
+        } else {
+            ConversationPin p = new ConversationPin();
+            p.setConversationId(id);
+            p.setUserId(userId);
+            conversationPinRepository.save(p);
+            return p.getCt();
+        }
     }
 }

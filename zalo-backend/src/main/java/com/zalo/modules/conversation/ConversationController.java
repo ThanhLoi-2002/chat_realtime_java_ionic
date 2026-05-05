@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -135,5 +136,10 @@ public class ConversationController {
     @RequireMemberRole(memberRoles = {MemberRole.GOLDEN_KEY})
     public void transferGoldenKey(@PathVariable Long conversationId, @CurrentUser User user, @PathVariable Long memberId) {
         conversationService.transferGoldenKey(conversationId, user.getId(), memberId);
+    }
+
+    @PostMapping("/{id}/pin")
+    public LocalDateTime pin(@PathVariable Long id, @CurrentUser User user) {
+        return conversationService.pin(id, user.getId());
     }
 }

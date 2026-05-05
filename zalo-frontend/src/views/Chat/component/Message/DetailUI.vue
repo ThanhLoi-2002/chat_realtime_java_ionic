@@ -7,7 +7,7 @@
             <!-- Section 1: Xem lại nội dung tin nhắn -->
             <div class="p-4 flex justify-end">
                 <div
-                    class="bg-blue-50 dark:bg-[#2d3a4b] py-2 px-4 rounded-xl max-w-[85%] shadow-sm border border-blue-100 dark:border-gray-600">
+                    class="bg-blue-50 dark:bg-[#2d3a4b] py-2 px-4 rounded-xl max-w-[85%] h-full shadow-sm border border-blue-100 dark:border-gray-600">
                     <p class="text-blue-600 dark:text-gray-400 text-xs font-semibold mb-2">
                         {{ message.sender?.username || t('you') }}
                     </p>
