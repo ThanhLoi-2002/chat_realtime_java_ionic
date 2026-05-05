@@ -8,6 +8,7 @@ import com.zalo.modules.message.dto.request.CreateMessageRequest;
 import com.zalo.modules.message.dto.request.ShareMessageRequest;
 import com.zalo.modules.message.dto.response.LinkPreviewResponse;
 import com.zalo.modules.message.dto.response.MessageResponse;
+import com.zalo.modules.message.dto.response.MessageStatusResponse;
 import com.zalo.modules.user.entities.User;
 import com.zalo.modules.message.service.MessageService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -67,5 +69,10 @@ public class MessageController {
     @CheckConversationMember
     public void removeAll(@PathVariable Long conversationId, @CurrentUser User user, @RequestParam Long messageId) {
         messageService.removeAllReactionByUserId(conversationId, messageId, user.getId());
+    }
+
+    @GetMapping("/{id}/details")
+    public List<MessageStatusResponse> getMessageDetails(@PathVariable Long id) {
+        return messageService.getStatusById(id).stream().map(s -> new MessageStatusResponse(s, "user")).toList();
     }
 }

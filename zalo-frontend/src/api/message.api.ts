@@ -48,6 +48,10 @@ const previewLink = async (link: string) => {
     return await axios.get<IResponse>(`/conversations/1/messages/preview-link?link=${link}`);
 }
 
+const getDetails = async (id: number, convId: number) => {
+    return await axios.get<IResponse>(`/conversations/${convId}/messages/${id}/details`);
+}
+
 export const messageApi = {
-    sendMessage, getMessages, deleteMessage, readMessage, addReaction, deleteAllReaction, previewLink, shareMessage
+    sendMessage, getMessages, deleteMessage, readMessage, addReaction, deleteAllReaction, previewLink, shareMessage, getDetails
 }

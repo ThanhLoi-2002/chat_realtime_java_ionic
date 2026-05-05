@@ -469,4 +469,8 @@ public class MessageService {
             }
         });
     }
+
+    public List<MessageStatus> getStatusById(Long id) {
+        return statusRepo.findStatusByMessageId(id);
+    }
 }

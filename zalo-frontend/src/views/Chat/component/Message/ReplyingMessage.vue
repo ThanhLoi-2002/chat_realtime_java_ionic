@@ -50,7 +50,7 @@ import { useMessage } from '@/composables/useMessage';
 import { useTranslate } from '@/composables/useTranslate';
 import { useUserStore } from '@/stores/user.storage';
 import { MessageType } from '@/types/entities';
-import { MessageEnum, ResourceEnum } from '@/types/enum';
+import { MessageEnum } from '@/types/enum';
 import { computed } from 'vue';
 
 const props = defineProps<{
@@ -60,7 +60,7 @@ const props = defineProps<{
 
 const userStorage = useUserStore()
 const { t } = useTranslate()
-const { formattedContentWithTag, jumpToMessage, highlightMessage } = useMessage()
+const { formattedContentWithTag, jumpToMessage } = useMessage()
 
 const isImage = computed(() => props.replyingMessage.contentType === MessageEnum.IMAGE);
 const isVideo = computed(() => props.replyingMessage.contentType === MessageEnum.VIDEO);

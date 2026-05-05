@@ -214,6 +214,19 @@ export const useMessageStore = defineStore('message', {
             }
         },
 
+        async getDetails(id: number, convId: number) {
+            try {
+                const result: any = await messageApi.getDetails(id, convId);
+                return result.result
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return null;
+            }
+        },
+
         reloadReactions(messageId: number, reactions: ReactionType[]) {
             const idx = this.messages.findIndex(m => m.id === messageId);
             if (idx !== -1) {

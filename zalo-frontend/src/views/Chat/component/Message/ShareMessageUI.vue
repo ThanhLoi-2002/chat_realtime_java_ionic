@@ -176,7 +176,7 @@
 <script setup lang="ts">
 import GroupAvatar from '@/components/Avatar/GroupAvatar.vue';
 import LoadingSpinner from '@/components/Loading/LoadingSpinner.vue';
-import Switch from '@/components/Switch/switch.vue';
+import Switch from '@/components/Switch/Switch.vue';
 import { useConversation } from '@/composables/useConversation';
 import { useMessage } from '@/composables/useMessage';
 import { useTranslate } from '@/composables/useTranslate';

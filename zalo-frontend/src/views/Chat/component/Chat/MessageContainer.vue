@@ -79,6 +79,10 @@
             <share-message-u-i :message="message"/>
         </modal>
 
+        <modal ref="detailsModal" :title="t('detail')">
+            <detail-u-i :message="message"/>
+        </modal>
+
         <confirm-modal v-model:showConfirm="showConfirm" :onOk="onDelete" :message="t('deleteMessage')"
             :header="t('deleteMessage')" />
     </div>
@@ -101,6 +105,7 @@ import FileMessage from '../Message/FileMessage.vue';
 import { toast } from '@/utils/toast';
 import Modal from '@/components/Modal/Modal.vue';
 import ShareMessageUI from '../Message/ShareMessageUI.vue';
+import DetailUI from '../Message/DetailUI.vue';
 
 const props = defineProps<{
     message: MessageType & any
@@ -113,6 +118,7 @@ const { t } = useTranslate()
 const userStorage = useUserStore()
 const messageStorage = useMessageStore()
 const shareModal = ref()
+const detailsModal = ref()
 
 const isOwner = props.message.sender.id === userStorage.user?.id
 
@@ -257,7 +263,7 @@ const onMark = () => {
 const onDetails = () => {
     // open details modal
     showMenu.value = false
-
+    detailsModal.value?.present()
 }
 
 const onDelete = () => {

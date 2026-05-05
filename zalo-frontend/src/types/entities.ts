@@ -49,6 +49,7 @@ export type MessageType = BaseType & {
     contentType: MessageEnum
     file: FileType
     replyToMessageId: number
+    replyToMessage: MessageType
     reactions: ReactionType[]
     systemMetadata: SystemMetadataType
     attachments: MediaType[]
@@ -65,7 +66,7 @@ export type ConversationMemberType = BaseType & {
 
 export type MessageStatusType = BaseType & {
     messageId: number
-    userId: number
+    user: UserType
     status: DeliveryStatusEnum
 }
 

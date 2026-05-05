@@ -66,8 +66,8 @@ public class Message extends BaseEntity {
     private Message replyToMessage;
 
     // ✅ message status list
-    @OneToMany(mappedBy = "message", fetch = FetchType.LAZY)
-    private List<MessageStatus> statuses;
+//    @OneToMany(mappedBy = "message", fetch = FetchType.LAZY)
+//    private List<MessageStatus> statuses;
 
 //    @OneToMany(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "moduleId", insertable = false, updatable = false)
