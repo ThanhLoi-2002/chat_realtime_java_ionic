@@ -101,6 +101,11 @@
             <template v-else-if="currentView.startsWith('pin')">
                 <PinPanel @back="closePins" />
             </template>
+
+            <!-- ================= GroupManagement VIEW ================= -->
+            <template v-else-if="currentView.startsWith('groupManagement')">
+                <GroupManagementPanel @back="currentView = 'info'" />
+            </template>
         </transition>
 
         <ConfirmModal v-model:showConfirm="showConfirmLeaveGroup" :onOk="onLeaveGroup" :message="t('leaveTheGroup')"
@@ -126,13 +131,14 @@ import ConfirmModal from '@/components/Modal/ConfirmModal.vue'
 import Collapse from '@/components/collapse/Collapse.vue'
 import PinPanel from '../../component/Pin/PinPanel.vue'
 import { useSystemStore } from '@/stores/system.storage'
+import GroupManagementPanel from './GroupManagement/GroupManagementPanel.vue'
 
 const emit = defineEmits(['close'])
 
 const conversationStorage = useConversationStore()
 const { t } = useTranslate()
 const { conversationName, isGoldenKey } = useConversation()
-const currentView = ref<'info' | 'member' | 'storage/image' | 'storage/file' | 'storage/link' | 'pin' | any>('info')
+const currentView = ref<'info' | 'member' | 'storage/image' | 'storage/file' | 'storage/link' | 'pin' | 'groupManagement' | any>('info')
 const showConfirmLeaveGroup = ref(false)
 const showConfirmDisbandGroup = ref(false)
 const openMember = ref(true)
@@ -146,7 +152,11 @@ const togglePin = async () => {
         await conversationStorage.pin(conversationStorage.conversation.id)
     }
 }
-const createGroup = () => console.log('create group')
+
+const groupManagement = () => {
+    currentView.value = 'groupManagement'
+}
+
 const onEditName = () => console.log('edit name')
 
 const actions = computed(() => [
@@ -161,9 +171,9 @@ const actions = computed(() => [
         onClick: togglePin
     },
     {
-        icon: 'fa fa-users',
-        title: 'createGroup',
-        onClick: createGroup
+        icon: 'fa fa-cogs',
+        title: 'groupManagement',
+        onClick: groupManagement
     }
 ])
 

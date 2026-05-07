@@ -353,7 +353,7 @@ watch(() => messageStorage.messages.length, () => {
     if (!showScrollDownButton.value) {
         handleScrollBottom(true)
     } else {
-        const unreadMessages = messageStorage.messages.filter(m => m.id > unreadMessageId.value)
+        const unreadMessages = messageStorage.messages.filter(m => m.id > unreadMessageId.value && m.contentType != MessageEnum.SYSTEM)
         unreadCount.value = unreadMessages.length
         conversationStorage.updateConversation({ ...conversationStorage.conversation!, unread: unreadCount.value })
     }

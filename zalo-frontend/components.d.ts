@@ -35,6 +35,7 @@ declare module 'vue' {
     IonPopover: typeof import('@ionic/vue')['IonPopover']
     IonSelect: typeof import('@ionic/vue')['IonSelect']
     IonSelectOption: typeof import('@ionic/vue')['IonSelectOption']
+    IonToggle: typeof import('@ionic/vue')['IonToggle']
     Key: typeof import('./src/components/Key/Key.vue')['default']
     LangDropdown: typeof import('./src/components/Dropdown/LangDropdown.vue')['default']
     LoadingSpinner: typeof import('./src/components/Loading/LoadingSpinner.vue')['default']

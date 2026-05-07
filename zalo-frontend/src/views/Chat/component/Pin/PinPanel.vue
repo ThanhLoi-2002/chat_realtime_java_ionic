@@ -59,7 +59,7 @@
                 <!-- Footer: Time & Link -->
                 <div class="flex items-center gap-1 text-xs text-gray-500 border-t border-gray-700/50 pt-2">
                     <span>{{ formatDateTime(pin.message.ct) }} |</span>
-                    <span class="text-blue-400 cursor-pointer font-medium">Xem tin nhắn gốc</span>
+                    <span class="text-blue-400 cursor-pointer font-medium">{{ t('seeOriginalMessage') }}</span>
                 </div>
             </div>
         </div>
