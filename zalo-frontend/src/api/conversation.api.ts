@@ -108,10 +108,6 @@ const transferGoldenKey = async (conversationId: number, memberId: number) => {
   return await axios.put<IResponse>(`/conversations/${conversationId}/transfer-golden-key/${memberId}`);
 };
 
-const pin = async (conversationId: number) => {
-  return await axios.post<IResponse>(`/conversations/${conversationId}/pin`);
-};
-
 export const conversationApi = {
   createPrivate,
   getList,
@@ -131,6 +127,5 @@ export const conversationApi = {
   revokeSilverKey,
   getConversation,
   transferGoldenKey,
-  findByUserIdsAndTypePrivate,
-  pin
+  findByUserIdsAndTypePrivate
 };

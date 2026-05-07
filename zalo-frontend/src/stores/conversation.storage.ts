@@ -7,6 +7,7 @@ import { storage } from '@/services/storage.service.'
 import { ConversationFilter } from '@/types/common'
 import { useConversation } from '@/composables/useConversation'
 import { normalizeText } from '@/utils/helper'
+import { pinApi } from '@/api/pin.api'
 
 interface ConversationState {
     isLoading: boolean,
@@ -535,7 +536,7 @@ export const useConversationStore = defineStore('conversation', {
 
         async pin(id: number) {
             try {
-                const result: any = await conversationApi.pin(id);
+                const result: any = await pinApi.pinConv(id);
 
                 if (this.conversation?.id == id) {
                     this.conversation.pinAt = result.result

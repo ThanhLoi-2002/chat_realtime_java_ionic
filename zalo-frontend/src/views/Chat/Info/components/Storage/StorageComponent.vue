@@ -2,7 +2,7 @@
     <div>
         <!-- MEDIA -->
         <collapse v-model:isOpen="open.media" :title="`${t('image')}/${t('video')}`">
-            <div class="grid grid-cols-4 gap-2">
+            <div class="grid grid-cols-4 gap-2 px-4">
                 <div v-for="(i, index) in messStorage.images.slice(0, 8)" :key="index"
                     class="aspect-square rounded bg-gray-200 dark:bg-slate-700 hover:scale-105 transition cursor-pointer"
                     @click="handlePreviewImage(i)">
@@ -11,27 +11,29 @@
                 </div>
             </div>
 
-            <ion-button class="btn mx-auto w-full normal-case" @click="goTo('storage/image')">
+            <ion-button class="btn mx-auto px-4 w-full normal-case" @click="goTo('storage/image')">
                 {{ t("seeAll") }}
             </ion-button>
         </collapse>
 
         <!-- FILE -->
         <collapse v-model:isOpen="open.file" :title="t('File')" customClass="gap-0!">
-            <file-container v-for="(media, index) in messStorage.files.slice(0, 4)" :key="index" :media="media" :isShowAction="true"/>
-
-            <ion-button class="btn mt-2 mx-auto w-full normal-case" @click="goTo('storage/file')">{{ t("seeAll")
-                }}</ion-button>
+            <div class="px-4">
+                <file-container v-for="(media, index) in messStorage.files.slice(0, 4)" :key="index" :media="media"
+                    :isShowAction="true" />
+                <ion-button class="btn mt-2 mx-auto w-full normal-case" @click="goTo('storage/file')">{{ t("seeAll")
+                    }}</ion-button>
+            </div>
         </collapse>
 
         <!-- LINK -->
-        <section class="p-4 border-b border-gray-200 dark:border-slate-700">
-            <div class="font-medium mb-2 dark:text-white">{{ t("link") }}</div>
-            <link-container v-for="(link, index) in messStorage.links.slice(0, 4)" :key="index" :message="link" />
-
-            <ion-button class="btn mt-2 mx-auto w-full normal-case" @click="goTo('storage/link')">{{ t("seeAll")
-                }}</ion-button>
-        </section>
+        <collapse v-model:isOpen="open.link" :title="t('link')" customClass="gap-0!">
+            <div class="px-4">
+                <link-container v-for="(link, index) in messStorage.links.slice(0, 4)" :key="index" :message="link" />
+                <ion-button class="btn mt-2 mx-auto w-full normal-case" @click="goTo('storage/link')">{{ t("seeAll")
+                    }}</ion-button>
+            </div>
+        </collapse>
 
 
     </div>
@@ -65,6 +67,7 @@ const { t } = useTranslate()
 const open = reactive({
     media: true,
     file: true,
+    link: true
 })
 
 const handlePreviewImage = (pi: MediaType) => {

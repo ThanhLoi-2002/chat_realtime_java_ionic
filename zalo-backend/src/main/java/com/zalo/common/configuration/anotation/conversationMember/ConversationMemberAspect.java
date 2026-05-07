@@ -69,7 +69,7 @@ public class ConversationMemberAspect {
             }
         }
 
-        if (conversationId == null || userId == null) {
+        if (userId == null) {
             throw new RuntimeException("Thiếu dữ liệu check");
         }
 

@@ -61,6 +61,10 @@
                     {{ t('markMessage') }}
                 </div>
                 <div :class="['p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer', style.text.primary]"
+                    @click="onPin">
+                    {{ t('pinMessage') }}
+                </div>
+                <div :class="['p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer', style.text.primary]"
                     @click="onDetails">
                     {{ t('seeDetails') }}
                 </div>
@@ -106,6 +110,7 @@ import { toast } from '@/utils/toast';
 import Modal from '@/components/Modal/Modal.vue';
 import ShareMessageUI from '../Message/ShareMessageUI.vue';
 import DetailUI from '../Message/DetailUI.vue';
+import { usePinStore } from '@/stores/pin.storage';
 
 const props = defineProps<{
     message: MessageType & any
@@ -117,6 +122,7 @@ const { t } = useTranslate()
 
 const userStorage = useUserStore()
 const messageStorage = useMessageStore()
+const pinStorage = usePinStore()
 const shareModal = ref()
 const detailsModal = ref()
 
@@ -257,6 +263,11 @@ const fallbackCopy = (text: string) => {
 
 const onMark = () => {
     // implement marking logic
+    showMenu.value = false
+}
+
+const onPin = async () => {
+    await pinStorage.pinMess(props.message.id, props.message.conversationId)
     showMenu.value = false
 }
 

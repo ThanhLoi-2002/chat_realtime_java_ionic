@@ -21,6 +21,11 @@ public class SystemMetadataResponse {
     String groupName;
     UserResponse user;
     MediaResponse groupAvatar;
+    Long messageId;
+    Long messagePinId;
+
+    MessagePinResponse messagePin;
+    MessageResponse message;
 
     public SystemMetadataResponse(SystemMetadata s) {
         BeanUtils.copyProperties(s, this, "groupAvatar");

@@ -96,6 +96,7 @@ export type SystemMetadataType = {
     groupName: string
     groupAvatar: MediaType
     user: UserType
+    message: MessageType
 }
 
 export type MediaType = BaseType & {
@@ -117,4 +118,11 @@ export type ClassificationCardType = BaseType & {
     color: string
     position: number
     conversationIds: number[]
+}
+
+export type MessagePinType = BaseType & {
+    conversationId: number
+    messageId: number
+    isActive: number
+    message: MessageType
 }

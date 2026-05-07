@@ -134,7 +134,6 @@ const openManager = () => {
 
 const goPage = (page: ComponentKey) => {
     pageModal.value = page
-    console.log(pageModal.value)
 }
 
 let sub: StompSubscription | undefined

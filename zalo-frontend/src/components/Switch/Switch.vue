@@ -4,13 +4,13 @@
         <input type="checkbox" :checked="modelValue" @change="toggle" class="sr-only peer">
 
         <!-- Track (Đường ray) -->
-        <div class="w-7 h-4 bg-gray-300 peer-focus:outline-none rounded-full peer 
+        <div class="bg-gray-300 peer-focus:outline-none rounded-full peer 
                 dark:bg-gray-700 peer-checked:after:translate-x-full 
                 peer-checked:after:border-white after:content-[''] 
                 after:absolute after:top-0.5 after:left-0.5 
                 after:bg-white after:border-gray-300 after:border 
-                after:rounded-full after:h-3 after:w-3 after:transition-all 
-                peer-checked:bg-blue-600">
+                after:rounded-full after:transition-all 
+                peer-checked:bg-blue-600" :class="size ?? 'w-7 h-4 after:h-3 after:w-3'">
         </div>
 
         <!-- Label đi kèm (nếu có) -->
@@ -25,6 +25,7 @@
 const props = defineProps<{
     modelValue: boolean;
     label?: string;
+    size?: string
 }>();
 
 // Định nghĩa emits để cập nhật lại giá trị cho cha

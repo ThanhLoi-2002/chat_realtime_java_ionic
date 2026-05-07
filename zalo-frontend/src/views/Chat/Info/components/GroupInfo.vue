@@ -53,11 +53,21 @@
                         </section>
 
                         <!-- COMMON GROUP -->
-                        <section
-                            :class="['p-4 border-b hover:bg-gray-50 dark:hover:bg-slate-800 cursor-pointer flex items-center', style.border.primary, style.text.secondary]"
-                            @click="currentView = 'member'">
-                            👥 {{ conversationStorage.conversation?.members?.length }} {{ t('member') }}
-                        </section>
+                        <Collapse v-model:isOpen="openMember" :title="t('member')">
+                            <div :class="['hover:bg-gray-50 dark:hover:bg-slate-800 py-2 px-4 cursor-pointer flex gap-2 items-center', style.border.primary, style.text.secondary]"
+                                @click="currentView = 'member'">
+                                <i class="fas fa-users"></i>
+                                <span>{{ conversationStorage.conversation?.members?.length }} {{ t('member') }}</span>
+                            </div>
+                        </Collapse>
+
+                        <Collapse v-model:isOpen="openCommunityBulletinBoard" :title="t('communityBulletinBoard')">
+                            <div :class="['hover:bg-gray-50 dark:hover:bg-slate-800 py-2 px-4 cursor-pointer flex gap-2 items-center', style.border.primary, style.text.secondary]"
+                                @click="currentView = 'pin'">
+                                <i class="fas fa-map-pin"></i>
+                                <span>{{ t('pin') }}</span>
+                            </div>
+                        </Collapse>
 
                         <StorageComponent @update:currentView="currentView = $event" />
                         <Security />
@@ -79,12 +89,17 @@
 
             <!-- ================= MEMBERS VIEW ================= -->
             <template v-else-if="currentView == 'member'">
-                <Member @back="currentView = 'info'" :type="currentView" :isShowBackButton="true" />
+                <Member @back="currentView = 'info'" :isShowBackButton="true" />
             </template>
 
             <!-- ================= IMAGE VIEW ================= -->
             <template v-else-if="currentView.startsWith('storage/')">
                 <StoragePanel @back="currentView = 'info'" :type="currentView" />
+            </template>
+
+            <!-- ================= Pin VIEW ================= -->
+            <template v-else-if="currentView.startsWith('pin')">
+                <PinPanel @back="currentView = 'info'" />
             </template>
         </transition>
 
@@ -108,15 +123,19 @@ import StorageComponent from './Storage/StorageComponent.vue'
 import Member from './Member.vue'
 import Security from './Security.vue'
 import ConfirmModal from '@/components/Modal/ConfirmModal.vue'
+import Collapse from '@/components/collapse/Collapse.vue'
+import PinPanel from '../../component/Pin/PinPanel.vue'
 
 const emit = defineEmits(['close'])
 
 const conversationStorage = useConversationStore()
 const { t } = useTranslate()
 const { conversationName, isGoldenKey } = useConversation()
-const currentView = ref<'info' | 'member' | 'storage/image' | 'storage/file' | 'storage/link' | any>('info')
+const currentView = ref<'info' | 'member' | 'storage/image' | 'storage/file' | 'storage/link' | 'pin' | any>('info')
 const showConfirmLeaveGroup = ref(false)
 const showConfirmDisbandGroup = ref(false)
+const openMember = ref(true)
+const openCommunityBulletinBoard = ref(true)
 
 /* ACTION */
 const toggleMute = () => console.log('mute')

@@ -1,14 +1,14 @@
 <template>
-    <section class="p-4 border-b border-gray-200 dark:border-slate-700">
-        <div class="flex justify-between items-center mb-3 cursor-pointer" @click="emit('update:isOpen', !isOpen)">
-            <span class="font-medium dark:text-white">{{ title }}</span>
+    <section class="border-b border-gray-200 dark:border-slate-700">
+        <div class="px-4 py-2 flex justify-between items-center cursor-pointer" @click="emit('update:isOpen', !isOpen)">
+            <span class="font-bold dark:text-white">{{ title }}</span>
             <span :class="[isOpen ? 'rotate-180' : '', style.text.primary]" class="transition">
                 ▼
             </span>
         </div>
 
         <transition name="collapse">
-            <div v-show="isOpen" class="flex flex-col gap-4 overflow-hidden" :class="customClass">
+            <div v-show="isOpen" class="flex flex-col gap-4 mb-2 overflow-hidden" :class="customClass">
                 <slot />
             </div>
         </transition>

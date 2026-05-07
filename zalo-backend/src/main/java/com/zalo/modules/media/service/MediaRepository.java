@@ -10,4 +10,6 @@ import java.util.List;
 public interface MediaRepository extends JpaRepository<Media, Long> {
     @EntityGraph(attributePaths = {"createdBy"})
     List<Media> findByModuleIdInAndModuleType(List<Long> moduleIds, MediaType type);
+
+    List<Media> findByModuleIdAndModuleType(Long moduleId, MediaType type);
 }

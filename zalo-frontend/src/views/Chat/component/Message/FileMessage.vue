@@ -104,7 +104,7 @@ const getFileIcon = (fileName: string) => {
         default: return '📁';
     }
 };
-console.log(props.message)
+
 onMounted(() => {
     props.setBubbleRef?.(el.value ?? null)
 })

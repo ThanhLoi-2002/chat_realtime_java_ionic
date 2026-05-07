@@ -23,6 +23,7 @@ declare module 'vue' {
     ImageOrVideo: typeof import('./src/components/Media/ImageOrVideo.vue')['default']
     IonAlert: typeof import('@ionic/vue')['IonAlert']
     IonApp: typeof import('@ionic/vue')['IonApp']
+    IonAvatar: typeof import('@ionic/vue')['IonAvatar']
     IonBackButton: typeof import('@ionic/vue')['IonBackButton']
     IonButton: typeof import('@ionic/vue')['IonButton']
     IonButtons: typeof import('@ionic/vue')['IonButtons']

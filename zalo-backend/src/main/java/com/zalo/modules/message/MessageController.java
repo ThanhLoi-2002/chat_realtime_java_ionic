@@ -7,8 +7,10 @@ import com.zalo.modules.message.dto.request.AddReactionRequest;
 import com.zalo.modules.message.dto.request.CreateMessageRequest;
 import com.zalo.modules.message.dto.request.ShareMessageRequest;
 import com.zalo.modules.message.dto.response.LinkPreviewResponse;
+import com.zalo.modules.message.dto.response.MessagePinResponse;
 import com.zalo.modules.message.dto.response.MessageResponse;
 import com.zalo.modules.message.dto.response.MessageStatusResponse;
+import com.zalo.modules.message.entity.MessagePin;
 import com.zalo.modules.user.entities.User;
 import com.zalo.modules.message.service.MessageService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -72,7 +75,20 @@ public class MessageController {
     }
 
     @GetMapping("/{id}/details")
-    public List<MessageStatusResponse> getMessageDetails(@PathVariable Long id) {
+    @CheckConversationMember
+    public List<MessageStatusResponse> getMessageDetails(@PathVariable Long id, @CurrentUser User user) {
         return messageService.getStatusById(id).stream().map(s -> new MessageStatusResponse(s, "user")).toList();
+    }
+
+    @PostMapping("/{id}/pin")
+    @CheckConversationMember
+    public MessagePinResponse pin(@PathVariable Long conversationId, @PathVariable Long id, @CurrentUser User user) {
+        return new MessagePinResponse(messageService.pin(id, conversationId, user.getId()), "createdBy", "message");
+    }
+
+    @DeleteMapping("/remove-pin-from-list/{pinId}")
+    @CheckConversationMember
+    public void removePinFromList(@PathVariable Long conversationId, @PathVariable Long pinId, @CurrentUser User user) {
+        messageService.removePinFromList(pinId, conversationId, user.getId());
     }
 }

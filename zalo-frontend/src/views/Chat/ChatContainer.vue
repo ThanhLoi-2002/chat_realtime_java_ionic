@@ -6,6 +6,7 @@
     <!-- MESSAGES -->
     <div class="flex-1 relative overflow-hidden">
         <AddFriendBar />
+        <PinList @update:isShowInfoSection="val => emit('update:isShowInfoSection', val)"/>
         <!-- Phần cuộn tin nhắn -->
         <div ref="scrollContainer" class="h-full w-full overflow-y-auto pt-2 pb-5 space-y-2 md:py-6" @scroll="scrollMore">
             <div v-if="messageStorage.isLoading" class="text-center text-gray-400 text-sm py-4">
@@ -62,9 +63,10 @@ import { socketSubscribe } from '@/utils/websocket';
 import { MessageFilter } from '@/types/common';
 import { useUserStore } from '@/stores/user.storage';
 import SystemMessage from './component/Message/SystemMessage.vue';
-import { MessageType } from '@/types/entities';
+import { MessagePinType, MessageType } from '@/types/entities';
 import { useDebounce } from '@/composables/useDebounce';
 import { appLimit } from '@/utils/constant';
+import PinList from './component/Pin/PinList.vue';
 
 const props = defineProps<{
     isShowInfoSection: boolean

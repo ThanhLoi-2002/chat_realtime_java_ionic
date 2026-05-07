@@ -33,3 +33,8 @@ cloudinary:
   cloud-name: dqoepulwu
   api-key: 247284882354721
   api-secret: rbrWg7MkW3MEpw2hZ6P-G5xpF38
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36}.%M(%line) : %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36}.%M(%line) : %msg%n"

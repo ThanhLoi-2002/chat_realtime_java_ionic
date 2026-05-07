@@ -10,6 +10,7 @@ import com.zalo.modules.conversation.dto.respone.ConversationResponse;
 import com.zalo.modules.conversation.entities.Conversation;
 import com.zalo.modules.conversation.entities.MemberRole;
 import com.zalo.modules.media.dtos.requests.MediaRequest;
+import com.zalo.modules.message.dto.response.MessagePinResponse;
 import com.zalo.modules.user.entities.User;
 import com.zalo.modules.conversation.service.ConversationService;
 import jakarta.validation.Valid;
@@ -138,8 +139,27 @@ public class ConversationController {
         conversationService.transferGoldenKey(conversationId, user.getId(), memberId);
     }
 
-    @PostMapping("/{id}/pin")
-    public LocalDateTime pin(@PathVariable Long id, @CurrentUser User user) {
-        return conversationService.pin(id, user.getId());
+    @PostMapping("/{conversationId}/pin")
+    @CheckConversationMember
+    public LocalDateTime pin(@PathVariable Long conversationId, @CurrentUser User user) {
+        return conversationService.pin(conversationId, user.getId());
+    }
+
+    @GetMapping("/{conversationId}/active-message-pin")
+    @CheckConversationMember
+    public List<MessagePinResponse> findIsActiveMessagePin(@PathVariable Long conversationId, @CurrentUser User user) {
+        return conversationService.findIsActiveMessagePin(conversationId);
+    }
+
+    @GetMapping("/{conversationId}/pins")
+    @CheckConversationMember
+    public List<MessagePinResponse> pins(@PathVariable Long conversationId, @CurrentUser User user) {
+        return conversationService.pins(conversationId);
+    }
+
+    @DeleteMapping("/{conversationId}/remove-pin/{messPinId}")
+    @CheckConversationMember
+    public void removePin(@PathVariable Long conversationId, @PathVariable Long messPinId, @CurrentUser User user) {
+        conversationService.removePin(messPinId, user.getId());
     }
 }

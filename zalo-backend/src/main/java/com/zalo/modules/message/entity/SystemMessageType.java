@@ -12,5 +12,8 @@ public enum SystemMessageType {
     REVOKE_SILVER_KEY,
     TRANSFER_GOLDEN_KEY,
 
-    ADD_FRIEND
+    ADD_FRIEND,
+
+    PIN_MESSAGE,
+    REMOVE_PIN_MESSAGE
 }

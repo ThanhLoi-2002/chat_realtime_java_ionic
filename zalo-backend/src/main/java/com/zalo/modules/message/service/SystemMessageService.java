@@ -4,6 +4,8 @@ import com.zalo.common.configuration.json.G;
 import com.zalo.common.service.WebsocketService;
 import com.zalo.modules.media.dtos.responses.MediaResponse;
 import com.zalo.modules.media.entities.Media;
+import com.zalo.modules.media.entities.MediaType;
+import com.zalo.modules.media.service.MediaRepository;
 import com.zalo.modules.message.dto.request.CreateSystemMessageRequest;
 import com.zalo.modules.conversation.dto.respone.ConversationResponse;
 import com.zalo.modules.message.dto.response.MessageResponse;
@@ -43,6 +45,7 @@ public class SystemMessageService implements SystemMessageInterface {
     ConversationMemberRepository memberRepo;
     MemberService memberService;
     UserService userService;
+    MediaRepository mediaRepository;
 
     @Override
     public void createSystemMessage(CreateSystemMessageRequest dto) {
@@ -64,6 +67,9 @@ public class SystemMessageService implements SystemMessageInterface {
 
             case REMOVE_MEMBER, ORDAIN_SILVER_KEY, REVOKE_SILVER_KEY, TRANSFER_GOLDEN_KEY ->
                     metadata.setUserId((Long) dto.info.get("userId"));
+
+            case PIN_MESSAGE, REMOVE_PIN_MESSAGE ->
+                    metadata.setMessageId((Long) dto.info.get("messageId"));
 
 //            default ->
 //                    throw new IllegalArgumentException("Unsupported system message type: " + dto.systemMessageType);
@@ -132,7 +138,31 @@ public class SystemMessageService implements SystemMessageInterface {
                 metadataResponse.setAddedUsersToGroup(users.stream().map(UserResponse::new).toList());
             }
 
+            if (e.getSystemMetadata().getType() == SystemMessageType.PIN_MESSAGE) {
+                Long messageId = e.getSystemMetadata().getMessageId();
+                System.out.println("messageId: " + messageId + ", SystemMessageType.PIN_MESSAGE: " + e.getId());
+                MessageResponse mr = findOneMessWithMedia(messageId);
+
+                metadataResponse.setMessage(mr);
+            }
+
+            if (e.getSystemMetadata().getType() == SystemMessageType.REMOVE_PIN_MESSAGE) {
+                Long messageId = e.getSystemMetadata().getMessageId();
+                System.out.println("messageId: " + messageId + ", SystemMessageType.REMOVE_PIN_MESSAGE");
+                MessageResponse mr = findOneMessWithMedia(messageId);
+
+                metadataResponse.setMessage(mr);
+            }
+
             rp.setSystemMetadata(metadataResponse);
         }
+    }
+
+    public MessageResponse findOneMessWithMedia(Long messId) {
+        Message m = messageRepo.findById(messId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
+        List<Media> medias = mediaRepository.findByModuleIdAndModuleType(m.getId(), MediaType.MESSAGE);
+        MessageResponse mr = new MessageResponse(m);
+        mr.setAttachments(medias.stream().map(MediaResponse::new).toList());
+        return mr;
     }
 }

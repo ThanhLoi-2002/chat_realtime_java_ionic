@@ -123,7 +123,7 @@ const formattedContent = computed(() => {
   // Ở đây dùng class 'chat-url' để tô màu và handle click qua event delegation
   return content.replace(urlRegex, (url) => {
     const href = url.startsWith('http') ? url : `https://${url}`;
-    return `<span class="text-blue-400 chat-url cursor-pointer underline break-all" data-url="${href}">${url}</span>`;
+    return `<span class="text-blue-700 dark:text-blue-400 chat-url cursor-pointer underline break-all" data-url="${href}">${url}</span>`;
   });
 }
 );

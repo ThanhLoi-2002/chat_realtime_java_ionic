@@ -15,4 +15,7 @@ public class SystemMetadata {
     private Media groupAvatar;
     private SystemMessageType type;
     private Long userId;
+
+    private Long messageId;
+    private Long messagePinId;
 }

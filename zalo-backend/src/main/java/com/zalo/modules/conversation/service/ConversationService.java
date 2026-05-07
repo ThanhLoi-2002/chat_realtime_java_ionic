@@ -8,15 +8,23 @@ import com.zalo.modules.conversation.dto.IsMentionDto;
 import com.zalo.modules.conversation.dto.request.CreateGroupRequest;
 import com.zalo.modules.conversation.entities.*;
 import com.zalo.modules.media.dtos.requests.MediaRequest;
+import com.zalo.modules.media.dtos.responses.MediaResponse;
 import com.zalo.modules.media.entities.Media;
 import com.zalo.modules.media.entities.MediaType;
 import com.zalo.modules.media.service.MediaInterface;
+import com.zalo.modules.media.service.MediaRepository;
 import com.zalo.modules.message.dto.request.CreateSystemMessageRequest;
 import com.zalo.modules.conversation.dto.respone.ConversationInfoResponse;
 import com.zalo.modules.conversation.dto.respone.ConversationResponse;
 import com.zalo.modules.conversation.dto.respone.MemberResponse;
+import com.zalo.modules.message.dto.response.MessagePinResponse;
+import com.zalo.modules.message.dto.response.MessageResponse;
+import com.zalo.modules.message.entity.Message;
+import com.zalo.modules.message.entity.MessagePin;
 import com.zalo.modules.message.entity.MessageType;
 import com.zalo.modules.message.entity.SystemMessageType;
+import com.zalo.modules.message.service.MessagePinRepository;
+import com.zalo.modules.message.service.MessageRepository;
 import com.zalo.modules.message.service.SystemMessageInterface;
 import com.zalo.modules.user.entities.User;
 import com.zalo.modules.user.service.UserRepository;
@@ -54,6 +62,9 @@ public class ConversationService implements ConversationInterface {
     MediaInterface mediaInterface;
     SystemMessageInterface systemMessageInterface;
     ConversationPinRepository conversationPinRepository;
+    MessagePinRepository messagePinRepository;
+    MessageRepository messageRepo;
+    MediaRepository mediaRepository;
 
     public Conversation createPrivateConversation(Long creatorId, Long otherUserId) {
         // try find existing
@@ -491,5 +502,53 @@ public class ConversationService implements ConversationInterface {
             conversationPinRepository.save(p);
             return p.getCt();
         }
+    }
+
+    public List<MessagePinResponse> findIsActiveMessagePin(Long convId) {
+        List<MessagePin> list = messagePinRepository.findByConversationIdAndIsActiveOrderByCtDesc(convId, 1);
+
+        return list.stream().map(p -> {
+            MessagePinResponse pinResponse = new MessagePinResponse(p, "createdBy", "message");
+
+            if(pinResponse.message.getContentType() == MessageType.FILE || pinResponse.message.getContentType() == MessageType.IMAGE){
+                findOneMessWithMedia(pinResponse.message);
+            }
+            return pinResponse;
+        }).toList();
+    }
+
+    public List<MessagePinResponse> pins(Long convId) {
+        List<MessagePin> list = messagePinRepository.findByConversationIdOrderByCtDesc(convId);
+
+        return list.stream().map(p -> {
+            MessagePinResponse pinResponse = new MessagePinResponse(p, "createdBy", "message");
+
+            if(pinResponse.message.getContentType() == MessageType.FILE || pinResponse.message.getContentType() == MessageType.IMAGE){
+                findOneMessWithMedia(pinResponse.message);
+            }
+            return pinResponse;
+        }).toList();
+    }
+
+    public void findOneMessWithMedia(MessageResponse message) {
+        List<Media> medias = mediaRepository.findByModuleIdAndModuleType(message.getId(), MediaType.MESSAGE);
+        message.setAttachments(medias.stream().map(MediaResponse::new).toList());
+    }
+
+    public void removePin(Long messPinId, Long userId) {
+        MessagePin pin = messagePinRepository.findById(messPinId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
+        pin.setIsActive(0);
+        messagePinRepository.save(pin);
+
+        CreateSystemMessageRequest dto = new CreateSystemMessageRequest();
+        dto.conversationId = pin.getConversationId();
+        dto.content = "removedPinAMessage";
+        dto.senderId = userId;
+        dto.systemMessageType = SystemMessageType.REMOVE_PIN_MESSAGE;
+        dto.info = Map.of(
+                "messageId", pin.getMessageId()
+        );
+
+        systemMessageInterface.createSystemMessage(dto);
     }
 }

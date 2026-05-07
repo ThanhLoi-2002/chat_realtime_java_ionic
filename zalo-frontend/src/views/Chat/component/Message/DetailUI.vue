@@ -41,8 +41,7 @@
                         <div class="grid grid-cols-2 gap-y-5">
                             <div v-for="stt in group.users" :key="stt.id"
                                 class="flex items-center gap-3 cursor-pointer">
-                                <CircleAvatar :user="stt.user"
-                                    class="w-10 h-10 border border-gray-100 dark:border-gray-700" />
+                                <CircleAvatar :user="stt.user"/>
                                 <span class="text-sm font-mediu" :class="[style.text.secondary]">
                                     {{ stt.user.username }}
                                 </span>

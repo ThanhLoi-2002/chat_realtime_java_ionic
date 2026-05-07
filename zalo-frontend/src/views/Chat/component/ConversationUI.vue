@@ -52,7 +52,7 @@
             </span>
 
             <i v-if="conversation.unread == 0"
-              :class="[conversation?.pinAt && 'fas fa-thumbtack', 'text-white']" />
+              :class="[conversation?.pinAt && 'fas fa-thumbtack', style.text.secondary]" />
           </div>
 
         </div>

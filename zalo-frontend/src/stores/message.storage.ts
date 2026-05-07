@@ -4,6 +4,7 @@ import { MessageFilter, SendMessageType, ShareMessageType } from '@/types/common
 import { messageApi } from '@/api/message.api';
 import { toast } from '@/utils/toast';
 import { MessageEnum, ReactionEnum } from '@/types/enum';
+import { pinApi } from '@/api/pin.api';
 
 interface State {
     isLoading: boolean,
@@ -332,6 +333,19 @@ export const useMessageStore = defineStore('message', {
                 if (!isExisted) {
                     this.links.push(m);
                 }
+            }
+        },
+
+        async removePinMessFromList(pinId: number, conversationId: number) {
+            try {
+                const result: any = await pinApi.removePinMessFromList(pinId, conversationId);
+                return result.result
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return null;
             }
         },
 

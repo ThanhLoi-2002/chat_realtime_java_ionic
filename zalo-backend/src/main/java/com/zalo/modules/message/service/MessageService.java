@@ -10,19 +10,17 @@ import com.zalo.common.filter.MessageFilter;
 import com.zalo.modules.conversation.service.*;
 import com.zalo.modules.media.dtos.responses.MediaResponse;
 import com.zalo.modules.media.entities.Media;
+import com.zalo.modules.media.service.MediaRepository;
 import com.zalo.modules.message.dto.request.AddReactionRequest;
 import com.zalo.modules.message.dto.request.CreateMessageRequest;
+import com.zalo.modules.message.dto.request.CreateSystemMessageRequest;
 import com.zalo.modules.message.dto.request.ShareMessageRequest;
 import com.zalo.modules.message.dto.response.LinkPreviewResponse;
 import com.zalo.modules.message.dto.response.MessageReactionResponse;
 import com.zalo.modules.message.dto.response.MessageResponse;
 import com.zalo.modules.conversation.dto.respone.ConversationResponse;
-import com.zalo.modules.message.entity.Message;
-import com.zalo.modules.message.entity.MessageReaction;
-import com.zalo.modules.message.entity.MessageStatus;
+import com.zalo.modules.message.entity.*;
 import com.zalo.modules.conversation.entities.ConversationType;
-import com.zalo.modules.message.entity.DeliveryStatus;
-import com.zalo.modules.message.entity.MessageType;
 import com.zalo.modules.conversation.entities.Conversation;
 import com.zalo.modules.conversation.entities.ConversationMember;
 import com.zalo.modules.media.dtos.requests.MediaRequest;
@@ -70,6 +68,8 @@ public class MessageService {
     UserOnlineStorage userOnlineStorage;
     PushNotificationService pushNotificationService;
     UserRepository userRepository;
+    MessagePinRepository messagePinRepository;
+    MediaRepository mediaRepository;
 
     public void sendMessage(Long conversationId, Long senderId, CreateMessageRequest dto) throws IOException {
         // optional check replyTo exists
@@ -443,16 +443,16 @@ public class MessageService {
         }).toList();
 
         // if be imaged -> isAttachDesc must equal true
-        if(dto.isAttachDesc && originalMsg.getContentType() == MessageType.IMAGE){
+        if (dto.isAttachDesc && originalMsg.getContentType() == MessageType.IMAGE) {
             createMessageRequest.content = originalMsg.getContent();
         }
 
-        if(originalMsg.getContentType() != MessageType.IMAGE){
+        if (originalMsg.getContentType() != MessageType.IMAGE) {
             createMessageRequest.content = originalMsg.getContent();
         }
 
         CreateMessageRequest createMessageRequest2 = new CreateMessageRequest();
-        if(!dto.content.isEmpty()){
+        if (!dto.content.isEmpty()) {
             createMessageRequest2.content = dto.content;
             createMessageRequest2.contentType = MessageType.TEXT;
         }
@@ -461,7 +461,7 @@ public class MessageService {
         dto.conversationIds.forEach(targetConvId -> {
             try {
                 sendMessage(targetConvId, senderId, createMessageRequest);
-                if(!dto.content.isEmpty()){
+                if (!dto.content.isEmpty()) {
                     sendMessage(targetConvId, senderId, createMessageRequest2);
                 }
             } catch (IOException e) {
@@ -472,5 +472,49 @@ public class MessageService {
 
     public List<MessageStatus> getStatusById(Long id) {
         return statusRepo.findStatusByMessageId(id);
+    }
+
+    public MessagePin pin(Long messageId, Long convId, Long userId) {
+        MessagePin p = new MessagePin(messageId, convId, userId);
+        messagePinRepository.save(p);
+
+        List<MessagePin> pinList = messagePinRepository.findByConversationIdAndIsActiveOrderByCtDesc(convId, 1);
+        if (pinList.size() > 3) {
+            // Lấy phần tử cuối cùng (phần tử cũ nhất do có OrderByCtDesc)
+            MessagePin oldestPin = pinList.get(pinList.size() - 1);
+            removePinFromList(oldestPin.getId(), oldestPin.getConversationId(), userId);
+        }
+
+        em.flush();
+        em.refresh(p);
+
+        CreateSystemMessageRequest dto = new CreateSystemMessageRequest();
+        dto.conversationId = convId;
+        dto.content = "pinnedAMessage";
+        dto.senderId = userId;
+        dto.systemMessageType = SystemMessageType.PIN_MESSAGE;
+        dto.info = Map.of(
+                "messageId", messageId
+        );
+
+        systemMessageInterface.createSystemMessage(dto);
+        return messagePinRepository.findOneWithRelationshipById(p.getId());
+    }
+
+    public void removePinFromList(Long pinId, Long convId, Long userId) {
+        MessagePin messagePin = messagePinRepository.findById(pinId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
+        messagePin.setIsActive(0);
+        messagePinRepository.save(messagePin);
+
+        CreateSystemMessageRequest dto = new CreateSystemMessageRequest();
+        dto.conversationId = convId;
+        dto.content = "removedPinAMessage";
+        dto.senderId = userId;
+        dto.systemMessageType = SystemMessageType.REMOVE_PIN_MESSAGE;
+        dto.info = Map.of(
+                "messageId", messagePin.getMessageId()
+        );
+        System.out.println(G.toJson(dto));
+        systemMessageInterface.createSystemMessage(dto);
     }
 }
