@@ -20,21 +20,33 @@
                         <span>{{ pinStorage.pinList[0]?.message.content }}</span>
                     </template>
                     <template v-else-if="pinStorage.pinList[0]?.message.contentType === MessageEnum.FILE">
+                        <i class="fas fa-file-alt mr-1 opacity-70"></i>
                         {{ pinStorage.pinList[0]?.message.attachments[0]?.name }}.{{
                             pinStorage.pinList[0]?.message.attachments[0]?.secureUrl.split('.').pop() }}
                     </template>
                 </span>
             </div>
 
-            <div v-if="pinStorage.pinList.length > 1" @click="isExpanded = true"
+            <div v-if="pinStorage.pinList.length > 1" @click.stop="isExpanded = true"
                 class="ml-2 flex items-center px-2 py-1 rounded border border-slate-400 bg-gray-200 hover:bg-gray-300 dark:bg-gray-800/50 dark:hover:bg-gray-700 transition-all">
                 <span class="text-xs font-bold mr-1" :class="[style.text.primary]">+{{ pinStorage.pinList.length - 1 }}
                     {{ t('pin') }}</span>
                 <i class="text-[10px] fas fa-angle-double-down" :class="[style.text.primary]"></i>
             </div>
 
-            <i class="fas fa-ellipsis-h rounded border border-slate-400 bg-gray-200 hover:bg-gray-300 dark:bg-gray-800/50 dark:hover:bg-gray-700 p-1 cursor-pointer"
-                :class="[style.text.primary]"></i>
+            <div class="relative ml-2">
+                <i @click.stop="toggleMenu(pinStorage.pinList[0].id)"
+                    class="fas fa-ellipsis-h rounded border border-slate-400 bg-gray-200 hover:bg-gray-300 dark:bg-gray-800/50 dark:hover:bg-gray-700 p-1 cursor-pointer"
+                    :class="[style.text.primary]"></i>
+
+                <div v-if="activeMenuId === pinStorage.pinList[0].id"
+                    class="absolute right-0 top-full mt-2 w-32 bg-white dark:bg-slate-700 shadow-xl rounded border border-gray-200 dark:border-slate-600 z-50 py-1">
+                    <button @click.stop="handleUnpin(pinStorage.pinList[0].id)"
+                        class="w-full text-left px-3 py-2 text-xs text-red-500 hover:bg-gray-100 dark:hover:bg-slate-600 flex items-center gap-2">
+                        <i class="fas fa-thumbtack-slash"></i> {{ t('unPinMessage') }}
+                    </button>
+                </div>
+            </div>
         </div>
 
         <transition name="slide-down">
@@ -42,7 +54,7 @@
                 <div class="flex items-center justify-between px-4 py-2 border-b border-gray-500/50">
                     <span class="font-semibold text-sm" :class="[style.text.secondary]">{{ t('pinList') }} ({{
                         pinStorage.pinList.length
-                        }})</span>
+                    }})</span>
                     <button @click="isExpanded = false" class="flex items-center text-xs text-gray-400 cursor-pointer">
                         {{ t('compact') }}
                         <i class="fas fa-angle-double-up ml-1"></i>
@@ -72,14 +84,26 @@
                                 </template>
                             </span>
                         </div>
-                        <i class="fas fa-ellipsis-h rounded border-slate-400 hover:bg-gray-300 dark:hover:bg-gray-700 p-1 cursor-pointer"
-                            :class="[style.text.primary]"></i>
+
+                        <div class="relative">
+                            <i @click.stop="toggleMenu(pin.id)"
+                                class="fas fa-ellipsis-h rounded border-slate-400 hover:bg-gray-300 dark:hover:bg-gray-700 p-1 cursor-pointer"
+                                :class="[style.text.primary]"></i>
+
+                            <div v-if="activeMenuId === pin.id"
+                                class="absolute right-0 top-full mt-1 w-32 bg-white dark:bg-slate-700 shadow-xl rounded border border-gray-200 dark:border-slate-600 z-50 py-1">
+                                <button @click.stop="handleUnpin(pin.id)"
+                                    class="w-full text-left px-3 py-2 text-xs text-red-500 hover:bg-gray-100 dark:hover:bg-slate-600 flex items-center gap-2">
+                                    <i class="fas fa-thumbtack-slash"></i> {{ t('unPinMessage') }}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <button
                     class="w-full py-2 text-sm cursor-pointer text-gray-400 hover:bg-white/5 flex items-center justify-center border-t border-gray-500/50"
-                    :class="[style.text.secondary]" @click="emit('update:isShowInfoSection', true)">
+                    :class="[style.text.secondary]" @click="openPins">
                     {{ t('seeAllInCommunityBulletinBoard') }}
                     <i class="fas fa-chevron-right ml-1"></i>
                 </button>
@@ -93,19 +117,47 @@ import { style } from '@/assets/tailwindcss';
 import { useTranslate } from '@/composables/useTranslate';
 import { useConversationStore } from '@/stores/conversation.storage';
 import { usePinStore } from '@/stores/pin.storage';
+import { useSystemStore } from '@/stores/system.storage';
 import { MessageEnum } from '@/types/enum';
 import { onClickOutside } from '@vueuse/core';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 const isExpanded = ref(false);
+const activeMenuId = ref<number | null>(null); // Quản lý ID của menu đang mở
 const { t } = useTranslate()
 const pinnedContainer = ref<HTMLElement | null>(null);
 const pinStorage = usePinStore()
 const convStorage = useConversationStore()
+const systemStorage = useSystemStore()
 
 const emit = defineEmits(['update:isShowInfoSection'])
 
-onClickOutside(pinnedContainer, () => (isExpanded.value = false));
+// --- Logics ---
+const toggleMenu = (id: number) => {
+    activeMenuId.value = activeMenuId.value === id ? null : id;
+};
+
+const handleUnpin = async (pinId: number) => {
+    // Gọi hàm xóa ghim từ store của bạn
+    // await pinStorage.removePin(pinId) 
+    console.log("Unpinning:", pinId);
+    activeMenuId.value = null;
+    await pinStorage.removePinMessFromList(pinId, convStorage.conversation!.id)
+};
+
+const openPins = () => {
+    emit('update:isShowInfoSection', true)
+    systemStorage.setIsOpenPins(true)
+}
+
+// Click ra ngoài container ghim thì đóng cả danh sách mở rộng và menu nhỏ
+onClickOutside(pinnedContainer, () => {
+    isExpanded.value = false;
+    activeMenuId.value = null;
+});
+
+// Đảm bảo đóng menu nhỏ khi đóng/mở danh sách lớn
+watch(isExpanded, () => activeMenuId.value = null);
 
 onMounted(async () => {
     if (convStorage.conversation?.id) {

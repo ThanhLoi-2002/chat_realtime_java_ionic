@@ -69,7 +69,7 @@ export const usePinStore = defineStore('pin', {
             try {
                 const result: any = await pinApi.removePinMessFromList(pinId, convId);
 
-                this.pinList.filter(p => p.id != pinId)
+                this.pinList = this.pinList.filter(p => p.id != pinId)
             } catch (e: any) {
                 toast({
                     color: 'danger',

@@ -10,7 +10,7 @@ const pinMess = async (messId: number, conversationId: number) => {
 }
 
 const removePinMessFromList = async (pinId: number, conversationId: number) => {
-    return await axios.post<IResponse>(`/conversations/${conversationId}/messages/remove-pin-from-list/${pinId}`);
+    return await axios.delete<IResponse>(`/conversations/${conversationId}/messages/remove-pin-from-list/${pinId}`);
 }
 
 const getMessPinList = async (conversationId: number) => {

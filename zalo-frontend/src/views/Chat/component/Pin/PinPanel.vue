@@ -80,8 +80,6 @@ const { t } = useTranslate()
 const pinStorage = usePinStore()
 const convStorage = useConversationStore()
 const { formatDateTime } = useDateTime()
-// Trong phần hiển thị, nếu bạn muốn cắt đuôi file thủ công:
-const getExt = (url: string) => url ? url.split('.').pop()?.toLowerCase() : '';
 
 onMounted(async () => {
     if (convStorage.conversation?.id)

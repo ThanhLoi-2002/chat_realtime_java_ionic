@@ -99,7 +99,7 @@
 
             <!-- ================= Pin VIEW ================= -->
             <template v-else-if="currentView.startsWith('pin')">
-                <PinPanel @back="currentView = 'info'" />
+                <PinPanel @back="closePins" />
             </template>
         </transition>
 
@@ -112,7 +112,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useConversationStore } from '@/stores/conversation.storage'
 import { useConversation } from '@/composables/useConversation'
 import { useTranslate } from '@/composables/useTranslate'
@@ -125,6 +125,7 @@ import Security from './Security.vue'
 import ConfirmModal from '@/components/Modal/ConfirmModal.vue'
 import Collapse from '@/components/collapse/Collapse.vue'
 import PinPanel from '../../component/Pin/PinPanel.vue'
+import { useSystemStore } from '@/stores/system.storage'
 
 const emit = defineEmits(['close'])
 
@@ -136,6 +137,7 @@ const showConfirmLeaveGroup = ref(false)
 const showConfirmDisbandGroup = ref(false)
 const openMember = ref(true)
 const openCommunityBulletinBoard = ref(true)
+const systemStorage = useSystemStore()
 
 /* ACTION */
 const toggleMute = () => console.log('mute')
@@ -176,4 +178,13 @@ const onDisbandGroup = async () => {
 
     showConfirmLeaveGroup.value = false
 }
+
+const closePins = () => {
+    currentView.value = 'info'
+    systemStorage.setIsOpenPins(false)
+}
+
+watch(() => systemStorage.isOpenPins, () => {
+    if(systemStorage.isOpenPins) currentView.value = 'pin'
+}, { immediate: true})
 </script>
