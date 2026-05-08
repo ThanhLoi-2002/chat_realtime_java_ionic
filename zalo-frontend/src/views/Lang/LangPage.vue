@@ -15,31 +15,26 @@
                     class="fa fa-plus"></i></ion-button>
         </div>
         <PaginationTable :data="langStore.languages" :columns="columns" />
-
-        <ConfirmModal v-model:showConfirm="showConfirm" :onOk="() => deleteRow()"
-            :message="`Bạn có chắc muốn xoá ${selectedItem?.code}?`" />
     </div>
 </template>
 
 <script setup lang="ts">
 import PaginationTable from "@/components/Table/PaginationTable.vue"
+import { useConfirmStore } from "@/composables/useConfirm"
 import { useDebounce } from "@/composables/useDebounce"
 import { useTranslate } from "@/composables/useTranslate"
 import { useLangStore } from "@/stores/lang.storage"
 import { LangType } from "@/types/entities"
 import { IonButton, IonInput } from "@ionic/vue"
-import { ref, h, onMounted, computed, defineAsyncComponent } from "vue"
+import { ref, h, onMounted, computed } from "vue"
 import { useRouter } from "vue-router"
-
-const ConfirmModal = defineAsyncComponent(() => import('../../components/Modal/ConfirmModal.vue'));
 
 const router = useRouter()
 const langStore = useLangStore()
+const confirmStore = useConfirmStore();
 const { t } = useTranslate()
 
-const showConfirm = ref(false)
 const search = ref("");
-const selectedItem = ref<LangType | undefined>(undefined)
 
 const columns = computed(() => [
     {
@@ -117,15 +112,13 @@ const { debounced: handleSearch } = useDebounce(() => {
 }, 300)
 
 const openModal = (item: LangType) => {
-    selectedItem.value = item
-    showConfirm.value = !showConfirm.value
-}
-
-function deleteRow() {
-    if (selectedItem.value?.id) {
-        langStore.delete(selectedItem.value?.id)
-        showConfirm.value = !showConfirm.value
-    }
+    confirmStore.open({
+        title: t('delete'),
+        message: `Bạn có chắc muốn xoá ${item.code}?`,
+        onOk: () => {
+            langStore.delete(item.id)
+        }
+    });
 }
 
 onMounted(() => {

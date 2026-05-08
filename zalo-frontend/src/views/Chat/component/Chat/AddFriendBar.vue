@@ -31,7 +31,7 @@
                 <!-- ✅ NGƯỜI GỬI -->
                 <template v-if="isSender">
                     <div class="px-3 py-1 text-sm rounded-sm cursor-pointer bg-gray-300 dark:bg-slate-600 hover:bg-gray-400"
-                        @click="showConfirmCancel = true">
+                        @click="onConfirmCancel">
                         {{ t("cancleAddFriend") }}
                     </div>
                 </template>
@@ -39,12 +39,12 @@
                 <!-- ✅ NGƯỜI NHẬN -->
                 <template v-else>
                     <div class="px-3 py-1 text-sm rounded-sm cursor-pointer bg-blue-500 text-white hover:bg-blue-600"
-                        @click="showConfirmAccept = true">
+                        @click="onConfirmAccept">
                         {{ t("accept") }}
                     </div>
 
                     <div class="px-3 py-1 text-sm rounded-sm cursor-pointer bg-gray-300 dark:bg-slate-600 hover:bg-gray-400"
-                        @click="showConfirmReject = true">
+                        @click="onConfirmReject">
                         {{ t("reject") }}
                     </div>
                 </template>
@@ -69,17 +69,6 @@
             </KeepAlive>
         </transition>
     </Modal>
-
-    <!-- CONFIRM: CANCEL -->
-    <ConfirmModal v-model:showConfirm="showConfirmCancel" :onOk="cancelFriend" :message="t('confirmCancelRequest')"
-        :header="t('cancleAddFriend')" />
-
-    <!-- CONFIRM: REJECT -->
-    <ConfirmModal v-model:showConfirm="showConfirmReject" :onOk="rejectFriend" :message="t('confirmRejectRequest')"
-        :header="t('rejectAddFriend')" />
-
-    <ConfirmModal v-model:showConfirm="showConfirmAccept" :onOk="acceptFriend" :message="t('confirmAcceptRequest')"
-        :header="t('acceptFriend')" />
 </template>
 
 <script setup lang="ts">
@@ -96,6 +85,7 @@ import { FriendshipStatusEnum } from '@/types/enum'
 import { useFriendshipStore } from '@/stores/friendship.storage'
 import { useFriendship } from '@/composables/useFriendship'
 import { useUserStore } from '@/stores/user.storage'
+import { useConfirmStore } from '@/composables/useConfirm'
 
 const { t } = useTranslate()
 const { getRecipient, isGroup } = useConversation()
@@ -104,19 +94,15 @@ const { getActionUser } = useFriendship()
 const conversationStorage = useConversationStore()
 const friendshipStorage = useFriendshipStore()
 const userStorage = useUserStore()
+const confirmStore = useConfirmStore();
 
 const modalRef = ref()
 const friendshipLocal = ref<FriendshipType | undefined>(undefined)
 const pageModal = ref<'addFriend' | 'friendProfile'>('addFriend')
 
-const showConfirmCancel = ref(false)
-const showConfirmReject = ref(false)
-const showConfirmAccept = ref(false)
-
 const username = ref('')
 
 /* ===================== COMPUTED ===================== */
-
 const user = computed(() => {
     return getRecipient(conversationStorage.conversation)
 })
@@ -126,7 +112,6 @@ const isSender = computed(() => {
 })
 
 /* ===================== ACTION ===================== */
-
 const openModal = () => {
     goPage('addFriend')
     modalRef.value?.present()
@@ -136,35 +121,52 @@ const goPage = (page: 'addFriend' | 'friendProfile') => {
     pageModal.value = page
 }
 
-const acceptFriend = async () => {
-    if (!friendshipLocal.value) return
-    const isSuccess = await friendshipStorage.accept(user.value!.id!)
-
-    if (isSuccess)
-        friendshipLocal.value = { ...friendshipLocal.value, status: FriendshipStatusEnum.ACCEPTED }
-}
-
-const rejectFriend = async () => {
-    if (!friendshipLocal.value) return
-    const isSuccess = await friendshipStorage.reject(user.value!.id!)
-
-    if (isSuccess)
-        friendshipLocal.value = undefined
-}
-
-const cancelFriend = async () => {
-    const recipient = getRecipient(conversationStorage.conversation)
-    if (!recipient) return
-    const isSuccess = await friendshipStorage.cancel(recipient.id)
-
-    if (isSuccess)
-        friendshipLocal.value = undefined
-}
-
 const getFriend = async () => {
     friendshipLocal.value = await friendshipStorage.getFriend(getRecipient(conversationStorage.conversation)?.id || 0)
 }
 
+const onConfirmCancel = () => {
+    confirmStore.open({
+        title: t('cancleAddFriend'),
+        message: t('confirmCancelRequest'),
+        onOk: async () => {
+            const recipient = getRecipient(conversationStorage.conversation)
+            if (!recipient) return
+            const isSuccess = await friendshipStorage.cancel(recipient.id)
+
+            if (isSuccess)
+                friendshipLocal.value = undefined
+        }
+    });
+}
+
+const onConfirmAccept = () => {
+    confirmStore.open({
+        title: t('acceptFriend'),
+        message: t('confirmAcceptRequest'),
+        onOk: async () => {
+            if (!friendshipLocal.value) return
+            const isSuccess = await friendshipStorage.accept(user.value!.id!)
+
+            if (isSuccess)
+                friendshipLocal.value = { ...friendshipLocal.value, status: FriendshipStatusEnum.ACCEPTED }
+        }
+    });
+}
+
+const onConfirmReject = () => {
+    confirmStore.open({
+        title: t('rejectAddFriend'),
+        message: t('confirmRejectRequest'),
+        onOk: async () => {
+            if (!friendshipLocal.value) return
+            const isSuccess = await friendshipStorage.reject(user.value!.id!)
+
+            if (isSuccess)
+                friendshipLocal.value = undefined
+        }
+    });
+}
 /* ===================== WATCH ===================== */
 
 watch(

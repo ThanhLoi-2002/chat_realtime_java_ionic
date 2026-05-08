@@ -59,9 +59,6 @@
         <modal ref="shareModal" :title="t('share')">
             <share-message-u-i :message="message" />
         </modal>
-
-        <!-- <confirm-modal v-model:showConfirm="showConfirm" :onOk="onDelete" :message="t('deleteMessage')"
-            :header="t('deleteMessage')" /> -->
     </div>
 </template>
 
@@ -71,12 +68,10 @@ import { useUserStore } from '@/stores/user.storage'
 import CircleAvatar from '@/components/Avatar/CircleAvatar.vue'
 import { useTranslate } from '@/composables/useTranslate';
 import { MemberRoleEnum, MessageEnum } from '@/types/enum';
-import { useMessageStore } from '@/stores/message.storage';
 import ImageMessage from '../Message/ImageMessage.vue';
 import TextMessage from '../Message/TextMessage.vue';
 import { MessageType } from '@/types/entities';
 import Key from '@/components/Key/Key.vue';
-import ConfirmModal from '@/components/Modal/ConfirmModal.vue';
 import FileMessage from '../Message/FileMessage.vue';
 import Modal from '@/components/Modal/Modal.vue';
 import ShareMessageUI from '../Message/ShareMessageUI.vue';
