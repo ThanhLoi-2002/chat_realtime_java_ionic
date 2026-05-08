@@ -48,47 +48,20 @@
 
         <!-- Teleported CONTEXT MENU (rendered into body) -->
         <teleport to="body">
-            <div v-if="showMenu" ref="menuRef" :style="menuInlineStyle" class="fixed z-50 w-56
-           bg-white dark:bg-gray-800 rounded-lg shadow-lg border
-           border-gray-200 dark:border-gray-700 overflow-hidden
-           transition-opacity duration-150 text-sm">
-                <div :class="['p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer', style.text.primary]"
-                    @click="onCopy">
-                    {{ t('copyMessage') }}
-                </div>
-                <div :class="['p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer', style.text.primary]"
-                    @click="onMark">
-                    {{ t('markMessage') }}
-                </div>
-                <div :class="['p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer', style.text.primary]"
-                    @click="onPin">
-                    {{ t('pinMessage') }}
-                </div>
-                <div :class="['p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer', style.text.primary]"
-                    @click="onDetails">
-                    {{ t('seeDetails') }}
-                </div>
-
-                <div class="border-t border-gray-200 dark:border-gray-700"></div>
-
-                <div v-if="userStorage.user?.id == message.sender?.id"
-                    class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-700/20 cursor-pointer"
-                    @click="showConfirm = true">
-                    {{ t('delete') }}
-                </div>
-            </div>
+            <message-context-menu 
+                :message="message" 
+                v-model:showMenu="showMenu" 
+                v-model:showConfirm="showConfirm"
+                :menuInlineStyle="menuInlineStyle" 
+                ref="contextMenuComponentRef" />
         </teleport>
 
         <modal ref="shareModal" :title="t('share')">
-            <share-message-u-i :message="message"/>
+            <share-message-u-i :message="message" />
         </modal>
 
-        <modal ref="detailsModal" :title="t('detail')">
-            <detail-u-i :message="message"/>
-        </modal>
-
-        <confirm-modal v-model:showConfirm="showConfirm" :onOk="onDelete" :message="t('deleteMessage')"
-            :header="t('deleteMessage')" />
+        <!-- <confirm-modal v-model:showConfirm="showConfirm" :onOk="onDelete" :message="t('deleteMessage')"
+            :header="t('deleteMessage')" /> -->
     </div>
 </template>
 
@@ -98,7 +71,6 @@ import { useUserStore } from '@/stores/user.storage'
 import CircleAvatar from '@/components/Avatar/CircleAvatar.vue'
 import { useTranslate } from '@/composables/useTranslate';
 import { MemberRoleEnum, MessageEnum } from '@/types/enum';
-import { style } from '@/assets/tailwindcss';
 import { useMessageStore } from '@/stores/message.storage';
 import ImageMessage from '../Message/ImageMessage.vue';
 import TextMessage from '../Message/TextMessage.vue';
@@ -106,11 +78,9 @@ import { MessageType } from '@/types/entities';
 import Key from '@/components/Key/Key.vue';
 import ConfirmModal from '@/components/Modal/ConfirmModal.vue';
 import FileMessage from '../Message/FileMessage.vue';
-import { toast } from '@/utils/toast';
 import Modal from '@/components/Modal/Modal.vue';
 import ShareMessageUI from '../Message/ShareMessageUI.vue';
-import DetailUI from '../Message/DetailUI.vue';
-import { usePinStore } from '@/stores/pin.storage';
+import MessageContextMenu from '../Message/MessageContextMenu.vue';
 
 const props = defineProps<{
     message: MessageType & any
@@ -121,17 +91,14 @@ const props = defineProps<{
 const { t } = useTranslate()
 
 const userStorage = useUserStore()
-const messageStorage = useMessageStore()
-const pinStorage = usePinStore()
 const shareModal = ref()
-const detailsModal = ref()
 
 const isOwner = props.message.sender.id === userStorage.user?.id
 
 // refs
 const bubbleRef = ref<HTMLElement | null>(null)
 const moreBtnRef = ref<HTMLElement | null>(null)
-const menuRef = ref<HTMLElement | null>(null)
+const contextMenuComponentRef = ref();
 const showConfirm = ref(false)
 
 // menu state
@@ -144,14 +111,14 @@ function setBubbleRef(el: HTMLElement | null) {
 
 const openShareModal = () => {
     shareModal.value.present()
-} 
+}
 
 const toggleMenu = async () => {
     if (!showMenu.value) {
         // Trước khi mở, gửi thông báo đóng tất cả các menu khác
         // Bạn có thể dùng mitt hoặc window.dispatchEvent
         window.dispatchEvent(new CustomEvent('close-all-menus', { detail: props.message.id }));
-        
+
         showMenu.value = true;
         await nextTick();
         positionMenu();
@@ -165,10 +132,13 @@ const toggleMenu = async () => {
 
 // calculate position and set menuInlineStyle
 const positionMenu = () => {
-    if (!bubbleRef.value || !menuRef.value) return
+    // Lấy element thực tế từ expose của con
+    const menuElement = contextMenuComponentRef.value?.menuRef;
+
+    if (!bubbleRef.value || !menuElement) return
 
     const bubbleRect = bubbleRef.value.getBoundingClientRect()
-    const menuRect = menuRef.value.getBoundingClientRect()
+    const menuRect = menuElement?.getBoundingClientRect()
     const viewportWidth = window.innerWidth
     const viewportHeight = window.innerHeight
     const margin = 8
@@ -213,82 +183,11 @@ const positionMenu = () => {
     }
 }
 
-// Actions (placeholders — replace with your actual logic)
-const onCopy = async () => {
-    const textToCopy = props.message.content || '';
-
-    if (!textToCopy) return;
-
-    // Cách 1: Dùng Clipboard API (Hiện đại)
-    if (navigator.clipboard && window.isSecureContext) {
-        try {
-            await navigator.clipboard.writeText(textToCopy);
-            toast({ message: t("copied"), color: "success" }); // Thông báo thành công
-        } catch (err) {
-            fallbackCopy(textToCopy);
-        }
-    } else {
-        // Cách 2: Fallback cho HTTP hoặc trình duyệt cũ
-        fallbackCopy(textToCopy);
-    }
-
-    showMenu.value = false;
-};
-
-// Hàm bổ trợ copy thủ công
-const fallbackCopy = (text: string) => {
-    const textArea = document.createElement("textarea");
-    textArea.value = text;
-
-    // Tránh bị scroll trang khi append
-    textArea.style.position = "fixed";
-    textArea.style.left = "-9999px";
-    textArea.style.top = "0";
-
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-
-    try {
-        const successful = document.execCommand('copy');
-        if (successful) {
-            toast({ message: t("copied"), color: "success" });
-        }
-    } catch (err) {
-        console.error('Fallback copy failed', err);
-    }
-
-    document.body.removeChild(textArea);
-};
-
-const onMark = () => {
-    // implement marking logic
-    showMenu.value = false
-}
-
-const onPin = async () => {
-    await pinStorage.pinMess(props.message.id, props.message.conversationId)
-    showMenu.value = false
-}
-
-const onDetails = () => {
-    // open details modal
-    showMenu.value = false
-    detailsModal.value?.present()
-}
-
-const onDelete = () => {
-    // confirm & delete
-    showMenu.value = false
-    showConfirm.value = false
-    messageStorage.deleteMessage(props.message.id, props.message.conversationId)
-}
-
 // click outside: if clicked outside menu and outside more button, close
 const handleClickOutside = (e: MouseEvent) => {
     const target = e.target as Node
 
-    if (menuRef.value && menuRef.value.contains(target)) return
+    if (contextMenuComponentRef.value.menuRef && contextMenuComponentRef.value.menuRef.contains(target)) return
     if (moreBtnRef.value && moreBtnRef.value.contains(target)) return
 
     // clicking inside bubble but not on more button should close menu

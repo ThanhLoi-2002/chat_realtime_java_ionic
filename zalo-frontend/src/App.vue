@@ -9,6 +9,9 @@
       </div>
       <router-view v-else />
     </component>
+
+    <confirm-modal v-model:showConfirm="confirmStore.show" :header="confirmStore.title" :message="confirmStore.message"
+      :onOk="confirmStore.confirm" />
   </ion-app>
 </template>
 
@@ -29,6 +32,7 @@ import { usePushNotification } from './composables/usePushNotification';
 import { storage } from './services/storage.service.';
 import { useClassificationCardStore } from './stores/classificationCard.storage';
 import { useFriendshipStore } from './stores/friendship.storage';
+import { useConfirmStore } from './composables/useConfirm';
 
 const route: any = useRoute();
 const langStore = useLangStore()
@@ -38,6 +42,7 @@ const classificationCardStorage = useClassificationCardStore()
 const friendshipStorage = useFriendshipStore()
 const { initPush } = usePushNotification()
 const { isMobile, logDeviceInfo, isSmartDevice } = useDevice()
+const confirmStore = useConfirmStore();
 
 const layouts: any = {
   main: defineAsyncComponent(() => import('./layouts/MainLayout.vue')),
