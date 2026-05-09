@@ -5,10 +5,14 @@
 
     <!-- MESSAGES -->
     <div class="flex-1 relative overflow-hidden">
-        <AddFriendBar />
-        <PinList @update:isShowInfoSection="val => emit('update:isShowInfoSection', val)"/>
+        <div class="flex flex-col gap-1 absolute top-1 left-1/2 -translate-x-1/2 w-full px-3 z-1">
+            <PinList @update:isShowInfoSection="val => emit('update:isShowInfoSection', val)" />
+            <AddFriendBar />
+        </div>
+
         <!-- Phần cuộn tin nhắn -->
-        <div ref="scrollContainer" class="h-full w-full overflow-y-auto pt-2 pb-5 space-y-2 md:py-6" @scroll="scrollMore">
+        <div ref="scrollContainer" class="h-full w-full overflow-y-auto pt-2 pb-5 space-y-2 md:py-6"
+            @scroll="scrollMore">
             <div v-if="messageStorage.isLoading" class="text-center text-gray-400 text-sm py-4">
                 <LoadingSpinner />
             </div>
@@ -67,6 +71,7 @@ import { MessagePinType, MessageType } from '@/types/entities';
 import { useDebounce } from '@/composables/useDebounce';
 import { appLimit } from '@/utils/constant';
 import PinList from './component/Pin/PinList.vue';
+import { usePinStore } from '@/stores/pin.storage';
 
 const props = defineProps<{
     isShowInfoSection: boolean
@@ -76,7 +81,7 @@ const conversationStorage = useConversationStore()
 const messageStorage = useMessageStore()
 const userStorage = useUserStore()
 const sysStorage = useSystemStore()
-const { t } = useTranslate()
+const pinStorage = usePinStore()
 const { getTime, formatSeparatorTime } = useDateTime()
 const { onScroll, scrollToBottom } = useScroll()
 const unreadCount = ref(0) // Số tin nhắn mới chưa đọc khi đang cuộn lên trên
@@ -276,6 +281,7 @@ const waitForImages = async () => {
 const reset = async () => {
     sysStorage.setShowBottomMenu(false)
     messageStorage.resetPagination()
+    pinStorage.reset()
     unreadMessageId.value = conversationStorage.userLastMessageId
 
     roles.value = conversationStorage.conversation?.members?.reduce((acc, member) => {
@@ -334,6 +340,10 @@ const resetSubscribe = () => {
 
     sub = socketSubscribe(`/user/queue/chat.conversation.${convId}.updateMemberList`, (msg: any) => {
         conversationStorage.updateMemberListRealtime(JSON.parse(msg.body).members)
+    })
+
+    sub = socketSubscribe(`/user/queue/chat.conversation.${convId}.pinMessage`, (msg: any) => {
+        pinStorage.pinMessRealtime(JSON.parse(msg.body).messPin)
     })
 }
 

@@ -1,6 +1,6 @@
 <template>
-    <div v-if="pinStorage.pinList.length != 0" ref="pinnedContainer" class="absolute top-1 left-1/2 -translate-x-1/2
-        px-4 py-1 flex justify-between items-center bg-gray-100 dark:bg-gray-800 border hover:bg-slate-200 dark:hover:bg-slate-700
+    <div v-if="pinStorage.pinList.length != 0" ref="pinnedContainer" class="
+        px-4 py-2 flex justify-between items-center bg-gray-100 dark:bg-gray-800 border hover:bg-slate-200 dark:hover:bg-slate-700
         border-slate-300 dark:border-slate-800
         z-10 rounded-sm shadow min-w-[98%]
         text-xs md:text-base" :class="[style.text.primary]">
@@ -40,7 +40,7 @@
                     :class="[style.text.primary]"></i>
 
                 <div v-if="activeMenuId === pinStorage.pinList[0].id"
-                    class="absolute right-0 top-full mt-2 w-32 bg-white dark:bg-slate-700 shadow-xl rounded border border-gray-200 dark:border-slate-600 z-50 py-1">
+                    class="absolute right-0 top-full mt-2 w-32 bg-white dark:bg-slate-700 shadow-xl rounded border border-gray-200 dark:border-slate-600 z-2 py-1">
                     <button @click.stop="handleUnpin(pinStorage.pinList[0].id)"
                         class="w-full text-left px-3 py-2 text-xs text-red-500 hover:bg-gray-100 dark:hover:bg-slate-600 flex items-center gap-2">
                         <i class="fas fa-thumbtack-slash"></i> {{ t('unPinMessage') }}
@@ -120,7 +120,7 @@ import { usePinStore } from '@/stores/pin.storage';
 import { useSystemStore } from '@/stores/system.storage';
 import { MessageEnum } from '@/types/enum';
 import { onClickOutside } from '@vueuse/core';
-import { onMounted, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 const isExpanded = ref(false);
 const activeMenuId = ref<number | null>(null); // Quản lý ID của menu đang mở
@@ -139,8 +139,6 @@ const toggleMenu = (id: number) => {
 
 const handleUnpin = async (pinId: number) => {
     // Gọi hàm xóa ghim từ store của bạn
-    // await pinStorage.removePin(pinId) 
-    console.log("Unpinning:", pinId);
     activeMenuId.value = null;
     await pinStorage.removePinMessFromList(pinId, convStorage.conversation!.id)
 };
@@ -159,9 +157,9 @@ onClickOutside(pinnedContainer, () => {
 // Đảm bảo đóng menu nhỏ khi đóng/mở danh sách lớn
 watch(isExpanded, () => activeMenuId.value = null);
 
-onMounted(async () => {
+watch(() => convStorage.conversation?.id, async () => {
     if (convStorage.conversation?.id) {
         await pinStorage.getMessPinList(convStorage.conversation.id)
     }
-})
+}, { immediate: true });
 </script>

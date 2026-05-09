@@ -40,23 +40,11 @@
         <Modal ref="profileModal" :title="t('profile')">
             <FriendProfileUI :user="user" />
         </Modal>
-
-        <ConfirmModal v-model:showConfirm="showConfirmKickMember" :onOk="onKickMember" :message="t('kickMember')"
-            :header="t('kickMember')" />
-
-        <ConfirmModal v-model:showConfirm="showConfirmAppointGroupLeader" :onOk="() => ordain(MemberRoleEnum.GOLDEN_KEY)"
-            :message="t('appointGroupLeader')" :header="t('appointGroupLeader')" />
-
-        <ConfirmModal v-model:showConfirm="showConfirmAppointGroupDeputy" :onOk="() => ordain(MemberRoleEnum.SILVER_KEY)"
-            :message="t('appointGroupDeputy')" :header="t('appointGroupDeputy')" />
-
-        <ConfirmModal v-model:showConfirm="showConfirmRevokeGroupDeputy" :onOk="revokeSilverKey"
-            :message="t('revokeGroupDeputy')" :header="t('revokeGroupDeputy')" />
     </div>
 </template>
 <script setup lang="ts">
-import ConfirmModal from '@/components/Modal/ConfirmModal.vue';
 import Modal from '@/components/Modal/Modal.vue';
+import { useConfirmStore } from '@/composables/useConfirm';
 import { useTranslate } from '@/composables/useTranslate';
 import { useConversationStore } from '@/stores/conversation.storage';
 import { MemberType } from '@/types/entities';
@@ -72,12 +60,9 @@ const props = defineProps<{
 }>()
 
 const { t } = useTranslate()
-const showConfirmAppointGroupLeader = ref(false)
-const showConfirmAppointGroupDeputy = ref(false)
-const showConfirmRevokeGroupDeputy = ref(false)
-const showConfirmKickMember = ref(false)
 const profileModal = ref()
 const convStorage = useConversationStore()
+const confirmStore = useConfirmStore();
 
 const dismiss = inject<() => void>("modalDismiss")
 
@@ -95,7 +80,15 @@ const items = computed(() => {
         {
             icon: 'fa fa-key text-yellow-400',
             title: 'appointGroupLeader',
-            onClick: () => { showConfirmAppointGroupLeader.value = true }
+            onClick: () => {
+                confirmStore.open({
+                    title: t('appointGroupLeader'),
+                    message: t('appointGroupLeader'),
+                    onOk: () => {
+                        ordain(MemberRoleEnum.GOLDEN_KEY)
+                    }
+                });
+            }
         },
         // Nút Phong / Tước Silver Key
         {
@@ -103,9 +96,23 @@ const items = computed(() => {
             title: isSilverKey ? 'revokeGroupDeputy' : 'appointGroupDeputy',
             onClick: () => {
                 if (isSilverKey) {
-                    showConfirmRevokeGroupDeputy.value = true
+                    confirmStore.open({
+                        title: t('revokeGroupDeputy'),
+                        message: t('revokeGroupDeputy'),
+                        onOk: async () => {
+                            convStorage.revokeSilverKey(props.user.id)
+                            dismiss?.()
+                            props.closeMemberManagementModal()
+                        }
+                    });
                 } else {
-                    showConfirmAppointGroupDeputy.value = true
+                    confirmStore.open({
+                        title: t('appointGroupDeputy'),
+                        message: t('appointGroupDeputy'),
+                        onOk: () => {
+                            ordain(MemberRoleEnum.SILVER_KEY)
+                        }
+                    });
                 }
             }
         },
@@ -114,20 +121,20 @@ const items = computed(() => {
             title: 'kickMember',
             class: 'text-red-400',
             onClick: () => {
-                showConfirmKickMember.value = true
+                confirmStore.open({
+                    title: t('kickMember'),
+                    message: t('kickMember'),
+                    onOk: async () => {
+                        await convStorage.kickMember(props.user.id)
+                        props.setSelectedUser()
+                        dismiss?.()
+                        props.closeMemberManagementModal()
+                    }
+                });
             }
         },
     ];
 });
-
-const onKickMember = async () => {
-    const success = await convStorage.kickMember(props.user.id)
-    if (success) showConfirmKickMember.value = false
-
-    props.setSelectedUser()
-    dismiss?.()
-    props.closeMemberManagementModal()
-}
 
 const ordain = (level: MemberRoleEnum.GOLDEN_KEY | MemberRoleEnum.SILVER_KEY) => {
     if (level == MemberRoleEnum.GOLDEN_KEY) {
@@ -135,12 +142,6 @@ const ordain = (level: MemberRoleEnum.GOLDEN_KEY | MemberRoleEnum.SILVER_KEY) =>
     } else {
         convStorage.ordainSilverKey(props.user.id)
     }
-    dismiss?.()
-    props.closeMemberManagementModal()
-}
-
-const revokeSilverKey = () => {
-    convStorage.revokeSilverKey(props.user.id)
     dismiss?.()
     props.closeMemberManagementModal()
 }

@@ -15,8 +15,8 @@
                 <div class="flex items-center gap-3 mb-3">
                     <CircleAvatar :user="pin.createdBy" :is-disabled="true" />
                     <div class="flex flex-col">
-                        <span class="font-bold text-sm" :class="[style.text.primary]">{{ pin.message.sender.username
-                            }}</span>
+                        <span class="font-bold text-sm" :class="[style.text.primary]">{{ pin.createdBy?.username
+                        }}</span>
                         <div class="flex items-center gap-1 text-gray-400 text-xs">
                             <ion-icon :icon="chatbubbleOutline" class="text-blue-400" />
                             <span>{{ t('pinMessage') }}</span>
@@ -37,7 +37,8 @@
                             <img :src="pin.message?.attachments[0]?.secureUrl" class="object-cover w-full h-full" />
                         </div>
                         <div>
-                            <p class="font-bold mb-1" :class="[style.text.secondary]">{{ pin.message.sender.username }}</p>
+                            <p class="font-bold mb-1" :class="[style.text.secondary]">{{ pin.message.sender.username }}
+                            </p>
                             <span class="italic text-gray-500 text-xs">{{ pin.message.content }}</span>
                         </div>
                     </div>
@@ -48,9 +49,11 @@
                             <ion-icon :icon="documentOutline" class="text-xl text-blue-500" />
                         </div>
                         <div class="flex flex-col overflow-hidden">
-                            <p class="font-bold mb-1" :class="[style.text.secondary]">{{ pin.message.sender.username }}</p>
+                            <p class="font-bold mb-1" :class="[style.text.secondary]">{{ pin.message.sender.username }}
+                            </p>
                             <span class="truncate font-medium text-xs dark:text-gray-300">
-                                {{ pin.message.attachments[0]?.name }}.{{ pin.message.attachments[0]?.secureUrl.split('.').pop() }}
+                                {{ pin.message.attachments[0]?.name }}.{{
+                                    pin.message.attachments[0]?.secureUrl.split('.').pop() }}
                             </span>
                         </div>
                     </div>
@@ -80,7 +83,7 @@ const { t } = useTranslate()
 const pinStorage = usePinStore()
 const convStorage = useConversationStore()
 const { formatDateTime } = useDateTime()
-
+console.log(pinStorage.pins)
 onMounted(async () => {
     if (convStorage.conversation?.id)
         await pinStorage.getPins(convStorage.conversation.id)

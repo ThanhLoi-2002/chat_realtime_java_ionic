@@ -17,7 +17,7 @@
                 <div :class="['py-4 overflow-y-auto', style.border.primary]">
 
                     <div class="flex flex-col items-center justify-center">
-                        <circle-avatar :user="getRecipient(conversationStorage.conversation)" size="size-20"/>
+                        <circle-avatar :user="getRecipient(conversationStorage.conversation)" size="size-20" />
 
                         <div class="mt-3 font-medium dark:text-white gap-2">
                             {{ conversationName(conversationStorage.conversation) }}
@@ -59,8 +59,16 @@
                             👥 {{ conversationStorage.generalGroup?.length }} {{ t('generalGroup') }}
                         </section>
 
-                        <StorageComponent @update:currentView="currentView = $event"/>
-                        <Security/>
+                        <Collapse v-model:isOpen="openCommunityBulletinBoard" :title="t('communityBulletinBoard')">
+                            <div :class="['hover:bg-gray-50 dark:hover:bg-slate-800 py-2 px-4 cursor-pointer flex gap-2 items-center', style.border.primary, style.text.secondary]"
+                                @click="currentView = 'pin'">
+                                <i class="fas fa-map-pin"></i>
+                                <span>{{ t('pin') }}</span>
+                            </div>
+                        </Collapse>
+
+                        <StorageComponent @update:currentView="currentView = $event" />
+                        <Security />
                     </div>
                 </div>
             </div>
@@ -72,7 +80,12 @@
 
             <!-- ================= IMAGE VIEW ================= -->
             <template v-else-if="currentView.startsWith('storage/')">
-                <StoragePanel @back="currentView = 'info'" :type="currentView"/>
+                <StoragePanel @back="currentView = 'info'" :type="currentView" />
+            </template>
+
+            <!-- ================= Pin VIEW ================= -->
+            <template v-else-if="currentView.startsWith('pin')">
+                <PinPanel @back="closePins" />
             </template>
         </transition>
     </div>
@@ -88,6 +101,8 @@ import CommonGroupPanel from './CommonGroupPanel.vue'
 import StoragePanel from './Storage/StoragePanel.vue'
 import StorageComponent from './Storage/StorageComponent.vue'
 import Security from './Security.vue'
+import { useSystemStore } from '@/stores/system.storage'
+import PinPanel from '../../component/Pin/PinPanel.vue'
 
 const emit = defineEmits(['close'])
 
@@ -95,6 +110,8 @@ const conversationStorage = useConversationStore()
 const { t } = useTranslate()
 const { conversationName, getRecipient } = useConversation()
 const currentView = ref<'info' | 'commonGroup' | 'storage/image' | 'storage/file' | 'storage/link' | any>('info')
+const openCommunityBulletinBoard = ref(true)
+const systemStorage = useSystemStore()
 
 /* ACTION */
 const toggleMute = () => console.log('mute')
@@ -123,4 +140,9 @@ const actions = computed(() => [
         onClick: createGroup
     }
 ])
+
+const closePins = () => {
+    currentView.value = 'info'
+    systemStorage.setIsOpenPins(false)
+}
 </script>

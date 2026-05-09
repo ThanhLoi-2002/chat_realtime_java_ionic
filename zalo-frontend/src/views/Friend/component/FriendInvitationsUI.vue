@@ -17,7 +17,8 @@
           <!-- TOP -->
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <CircleAvatar :user="getOther(friendship)" custom-class="w-10 h-10 rounded-full object-cover cursor-pointer"/>
+              <CircleAvatar :user="getOther(friendship)"
+                custom-class="w-10 h-10 rounded-full object-cover cursor-pointer" />
 
               <div>
                 <div class="font-medium text-sm">
@@ -64,7 +65,8 @@
           <!-- TOP -->
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <CircleAvatar :user="getOther(friendship)" custom-class="w-10 h-10 rounded-full object-cover cursor-pointer"/>
+              <CircleAvatar :user="getOther(friendship)"
+                custom-class="w-10 h-10 rounded-full object-cover cursor-pointer" />
 
               <div>
                 <div class="font-medium text-sm">
@@ -95,21 +97,9 @@
       </div>
     </div>
   </div>
-
-  <!-- CONFIRM: CANCEL -->
-  <ConfirmModal v-model:showConfirm="showConfirmCancel" :onOk="cancelRequest" :message="t('confirmCancelRequest')"
-    :header="t('cancleAddFriend')" />
-
-  <ConfirmModal v-model:showConfirm="showConfirmAccept" :onOk="acceptRequest" :message="t('confirmAcceptRequest')"
-    :header="t('acceptFriend')" />
-
-  <!-- CONFIRM: REJECT -->
-  <ConfirmModal v-model:showConfirm="showConfirmReject" :onOk="rejectRequest" :message="t('confirmRejectRequest')"
-    :header="t('rejectAddFriend')" />
 </template>
 
 <script setup lang="ts">
-import ConfirmModal from "@/components/Modal/ConfirmModal.vue";
 import { useDateTime } from "@/composables/useDateTime";
 import { useFriendship } from "@/composables/useFriendship";
 import { useTranslate } from "@/composables/useTranslate";
@@ -117,6 +107,7 @@ import { useFriendshipStore } from "@/stores/friendship.storage";
 import { FriendshipType } from "@/types/entities";
 import { onMounted, ref } from "vue";
 import CircleAvatar from "@/components/Avatar/CircleAvatar.vue";
+import { useConfirmStore } from "@/composables/useConfirm";
 
 const friendshipStorage = useFriendshipStore();
 const { getOther } = useFriendship();
@@ -126,35 +117,27 @@ const { t } = useTranslate()
 const isLoadingRecieved = ref(false);
 const isLoadingSent = ref(false);
 const selectedFriendship = ref<FriendshipType | undefined>(undefined)
-
-const showConfirmCancel = ref(false)
-const showConfirmAccept = ref(false)
-const showConfirmReject = ref(false)
+const confirmStore = useConfirmStore();
 
 const received = ref<FriendshipType[]>([]); // lời mời nhận (đang empty)
 
 const sent = ref<FriendshipType[]>([]);
 
-const cancelRequest = async () => {
-  const otherId = getOther(selectedFriendship.value!).id
+const cancelRequest = async (otherId: number) => {
   const isSuccess = await friendshipStorage.cancel(otherId)
 
   if (isSuccess)
     sent.value = sent.value.filter((f) => f.id !== selectedFriendship.value!.id);
-
-  console.log(showConfirmAccept.value)
 };
 
-const acceptRequest = async () => {
-  const otherId = getOther(selectedFriendship.value!).id
+const acceptRequest = async (otherId: number) => {
   const isSuccess = await friendshipStorage.accept(otherId)
 
   if (isSuccess)
     received.value = sent.value.filter((f) => f.id !== selectedFriendship.value!.id);
 };
 
-const rejectRequest = async () => {
-  const otherId = getOther(selectedFriendship.value!).id
+const rejectRequest = async (otherId: number) => {
   const isSuccess = await friendshipStorage.reject(otherId)
 
   if (isSuccess)
@@ -162,19 +145,34 @@ const rejectRequest = async () => {
 };
 
 const openConfirmModal = (type: 'accept' | 'cancel' | 'reject', item: FriendshipType) => {
-  selectedFriendship.value = item
+  const otherId = getOther(selectedFriendship.value!).id
+  let onConfirm
+  let title
+  let message
 
   switch (type) {
     case 'accept':
-      showConfirmAccept.value = true
+      title = 'acceptFriend'
+      message = 'confirmAcceptRequest'
+      onConfirm = () => acceptRequest(otherId)
       break;
     case 'cancel':
-      showConfirmCancel.value = true
+      title = 'cancleAddFriend'
+      message = 'confirmCancelRequest'
+      onConfirm = () => cancelRequest(otherId)
       break
     case 'reject':
-      showConfirmReject.value = true
+      title = 'rejectAddFriend'
+      message = 'confirmRejectRequest'
+      onConfirm = () => cancelRequest(otherId)
       break
   }
+
+  confirmStore.open({
+    title: t(title),
+    message: t(message),
+    onOk: onConfirm
+  });
 }
 
 onMounted(async () => {

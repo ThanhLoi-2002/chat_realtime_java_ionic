@@ -16,6 +16,7 @@ import com.zalo.modules.message.dto.request.CreateMessageRequest;
 import com.zalo.modules.message.dto.request.CreateSystemMessageRequest;
 import com.zalo.modules.message.dto.request.ShareMessageRequest;
 import com.zalo.modules.message.dto.response.LinkPreviewResponse;
+import com.zalo.modules.message.dto.response.MessagePinResponse;
 import com.zalo.modules.message.dto.response.MessageReactionResponse;
 import com.zalo.modules.message.dto.response.MessageResponse;
 import com.zalo.modules.conversation.dto.respone.ConversationResponse;
@@ -474,7 +475,7 @@ public class MessageService {
         return statusRepo.findStatusByMessageId(id);
     }
 
-    public MessagePin pin(Long messageId, Long convId, Long userId) {
+    public MessagePinResponse pin(Long messageId, Long convId, Long userId) {
         MessagePin p = new MessagePin(messageId, convId, userId);
         messagePinRepository.save(p);
 
@@ -498,7 +499,13 @@ public class MessageService {
         );
 
         systemMessageInterface.createSystemMessage(dto);
-        return messagePinRepository.findOneWithRelationshipById(p.getId());
+
+        MessagePinResponse messagePinResponse = new MessagePinResponse(messagePinRepository.findOneWithRelationshipById(p.getId()), "createdBy", "message");
+        List<Media> medias = mediaRepository.findByModuleIdAndModuleType(messagePinResponse.getMessage().getId(), MediaType.MESSAGE);
+        messagePinResponse.message.setAttachments(medias.stream().map(MediaResponse::new).toList());
+
+        websocketService.pinMessage(messagePinResponse);
+        return messagePinResponse;
     }
 
     public void removePinFromList(Long pinId, Long convId, Long userId) {

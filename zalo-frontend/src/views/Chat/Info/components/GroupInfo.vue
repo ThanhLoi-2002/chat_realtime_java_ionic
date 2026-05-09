@@ -75,11 +75,11 @@
                         <div class="p-2">
                             <div v-if="!isGoldenKey()"
                                 class="text-red-500 hover:text-red-600 cursor-pointer transition p-2 rounded-xs"
-                                :class="[style.bg.hover]" @click="showConfirmLeaveGroup = !showConfirmLeaveGroup">
+                                :class="[style.bg.hover]" @click="showConfirmLeaveGroup">
                                 {{ t("leaveTheGroup") }}
                             </div>
                             <div v-else class="text-red-500 hover:text-red-600 cursor-pointer transition p-2 rounded-xs"
-                                :class="[style.bg.hover]" @click="showConfirmDisbandGroup = !showConfirmDisbandGroup">
+                                :class="[style.bg.hover]" @click="showConfirmDisbandGroup">
                                 {{ t("disbandTheGroup") }}
                             </div>
                         </div>
@@ -107,12 +107,6 @@
                 <GroupManagementPanel @back="currentView = 'info'" />
             </template>
         </transition>
-
-        <ConfirmModal v-model:showConfirm="showConfirmLeaveGroup" :onOk="onLeaveGroup" :message="t('leaveTheGroup')"
-            :header="t('leaveTheGroup')" />
-
-        <ConfirmModal v-model:showConfirm="showConfirmDisbandGroup" :onOk="onDisbandGroup"
-            :message="t('disbandTheGroup')" :header="t('disbandTheGroup')" />
     </div>
 </template>
 
@@ -127,11 +121,11 @@ import StoragePanel from './Storage/StoragePanel.vue'
 import StorageComponent from './Storage/StorageComponent.vue'
 import Member from './Member.vue'
 import Security from './Security.vue'
-import ConfirmModal from '@/components/Modal/ConfirmModal.vue'
 import Collapse from '@/components/collapse/Collapse.vue'
 import PinPanel from '../../component/Pin/PinPanel.vue'
 import { useSystemStore } from '@/stores/system.storage'
 import GroupManagementPanel from './GroupManagement/GroupManagementPanel.vue'
+import { useConfirmStore } from '@/composables/useConfirm'
 
 const emit = defineEmits(['close'])
 
@@ -139,11 +133,10 @@ const conversationStorage = useConversationStore()
 const { t } = useTranslate()
 const { conversationName, isGoldenKey } = useConversation()
 const currentView = ref<'info' | 'member' | 'storage/image' | 'storage/file' | 'storage/link' | 'pin' | 'groupManagement' | any>('info')
-const showConfirmLeaveGroup = ref(false)
-const showConfirmDisbandGroup = ref(false)
 const openMember = ref(true)
 const openCommunityBulletinBoard = ref(true)
 const systemStorage = useSystemStore()
+const confirmStore = useConfirmStore();
 
 /* ACTION */
 const toggleMute = () => console.log('mute')
@@ -151,6 +144,26 @@ const togglePin = async () => {
     if (conversationStorage.conversation) {
         await conversationStorage.pin(conversationStorage.conversation.id)
     }
+}
+
+const showConfirmLeaveGroup = () => {
+    confirmStore.open({
+        title: t('leaveTheGroup'),
+        message: t('leaveTheGroup'),
+        onOk: async () => {
+            await conversationStorage.leaveGroup()
+        }
+    });
+}
+
+const showConfirmDisbandGroup = () => {
+    confirmStore.open({
+        title: t('disbandTheGroup'),
+        message: t('disbandTheGroup'),
+        onOk: async () => {
+            await conversationStorage.leaveGroup()
+        }
+    });
 }
 
 const groupManagement = () => {
@@ -177,24 +190,12 @@ const actions = computed(() => [
     }
 ])
 
-const onLeaveGroup = async () => {
-    const success = await conversationStorage.leaveGroup();
-
-    showConfirmLeaveGroup.value = false
-}
-
-const onDisbandGroup = async () => {
-    const success = await conversationStorage.leaveGroup();
-
-    showConfirmLeaveGroup.value = false
-}
-
 const closePins = () => {
     currentView.value = 'info'
     systemStorage.setIsOpenPins(false)
 }
 
 watch(() => systemStorage.isOpenPins, () => {
-    if(systemStorage.isOpenPins) currentView.value = 'pin'
-}, { immediate: true})
+    if (systemStorage.isOpenPins) currentView.value = 'pin'
+}, { immediate: true })
 </script>

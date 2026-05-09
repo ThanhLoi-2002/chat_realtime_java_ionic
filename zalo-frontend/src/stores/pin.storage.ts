@@ -1,10 +1,5 @@
-import { authApi } from '@/api/auth.api'
-import { LoginFormType, RegisterFormType } from '@/schema/auth.schema'
-import { ACCESS_TOKEN, REFRESH_TOKEN } from '@/utils/constant'
-import { setKey } from '@/utils/local'
 import { toast } from '@/utils/toast'
 import { defineStore } from 'pinia'
-import { useUserStore } from './user.storage'
 import { MessagePinType } from '@/types/entities'
 import { pinApi } from '@/api/pin.api'
 
@@ -51,18 +46,27 @@ export const usePinStore = defineStore('pin', {
             try {
                 const result: any = await pinApi.pinMess(messId, convId);
 
-                this.pinList.unshift(result.result)
-                
-                if (this.pinList.length > 3)
-                    this.pinList.pop()
+                // this.pinList.unshift(result.result)
 
-                this.pins.unshift(result.result)
+                // if (this.pinList.length > 3)
+                //     this.pinList.pop()
+
+                // this.pins.unshift(result.result)
             } catch (e: any) {
                 toast({
                     color: 'danger',
                     message: e.message
                 })
             }
+        },
+
+        pinMessRealtime(messPin: MessagePinType) {
+            this.pinList.unshift(messPin)
+
+            if (this.pinList.length > 3)
+                this.pinList.pop()
+
+            this.pins.unshift(messPin)
         },
 
         async removePinMessFromList(pinId: number, convId: number) {
@@ -77,5 +81,10 @@ export const usePinStore = defineStore('pin', {
                 })
             }
         },
+
+        reset() {
+            this.pinList = []
+            this.pins = []
+        }
     }
 })

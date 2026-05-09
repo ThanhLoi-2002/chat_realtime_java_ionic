@@ -83,7 +83,7 @@ public class MessageController {
     @PostMapping("/{id}/pin")
     @CheckConversationMember
     public MessagePinResponse pin(@PathVariable Long conversationId, @PathVariable Long id, @CurrentUser User user) {
-        return new MessagePinResponse(messageService.pin(id, conversationId, user.getId()), "createdBy", "message");
+        return messageService.pin(id, conversationId, user.getId());
     }
 
     @DeleteMapping("/remove-pin-from-list/{pinId}")

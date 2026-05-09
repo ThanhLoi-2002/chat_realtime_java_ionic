@@ -1,11 +1,11 @@
 <template>
     <!-- HEADER ACTION -->
     <div v-if="(friendshipLocal?.status == FriendshipStatusEnum.PENDING || !friendshipLocal) && !isGroup(conversationStorage.conversation)"
-        class="absolute top-1 left-1/2 -translate-x-1/2
+        class="
         px-4 py-2 flex justify-between items-center
         bg-gray-100 dark:bg-slate-700 border
         border-slate-300 dark:border-slate-800
-        z-10 rounded-sm shadow min-w-[98%]
+        rounded-sm shadow min-w-[98%]
         text-xs md:text-base" :class="[style.text.primary]">
         <!-- TEXT -->
         <div class="flex gap-2 items-center">

@@ -5,6 +5,7 @@ import com.zalo.modules.conversation.dto.IsMentionDto;
 import com.zalo.modules.conversation.dto.respone.MemberResponse;
 import com.zalo.modules.conversation.entities.Conversation;
 import com.zalo.modules.conversation.service.ConversationInterface;
+import com.zalo.modules.message.dto.response.MessagePinResponse;
 import com.zalo.modules.message.dto.response.MessageReactionResponse;
 import com.zalo.modules.message.dto.response.MessageResponse;
 import com.zalo.modules.conversation.dto.respone.ConversationResponse;
@@ -120,6 +121,13 @@ public class WebsocketService {
         payload.put("conversationId", conversationId);
 
         realtimeToConversation(conversationId, payload, "/queue/chat.conversation." + conversationId + ".disbandGroup");
+    }
+
+    public void pinMessage(MessagePinResponse messPin) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("messPin", messPin);
+
+        realtimeToConversation(messPin.conversationId, payload, "/queue/chat.conversation." + messPin.conversationId + ".pinMessage");
     }
 
     public void updateMemberList(Long conversationId, List<MemberResponse> members) {
