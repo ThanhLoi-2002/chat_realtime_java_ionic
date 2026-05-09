@@ -1,5 +1,5 @@
 <template>
-    <ion-modal ref="modal" :enter-animation="enterAnimation" :leave-animation="leaveAnimation" class="custom-modal">
+    <ion-modal ref="modal" @didDismiss="$emit('close')" :enter-animation="enterAnimation" :leave-animation="leaveAnimation" class="custom-modal">
         <ion-content class="ion-content-layout" :scroll-y="false">
             <ion-toolbar class="px-4">
                 <!-- BACK BUTTON -->
@@ -56,6 +56,7 @@ defineExpose({
     present,
     dismiss
 })
+const emit = defineEmits(['close']);
 
 provide("modalDismiss", dismiss)
 

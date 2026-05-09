@@ -47,6 +47,19 @@
 
     <Typing :scrollContainer="scrollContainer" :replyingMessage="replyingMessage"
         :setReplyingMessage="setReplyingMessage" />
+
+    <!-- ĐƯA CONTEXT MENU VÀ MODAL RA ĐÂY ĐỂ DÙNG CHUNG -->
+    <MessageContextMenu v-if="actionStore.showMenu && actionStore.activeMessage" :message="actionStore.activeMessage"
+        v-model:showMenu="actionStore.showMenu" :menuInlineStyle="actionStore.menuInlineStyle" :onDetails="onDetails"
+        :ref="(el: any) => { if (el) actionStore.menuRef = el.menuRef }" />
+
+    <Modal ref="detailsModal" :title="t('detail')">
+        <DetailUI :message="actionStore.activeMessage" v-if="actionStore.activeMessage" />
+    </Modal>
+
+    <Modal ref="shareModalRef" :title="t('share')" @close="actionStore.showShareModal = false">
+        <ShareMessageUI v-if="actionStore.shareMessage" :message="actionStore.shareMessage" />
+    </Modal>
 </template>
 <script setup lang="ts">
 import { useTranslate } from '@/composables/useTranslate';
@@ -67,11 +80,16 @@ import { socketSubscribe } from '@/utils/websocket';
 import { MessageFilter } from '@/types/common';
 import { useUserStore } from '@/stores/user.storage';
 import SystemMessage from './component/Message/SystemMessage.vue';
-import { MessagePinType, MessageType } from '@/types/entities';
+import { MessageType } from '@/types/entities';
 import { useDebounce } from '@/composables/useDebounce';
 import { appLimit } from '@/utils/constant';
 import PinList from './component/Pin/PinList.vue';
 import { usePinStore } from '@/stores/pin.storage';
+import { useChatActionStore } from '@/composables/useChatAction';
+import MessageContextMenu from './component/Message/MessageContextMenu.vue';
+import ShareMessageUI from './component/Message/ShareMessageUI.vue';
+import Modal from '@/components/Modal/Modal.vue';
+import DetailUI from './component/Message/DetailUI.vue';
 
 const props = defineProps<{
     isShowInfoSection: boolean
@@ -91,6 +109,23 @@ const roles = ref<Record<number, MemberRoleEnum>>()
 
 const scrollContainer = ref<HTMLElement | null>(null)
 const showScrollDownButton = ref(false)
+
+const actionStore = useChatActionStore();
+const { t } = useTranslate()
+const detailsModal = ref()
+const shareModalRef = ref(); // Khai báo ref cho Modal
+
+// Theo dõi biến showShareModal trong store
+watch(
+    () => actionStore.showShareModal,
+    () => {
+        if (actionStore.showShareModal) {
+            shareModalRef.value?.present();
+        } else {
+            shareModalRef.value?.dismiss();
+        }
+    }
+);
 
 let subReaction: StompSubscription | undefined
 let sub: StompSubscription | undefined
@@ -154,6 +189,12 @@ const messagesWithMeta = computed(() => {
         }
     })
 })
+
+const onDetails = () => {
+    // open details modal
+    actionStore.showMenu = false
+    detailsModal.value?.present()
+}
 
 const { debounced: debouncedRead } = useDebounce(() => {
     checkReadMessages()

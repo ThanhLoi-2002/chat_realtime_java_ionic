@@ -33,39 +33,36 @@
                 {{ t('delete') }}
             </div>
         </div>
-
-        <Modal ref="detailsModal" :title="t('detail')">
-            <detail-u-i :message="message" />
-        </Modal>
     </div>
 </template>
 <script setup lang="ts">
 import { style } from '@/assets/tailwindcss';
-import Modal from '@/components/Modal/Modal.vue';
 import { useTranslate } from '@/composables/useTranslate';
 import { usePinStore } from '@/stores/pin.storage';
 import { useUserStore } from '@/stores/user.storage';
 import { MessageType } from '@/types/entities';
 import { toast } from '@/utils/toast';
 import { ref } from 'vue';
-import DetailUI from './DetailUI.vue';
 import { useConfirmStore } from '@/composables/useConfirm';
 import { useMessageStore } from '@/stores/message.storage';
+import { useChatActionStore } from '@/composables/useChatAction';
 
 const props = defineProps<{
     message: MessageType
     showMenu: boolean
     menuInlineStyle: any
+    onDetails: () => void
 }>()
 const { t } = useTranslate()
 const userStorage = useUserStore()
 const pinStorage = usePinStore()
 const confirmStore = useConfirmStore();
 const messageStorage = useMessageStore()
+const actionStore = useChatActionStore();
 
 const detailsModal = ref()
 
-const emit = defineEmits(['update:showConfirm', 'update:showMenu'])
+const emit = defineEmits(['update:showMenu'])
 
 // Trong MessageContextMenu.vue
 const menuRef = ref<HTMLElement | null>(null)
@@ -133,12 +130,6 @@ const onPin = async () => {
     emit('update:showMenu', false);
 }
 
-const onDetails = () => {
-    // open details modal
-    emit('update:showMenu', false);
-    detailsModal.value?.present()
-}
-
 const onOpenDeleteConfirm = () => {
     emit('update:showMenu', false)
     confirmStore.open({
@@ -151,6 +142,8 @@ const onOpenDeleteConfirm = () => {
 }
 
 const onSelectMessages = () => {
+    actionStore.isSelectionMode = true;
+    actionStore.selectedIds.add(props.message.id);
     emit('update:showMenu', false);
 }
 </script>
