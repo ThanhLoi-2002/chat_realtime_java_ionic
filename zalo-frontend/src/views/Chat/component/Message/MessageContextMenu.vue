@@ -60,8 +60,6 @@ const confirmStore = useConfirmStore();
 const messageStorage = useMessageStore()
 const actionStore = useChatActionStore();
 
-const detailsModal = ref()
-
 const emit = defineEmits(['update:showMenu'])
 
 // Trong MessageContextMenu.vue

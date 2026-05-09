@@ -24,9 +24,27 @@
                 </div>
 
                 <SystemMessage v-if="msg.contentType === MessageEnum.SYSTEM" :msg="msg" />
+                
+                <div v-else class="flex items-center gap-2 group w-full px-1 relative"
+                    :class="[actionStore.isSelectionMode ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800/50' : '',
+                        msg.sender.id == userStorage.user?.id ? 'flex-row-reverse' : ''
+                    ]"
+                    @click="() => msg.stt == 1 && handleContainerClick(msg.id)">
 
-                <MessageContainer v-else :message="msg" :roles="roles" :setReplyingMessage="setReplyingMessage"
-                    v-observe-visibility="(entry: IntersectionObserverEntry) => handleMessageVisible(msg, entry)" />
+                    <!-- CHECKBOX (Chỉ hiện khi ở chế độ chọn nhiều) -->
+                    <div v-if="actionStore.isSelectionMode && msg.stt == 1" class="shrink-0">
+                        <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all"
+                            :class="[actionStore.selectedIds.has(msg.id)
+                                ? 'bg-blue-500 border-blue-500'
+                                : 'border-gray-300 dark:border-gray-600']">
+                            <i v-if="actionStore.selectedIds.has(msg.id)"
+                                class="fas fa-check text-[10px] text-white"></i>
+                        </div>
+                    </div>
+
+                    <MessageContainer :message="msg" :roles="roles" :setReplyingMessage="setReplyingMessage"
+                        v-observe-visibility="(entry: IntersectionObserverEntry) => handleMessageVisible(msg, entry)" />
+                </div>
             </div>
         </div>
 
@@ -44,6 +62,9 @@
             </span>
         </button>
     </div>
+
+    <!-- TOOLBAR CHỌN NHIỀU (Nằm đè lên vùng Input khi bật mode chọn) -->
+    <SelectionToolbar />
 
     <Typing :scrollContainer="scrollContainer" :replyingMessage="replyingMessage"
         :setReplyingMessage="setReplyingMessage" />
@@ -90,6 +111,7 @@ import MessageContextMenu from './component/Message/MessageContextMenu.vue';
 import ShareMessageUI from './component/Message/ShareMessageUI.vue';
 import Modal from '@/components/Modal/Modal.vue';
 import DetailUI from './component/Message/DetailUI.vue';
+import SelectionToolbar from './component/Chat/SelectionToolbar.vue';
 
 const props = defineProps<{
     isShowInfoSection: boolean
@@ -126,6 +148,12 @@ watch(
         }
     }
 );
+
+const handleContainerClick = (messId: number) => {
+    if (actionStore.isSelectionMode) {
+        actionStore.toggleSelect(messId);
+    }
+}
 
 let subReaction: StompSubscription | undefined
 let sub: StompSubscription | undefined
@@ -324,6 +352,7 @@ const reset = async () => {
     messageStorage.resetPagination()
     pinStorage.reset()
     unreadMessageId.value = conversationStorage.userLastMessageId
+    actionStore.cancelSelectionMode()
 
     roles.value = conversationStorage.conversation?.members?.reduce((acc, member) => {
         // Chỉ lấy những người là GOLDEN_KEY hoặc SILVER_KEY

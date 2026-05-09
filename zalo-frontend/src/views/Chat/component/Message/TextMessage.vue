@@ -29,10 +29,10 @@
         <ReplyingMessage v-if="message.replyToMessage" :replying-message="message.replyToMessage" />
 
         <span :class="isOwner ? 'text-white' : 'text-slate-800 dark:text-slate-100'" v-html="formattedContent"
-          @click="handleContentClick">
+          @click="(e) => !actionStore.isSelectionMode && handleContentClick(e)">
         </span>
 
-        <div v-if="linkPreview" @click="openLink(linkPreview.url)"
+        <div v-if="linkPreview" @click="() => !actionStore.isSelectionMode && openLink(linkPreview.url)"
           class="mt-1 flex flex-col w-full max-w-full border rounded-xl overflow-hidden bg-white/10 dark:bg-gray-900/50 shadow-sm cursor-pointer hover:bg-black/5 transition">
 
           <div v-if="linkPreview.image" class="w-full h-32 md:h-40 overflow-hidden border-b border-black/5">
@@ -89,6 +89,7 @@ import ReplyingMessage from "./ReplyingMessage.vue";
 import { qrCodeUrl } from "@/utils/constant";
 import GroupProfile from "../GroupProfile.vue";
 import { useUserStore } from "@/stores/user.storage";
+import { useChatActionStore } from "@/composables/useChatAction";
 
 const props = defineProps<{
   setBubbleRef?: (el: HTMLElement | null) => void;
@@ -108,6 +109,7 @@ const isMember = ref(false)
 const emit = defineEmits(['visible']);
 const { formattedContentWithTag, formatHostname } = useMessage()
 let observer: IntersectionObserver | null = null;
+const actionStore = useChatActionStore();
 
 const el = ref<HTMLElement | null>(null);
 const selectedUser = ref<UserType | undefined>(undefined)
@@ -144,7 +146,6 @@ const handleContentClick = async (event: MouseEvent) => {
           if (group.value) {
             isMember.value = group.value.members.some(u => u.id == userStorage.user?.id)
             groupInfoModal.value?.present()
-            console.log(group.value)
           }
 
         }

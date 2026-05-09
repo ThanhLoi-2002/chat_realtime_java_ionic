@@ -47,10 +47,16 @@ export const useChatActionStore = defineStore('chatAction', () => {
         menuInlineStyle.value = style;
     };
 
+    const cancelSelectionMode = () => {
+        isSelectionMode.value = false;
+        selectedIds.value.clear();
+    };
+
     return {
         activeMessage, showMenu, menuInlineStyle, openMenu,
         showShareModal, shareMessage, openShare,
         isSelectionMode, selectedIds, toggleSelect, updateMenuStyle
-        , menuRef, closeShare
+        , menuRef, closeShare,
+        cancelSelectionMode
     };
 });

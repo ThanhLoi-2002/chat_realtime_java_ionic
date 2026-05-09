@@ -39,7 +39,7 @@
                         <p class="text-[10px] text-gray-500 uppercase">{{ getFileExt(file.secureUrl) }}</p>
                     </div>
 
-                    <div class="flex">
+                    <div v-if="!actionStore.isSelectionMode" class="flex">
                         <a :href="file.secureUrl" target="_blank" v-if="getFileExt(file.secureUrl) == 'PDF'"
                             class="p-2 rounded-full bg-yellow-500 hover:bg-yellow-600 text-white transition-transform active:scale-90">
                             <i class="fa-solid fa-folder text-yellow-500"></i>
@@ -74,6 +74,7 @@ import { MediaType } from '@/types/entities';
 import { style } from '@/assets/tailwindcss';
 import { useDateTime } from '@/composables/useDateTime';
 import { useTranslate } from '@/composables/useTranslate';
+import { useChatActionStore } from '@/composables/useChatAction';
 
 const props = defineProps<{
     setBubbleRef?: (el: HTMLElement | null) => void
@@ -85,6 +86,7 @@ const props = defineProps<{
 const el = ref<HTMLElement | null>(null)
 const { formatTime } = useDateTime()
 const { t } = useTranslate();
+const actionStore = useChatActionStore();
 
 // Các hàm helper để lọc loại file
 const isImage = (url: string) => /\.(jpg|jpeg|png|webp|gif|avif)$/i.test(url);

@@ -35,7 +35,7 @@
                                 message.attachments.length === 1 ? 'rounded-xl h-auto max-h-80 aspect-auto' : ''
                             ]">
 
-                            <div v-if="isVideo(img.secureUrl)" class="relative h-full w-full" @click="handlePreviewImage(message, +index)">
+                            <div v-if="isVideo(img.secureUrl)" class="relative h-full w-full" @click="() => !actionStore.isSelectionMode && handlePreviewImage(message, +index)">
                                 <img :src="img.secureUrl.replace(/\.[^/.]+$/, '.jpg')"
                                     class="w-full h-full object-cover opacity-80" />
                                 <div class="absolute inset-0 flex items-center justify-center">
@@ -43,7 +43,7 @@
                                 </div>
                             </div>
 
-                            <img v-else :src="img.secureUrl" @click="handlePreviewImage(message, +index)"
+                            <img v-else :src="img.secureUrl" @click="() => !actionStore.isSelectionMode && handlePreviewImage(message, +index)"
                                 class="w-full h-full object-cover" />
                         </div>
                     </div>
@@ -79,6 +79,7 @@ import Reactions from '../Reaction/Reactions.vue';
 import { MediaType, MessageType } from '@/types/entities';
 import { MemberRoleEnum } from '@/types/enum';
 import { useMedia } from '@/composables/useMedia';
+import { useChatActionStore } from '@/composables/useChatAction';
 
 const props = defineProps<{
     setBubbleRef?: (el: HTMLElement | null) => void
@@ -91,6 +92,7 @@ const { isVideo } = useMedia()
 const { formatTime } = useDateTime()
 const messStorage = useMessageStore()
 const { t } = useTranslate()
+const actionStore = useChatActionStore();
 
 const el = ref<HTMLElement | null>(null)
 

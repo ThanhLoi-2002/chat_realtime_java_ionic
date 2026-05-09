@@ -1,6 +1,6 @@
 <template>
     <div class="flex items-center gap-2 p-2 w-full max-w-full bg-gray-200/50 dark:bg-gray-800/50 border-l-4 border-blue-500 rounded-t-lg cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors overflow-hidden"
-        @click="goToReplyingMessage">
+        @click="() => !actionStore.isSelectionMode && goToReplyingMessage()">
 
         <div v-if="hasMedia"
             class="size-10 rounded overflow-hidden shrink-0 bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
@@ -46,6 +46,7 @@
     </div>
 </template>
 <script setup lang="ts">
+import { useChatActionStore } from '@/composables/useChatAction';
 import { useMessage } from '@/composables/useMessage';
 import { useTranslate } from '@/composables/useTranslate';
 import { useUserStore } from '@/stores/user.storage';
@@ -61,6 +62,7 @@ const props = defineProps<{
 const userStorage = useUserStore()
 const { t } = useTranslate()
 const { formattedContentWithTag, jumpToMessage } = useMessage()
+const actionStore = useChatActionStore();
 
 const isImage = computed(() => props.replyingMessage.contentType === MessageEnum.IMAGE);
 const isVideo = computed(() => props.replyingMessage.contentType === MessageEnum.VIDEO);

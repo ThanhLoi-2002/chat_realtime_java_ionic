@@ -1,6 +1,6 @@
 <template>
 
-    <div class="flex gap-2 items-start relative group w-full px-6"
+    <div class="flex-1 flex gap-2 items-start relative group w-full px-2"
         :class="[isOwner ? 'ml-auto flex-row-reverse' : '', message.reactions?.length > 0 && 'mb-4']" ref="rootRef"
         :id="`msg-${message.id}`">
 
@@ -27,7 +27,7 @@
         </div>
 
         <!-- ACTIONS -->
-        <div class="flex items-center gap-1
+        <div v-if="!actionStore.isSelectionMode" class="flex items-center gap-1
          opacity-0 transition my-auto" :class="[message.stt != -1 && 'group-hover:opacity-100']">
             <button @click.stop="setReplyingMessage(message)"
                 class="px-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 dark:bg-gray-800 dark:text-white text-center cursor-pointer">
