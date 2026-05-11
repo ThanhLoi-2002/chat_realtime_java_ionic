@@ -29,15 +29,15 @@
                     :class="[actionStore.isSelectionMode ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800/50' : '',
                         msg.sender.id == userStorage.user?.id ? 'flex-row-reverse' : ''
                     ]"
-                    @click="() => msg.stt == 1 && handleContainerClick(msg.id)">
+                    @click="() => msg.stt == 1 && handleContainerClick(msg)">
 
                     <!-- CHECKBOX (Chỉ hiện khi ở chế độ chọn nhiều) -->
                     <div v-if="actionStore.isSelectionMode && msg.stt == 1" class="shrink-0">
                         <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all"
-                            :class="[actionStore.selectedIds.has(msg.id)
+                            :class="[actionStore.shareMessages.some(m => m.id == msg.id)
                                 ? 'bg-blue-500 border-blue-500'
                                 : 'border-gray-300 dark:border-gray-600']">
-                            <i v-if="actionStore.selectedIds.has(msg.id)"
+                            <i v-if="actionStore.shareMessages.some(m => m.id == msg.id)"
                                 class="fas fa-check text-[10px] text-white"></i>
                         </div>
                     </div>
@@ -79,7 +79,7 @@
     </Modal>
 
     <Modal ref="shareModalRef" :title="t('share')" @close="actionStore.showShareModal = false">
-        <ShareMessageUI v-if="actionStore.shareMessage" :message="actionStore.shareMessage" />
+        <ShareMessageUI/>
     </Modal>
 </template>
 <script setup lang="ts">
@@ -149,9 +149,9 @@ watch(
     }
 );
 
-const handleContainerClick = (messId: number) => {
+const handleContainerClick = (mess: MessageType) => {
     if (actionStore.isSelectionMode) {
-        actionStore.toggleSelect(messId);
+        actionStore.toggleSelect(mess);
     }
 }
 

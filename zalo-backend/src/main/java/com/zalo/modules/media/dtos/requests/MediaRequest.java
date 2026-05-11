@@ -1,8 +1,10 @@
 package com.zalo.modules.media.dtos.requests;
 
+import com.zalo.modules.media.entities.Media;
 import com.zalo.modules.media.entities.MediaType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.beans.BeanUtils;
 
 import java.time.LocalDateTime;
 
@@ -23,4 +25,8 @@ public class MediaRequest {
     Long bytes;          // Dung lượng file
     Integer width;       // Chỉ cho image/video
     Integer height;
+
+    public MediaRequest(Media m) {
+        BeanUtils.copyProperties(m, this);
+    }
 }

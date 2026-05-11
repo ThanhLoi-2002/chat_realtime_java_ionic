@@ -141,7 +141,7 @@ const onOpenDeleteConfirm = () => {
 
 const onSelectMessages = () => {
     actionStore.isSelectionMode = true;
-    actionStore.selectedIds.add(props.message.id);
+    actionStore.shareMessages.push(props.message);
     emit('update:showMenu', false);
 }
 </script>

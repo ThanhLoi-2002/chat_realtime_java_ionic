@@ -11,11 +11,11 @@ export const useChatActionStore = defineStore('chatAction', () => {
 
     // Share Modal State
     const showShareModal = ref(false);
-    const shareMessage = ref<MessageType | null>(null);
+    const shareMessage = ref<MessageType | undefined>(undefined);
+    const shareMessages = ref<MessageType[]>([]);
 
     // Multi-select State
     const isSelectionMode = ref(false);
-    const selectedIds = ref<Set<number>>(new Set());
 
     const openMenu = (msg: MessageType, style: any) => {
         activeMessage.value = msg;
@@ -23,23 +23,32 @@ export const useChatActionStore = defineStore('chatAction', () => {
         showMenu.value = true;
     };
 
-    const openShare = (msg: MessageType) => {
+    const openShare = (msg?: MessageType) => {
         shareMessage.value = msg;
         showShareModal.value = true;
         showMenu.value = false;
     };
 
     const closeShare = () => {
-        shareMessage.value = null;
+        shareMessage.value = undefined;
+        shareMessages.value = []
         showShareModal.value = false;
     };
 
-    const toggleSelect = (id: number) => {
-        if (selectedIds.value.has(id)) {
-            selectedIds.value.delete(id);
-            if (selectedIds.value.size === 0) isSelectionMode.value = false;
+    const toggleSelect = (msg: MessageType) => {
+        const index = shareMessages.value.findIndex(m => m.id == msg.id);
+console.log(msg, index)
+        if (index !== -1) {
+            // Nếu đã có trong mảng thì xóa đi
+            shareMessages.value.splice(index, 1);
+
+            // Kiểm tra nếu mảng trống thì tắt chế độ chọn
+            if (shareMessages.value.length === 0) {
+                isSelectionMode.value = false;
+            }
         } else {
-            selectedIds.value.add(id);
+            // Nếu chưa có thì thêm vào mảng
+            shareMessages.value.push(msg);
         }
     };
 
@@ -49,14 +58,15 @@ export const useChatActionStore = defineStore('chatAction', () => {
 
     const cancelSelectionMode = () => {
         isSelectionMode.value = false;
-        selectedIds.value.clear();
+        shareMessages.value = [];
     };
 
     return {
         activeMessage, showMenu, menuInlineStyle, openMenu,
         showShareModal, shareMessage, openShare,
-        isSelectionMode, selectedIds, toggleSelect, updateMenuStyle
+        isSelectionMode, toggleSelect, updateMenuStyle
         , menuRef, closeShare,
-        cancelSelectionMode
+        cancelSelectionMode,
+        shareMessages
     };
 });

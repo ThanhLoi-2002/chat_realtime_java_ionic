@@ -48,6 +48,13 @@ export type ShareMessageType = {
   content?: string
 }
 
+export type ShareMessagesType = {
+  messagesId?: number[]
+  conversationId?: number
+  conversationIds?: number[]
+  content?: string
+}
+
 export type SendAddFriendRequestType = {
   content?: string
   toId?: number

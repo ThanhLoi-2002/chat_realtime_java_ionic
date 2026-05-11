@@ -6,6 +6,7 @@ import com.zalo.common.filter.MessageFilter;
 import com.zalo.modules.message.dto.request.AddReactionRequest;
 import com.zalo.modules.message.dto.request.CreateMessageRequest;
 import com.zalo.modules.message.dto.request.ShareMessageRequest;
+import com.zalo.modules.message.dto.request.ShareMessagesRequest;
 import com.zalo.modules.message.dto.response.LinkPreviewResponse;
 import com.zalo.modules.message.dto.response.MessagePinResponse;
 import com.zalo.modules.message.dto.response.MessageResponse;
@@ -42,6 +43,12 @@ public class MessageController {
 //    @CheckConversationMember
     public void share(@CurrentUser User user, @RequestBody ShareMessageRequest dto) throws IOException {
         messageService.shareMessage(user.getId(), dto);
+    }
+
+    @PostMapping("/share-multi-messages")
+//    @CheckConversationMember
+    public void shareMessages(@CurrentUser User user, @RequestBody ShareMessagesRequest dto) throws IOException {
+        messageService.shareMessages(user.getId(), dto);
     }
 
     @GetMapping

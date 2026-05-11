@@ -100,7 +100,7 @@
                     <!-- Selected users list: cũng có scroll riêng; ẩn nếu rỗng -->
                     <div v-if="selectedConvs.length > 0" class="w-40">
                         <span class="dark:text-slate-400 text-sm">{{ t('selected') }} {{ selectedConvs.length
-                            }}/100</span>
+                        }}/100</span>
                         <div class="h-[85%] overflow-y-auto bg-white dark:bg-gray-900 rounded flex flex-col gap-2 mt-2">
                             <div v-for="conv in selectedConvs" :key="conv.id"
                                 class="flex items-center justify-between gap-2 py-1 cursor-pointer bg-blue-500 rounded-full px-2">
@@ -122,33 +122,48 @@
             <!-- PREVIEW & INPUT MESSAGE -->
             <div class="mt-4 pt-2 border-t border-gray-200 dark:border-gray-700">
                 <!-- Message Preview Card -->
-                <div class="bg-gray-50 dark:bg-gray-800/50 px-3 py-2 rounded-lg mb-1.5 border dark:border-gray-700">
+                <div v-if="actionStore.shareMessage"
+                    class="bg-gray-50 dark:bg-gray-800/50 px-3 py-2 rounded-lg mb-1.5 border dark:border-gray-700">
                     <div class="flex gap-3 items-center">
                         <!-- Preview ảnh nếu là tin nhắn hình ảnh -->
-                        <div v-if="message.contentType === MessageEnum.IMAGE"
+                        <div v-if="actionStore.shareMessage.contentType === MessageEnum.IMAGE"
                             class="size-12 rounded overflow-hidden shrink-0">
-                            <img :src="message.attachments[0].secureUrl" class="w-full h-full object-cover" />
+                            <img :src="actionStore.shareMessage.attachments[0].secureUrl"
+                                class="w-full h-full object-cover" />
                         </div>
                         <div class="min-w-0">
                             <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                                {{ message.contentType == MessageEnum.IMAGE ? t('shareImages') : message.contentType == MessageEnum.FILE ? t('shareFiles') : t('shareMessages') }}
+                                {{ actionStore.shareMessage.contentType == MessageEnum.IMAGE ? t('shareImages') :
+                                    actionStore.shareMessage.contentType == MessageEnum.FILE ? t('shareFiles') :
+                                        t('shareMessages') }}
                             </p>
 
-                            <FileContainer :media="message.attachments[0]" :isShowAction="false" v-if="message.contentType == MessageEnum.FILE"/>
-                            <p v-if="isAttachDesc && message.contentType == MessageEnum.IMAGE"
+                            <FileContainer :media="actionStore.shareMessage.attachments[0]" :isShowAction="false"
+                                v-if="actionStore.shareMessage.contentType == MessageEnum.FILE" />
+                            <p v-if="isAttachDesc && actionStore.shareMessage.contentType == MessageEnum.IMAGE"
                                 class="text-sm truncate dark:text-gray-200"
-                                v-html="formattedContentWithTag(message.content, message.senderId == userStorage.user?.id)" />
+                                v-html="formattedContentWithTag(actionStore.shareMessage.content, actionStore.shareMessage.senderId == userStorage.user?.id)" />
 
-                            <p v-if="message.contentType != MessageEnum.IMAGE"
+                            <p v-if="actionStore.shareMessage.contentType != MessageEnum.IMAGE"
                                 class="text-sm truncate dark:text-gray-200"
-                                v-html="formattedContentWithTag(message.content, message.senderId == userStorage.user?.id)" />
+                                v-html="formattedContentWithTag(actionStore.shareMessage.content, actionStore.shareMessage.senderId == userStorage.user?.id)" />
                         </div>
                     </div>
 
                     <!-- Toggle đính kèm mô tả (Optional) -->
-                    <div v-if="message.contentType == MessageEnum.IMAGE && message.content"
+                    <div v-if="actionStore.shareMessage.contentType == MessageEnum.IMAGE && actionStore.shareMessage.content"
                         class="mt-2 flex items-center gap-2 border-t dark:border-gray-700 pt-2">
                         <Switch v-model="isAttachDesc" :label="t('attachDescription')" />
+                    </div>
+                </div>
+
+                <div v-if="actionStore.shareMessages.length > 0"
+                    class="bg-gray-50 dark:bg-gray-800/50 px-3 py-2 rounded-lg mb-1.5 border dark:border-gray-700">
+                    <div class="flex items-center min-w-0">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 font-medium truncate">
+                            <i class="far fa-comments"></i>
+                            {{ t('share') }} {{ actionStore.shareMessages.length }} {{ t('message') }}
+                        </p>
                     </div>
                 </div>
 
@@ -185,16 +200,18 @@ import { useConversationStore } from '@/stores/conversation.storage';
 import { useFriendshipStore } from '@/stores/friendship.storage';
 import { useMessageStore } from '@/stores/message.storage';
 import { useUserStore } from '@/stores/user.storage';
-import { ShareMessageType } from '@/types/common';
+import { ShareMessagesType, ShareMessageType } from '@/types/common';
 import { ConversationType, MessageType } from '@/types/entities';
 import { ConversationEnum, MessageEnum } from '@/types/enum';
 import { normalizeText } from '@/utils/helper';
 import { computed, inject, onMounted, ref } from 'vue';
 import FileContainer from '../../Info/components/Storage/FileContainer.vue';
+import { useChatActionStore } from '@/composables/useChatAction';
 
-const props = defineProps<{
-    message: MessageType
-}>()
+// const props = defineProps<{
+//     message?: MessageType
+//     messages?: MessageType[]
+// }>()
 
 // Khai báo các loại tab
 enum TabEnum {
@@ -204,6 +221,7 @@ enum TabEnum {
 }
 
 const activeTab = ref(TabEnum.ALL);
+const actionStore = useChatActionStore();
 
 const dismiss = inject<() => void>("modalDismiss")
 const { t } = useTranslate()
@@ -317,20 +335,37 @@ const removeConv = (user: ConversationType) => {
 
 const onShare = async () => {
     isLoading.value = true
-    const convIds = selectedConvs.value.map(c => c.id);
-    const payload: ShareMessageType = {
-        conversationIds: convIds,
-        messageId: props.message.id,
-        isAttachDesc: isAttachDesc.value,
-        content: shareNote.value,
-        conversationId: props.message.conversationId
-    };
 
-    console.log("Sharing to:", payload);
-    await messStorage.shareMessage(payload)
+    const convIds = selectedConvs.value.map(c => c.id);
+
+    if (actionStore.shareMessages.length > 0) {
+        const payload: ShareMessagesType = {
+            conversationIds: convIds,
+            messagesId: actionStore.shareMessages.map(m => m.id),
+            content: shareNote.value,
+            conversationId: actionStore.shareMessages[0].conversationId
+        };
+
+        console.log("Sharing to:", payload);
+        await messStorage.shareMessages(payload)
+    }
+
+    if (actionStore.shareMessage) {
+        const payload: ShareMessageType = {
+            conversationIds: convIds,
+            messageId: actionStore.shareMessage.id,
+            isAttachDesc: isAttachDesc.value,
+            content: shareNote.value,
+            conversationId: actionStore.shareMessage.conversationId
+        };
+
+        console.log("Sharing to:", payload);
+        await messStorage.shareMessage(payload)
+    }
 
     isLoading.value = false
     dismiss?.()
+    actionStore.cancelSelectionMode()
 }
 
 onMounted(async () => {

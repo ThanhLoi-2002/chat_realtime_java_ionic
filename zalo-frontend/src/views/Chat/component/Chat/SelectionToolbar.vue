@@ -6,9 +6,9 @@
 
         <div class="flex items-center gap-3">
             <span class="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">
-                {{ actionStore.selectedIds.size }}
+                {{ actionStore.shareMessages.length }}
             </span>
-            <span class="text-sm font-medium dark:text-white">Đã chọn</span>
+            <span class="text-sm font-medium dark:text-white">{{ t('selected') }}</span>
         </div>
 
         <div class="flex items-center gap-6">
@@ -16,21 +16,21 @@
             <button @click="copyAll"
                 class="flex flex-col items-center gap-1 text-gray-600 dark:text-gray-300 hover:text-blue-500 cursor-pointer">
                 <i class="fas fa-copy"></i>
-                <span class="text-[10px]">Copy</span>
+                <span class="text-[10px]">{{ t('copy') }}</span>
             </button>
 
             <!-- Forward/Share -->
             <button @click="shareAll"
                 class="flex flex-col items-center gap-1 text-gray-600 dark:text-gray-300 hover:text-blue-500 cursor-pointer">
                 <i class="fas fa-share"></i>
-                <span class="text-[10px]">Chia sẻ</span>
+                <span class="text-[10px]">{{ t('share') }}</span>
             </button>
 
             <!-- Delete -->
             <button @click="deleteAll"
                 class="flex flex-col items-center gap-1 text-red-500 hover:text-red-600 cursor-pointer">
                 <i class="fas fa-trash"></i>
-                <span class="text-[10px]">Xóa</span>
+                <span class="text-[10px]">{{ t('delete') }}</span>
             </button>
 
             <div class="h-8 w-px bg-gray-200 dark:bg-gray-700"></div>
@@ -38,7 +38,7 @@
             <!-- Cancel -->
             <button @click="actionStore.cancelSelectionMode"
                 class="text-sm font-bold text-blue-600 hover:text-blue-700 cursor-pointer">
-                Hủy
+                {{ t('cancel') }}
             </button>
         </div>
     </div>
@@ -46,10 +46,12 @@
 
 <script setup lang="ts">
 import { useChatActionStore } from '@/composables/useChatAction';
+import { useTranslate } from '@/composables/useTranslate';
 const actionStore = useChatActionStore();
+const { t } = useTranslate()
 
 const copyAll = () => { /* Logic copy các nội dung tin nhắn */ }
-const shareAll = () => { /* Logic gom các ID lại rồi mở modal share */ }
+const shareAll = () => { actionStore.openShare() }
 const deleteAll = () => { /* Logic xóa hàng loạt */ }
 </script>
 
