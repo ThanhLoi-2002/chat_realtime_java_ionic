@@ -15,6 +15,7 @@ spring:
     username: root
     password: "1"
 
+
   jpa:
     database-platform: org.hibernate.dialect.MariaDBDialect
     hibernate:

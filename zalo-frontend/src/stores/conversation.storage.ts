@@ -501,7 +501,9 @@ export const useConversationStore = defineStore('conversation', {
                     const cName = normalizeText(conversationName(conv) || "");
                     const matchesName = cName.includes(searchKeyword);
 
-                    return matchesId && matchesName;
+                    if (convIds?.length == 0) return matchesName
+                    else
+                        return matchesId && matchesName;
                 });
             }
         },
