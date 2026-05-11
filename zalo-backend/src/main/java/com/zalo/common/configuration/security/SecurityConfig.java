@@ -58,9 +58,8 @@ public class SecurityConfig {
                 "http://localhost:8100",
                 "http://127.0.0.1:8100",
                 "http://10.0.111.38:8100",
-                "http://172.31.0.1:8100",
-                "https://7rb20mn1-8100.asse.devtunnels.ms",
-                "http://10.0.2.2:8100"
+                "http://10.0.2.2:8100",
+                "https://chat-realtime-java-ionic.vercel.app/"
         ));
 
         configuration.setAllowedMethods(List.of(
