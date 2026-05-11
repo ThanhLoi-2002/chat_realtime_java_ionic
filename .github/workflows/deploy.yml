@@ -3,8 +3,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'zalo-backend/**' # Chỉ chạy khi có thay đổi trong thư mục zalo-backend
-  workflow_dispatch: # Cho phép bấm chạy thủ công
+      - 'zalo-backend/**' # Đã sửa ở đây
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -19,8 +19,11 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_USERNAME: ${{ secrets.HF_USERNAME }}
         run: |
-          # 1. Trích xuất thư mục 'zalo-backend' thành một nhánh tạm thời tên là 'backend-only'
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          
+          # Sửa 'be' thành 'zalo-backend' ở dòng dưới này
           git subtree split --prefix=zalo-backend -b backend-only
 
-          # 2. Ép nhánh 'backend-only' này lên Hugging Face
+          # Ép nhánh này lên Space 'zalo-server'
           git push --force https://$HF_USERNAME:$HF_TOKEN@huggingface.co/spaces/$HF_USERNAME/zalo-server backend-only:main
