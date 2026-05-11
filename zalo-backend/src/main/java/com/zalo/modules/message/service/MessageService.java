@@ -186,6 +186,7 @@ public class MessageService {
         }
 
         String avatar = "";
+        
         if (convRes.getType() == ConversationType.PRIVATE) {
             if (Objects.equals(convRes.cu, senderId)) {
                 avatar = convRes.getRecipient().getAvatar() != null ? convRes.getRecipient().getAvatar().getUrl() : "";
