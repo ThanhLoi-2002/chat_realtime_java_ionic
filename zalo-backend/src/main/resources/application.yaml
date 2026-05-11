@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
   servlet:
     context-path: /api
 spring:
@@ -11,10 +11,12 @@ spring:
       api-key: ${OPENAI_API_KEY}
 
   datasource:
-    url: "jdbc:mysql://localhost:3306/zalo"
-    username: root
-    password: "1"
-
+#    url: "jdbc:mysql://localhost:3306/zalo"
+#    username: root
+#    password: "1"
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   jpa:
     database-platform: org.hibernate.dialect.MariaDBDialect
@@ -26,14 +28,14 @@ spring:
 #        dialect: org.hibernate.dialect.MySQL8Dialect
 
 jwt:
-  signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
+  signerKey: ${JWT_SIGNER_KEY}
   valid-duration: 3600 # in second
   refreshable-duration: 36000 # in seconds
 
 cloudinary:
-  cloud-name: dqoepulwu
-  api-key: 247284882354721
-  api-secret: rbrWg7MkW3MEpw2hZ6P-G5xpF38
+  cloud-name: ${CLOUDINARY_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}
 
 logging:
   pattern:
