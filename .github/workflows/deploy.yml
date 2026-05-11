@@ -1,0 +1,26 @@
+name: Sync Backend to Hugging Face
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'zalo-backend/**' # Chỉ chạy khi có thay đổi trong thư mục zalo-backend
+  workflow_dispatch: # Cho phép bấm chạy thủ công
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Push Subdirectory to HF
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_USERNAME: ${{ secrets.HF_USERNAME }}
+        run: |
+          # 1. Trích xuất thư mục 'be' thành một nhánh tạm thời tên là 'backend-only'
+          git subtree split --prefix=be -b backend-only
+
+          # 2. Ép nhánh 'backend-only' này lên Hugging Face
+          git push --force https://$HF_USERNAME:$HF_TOKEN@huggingface.co/spaces/$HF_USERNAME/zalo-server backend-only:main
