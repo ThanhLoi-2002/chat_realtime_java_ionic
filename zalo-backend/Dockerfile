@@ -14,6 +14,6 @@ COPY --from=build /target/*.jar app.jar
 # Kiểm tra xem file jar có nội dung không (optional)
 RUN jar -tf app.jar | grep Main-Class || echo "Warning: No Main Class found"
 
-ENV PORT=7860
-EXPOSE 7860
+ENV PORT=8080
+EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
