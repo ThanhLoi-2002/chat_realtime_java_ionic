@@ -61,19 +61,92 @@ export const useMessageStore = defineStore('message', {
                 return false
             }
         },
-        async getMessages(options: MessageFilter) {
+        async getMessages(options: MessageFilter, isReset?: boolean) {
             try {
                 this.isLoading = true
 
                 const result: any = await messageApi.getMessages(options);
                 const { content, page: { size, totalElements } } = result.result
 
-                this.messages.unshift(...content)
+                if (isReset) {
+                    this.messages = content
+                } else {
+                    // Chỉ thêm các message chưa tồn tại trong store để tránh duplicate
+                    const existingIds = new Set(this.messages.map(m => m.id))
+                    const newMessages = content.filter((m: MessageType) => !existingIds.has(m.id))
+                    this.messages.unshift(...newMessages)
+                }
+
                 this.sort()
 
                 if (totalElements <= size) this.hasMore = false
+                else this.hasMore = true
 
                 content.forEach((m: MessageType) => {
+                    this.addImage(m)
+                    this.addFile(m)
+                    this.addLink(m)
+                })
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+            } finally {
+                this.isLoading = false
+            }
+        },
+
+        async getNewerMessages(options: MessageFilter) {
+            try {
+                this.isLoading = true
+
+                const result: any = await messageApi.getMessages(options);
+                const { content, page: { size, totalElements } } = result.result
+
+                // Chỉ thêm các message chưa tồn tại trong store để tránh duplicate
+                const existingIds = new Set(this.messages.map(m => m.id))
+                const newMessages = content.filter((m: MessageType) => !existingIds.has(m.id))
+                this.messages.push(...newMessages)
+                this.sort()
+
+                if (totalElements <= size) this.hasMore = false
+                else this.hasMore = true
+
+                content.forEach((m: MessageType) => {
+                    this.addImage(m)
+                    this.addFile(m)
+                    this.addLink(m)
+                })
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+            } finally {
+                this.isLoading = false
+            }
+        },
+
+        async getMessagesAround(messageId: number, conversationId: number) {
+            try {
+                this.isLoading = true
+
+                const options: MessageFilter = {
+                    conversationId,
+                    aroundId: messageId,
+                    limit: 20
+                }
+
+                const result: any = await messageApi.getMessagesAround(options);
+                const { content } = result.result
+                this.hasMore = true
+
+                // Thay thế toàn bộ messages bằng kết quả xung quanh message
+                this.messages = content
+                this.sort()
+
+                this.messages.forEach((m: MessageType) => {
                     this.addImage(m)
                     this.addFile(m)
                     this.addLink(m)

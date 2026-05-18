@@ -57,6 +57,7 @@ import { computed } from 'vue';
 const props = defineProps<{
     replyingMessage: MessageType
     setReplyingMessage?: (m: MessageType | null) => void
+    scrollContainer?: HTMLElement | null
 }>()
 
 const userStorage = useUserStore()
@@ -81,7 +82,6 @@ const formattedContent = computed(() => {
 });
 
 const goToReplyingMessage = () => {
-    console.log(props.replyingMessage.id)
     if (!props.replyingMessage.id) return
 
     jumpToMessage(props.replyingMessage.id)

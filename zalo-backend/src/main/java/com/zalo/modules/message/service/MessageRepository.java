@@ -39,4 +39,27 @@ public interface MessageRepository extends JpaRepository<Message, Long>, JpaSpec
             Integer stt,
             Pageable pageable
     );
+
+    @Query("""
+                SELECT m
+                FROM Message m
+                LEFT JOIN FETCH m.sender
+                LEFT JOIN FETCH m.replyToMessage
+                LEFT JOIN FETCH m.replyToMessage.sender
+                WHERE m.conversationId = :conversationId
+                AND (
+                    (m.id < :aroundId AND m.id >= :aroundId - :halfLimit)
+                    OR
+                    (m.id > :aroundId AND m.id <= :aroundId + :halfLimit)
+                    OR
+                    m.id = :aroundId
+                )
+                ORDER BY m.id ASC
+            """)
+    Page<Message> findMessagesAround(
+            @Param("conversationId") Long conversationId,
+            @Param("aroundId") Long aroundId,
+            @Param("halfLimit") int halfLimit,
+            Pageable pageable
+    );
 }

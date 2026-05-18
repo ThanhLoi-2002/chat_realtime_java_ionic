@@ -34,6 +34,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -272,11 +273,26 @@ public class MessageService {
     public Page<MessageResponse> fetchMessages(Long conversationId, MessageFilter filter) {
         filter.setConversationId(conversationId);
 
+        // Nếu có aroundId -> chuyển sang phương thức riêng
+        if (filter.getAroundId() != null) {
+            return fetchMessagesAround(conversationId, filter.getAroundId(), filter.getLimit());
+        }
+
         if (filter.getContentType() == MessageType.FILE || filter.getContentType() == MessageType.IMAGE || filter.getContentType() == MessageType.LINK) {
             filter.setStt(1);
         }
 
-        Pageable pageable = filter.toScrollable("ct", Sort.Direction.DESC);
+        // Xác định sort direction dựa trên loại filter
+        Sort.Direction direction;
+        if (filter.getFirstId() != null) {
+            // Load newer messages: lấy message có id > firstId, sắp xếp ASC để lấy message cũ nhất trong số mới trước
+            direction = Sort.Direction.ASC;
+        } else {
+            // Load older messages (lastId) hoặc load lần đầu: sắp xếp DESC
+            direction = Sort.Direction.DESC;
+        }
+
+        Pageable pageable = filter.toScrollable("id", direction);
 
         Page<Message> page = messageRepo.findAll(filter.toSpecification(), pageable);
 
@@ -311,6 +327,44 @@ public class MessageService {
 
             systemMessageInterface.getSystemMetadata(e, m);
 
+            return m;
+        });
+    }
+
+    public Page<MessageResponse> fetchMessagesAround(Long conversationId, Long aroundId, int limit) {
+        int halfLimit = limit / 2; // 10 messages trước, 10 messages sau
+        Pageable pageable = PageRequest.of(0, limit);
+
+        Page<Message> page = messageRepo.findMessagesAround(conversationId, aroundId, halfLimit, pageable);
+
+        List<Long> messageIds = page.getContent().stream().map(BaseEntity::getId).toList();
+
+        List<MessageReaction> mrs = messageReactionRepository.findByMessageIdIn(messageIds);
+        List<Media> medias = mediaInterface.findByModuleIdInAndModuleType(messageIds, MediaType.MESSAGE);
+
+        Map<Long, List<MessageReactionResponse>> mapReaction = mrs.stream()
+                .collect(Collectors.groupingBy(
+                        MessageReaction::getMessageId,
+                        Collectors.mapping(
+                                mr -> new MessageReactionResponse(mr, "createdBy"),
+                                Collectors.toList()
+                        )
+                ));
+
+        Map<Long, List<MediaResponse>> mapAttachment = medias.stream()
+                .collect(Collectors.groupingBy(
+                        Media::getModuleId,
+                        Collectors.mapping(
+                                MediaResponse::new,
+                                Collectors.toList()
+                        )
+                ));
+
+        return page.map(e -> {
+            MessageResponse m = new MessageResponse(e, "sender", "replyToMessage");
+            m.setReactions(mapReaction.getOrDefault(m.getId(), List.of()));
+            m.setAttachments(mapAttachment.getOrDefault(m.getId(), List.of()));
+            systemMessageInterface.getSystemMetadata(e, m);
             return m;
         });
     }

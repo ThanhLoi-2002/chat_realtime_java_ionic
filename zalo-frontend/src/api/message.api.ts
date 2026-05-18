@@ -32,6 +32,20 @@ const getMessages = async (options: MessageFilter) => {
     return await axios.get<IResponse<MessageType>>(`/conversations/${conversationId}/messages?${filterOptions}`);
 }
 
+const getMessagesAround = async (options: MessageFilter) => {
+    const { conversationId, aroundId, limit = 20, ...rest } = options
+
+    let filterOptions = `aroundId=${aroundId}&limit=${limit}`;
+
+    for (const [key, value] of Object.entries(rest)) {
+        if (value != null || value != undefined)
+            filterOptions += `&${key}=${Array.isArray(value) ? value.join(",") : value
+                }`;
+    }
+
+    return await axios.get<IResponse<MessageType>>(`/conversations/${conversationId}/messages?${filterOptions}`);
+}
+
 const deleteMessage = async (id: number, conversationId: number) => {
     return await axios.delete<IResponse>(`/conversations/${conversationId}/messages/${id}`);
 }
@@ -57,5 +71,5 @@ const getDetails = async (id: number, convId: number) => {
 }
 
 export const messageApi = {
-    sendMessage, getMessages, deleteMessage, readMessage, addReaction, deleteAllReaction, previewLink, shareMessage, getDetails, shareMessages
+    sendMessage, getMessages, getMessagesAround, deleteMessage, readMessage, addReaction, deleteAllReaction, previewLink, shareMessage, getDetails, shareMessages
 }

@@ -1,7 +1,10 @@
 import { useMessageStore } from "@/stores/message.storage";
+import { useConversationStore } from "@/stores/conversation.storage";
+import { nextTick } from "vue";
 
 export function useMessage() {
     const messStorage = useMessageStore()
+    const conversationStorage = useConversationStore()
 
     //format text with tag
     const formattedContentWithTag = (content: string | undefined, isOwner: boolean) => {
@@ -55,38 +58,75 @@ export function useMessage() {
         }
     }
 
+    const scrollToMiddle = (el: HTMLElement) => {
+        // 1. Tìm container chứa scroll: Thử tìm theo class, nếu không thấy thì tìm element cha có scroll gần nhất
+        const container = el.closest<HTMLElement>('.overflow-y-auto') ||
+            el.parentElement?.closest<HTMLElement>('[class*="scroll"]');
+
+        if (container) {
+            // Tọa độ của container và phần tử target đối với viewport
+            const containerRect = container.getBoundingClientRect();
+            const targetRect = el.getBoundingClientRect();
+
+            // CÔNG THỨC CHUẨN: 
+            // Vị trí hiện tại của scroll + Khoảng cách từ đỉnh container đến đỉnh target - (Một nửa chiều cao container) + (Một nửa chiều cao target)
+            const offset = container.scrollTop + (targetRect.top - containerRect.top) - (containerRect.height / 2) + (el.offsetHeight / 2);
+
+            container.scrollTo({
+                top: offset,
+                behavior: 'smooth'
+            });
+        } else {
+            // Dự phòng nếu không tìm thấy container cụ thể nào
+            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        highlightMessage(el);
+    };
+
     const jumpToMessage = async (messageId: number) => {
-        // 1. Tìm trong danh sách hiện tại
+        // 1. Tìm trong danh sách hiện tại (DOM)
         const element = document.getElementById(`msg-${messageId}`);
 
         if (element) {
-            // Nếu tìm thấy ngay
-            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            highlightMessage(element);
+            scrollToMiddle(element);
+            return; // Thoát sớm để code gọn gàng
+        }
+
+        // 2. Kiểm tra trong storage xem message đã được lưu chưa
+        const foundInStore = messStorage.messages.some(m => m.id === messageId);
+
+        if (foundInStore) {
+            await nextTick();
+            // Thêm một chút timeout để đảm bảo Vue/React đã update hoàn toàn CSS/Layout
+            setTimeout(() => {
+                const newElement = document.getElementById(`msg-${messageId}`);
+                if (newElement) scrollToMiddle(newElement);
+            }, 50);
         } else {
-            // 2. Nếu chưa load, gọi API lấy data xung quanh ID đó
-            // isLoading.value = true;
-            // try {
-            //     // Giả sử hàm này gọi API nạp lại messageStore
-            //     await messageStorage.fetchMessagesAround(messageId);
+            // 3. Chưa có trong store -> gọi API getMessagesAround
+            const convId = conversationStorage.conversation?.id;
+            if (!convId) return;
 
-            //     // Đợi Vue render lại DOM
-            //     await nextTick();
+            await messStorage.getMessagesAround(messageId, convId);
 
-            //     const newElement = document.getElementById(`msg-${messageId}`);
-            //     if (newElement) {
-            //         newElement.scrollIntoView({ behavior: 'auto', block: 'center' });
-            //         highlightMessage(newElement);
-            //     }
-            // } finally {
-            //     isLoading.value = false;
-            // }
+            // 4. Đợi DOM render xong hoàn toàn
+            await nextTick();
+
+            // Sử dụng setTimeout (khoảng 60-100ms) cực kỳ quan trọng ở đây 
+            // vì API mới về thường kéo theo ảnh, link preview... làm thay đổi chiều cao DOM liên tục
+            setTimeout(() => {
+                const newElement = document.getElementById(`msg-${messageId}`);
+                if (newElement) {
+                    scrollToMiddle(newElement);
+                }
+            }, 100);
         }
     };
 
     const highlightMessage = (el: HTMLElement) => {
         el.classList.add('animate-highlight');
-        setTimeout(() => el.classList.remove('animate-highlight'), 2000);
+        setTimeout(() => el.classList.remove('animate-highlight'), 2500);
     };
 
     return {

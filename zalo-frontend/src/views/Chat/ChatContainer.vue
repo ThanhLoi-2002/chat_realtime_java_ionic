@@ -123,7 +123,7 @@ const userStorage = useUserStore()
 const sysStorage = useSystemStore()
 const pinStorage = usePinStore()
 const { getTime, formatSeparatorTime } = useDateTime()
-const { onScroll, scrollToBottom } = useScroll()
+const { onScroll, onScrollDown, scrollToBottom } = useScroll()
 const unreadCount = ref(0) // Số tin nhắn mới chưa đọc khi đang cuộn lên trên
 const unreadMessageId = ref<number>(conversationStorage.userLastMessageId);
 
@@ -164,6 +164,7 @@ const replyingMessage = ref<MessageType | null>(null);
 
 const setReplyingMessage = (msg: MessageType | null) => {
     replyingMessage.value = msg;
+    console.log(msg)
 };
 
 const TIME_GAP = 5 * 60 * 1000 // 5 phút
@@ -299,17 +300,40 @@ const checkReadMessages = async () => {
 const scrollMore = () => {
     checkScrollAtBottom()
 
-    // Chỉ gọi load more khi gần đầu trang và còn dữ liệu
-    if (messageStorage.hasMore && !messageStorage.isLoading) {
-        const { scrollTop } = scrollContainer.value!
-        if (scrollTop < 300) {   // gần đầu
-            const options: MessageFilter = {
-                conversationId: conversationStorage.conversation!.id,
-                lastId: messageStorage.messages[0]?.id,
+    const el = scrollContainer.value
+    if (!el || messageStorage.isLoading) return
+
+    const { scrollTop, scrollHeight, clientHeight } = el
+    const distanceFromBottom = scrollHeight - scrollTop - clientHeight
+
+    // Scroll lên đầu → load tin nhắn cũ hơn
+    if (messageStorage.hasMore && scrollTop < 300) {
+        const options: MessageFilter = {
+            conversationId: conversationStorage.conversation!.id,
+            lastId: messageStorage.messages[0]?.id,
+        }
+        onScroll(scrollContainer.value, () =>
+            messageStorage.getMessages(options)
+        )
+    }
+
+    // Scroll xuống cuối → load tin nhắn mới hơn (nếu có)
+    if (messageStorage.messages.length > 0 && distanceFromBottom < 300) {
+        const lastMessage = messageStorage.messages[messageStorage.messages.length - 1]
+        if (lastMessage) {
+            // Kiểm tra xem message cuối cùng đã là message mới nhất chưa
+            // Nếu conversationStorage.conversation?.lastMessage?.id > lastMessage.id → còn tin mới hơn
+            const newestId = conversationStorage.conversation?.lastMessage?.id ?? 0
+            if (newestId > lastMessage.id) {
+                const options: MessageFilter = {
+                    conversationId: conversationStorage.conversation!.id,
+                    firstId: lastMessage.id,
+                    limit: appLimit.messages,
+                }
+                onScrollDown(scrollContainer.value, () =>
+                    messageStorage.getNewerMessages(options)
+                )
             }
-            onScroll(scrollContainer.value, () =>
-                messageStorage.getMessages(options)
-            )
         }
     }
 }
@@ -322,11 +346,25 @@ const checkScrollAtBottom = () => {
     showScrollDownButton.value = distanceFromBottom > 50
 }
 
-const handleScrollBottom = (smooth: boolean) => {
+const handleScrollBottom = async (smooth: boolean) => {
+    const convId = conversationStorage.conversation?.id
+    if (!convId) return
+
+    // Load tin nhắn mới nhất (reset list)
+    const options: MessageFilter = {
+        conversationId: convId,
+        limit: appLimit.messages,
+    }
+
+    await messageStorage.getMessages(options, true)
+
+
     scrollToBottom(scrollContainer.value!, smooth)
     // Đợi scroll hoàn tất rồi mới ẩn nút
     setTimeout(() => {
         showScrollDownButton.value = false
+        unreadCount.value = 0
+        unreadMessageId.value = conversationStorage.userLastMessageId
     }, smooth ? 800 : 100)
 }
 
@@ -376,7 +414,7 @@ const reset = async () => {
         await nextTick()
         await waitForImages()
 
-        handleScrollBottom(false)
+        // handleScrollBottom(false)
     }
 }
 
@@ -429,8 +467,10 @@ watch(() => conversationStorage.conversation?.id, async () => {
     resetSubscribe()
 })
 
-watch(() => messageStorage.messages.length, () => {
-    if (!showScrollDownButton.value) {
+watch(() => [messageStorage.messages.length, conversationStorage.userLastMessageId], () => {
+    // console.log(messageStorage.messages.at(-1)?.id,conversationStorage.userLastMessageId)
+    const lastMessageView = conversationStorage.userLastMessageId - (messageStorage.messages.at(-1)?.id ?? 0)
+    if (!showScrollDownButton.value && lastMessageView <= 20) {
         handleScrollBottom(true)
     } else {
         const unreadMessages = messageStorage.messages.filter(m => m.id > unreadMessageId.value && m.contentType != MessageEnum.SYSTEM)
@@ -442,6 +482,7 @@ watch(() => messageStorage.messages.length, () => {
 // update unreadMessageId
 watch(() => conversationStorage.userLastMessageId, () => {
     unreadMessageId.value = conversationStorage.userLastMessageId
+    console.log(conversationStorage.userLastMessageId)
 })
 </script>
 

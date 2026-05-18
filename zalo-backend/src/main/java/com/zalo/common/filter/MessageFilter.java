@@ -17,6 +17,8 @@ import java.util.List;
 public class MessageFilter extends BaseFilter {
     private Long conversationId;
     private Long lastId;
+    private Long firstId;
+    private Long aroundId;
     private MessageType contentType;
     private Integer stt;
     private Boolean linkMetadata;
@@ -37,10 +39,10 @@ public class MessageFilter extends BaseFilter {
                     cb.lessThan(root.get("id"), lastId));
         }
 
-//        if (stt != null) {
-//            specs.add((root, query, cb) ->
-//                    cb.equal(root.get("stt"), stt));
-//        }
+        if (firstId != null) {
+            specs.add((root, query, cb) ->
+                    cb.greaterThan(root.get("id"), firstId));
+        }
 
         if (contentType != null) {
             if (contentType == MessageType.IMAGE) {
@@ -74,4 +76,3 @@ public class MessageFilter extends BaseFilter {
                 .orElse((root, query, cb) -> cb.conjunction());
     }
 }
-

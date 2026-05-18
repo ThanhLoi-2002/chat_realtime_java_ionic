@@ -70,6 +70,8 @@ export type MessageFilter = BaseFilter & {
   conversationId: number
   contentType?: MessageEnum
   linkMetadata?: boolean
+  firstId?: number
+  aroundId?: number
 }
 
 export type ConversationFilter = BaseFilter & {
