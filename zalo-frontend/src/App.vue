@@ -12,6 +12,8 @@
 
     <confirm-modal v-model:showConfirm="confirmStore.show" :header="confirmStore.title" :message="confirmStore.message"
       :onOk="confirmStore.confirm" />
+
+    <avatar-modal />
   </ion-app>
 </template>
 
@@ -21,6 +23,7 @@ import LoadingSpinner from './components/Loading/LoadingSpinner.vue';
 import { useLangStore } from './stores/lang.storage';
 import { defineAsyncComponent, onMounted, watch } from 'vue';
 import { useUserStore } from './stores/user.storage';
+import AvatarModal from './components/Avatar/AvatarModal.vue';
 import { getKey } from './utils/local';
 import { THEME } from './utils/constant';
 import { connectSocket, disconnectSocket } from './utils/websocket';

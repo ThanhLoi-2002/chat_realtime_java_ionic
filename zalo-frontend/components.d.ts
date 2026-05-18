@@ -11,6 +11,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AvatarModal: typeof import('./src/components/Avatar/AvatarModal.vue')['default']
     BaseButton: typeof import('./src/components/Button/BaseButton.vue')['default']
     CircleAvatar: typeof import('./src/components/Avatar/CircleAvatar.vue')['default']
     ClassificationCard: typeof import('./src/components/Classification/ClassificationCard.vue')['default']
@@ -23,19 +24,15 @@ declare module 'vue' {
     ImageOrVideo: typeof import('./src/components/Media/ImageOrVideo.vue')['default']
     IonAlert: typeof import('@ionic/vue')['IonAlert']
     IonApp: typeof import('@ionic/vue')['IonApp']
-    IonAvatar: typeof import('@ionic/vue')['IonAvatar']
     IonBackButton: typeof import('@ionic/vue')['IonBackButton']
     IonButton: typeof import('@ionic/vue')['IonButton']
     IonButtons: typeof import('@ionic/vue')['IonButtons']
     IonContent: typeof import('@ionic/vue')['IonContent']
     IonIcon: typeof import('@ionic/vue')['IonIcon']
     IonItem: typeof import('@ionic/vue')['IonItem']
-    IonLabel: typeof import('@ionic/vue')['IonLabel']
-    IonList: typeof import('@ionic/vue')['IonList']
     IonPopover: typeof import('@ionic/vue')['IonPopover']
     IonSelect: typeof import('@ionic/vue')['IonSelect']
     IonSelectOption: typeof import('@ionic/vue')['IonSelectOption']
-    IonToggle: typeof import('@ionic/vue')['IonToggle']
     Key: typeof import('./src/components/Key/Key.vue')['default']
     LangDropdown: typeof import('./src/components/Dropdown/LangDropdown.vue')['default']
     LoadingSpinner: typeof import('./src/components/Loading/LoadingSpinner.vue')['default']

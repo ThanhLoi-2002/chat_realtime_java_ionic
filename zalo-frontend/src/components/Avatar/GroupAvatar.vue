@@ -1,5 +1,5 @@
 <template>
-    <div class="cursor-pointer" :onClick="openGroupModal">
+    <div class="cursor-pointer" :onClick="handleClick">
         <div v-if="hasConversationAvatar" :class="size ?? 'w-10 h-10'">
             <img :src="conversation.avatar?.secureUrl" class="w-full h-full object-cover rounded-full" />
         </div>
@@ -58,37 +58,22 @@
             </div>
         </template>
     </div>
-
-    <Modal ref="groupProfileModal" :title="t('groupProfile')">
-        <transition name="slide">
-            <GroupProfile v-if="view == 'groupInfo'" :conversation="conversation" @update:view="view = $event" :is-member="true"/>
-
-            <Member v-else-if="view == 'member'" @back="view = 'groupInfo'" :is-show-back-button="true" :members="conversation.members" />
-        </transition>
-    </Modal>
 </template>
 
 <script setup lang="ts">
-import { computed, defineAsyncComponent, ref } from "vue";
+import { computed } from "vue";
 import { ConversationType } from "@/types/entities";
 import { RANDOM_AVATAR } from "@/utils/constant";
-import { useTranslate } from "@/composables/useTranslate";
-import Modal from "../Modal/Modal.vue";
-import { useConversationStore } from "@/stores/conversation.storage";
-
-const GroupProfile = defineAsyncComponent(() => import('../../views/Chat/component/GroupProfile.vue'));
-const Member = defineAsyncComponent(() => import('../../views/Chat/Info/components/Member.vue'));
+import { useAvatarModal } from "@/composables/useAvatarModal";
 
 const props = defineProps<{
     conversation: ConversationType;
     size?: string
     isDisabled?: boolean
+    isMember?: boolean
 }>();
 
-const { t } = useTranslate()
-const groupProfileModal = ref()
-const view = ref<'groupInfo' | 'member'>('groupInfo')
-const convStorage = useConversationStore()
+const { openGroupModal } = useAvatarModal()
 
 // ✅ Kiểm tra xem có avatar của cuộc hội thoại (Group Avatar) không
 const hasConversationAvatar = computed(() => !!props.conversation.avatar?.secureUrl);
@@ -102,10 +87,9 @@ const handleImgError = (e: Event) => {
     target.src = RANDOM_AVATAR;
 };
 
-const openGroupModal = () => {
+const handleClick = () => {
     if (!props.isDisabled) {
-        groupProfileModal.value?.present()
-        // convStorage.selectConversation(props.conversation)
+        openGroupModal(props.conversation, props.isMember)
     }
 }
 </script>

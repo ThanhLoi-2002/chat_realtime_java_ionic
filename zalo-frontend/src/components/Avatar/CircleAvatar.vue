@@ -4,27 +4,25 @@
         size ? size : 'size-12',
         'rounded-full',
         'cursor-pointer'
-    ]" :src="user?.avatar?.url || RANDOM_AVATAR" :onClick="() => !isDisabled && profileModal?.present()" />
-
-    <Modal ref="profileModal" :title="t('profile')">
-        <FriendProfileUI :user="user"/>
-    </Modal>
+    ]" :src="user?.avatar?.url || RANDOM_AVATAR" :onClick="handleClick" />
 </template>
 <script setup lang="ts">
-import { useTranslate } from '@/composables/useTranslate';
+import { useAvatarModal } from '@/composables/useAvatarModal';
 import { UserType } from '@/types/entities';
 import { RANDOM_AVATAR } from '@/utils/constant';
-import FriendProfileUI from '@/views/Chat/component/FriendProfileUI.vue';
-import { ref } from 'vue';
-import Modal from '../Modal/Modal.vue';
 
-defineProps<{
+const props = defineProps<{
     user?: UserType
     size?: string
     isDisabled?: boolean
     customClass?: string
 }>()
 
-const { t } = useTranslate()
-const profileModal = ref()
+const { openUserModal } = useAvatarModal()
+
+const handleClick = () => {
+    if (!props.isDisabled && props.user) {
+        openUserModal(props.user)
+    }
+}
 </script>
