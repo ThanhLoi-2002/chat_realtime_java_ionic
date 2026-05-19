@@ -85,7 +85,7 @@ const toggleSetting = (key: keyof GroupSetting) => {
 };
 
 // Watch 1: Theo dõi thay đổi cuộc hội thoại để nạp giao diện
-watch(() => convStorage.conversation?.id, () => {
+watch(() => [convStorage.conversation?.id, convStorage.conversation?.settings], () => {
     if (convStorage.conversation?.settings) {
         // 🌟 BẬT CỜ: Đang trong quá trình khởi tạo dữ liệu phòng mới
         isInitializing = true;

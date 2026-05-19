@@ -24,12 +24,10 @@
                 </div>
 
                 <SystemMessage v-if="msg.contentType === MessageEnum.SYSTEM" :msg="msg" />
-                
-                <div v-else class="flex items-center gap-2 group w-full px-1 relative"
-                    :class="[actionStore.isSelectionMode ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800/50' : '',
-                        msg.sender.id == userStorage.user?.id ? 'flex-row-reverse' : ''
-                    ]"
-                    @click="() => msg.stt == 1 && handleContainerClick(msg)">
+
+                <div v-else class="flex items-center gap-2 group w-full px-1 relative" :class="[actionStore.isSelectionMode ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800/50' : '',
+                msg.sender.id == userStorage.user?.id ? 'flex-row-reverse' : ''
+                ]" @click="() => msg.stt == 1 && handleContainerClick(msg)">
 
                     <!-- CHECKBOX (Chỉ hiện khi ở chế độ chọn nhiều) -->
                     <div v-if="actionStore.isSelectionMode && msg.stt == 1" class="shrink-0">
@@ -66,7 +64,9 @@
     <!-- TOOLBAR CHỌN NHIỀU (Nằm đè lên vùng Input khi bật mode chọn) -->
     <SelectionToolbar />
 
-    <Typing :scrollContainer="scrollContainer" :replyingMessage="replyingMessage"
+    <ChatBlockedBar :isCommunity="false"
+        v-if="!conversationStorage.conversation?.settings.allowSendMessage && !isAdmin()" />
+    <Typing v-else :scrollContainer="scrollContainer" :replyingMessage="replyingMessage"
         :setReplyingMessage="setReplyingMessage" />
 
     <!-- ĐƯA CONTEXT MENU VÀ MODAL RA ĐÂY ĐỂ DÙNG CHUNG -->
@@ -79,7 +79,7 @@
     </Modal>
 
     <Modal ref="shareModalRef" :title="t('share')" @close="actionStore.showShareModal = false">
-        <ShareMessageUI/>
+        <ShareMessageUI />
     </Modal>
 </template>
 <script setup lang="ts">
@@ -112,6 +112,8 @@ import ShareMessageUI from './component/Message/ShareMessageUI.vue';
 import Modal from '@/components/Modal/Modal.vue';
 import DetailUI from './component/Message/DetailUI.vue';
 import SelectionToolbar from './component/Chat/SelectionToolbar.vue';
+import ChatBlockedBar from './component/Chat/ChatBlockedBar.vue';
+import { useConversation } from '@/composables/useConversation';
 
 const props = defineProps<{
     isShowInfoSection: boolean
@@ -126,6 +128,7 @@ const { getTime, formatSeparatorTime } = useDateTime()
 const { onScroll, onScrollDown, scrollToBottom } = useScroll()
 const unreadCount = ref(0) // Số tin nhắn mới chưa đọc khi đang cuộn lên trên
 const unreadMessageId = ref<number>(conversationStorage.userLastMessageId);
+const { isAdmin } = useConversation()
 
 const roles = ref<Record<number, MemberRoleEnum>>()
 

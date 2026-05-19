@@ -1,5 +1,5 @@
 import { useUserStore } from "@/stores/user.storage"
-import { ConversationType, MessageType } from "@/types/entities"
+import { ConversationType, MemberType, MessageType } from "@/types/entities"
 import { ConversationEnum, MemberRoleEnum, MessageEnum } from "@/types/enum"
 import { useTranslate } from "./useTranslate"
 import { useConversationStore } from "@/stores/conversation.storage"
@@ -42,7 +42,15 @@ export function useConversation() {
     const conversationName = (conversation?: ConversationType) => isGroup(conversation) ? conversation?.name : getRecipient(conversation!)?.username
     const conversationAvatar = (conversation?: ConversationType) => isGroup(conversation) ? conversation?.avatar?.secureUrl : getRecipient(conversation!)?.avatar?.url
 
+    const isAdmin = () => {
+        if (convStorage.conversation) {
+            const me = convStorage.conversation?.members.find((m: MemberType) => m.id == userStorage.user?.id)
+            return me?.role == MemberRoleEnum.GOLDEN_KEY || me?.role == MemberRoleEnum.SILVER_KEY
+        }
+        return false
+    }
+
     return {
-        isGroup, getRecipient, getUserNameFromLastMessage, conversationName, conversationAvatar, isGoldenKey
+        isGroup, getRecipient, getUserNameFromLastMessage, conversationName, conversationAvatar, isGoldenKey, isAdmin
     }
 }

@@ -21,12 +21,13 @@
             {{ msg.systemMetadata.message.attachments[0].name }}.{{ extension }}
         </span>
 
-        <span v-if="isPinMessage" class="ml-2 text-blue-500 cursor-pointer font-medium">
+        <span v-if="isPinMessage" class="ml-2 text-blue-500 cursor-pointer font-medium" @click="jumpToMessage(msg.id)">
             {{ t("see") }}
         </span>
     </div>
 </template>
 <script setup lang="ts">
+import { useMessage } from '@/composables/useMessage';
 import { useTranslate } from '@/composables/useTranslate';
 import { MessageType, UserType } from '@/types/entities';
 import { MessageEnum, SystemMetadataEnum } from '@/types/enum';
@@ -37,6 +38,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useTranslate();
+const { jumpToMessage} = useMessage()
 
 const isPinMessage = props.msg.systemMetadata.type === SystemMetadataEnum.PIN_MESSAGE
 const messType = props.msg.systemMetadata.message.contentType

@@ -12,7 +12,8 @@
                 @click="onMark">
                 {{ t('markMessage') }}
             </div>
-            <div :class="['p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer', style.text.primary]"
+            <div v-if="(isAdmin() && !convStorage.conversation?.settings.allowPinMessage) || convStorage.conversation?.settings.allowPinMessage"
+                :class="['p-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer', style.text.primary]"
                 @click="onPin">
                 {{ t('pinMessage') }}
             </div>
@@ -46,6 +47,8 @@ import { ref } from 'vue';
 import { useConfirmStore } from '@/composables/useConfirm';
 import { useMessageStore } from '@/stores/message.storage';
 import { useChatActionStore } from '@/composables/useChatAction';
+import { useConversation } from '@/composables/useConversation';
+import { useConversationStore } from '@/stores/conversation.storage';
 
 const props = defineProps<{
     message: MessageType
@@ -55,10 +58,12 @@ const props = defineProps<{
 }>()
 const { t } = useTranslate()
 const userStorage = useUserStore()
+const convStorage = useConversationStore()
 const pinStorage = usePinStore()
 const confirmStore = useConfirmStore();
 const messageStorage = useMessageStore()
 const actionStore = useChatActionStore();
+const { isAdmin } = useConversation()
 
 const emit = defineEmits(['update:showMenu'])
 

@@ -40,7 +40,8 @@
 
             <div v-for="user in filteredMembers" :key="user.id"
                 class="flex items-center gap-3 p-2 rounded-lg transition cursor-pointer"
-                :class="[style.text.secondary, isAdmin() && style.bg.hover]" @click="isAdmin() && openMemberManagementModal(user)">
+                :class="[style.text.secondary, isAdmin() && style.bg.hover]"
+                @click="isAdmin() && openMemberManagementModal(user)">
 
                 <div class="relative">
                     <!-- AVATAR -->
@@ -86,8 +87,8 @@
         </Modal>
 
         <Modal ref="memberManagementModal" :title="t('memberManagement')">
-            <MemberManagement v-if="selectedUser" :user="selectedUser"
-                :setSelectedUser="setSelectedUser" :closeMemberManagementModal="closeMemberManagementModal" />
+            <MemberManagement v-if="selectedUser" :user="selectedUser" :setSelectedUser="setSelectedUser"
+                :closeMemberManagementModal="closeMemberManagementModal" />
         </Modal>
     </div>
 </template>
@@ -107,8 +108,9 @@ import { MemberType } from '@/types/entities'
 import Key from '@/components/Key/Key.vue'
 import Modal from '@/components/Modal/Modal.vue'
 import AddMember from '../../component/Member/AddMember.vue'
-import { MemberRoleEnum } from '@/types/enum'
 import MemberManagement from './MemberManagement/MemberManagement.vue'
+import { useConversation } from '@/composables/useConversation'
+import { MemberRoleEnum } from '@/types/enum'
 
 const props = defineProps<{
     isShowBackButton: boolean
@@ -120,6 +122,11 @@ const emit = defineEmits(['back'])
 const convStorage = useConversationStore()
 const friendStorage = useFriendshipStore()
 const userStorage = useUserStore()
+const { isAdmin } = useConversation()
+const isHideMemberList = computed(() => {
+    if (isAdmin()) return false
+    return convStorage.conversation?.settings.hideMemberList
+})
 
 const modalRef = ref()
 const addMemberModal = ref()
@@ -133,8 +140,14 @@ const pages = {
 const selectedUser = ref<MemberType | undefined>(undefined)
 
 const memberList = computed(() => {
-    if(props.members) return props.members || []
-    else return convStorage.conversation?.members || []
+    console.log(isHideMemberList.value)
+    if (!isHideMemberList.value) {
+        if (props.members) return props.members || []
+        else return convStorage.conversation?.members || []
+    } else {
+        if (props.members) return props.members.filter(m => m.role == MemberRoleEnum.GOLDEN_KEY || m.role == MemberRoleEnum.SILVER_KEY || m.id == userStorage.user?.id)
+        else return convStorage.conversation?.members.filter(m => m.role == MemberRoleEnum.GOLDEN_KEY || m.role == MemberRoleEnum.SILVER_KEY || m.id == userStorage.user?.id) || []
+    }
 })
 
 const filteredMembers = computed(() => {
@@ -144,11 +157,6 @@ const filteredMembers = computed(() => {
         normalizeText(u.username).toLowerCase().includes(normalizeText(keyword.value).toLowerCase())
     )
 })
-
-const isAdmin = () => {
-    const me = memberList.value.find((m: MemberType) => m.id == userStorage.user?.id)
-    return me?.role == MemberRoleEnum.GOLDEN_KEY || me?.role == MemberRoleEnum.SILVER_KEY
-}
 
 const openModal = (user: MemberType) => {
     setSelectedUser(user)

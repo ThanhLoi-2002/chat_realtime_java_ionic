@@ -8,16 +8,20 @@
             <!-- GROUP INFO -->
             <div class="flex flex-col items-center py-4 gap-1">
                 <div class="flex w-full gap-4 ml-8">
-                    <div class="relative group/avatar cursor-pointer" @click="triggerFileInput">
-                        <div
-                            class="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden border-2 border-transparent hover:border-blue-500 transition-all">
+                    <div class="relative group/avatar" :class="isChangeGroupInfo ? 'cursor-pointer' : 'cursor-default'"
+                        @click="triggerFileInput()">
+
+                        <div class="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden border-2 border-transparent transition-all"
+                            :class="isChangeGroupInfo ? 'hover:border-blue-500' : ''">
+
                             <LoadingSpinner v-if="isUploading" />
-                            <div v-else>
-                                <img v-if="props.conversation.avatar" :src="props.conversation.avatar.secureUrl"
+
+                            <div v-else class="w-full h-full flex items-center justify-center relative">
+                                <img v-if="props.conversation?.avatar" :src="props.conversation.avatar.secureUrl"
                                     class="w-full h-full object-cover" />
                                 <i v-else class="fas fa-users text-3xl text-gray-500 dark:text-gray-300"></i>
 
-                                <div
+                                <div v-if="isChangeGroupInfo"
                                     class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity">
                                     <i class="fas fa-camera text-white"></i>
                                 </div>
@@ -28,7 +32,7 @@
                             @change="handleAvatarChange" />
                     </div>
 
-                    <div class="flex items-center gap-2 mt-3 flex-1 mr-8">
+                    <div class="flex items-center gap-2 mt-3 flex-1 mr-8" v-if="isChangeGroupInfo">
                         <template v-if="!isEditingName">
                             <span class="font-medium truncate max-w-37.5">{{ props.conversation.name }}</span>
                             <i class="fas fa-pen text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:text-blue-500"
@@ -40,6 +44,10 @@
                                 class="bg-gray-100 dark:bg-gray-800 border-b-2 border-blue-500 outline-none px-1 py-0.5 w-full text-sm"
                                 @keyup.enter="saveName" @blur="saveName" />
                         </div>
+                    </div>
+
+                    <div v-else class="flex items-center gap-2 mt-3 flex-1 mr-8">
+                        <span class="font-medium truncate max-w-37.5">{{ props.conversation.name }}</span>
                     </div>
                 </div>
 
@@ -163,10 +171,11 @@ import { UploadFileType } from '@/types/common';
 import { ConversationType } from '@/types/entities';
 import { ModuleEnum, ResourceEnum } from '@/types/enum';
 import { qrCodeUrl, ROUTE } from '@/utils/constant';
-import { inject, nextTick, ref } from 'vue';
+import { computed, inject, nextTick, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import ImageOrVideo from '@/components/Media/ImageOrVideo.vue';
 import { toast } from '@/utils/toast';
+import { useConversation } from '@/composables/useConversation';
 
 const props = defineProps<{
     conversation: ConversationType;
@@ -181,16 +190,23 @@ const openQrCode = ref(false)
 const inviteUrl = `${qrCodeUrl}/${props.conversation.inviteCode}`
 const isUploading = ref(false)
 const { uploadFile, imageFolder } = useUpload()
+const { isAdmin } = useConversation()
 
 const dismiss = inject<() => void>("modalDismiss")
 
 const emit = defineEmits(['update:view'])
 
+const isChangeGroupInfo = computed(() => {
+    return (isAdmin() && !convStorage.conversation?.settings.allowChangeGroupInfo) || convStorage.conversation?.settings.allowChangeGroupInfo
+})
+
 // --- LOGIC ĐỔI AVATAR ---
 const fileInput = ref<HTMLInputElement | null>(null);
 
 const triggerFileInput = () => {
-    fileInput.value?.click();
+    if (isChangeGroupInfo.value) {
+        fileInput.value?.click();
+    }
 };
 
 const handleAvatarChange = async (event: Event) => {
@@ -259,7 +275,7 @@ const handleCopy = async () => {
         await navigator.clipboard.writeText(inviteUrl);
         // alert('Đã sao chép liên kết vào bộ nhớ tạm!');
         // Thay alert bằng toast của bạn nếu có: toast.success('Copied!')
-        toast({message: 'Copied'})
+        toast({ message: 'Copied' })
     } catch (err) {
         console.error('Không thể copy:', err);
     }
