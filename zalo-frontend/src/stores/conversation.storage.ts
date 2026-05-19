@@ -563,7 +563,7 @@ export const useConversationStore = defineStore('conversation', {
             try {
                 if (this.conversation) {
                     const result: any = await conversationApi.saveSetting(this.conversation.id, settings);
-                    this.conversation.settings = settings
+                    // this.conversation.settings = settings
                 }
             } catch (e: any) {
                 toast({
@@ -572,6 +572,11 @@ export const useConversationStore = defineStore('conversation', {
                 })
                 return undefined
             }
+        },
+
+        saveSettingRealtime(convId: number, settings: GroupSetting) {
+            const idx = this.conversations.findIndex(c => c.id == convId)
+            if(idx != -1) this.conversations[idx].settings = settings
         },
 
         reset() {

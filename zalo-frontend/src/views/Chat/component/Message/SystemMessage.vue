@@ -94,13 +94,13 @@
                     </template>
 
                     <template v-else-if="systemType === SystemMetadataEnum.UPDATE_GROUP_AVATAR || systemType === SystemMetadataEnum.UPDATE_SETTING">
-                        <div class="items-center justify-center flex">
+                        <div class="items-start justify-center flex">
                             <CircleAvatar :user="msg.sender" size="size-5 mr-1" />
                             <span @click="openProfile(msg.sender)"
                                 class="font-bold cursor-pointer hover:underline text-gray-700 dark:text-gray-200">
                                 {{ isMeAction ? t("you") : msg.sender?.username }}
                             </span>
-                            <span class="mx-1">{{ t(msg.content) }}</span>
+                            <p class="mx-1">{{ t(msg.content) }}</p>
                         </div>
                     </template>
 

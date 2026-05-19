@@ -1,5 +1,6 @@
 package com.zalo.modules.groupSetting.service;
 
+import com.zalo.common.service.WebsocketService;
 import com.zalo.modules.conversation.entities.Conversation;
 import com.zalo.modules.conversation.service.ConversationRepository;
 import com.zalo.modules.groupSetting.entities.GroupSetting;
@@ -14,8 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Map;
-
 @Service
 @Transactional
 @AllArgsConstructor
@@ -23,6 +22,7 @@ import java.util.Map;
 public class GroupSettingService {
     ConversationRepository convRepo;
     SystemMessageInterface systemMessageInterface;
+    WebsocketService websocketService;
 
     public void saveSetting(Long convId, Long userId, GroupSetting dto) {
         Conversation conv = convRepo.findById(convId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
@@ -72,5 +72,6 @@ public class GroupSettingService {
         conv.setSettings(dto);
         convRepo.save(conv);
         systemMessageInterface.createSystemMessage(sysMes);
+        websocketService.saveSetting(convId, dto);
     }
 }
