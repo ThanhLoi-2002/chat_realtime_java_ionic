@@ -468,6 +468,12 @@ watch(() => conversationStorage.conversation?.id, async () => {
 })
 
 watch(() => [messageStorage.messages.length, conversationStorage.userLastMessageId], () => {
+    // Nếu là update realtime từ WebSocket thì không gọi API
+    if (messageStorage.isRealtimeUpdate) {
+        messageStorage.isRealtimeUpdate = false
+        return
+    }
+
     // console.log(messageStorage.messages.at(-1)?.id,conversationStorage.userLastMessageId)
     const lastMessageView = conversationStorage.userLastMessageId - (messageStorage.messages.at(-1)?.id ?? 0)
     if (!showScrollDownButton.value && lastMessageView <= 20) {

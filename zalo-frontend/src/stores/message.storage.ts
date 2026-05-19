@@ -17,6 +17,7 @@ interface State {
     filesHasMore: boolean,
     links: MessageType[],
     linksHasMore: boolean,
+    isRealtimeUpdate: boolean,
 }
 
 export const useMessageStore = defineStore('message', {
@@ -31,6 +32,7 @@ export const useMessageStore = defineStore('message', {
         filesHasMore: true,
         links: [],
         linksHasMore: true,
+        isRealtimeUpdate: false,
     }),
     actions: {
         setPreviewImage(previewImage?: MediaType) {
@@ -322,6 +324,7 @@ export const useMessageStore = defineStore('message', {
         },
 
         addNewMessage(data: MessageType) {
+            this.isRealtimeUpdate = true
             this.messages.push(data)
             if (data.contentType == MessageEnum.IMAGE) {
                 this.images.unshift(...data.attachments)
