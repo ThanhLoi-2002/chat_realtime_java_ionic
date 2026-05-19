@@ -26,7 +26,12 @@
 
                 <!-- Body: Message Content -->
                 <div class="text-gray-200 text-sm mb-3">
-                    <div v-if="pin.message.contentType === MessageEnum.TEXT" :class="[style.text.secondary]"
+                    <div v-if="pin.message.stt == -1" :class="[style.text.muted, 'italic']">
+                        <p class="font-bold mb-1" :class="[style.text.secondary]">{{ pin.message.sender.username }}</p>
+                        <p>{{ t('messageHasBeenWithdrawn') }}</p>
+                    </div>
+
+                    <div v-else-if="pin.message.contentType === MessageEnum.TEXT" :class="[style.text.secondary]"
                         class="line-clamp-3">
                         <p class="font-bold mb-1" :class="[style.text.secondary]">{{ pin.message.sender.username }}</p>
                         <p>{{ pin.message.content }}</p>
@@ -60,7 +65,7 @@
                 </div>
 
                 <!-- Footer: Time & Link -->
-                <div class="flex items-center gap-1 text-xs text-gray-500 border-t border-gray-700/50 pt-2">
+                <div class="flex items-center gap-1 text-xs text-gray-500 border-t border-gray-700/50 pt-2" @click="jumpToMessage(pin.messageId)">
                     <span>{{ formatDateTime(pin.message.ct) }} |</span>
                     <span class="text-blue-400 cursor-pointer font-medium">{{ t('seeOriginalMessage') }}</span>
                 </div>
@@ -72,6 +77,7 @@
 import { style } from '@/assets/tailwindcss';
 import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
 import { useDateTime } from '@/composables/useDateTime';
+import { useMessage } from '@/composables/useMessage';
 import { useTranslate } from '@/composables/useTranslate';
 import { useConversationStore } from '@/stores/conversation.storage';
 import { usePinStore } from '@/stores/pin.storage';
@@ -83,7 +89,8 @@ const { t } = useTranslate()
 const pinStorage = usePinStore()
 const convStorage = useConversationStore()
 const { formatDateTime } = useDateTime()
-console.log(pinStorage.pins)
+const {jumpToMessage} = useMessage()
+
 onMounted(async () => {
     if (convStorage.conversation?.id)
         await pinStorage.getPins(convStorage.conversation.id)

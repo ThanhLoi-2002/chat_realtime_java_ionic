@@ -111,8 +111,9 @@
                         <span class="ml-1">{{ t(msg.content) }}</span>
                     </template>
 
-                    <template v-else-if="systemType === SystemMetadataEnum.PIN_MESSAGE || systemType === SystemMetadataEnum.REMOVE_PIN_MESSAGE">
-                        <SystemPinMessage :msg="msg" :isMeAction="isMeAction"/>
+                    <template
+                        v-else-if="systemType === SystemMetadataEnum.PIN_MESSAGE || systemType === SystemMetadataEnum.REMOVE_PIN_MESSAGE">
+                        <SystemPinMessage :msg="msg" :isMeAction="isMeAction" :openProfile="openProfile" />
                     </template>
 
                     <SystemChangeKeyContent v-else-if="
@@ -120,6 +121,16 @@
                         systemType == SystemMetadataEnum.REVOKE_SILVER_KEY ||
                         systemType == SystemMetadataEnum.TRANSFER_GOLDEN_KEY
                     " :msg="msg" :isMeAction="isMeAction" :openProfile="openProfile" />
+
+                    <template v-else-if="systemType === SystemMetadataEnum.UPDATE_SETTING">
+                        <div class="items-center justify-center inline-flex">
+                            <span @click="openProfile(msg.sender)"
+                                class="font-bold cursor-pointer hover:underline text-gray-700 dark:text-gray-200">
+                                {{ isMeAction ? t("you") : msg.sender?.username }}
+                            </span>
+                            <span class="mx-1">{{ t(msg.content) }}</span>
+                        </div>
+                    </template>
 
                     <template v-else>
                         {{ t(msg.content) }}

@@ -6,23 +6,23 @@
             <span class="font-semibold m-auto">{{ t("groupManagement") }}</span>
         </div>
 
-        <div class="max-w-2xl mx-auto w-full p-3 flex flex-col gap-4">
+        <div v-if="settingsOpt" class="max-w-2xl mx-auto w-full p-3 flex flex-col gap-4">
 
             <div class="overflow-hidden">
-                <span class="py-2 text-blue-600 dark:text-blue-400">
+                <span class="py-2 text-blue-600 dark:text-blue-400 block font-medium text-sm">
                     {{ t("allowMembersTo") }}:
                 </span>
 
                 <div class="flex flex-col">
-                    <div v-for="(opt, index) in memberOptions" :key="index" @click="opt.value = !opt.value"
+                    <div v-for="(opt, index) in memberOptions" :key="index" @click="toggleSetting(opt.key)"
                         class="py-2 flex justify-between items-center cursor-pointer">
-                        <span class="text-sm truncate flex-1" :class="[style.text.secondary]">
-                            {{ t(opt.labelKey) }}
+                        <span class="text-sm text-wrap flex-1" :class="[style.text.secondary]">
+                            {{ capitalize(t(opt.labelKey)) }}
                         </span>
                         <div class="relative flex items-center">
                             <div class="w-5 h-5 border rounded-md transition-all flex items-center justify-center"
-                                :class="opt.value ? 'bg-blue-600 border-blue-600' : 'border-slate-300 dark:border-slate-600'">
-                                <i v-if="opt.value" class="fas fa-check text-white text-xs"></i>
+                                :class="settingsOpt[opt.key] ? 'bg-blue-600 border-blue-600' : 'border-slate-300 dark:border-slate-600'">
+                                <i v-if="settingsOpt[opt.key]" class="fas fa-check text-white text-xs"></i>
                             </div>
                         </div>
                     </div>
@@ -31,26 +31,20 @@
 
             <div class="overflow-hidden pt-2 border-t" :class="[style.border.primary]">
                 <div class="flex flex-col">
-                    <div v-for="(item, index) in adminSettings" :key="index" @click="toggleAdminSetting(index)"
+                    <div v-for="(item, index) in adminSettings" :key="index" @click="toggleSetting(item.key)"
                         class="py-2 flex justify-between items-start gap-4 cursor-pointer">
 
                         <div class="flex-1 flex flex-col gap-1.5">
                             <div class="flex items-center gap-2">
-                                <span class="text-sm truncate flex-1" :class="[style.text.secondary]">
-                                    {{ t(item.labelKey) }}
+                                <span class="text-sm text-wrap flex-1" :class="[style.text.secondary]">
+                                    {{ capitalize(t(item.labelKey)) }}
                                 </span>
-                                <i v-if="item.hasHelp"
-                                    class="far fa-question-circle text-slate-400 hover:text-blue-500 transition-colors text-xs"
-                                    @click.stop="showHelp(item.labelKey)"></i>
                             </div>
-                            <p v-if="item.subLabelKey"
-                                class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed pr-4">
-                                {{ t(item.subLabelKey) }}
-                            </p>
                         </div>
 
                         <div class="mt-1 pointer-events-none">
-                            <ion-toggle color="primary" :checked="item.value" class="custom-toggle"></ion-toggle>
+                            <ion-toggle color="primary" :checked="!!settingsOpt[item.key]"
+                                class="custom-toggle"></ion-toggle>
                         </div>
                     </div>
                 </div>
@@ -60,35 +54,73 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { nextTick, ref, watch } from 'vue';
 import { style } from '@/assets/tailwindcss';
 import { useTranslate } from '@/composables/useTranslate';
 import { IonToggle } from '@ionic/vue';
+import { useConversationStore } from '@/stores/conversation.storage';
+import { capitalize } from '@/utils/helper';
+import { GroupSetting } from '@/types/common';
 
 const { t } = useTranslate();
+const convStorage = useConversationStore()
+const settingsOpt = ref<GroupSetting>()
 
-const memberOptions = ref([
-    { labelKey: 'changeGroupInfo', value: false },
-    { labelKey: 'pinMessages', value: false },
-    { labelKey: 'createNotes', value: false },
-    { labelKey: 'createPoll', value: false },
-    { labelKey: 'sendMessages', value: true },
-]);
+interface UIItem {
+    labelKey: string;
+    key: keyof GroupSetting;
+}
 
-const adminSettings = ref([
-    { labelKey: 'hideMemberList', subLabelKey: 'hideMemberListDesc', value: true, hasHelp: false },
-    { labelKey: 'membershipApproval', value: true, hasHelp: true },
-    { labelKey: 'highlightAdminMessages', value: true, hasHelp: true },
-    { labelKey: 'newMembersReadRecentMessages', value: true, hasHelp: true }
-]);
+const memberOptions = ref<UIItem[]>([]);
+const adminSettings = ref<UIItem[]>([]);
+// 🌟 Chiếc cờ dùng để chặn lượt chạy tự động khi nạp dữ liệu
+let isInitializing = false;
 
-const toggleAdminSetting = (index: number) => {
-    adminSettings.value[index].value = !adminSettings.value[index].value;
+// 🌟 HÀM XỬ LÝ CLICK ĐỒNG BỘ 2 CHIỀU
+const toggleSetting = (key: keyof GroupSetting) => {
+    if (settingsOpt.value && key in settingsOpt.value) {
+        // Cập nhật trực tiếp vào Object gốc, giao diện v-for qua settingsOpt[item.key] sẽ tự thay đổi theo
+        (settingsOpt.value[key] as boolean) = !settingsOpt.value[key];
+    }
 };
 
-const showHelp = (key: string) => {
-    console.log("Help for:", key);
-};
+// Watch 1: Theo dõi thay đổi cuộc hội thoại để nạp giao diện
+watch(() => convStorage.conversation?.id, () => {
+    if (convStorage.conversation?.settings) {
+        // 🌟 BẬT CỜ: Đang trong quá trình khởi tạo dữ liệu phòng mới
+        isInitializing = true;
+
+        memberOptions.value = [];
+        adminSettings.value = [];
+
+        settingsOpt.value = { ...convStorage.conversation.settings };
+
+        for (const key in settingsOpt.value) {
+            const currentKey = key as keyof GroupSetting;
+            if (key.startsWith('allow')) {
+                memberOptions.value.push({ labelKey: key, key: currentKey });
+            } else {
+                adminSettings.value.push({ labelKey: key, key: currentKey });
+            }
+        }
+
+        // 🌟 HẠ CỜ: Sau khi DOM cập nhật và đồng bộ xong dữ liệu cũ, mở khóa cho phép gọi API
+        nextTick(() => {
+            isInitializing = false;
+        });
+    }
+}, { immediate: true });
+
+// Watch 2: Theo dõi để gọi API lưu trữ
+watch(settingsOpt, async (newSettings) => {
+    // 🛡️ CHẶN LẠI: Nếu cờ đang bật (do Watch 1 kích hoạt nạp data), thoát ra ngay không gọi API
+    if (isInitializing) return;
+
+    if (newSettings) {
+        console.log("Người dùng thực sự click thay đổi, tiến hành gọi API:", newSettings);
+        await convStorage.saveSetting(newSettings);
+    }
+}, { deep: true });
 </script>
 
 <style scoped>

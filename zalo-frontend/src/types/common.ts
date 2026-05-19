@@ -97,12 +97,26 @@ export type UploadFileRequest = {
 }
 
 export interface ToastType {
-    message: string
-    color?: 'success' | 'danger' | 'warning' | 'primary'
-    duration?: number
-    position?: "top" | "bottom" | "middle" | undefined
+  message: string
+  color?: 'success' | 'danger' | 'warning' | 'primary'
+  duration?: number
+  position?: "top" | "bottom" | "middle" | undefined
 }
 
 export type SaveFcmTokenType = { deviceId: string, fcmToken: string }
 
 export type UpdateClassificationPositionType = { id: number, position: number }
+
+export type GroupSetting = {
+  allowChangeGroupInfo: boolean
+  allowPinMessage: boolean
+  allowCreateNote: boolean
+  allowCreatePoll: boolean
+  allowSendMessage: boolean
+
+  // --- CÁC CẤU HÌNH TOGGLE (Trong ảnh mẫu) ---
+  hideMemberList: boolean;
+  membershipApproval: boolean;
+  highlightAdminMessages: boolean;
+  newMembersReadRecentMessages: boolean;
+}

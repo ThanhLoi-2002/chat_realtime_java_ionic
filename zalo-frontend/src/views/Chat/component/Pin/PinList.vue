@@ -7,12 +7,16 @@
 
         <div v-if="!isExpanded" class="flex items-center gap-2.5 cursor-pointer w-full" :class="style.text.primary">
             <i class="text-blue-400 text-xl block fas fa-comment-dots"></i>
-            <div class="flex-1 flex flex-col min-w-0">
+            <div class="flex-1 flex flex-col min-w-0" @click="jumpToMessage(pinStorage.pinList[0]?.messageId)">
                 <span class="text-xs" :class="style.text.primary">{{ t('message') }}</span>
                 <span class="flex items-center gap-1 text-xs truncate font-medium" :class="[style.text.primary]">
                     {{ pinStorage.pinList[0]?.message.sender.username }}:
 
-                    <template v-if="pinStorage.pinList[0]?.message.contentType === MessageEnum.TEXT">
+                    <template v-if="pinStorage.pinList[0]?.message.stt == -1">
+                        <p :class="[style.text.muted, 'italic']">{{ t('messageHasBeenWithdrawn') }}</p>
+                    </template>
+
+                    <template v-else-if="pinStorage.pinList[0]?.message.contentType === MessageEnum.TEXT">
                         {{ pinStorage.pinList[0]?.message.content }}
                     </template>
                     <template v-else-if="pinStorage.pinList[0]?.message.contentType === MessageEnum.IMAGE">
@@ -54,7 +58,7 @@
                 <div class="flex items-center justify-between px-4 py-2 border-b border-gray-500/50">
                     <span class="font-semibold text-sm" :class="[style.text.secondary]">{{ t('pinList') }} ({{
                         pinStorage.pinList.length
-                    }})</span>
+                        }})</span>
                     <button @click="isExpanded = false" class="flex items-center text-xs text-gray-400 cursor-pointer">
                         {{ t('compact') }}
                         <i class="fas fa-angle-double-up ml-1"></i>
@@ -62,7 +66,7 @@
                 </div>
 
                 <div class="max-h-75 overflow-y-auto divide-y divide-gray-500/50">
-                    <div v-for="pin in pinStorage.pinList" :key="pin.id"
+                    <div v-for="pin in pinStorage.pinList" :key="pin.id" @click="jumpToMessage(pin.messageId)"
                         class="flex gap-2.5 items-center px-4 py-3 hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-colors group cursor-pointer">
                         <i class="text-blue-400 text-xl block fas fa-comment-dots"></i>
                         <div class="flex-1 flex flex-col min-w-0">
@@ -70,7 +74,11 @@
                             <span class="text-xs truncate font-medium" :class="[style.text.primary]">
                                 {{ pin.message.sender.username }}:
 
-                                <template v-if="pin.message.contentType === MessageEnum.TEXT">
+                                <template v-if="pin.message.stt == -1">
+                                    <span :class="[style.text.muted, 'italic']">{{ t('messageHasBeenWithdrawn') }}</span>
+                                </template>
+
+                                <template v-else-if="pin.message.contentType === MessageEnum.TEXT">
                                     {{ pin.message.content }}
                                 </template>
                                 <template v-else-if="pin.message.contentType === MessageEnum.IMAGE">
@@ -114,6 +122,7 @@
 
 <script setup lang="ts">
 import { style } from '@/assets/tailwindcss';
+import { useMessage } from '@/composables/useMessage';
 import { useTranslate } from '@/composables/useTranslate';
 import { useConversationStore } from '@/stores/conversation.storage';
 import { usePinStore } from '@/stores/pin.storage';
@@ -129,6 +138,7 @@ const pinnedContainer = ref<HTMLElement | null>(null);
 const pinStorage = usePinStore()
 const convStorage = useConversationStore()
 const systemStorage = useSystemStore()
+const {jumpToMessage} = useMessage()
 
 const emit = defineEmits(['update:isShowInfoSection'])
 

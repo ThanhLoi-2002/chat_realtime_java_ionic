@@ -2,6 +2,7 @@ package com.zalo.modules.conversation.dto.respone;
 
 import com.zalo.common.base.BaseResponse;
 import com.zalo.common.configuration.json.G;
+import com.zalo.modules.groupSetting.entities.GroupSetting;
 import com.zalo.modules.media.dtos.responses.MediaResponse;
 import com.zalo.modules.message.dto.response.MessageResponse;
 import com.zalo.modules.user.dto.response.UserResponse;
@@ -42,9 +43,11 @@ public class ConversationResponse extends BaseResponse {
 
     LocalDateTime pinAt;
 
+    GroupSetting settings;
+
     public ConversationResponse(Conversation c, String... relations) {
         super(c, relations);
-        BeanUtils.copyProperties(c, this, "createdBy", "updatedBy", "lastMessage", "recipient", "owner", "avatar");
+        BeanUtils.copyProperties(c, this, "createdBy", "updatedBy", "lastMessage", "recipient", "owner", "avatar", "settings");
 
         Set<String> rels = relations != null
                 ? new HashSet<>(Arrays.asList(relations))
@@ -72,6 +75,12 @@ public class ConversationResponse extends BaseResponse {
             if(c.getAvatar() != null){
                 this.avatar = new MediaResponse(c.getAvatar());
             }
+        }
+
+        if(c.getSettings() == null){
+            this.settings = new GroupSetting();
+        } else {
+            this.settings = c.getSettings();
         }
     }
 }

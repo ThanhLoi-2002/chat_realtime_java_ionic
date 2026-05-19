@@ -1,4 +1,4 @@
-import { ConversationFilter, IResponse } from "@/types/common";
+import { ConversationFilter, GroupSetting, IResponse } from "@/types/common";
 import axios from "./axios";
 import { ConversationType, MediaType, UserType } from "@/types/entities";
 
@@ -108,6 +108,10 @@ const transferGoldenKey = async (conversationId: number, memberId: number) => {
   return await axios.put<IResponse>(`/conversations/${conversationId}/transfer-golden-key/${memberId}`);
 };
 
+const saveSetting = async (conversationId: number, settings: GroupSetting) => {
+  return await axios.post<IResponse>(`/group-settings/${conversationId}`, settings);
+};
+
 export const conversationApi = {
   createPrivate,
   getList,
@@ -127,5 +131,6 @@ export const conversationApi = {
   revokeSilverKey,
   getConversation,
   transferGoldenKey,
-  findByUserIdsAndTypePrivate
+  findByUserIdsAndTypePrivate,
+  saveSetting
 };

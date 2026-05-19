@@ -15,5 +15,6 @@ public enum SystemMessageType {
     ADD_FRIEND,
 
     PIN_MESSAGE,
-    REMOVE_PIN_MESSAGE
+    REMOVE_PIN_MESSAGE,
+    UPDATE_SETTING
 }

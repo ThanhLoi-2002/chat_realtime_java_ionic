@@ -2,6 +2,7 @@ package com.zalo.modules.conversation.entities;
 
 import com.zalo.common.base.BaseEntity;
 import com.zalo.common.entity.File;
+import com.zalo.modules.groupSetting.entities.GroupSetting;
 import com.zalo.modules.media.entities.Media;
 import com.zalo.modules.message.entity.Message;
 import com.zalo.modules.user.entities.User;
@@ -9,7 +10,10 @@ import com.zalo.common.covert.FileConverter;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.ColumnTransformer;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.type.SqlTypes;
 
 import java.util.List;
 
@@ -34,28 +38,30 @@ public class Conversation extends BaseEntity {
     // ✅ relation tới owner (read-only)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ownerId", insertable = false, updatable = false)
-    private User owner;
+    User owner;
 
     // Trong Conversation.java
     Long avatarId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "avatarId", insertable = false, updatable = false)
-    private Media avatar;
+    Media avatar;
 
     Long lastMessageId;
 
     // ✅ relation tới lastMessage (read-only)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lastMessageId", insertable = false, updatable = false)
-    private Message lastMessage;
+    Message lastMessage;
 
     Long recipientId;
 
     // ✅ relation tới recipient (read-only)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipientId", insertable = false, updatable = false)
-    private User recipient;
+    User recipient;
 
-
+    @JdbcTypeCode(SqlTypes.JSON)
+    @ColumnTransformer(write = "?")
+    GroupSetting settings = new GroupSetting();
 }

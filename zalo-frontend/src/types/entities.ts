@@ -1,4 +1,4 @@
-import { FileType, LinkMetadataType } from "./common"
+import { FileType, GroupSetting, LinkMetadataType } from "./common"
 import { ConversationEnum, DeliveryStatusEnum, FriendshipStatusEnum, MemberRoleEnum, MessageEnum, ModuleEnum, ReactionEnum, ResourceEnum, SystemMetadataEnum } from "./enum"
 
 export type BaseType = {
@@ -40,6 +40,7 @@ export type ConversationType = BaseType & {
     unread: number
     isMention: boolean
     pinAt?: Date
+    settings: GroupSetting
 }
 
 export type MessageType = BaseType & {

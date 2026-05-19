@@ -4,7 +4,7 @@ import { conversationApi } from '@/api/conversation.api'
 import { toast } from '@/utils/toast'
 import { appLimit } from '@/utils/constant'
 import { storage } from '@/services/storage.service.'
-import { ConversationFilter } from '@/types/common'
+import { ConversationFilter, GroupSetting } from '@/types/common'
 import { useConversation } from '@/composables/useConversation'
 import { normalizeText } from '@/utils/helper'
 import { pinApi } from '@/api/pin.api'
@@ -550,6 +550,21 @@ export const useConversationStore = defineStore('conversation', {
                 }
 
                 this.sortConversation()
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return undefined
+            }
+        },
+
+        async saveSetting(settings: GroupSetting) {
+            try {
+                if (this.conversation) {
+                    const result: any = await conversationApi.saveSetting(this.conversation.id, settings);
+                    this.conversation.settings = settings
+                }
             } catch (e: any) {
                 toast({
                     color: "danger",
