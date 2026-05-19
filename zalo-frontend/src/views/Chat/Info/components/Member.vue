@@ -140,7 +140,6 @@ const pages = {
 const selectedUser = ref<MemberType | undefined>(undefined)
 
 const memberList = computed(() => {
-    console.log(isHideMemberList.value)
     if (!isHideMemberList.value) {
         if (props.members) return props.members || []
         else return convStorage.conversation?.members || []

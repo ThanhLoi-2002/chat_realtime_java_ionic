@@ -152,7 +152,7 @@ import SystemChangeKeyContent from "./System/SystemChangeKeyContent.vue";
 const props = defineProps<{
     msg: MessageType;
 }>();
-console.log(props.msg.systemMetadata)
+
 const { t } = useTranslate();
 const userStorage = useUserStore();
 const myId = userStorage.user?.id;

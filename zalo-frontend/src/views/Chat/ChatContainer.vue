@@ -182,8 +182,8 @@ const messagesWithMeta = computed(() => {
         const prevTime = prev ? getTime(prev.ct) : 0
         const nextTime = next ? getTime(next.ct) : 0
 
-        const isSamePrev = prev && prev.sender?.id === msg.sender?.id
-        const isSameNext = next && next.sender?.id === msg.sender?.id
+        const isSamePrev = prev && prev.sender?.id === msg.sender?.id && prev.contentType != MessageEnum.SYSTEM
+        const isSameNext = next && next.sender?.id === msg.sender?.id && next.contentType != MessageEnum.SYSTEM
 
         // ✅ START OF GROUP (quan trọng nhất)
         const isStartGroup =
