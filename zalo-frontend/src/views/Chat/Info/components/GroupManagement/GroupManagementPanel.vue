@@ -1,15 +1,21 @@
 <template>
-    <div class="h-full flex flex-col overflow-auto">
+    <div class="h-full flex flex-col overflow-auto select-none">
         <div class="p-4 flex items-center gap-3 border-b border-slate-300 dark:border-slate-700"
             :class="[style.text.secondary]">
             <i class="fa fa-arrow-left cursor-pointer" @click="$emit('back')"></i>
             <span class="font-semibold m-auto">{{ t("groupManagement") }}</span>
         </div>
 
-        <div v-if="settingsOpt" class="max-w-2xl mx-auto w-full p-3 flex flex-col gap-4">
+        <div v-if="!isAdmin()" class="bg-gray-100 dark:bg-gray-800 py-2.5 px-4 flex items-center justify-center gap-2 text-xs font-medium border-b border-slate-200 dark:border-slate-700 text-gray-500 dark:text-gray-400">
+            <i class="fas fa-lock"></i>
+            <span>{{ t("adminOnlyFeature") }}</span> </div>
+
+        <div v-if="settingsOpt" 
+            class="max-w-2xl mx-auto w-full p-3 flex flex-col gap-4 transition-all"
+            :class="[!isAdmin() ? 'pointer-events-none opacity-60' : '']">
 
             <div class="overflow-hidden">
-                <span class="py-2 text-blue-600 dark:text-blue-400 block font-medium text-sm">
+                <span class="py-2 text-slate-500 dark:text-slate-400 block font-medium text-sm">
                     {{ t("allowMembersTo") }}:
                 </span>
 
@@ -21,7 +27,11 @@
                         </span>
                         <div class="relative flex items-center">
                             <div class="w-5 h-5 border rounded-md transition-all flex items-center justify-center"
-                                :class="settingsOpt[opt.key] ? 'bg-blue-600 border-blue-600' : 'border-slate-300 dark:border-slate-600'">
+                                :class="[
+                                    settingsOpt[opt.key] 
+                                        ? (isAdmin() ? 'bg-blue-600 border-blue-600' : 'bg-blue-500/50 border-blue-500/30') 
+                                        : 'border-slate-300 dark:border-slate-600'
+                                ]">
                                 <i v-if="settingsOpt[opt.key]" class="fas fa-check text-white text-xs"></i>
                             </div>
                         </div>
@@ -43,12 +53,15 @@
                         </div>
 
                         <div class="mt-1 pointer-events-none">
-                            <ion-toggle color="primary" :checked="!!settingsOpt[item.key]"
+                            <ion-toggle color="primary" 
+                                :checked="!!settingsOpt[item.key]"
+                                :disabled="!isAdmin()"
                                 class="custom-toggle"></ion-toggle>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </template>
@@ -61,10 +74,12 @@ import { IonToggle } from '@ionic/vue';
 import { useConversationStore } from '@/stores/conversation.storage';
 import { capitalize } from '@/utils/helper';
 import { GroupSetting } from '@/types/common';
+import { useConversation } from '@/composables/useConversation';
 
 const { t } = useTranslate();
 const convStorage = useConversationStore()
 const settingsOpt = ref<GroupSetting>()
+const { isAdmin } = useConversation()
 
 interface UIItem {
     labelKey: string;
