@@ -326,7 +326,7 @@ export const useMessageStore = defineStore('message', {
         addNewMessage(data: MessageType) {
             this.isRealtimeUpdate = true
             this.messages.push(data)
-            this.sort()
+            // this.sort()
             if (data.contentType == MessageEnum.IMAGE) {
                 this.images.unshift(...data.attachments)
             }

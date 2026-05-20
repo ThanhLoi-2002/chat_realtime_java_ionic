@@ -32,7 +32,7 @@ export function useScroll() {
         const { scrollTop, scrollHeight, clientHeight } = el;
         const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
 
-        if (distanceFromBottom <= 10) {
+        if (distanceFromBottom <= 100) {
             // 1. Lưu scrollHeight cũ và scrollTop để duy trì vị trí sau khi thêm message mới
             const previousScrollHeight = el.scrollHeight;
             const previousScrollTop = el.scrollTop;

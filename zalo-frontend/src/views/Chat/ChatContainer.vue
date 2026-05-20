@@ -315,6 +315,7 @@ const scrollMore = () => {
             conversationId: conversationStorage.conversation!.id,
             lastId: messageStorage.messages[0]?.id,
         }
+        console.log('123')
         onScroll(scrollContainer.value, () =>
             messageStorage.getMessages(options)
         )
@@ -353,16 +354,30 @@ const handleScrollBottom = async (smooth: boolean) => {
     const convId = conversationStorage.conversation?.id
     if (!convId) return
 
-    // Load tin nhắn mới nhất (reset list)
-    const options: MessageFilter = {
-        conversationId: convId,
-        limit: appLimit.messages,
+    const convLastMessageId = conversationStorage.conversation?.lastMessage?.id
+
+    if (convLastMessageId) {
+        // Kiểm tra xem tin nhắn cuối cùng của hội thoại ĐÃ CÓ trong danh sách hiện tại chưa
+        const isLastMessageAlreadyInList = messageStorage.messages.some(m => m.id === convLastMessageId)
+
+        // Nếu CHƯA CÓ trong list, chứng tỏ danh sách đang bị thiếu/ngắt quãng -> Mới gọi API để load lại
+        if (!isLastMessageAlreadyInList) {
+            const options: MessageFilter = {
+                conversationId: convId,
+                limit: appLimit.messages,
+            }
+            console.log('Fetching latest messages from API...')
+            await messageStorage.getMessages(options, true)
+        } else {
+            console.log('Last message already in list, skipping API call.')
+        }
     }
 
-    await messageStorage.getMessages(options, true)
+    // Luôn luôn thực hiện cuộn xuống
+    if (scrollContainer.value) {
+        scrollToBottom(scrollContainer.value, smooth)
+    }
 
-
-    scrollToBottom(scrollContainer.value!, smooth)
     // Đợi scroll hoàn tất rồi mới ẩn nút
     setTimeout(() => {
         showScrollDownButton.value = false
@@ -472,7 +487,7 @@ watch(() => conversationStorage.conversation?.id, async () => {
 
 watch(() => [messageStorage.messages.length, conversationStorage.userLastMessageId], () => {
     // Nếu là update realtime từ WebSocket thì không gọi API
-    if (messageStorage.isRealtimeUpdate) {
+    if (messageStorage.isRealtimeUpdate || conversationStorage.userLastMessageId == messageStorage.messages.at(-1)?.id) {
         messageStorage.isRealtimeUpdate = false
         return
     }

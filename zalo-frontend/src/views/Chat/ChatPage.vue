@@ -27,6 +27,8 @@ onMounted(() => {
     const mess: MessageType = JSON.parse(msg.body).message
     const conv: ConversationType = JSON.parse(msg.body).conversation
 
+    conversationStorage.updateConversation(conv)
+
     const isOpening = conversationStorage.conversation?.id === mess.conversationId
     if (isOpening) {
       if (mess.senderId != userStorage.user?.id) {
@@ -37,9 +39,6 @@ onMounted(() => {
     if (conv.id == conversationStorage.conversation?.id) {
       messageStorage.addNewMessage(mess)
     }
-
-    conversationStorage.updateConversation(conv)
-    console.log(JSON.parse(msg.body).message)
   })
 
   sub = socketSubscribe(`/user/queue/chat.updateMessages`, (msg: any) => {
