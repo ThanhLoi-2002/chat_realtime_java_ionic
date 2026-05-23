@@ -25,7 +25,7 @@ public class JoinGroupRequestController {
 
     @GetMapping("/{conversationId}")
     @RequireMemberRole(memberRoles = {MemberRole.GOLDEN_KEY, MemberRole.SILVER_KEY})
-    public List<JoinGroupRequestResponse> getGroupRequest(@CurrentUser User user, @RequestParam Long conversationId) {
+    public List<JoinGroupRequestResponse> getGroupRequest(@CurrentUser User user, @PathVariable Long conversationId) {
         return joinGroupRequestService.getListByConvId(conversationId).stream().map(e -> new JoinGroupRequestResponse(e, "createdBy")).toList();
     }
 }

@@ -20,8 +20,6 @@ public class JoinGroupRequestResponse extends BaseResponse {
     Long conversationId;
     String message;
 
-    UserResponse user;
-
     public JoinGroupRequestResponse(JoinGroupRequest e, String... relations) {
         super(e, relations);
         BeanUtils.copyProperties(e, this, "createdBy", "updatedBy");

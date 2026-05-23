@@ -1,5 +1,6 @@
 package com.zalo.modules.joinGroupRequest.service;
 
+import com.zalo.common.configuration.json.G;
 import com.zalo.common.service.WebsocketService;
 import com.zalo.modules.conversation.entities.Conversation;
 import com.zalo.modules.conversation.entities.ConversationMember;

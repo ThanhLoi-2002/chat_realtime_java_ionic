@@ -435,7 +435,7 @@ const reset = async () => {
         await waitForImages()
 
         // handleScrollBottom(false)
-        joinGroupStore.getJoinGroupRequests(conversationStorage.conversation.id)
+        isAdmin() && joinGroupStore.getJoinGroupRequests(conversationStorage.conversation.id)
     }
 }
 
