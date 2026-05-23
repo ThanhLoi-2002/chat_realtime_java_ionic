@@ -176,6 +176,7 @@ import { useRouter } from 'vue-router';
 import ImageOrVideo from '@/components/Media/ImageOrVideo.vue';
 import { toast } from '@/utils/toast';
 import { useConversation } from '@/composables/useConversation';
+import { useJoinGroupStore } from '@/stores/joinGroupRequest';
 
 const props = defineProps<{
     conversation: ConversationType;
@@ -185,6 +186,7 @@ const props = defineProps<{
 const { t } = useTranslate()
 const router = useRouter()
 const convStorage = useConversationStore()
+const joinGroupStorage = useJoinGroupStore()
 const messStorage = useMessageStore()
 const openQrCode = ref(false)
 const inviteUrl = `${qrCodeUrl}/${props.conversation.inviteCode}`
@@ -264,7 +266,7 @@ const goToMessage = () => {
 }
 
 const requestToJoinTheGroup = (id: number) => {
-    convStorage.joinGroup({convId: id})
+    joinGroupStorage.joinGroup({ convId: id })
     dismiss?.()
 }
 

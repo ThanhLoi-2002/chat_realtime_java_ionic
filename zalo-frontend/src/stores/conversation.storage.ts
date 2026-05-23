@@ -580,18 +580,6 @@ export const useConversationStore = defineStore('conversation', {
             if (idx != -1) this.conversations[idx].settings = settings
         },
 
-        async joinGroup(data: JoinGroupRequestDto) {
-            try {
-                const result: any = await joinGroupApi.requestToJoinGroup(data);
-            } catch (e: any) {
-                toast({
-                    color: "danger",
-                    message: e.message
-                })
-                return undefined
-            }
-        },
-
         reset() {
             this.conversations = []
             this.conversation = undefined

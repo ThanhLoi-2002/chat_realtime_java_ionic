@@ -127,3 +127,8 @@ export type MessagePinType = BaseType & {
     isActive: number
     message: MessageType
 }
+
+export type JoinGroupRequestType = BaseType & {
+    conversationId: number
+    message: string
+}

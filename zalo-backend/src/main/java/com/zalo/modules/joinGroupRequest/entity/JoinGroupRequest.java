@@ -16,5 +16,4 @@ import lombok.experimental.FieldDefaults;
 public class JoinGroupRequest extends BaseEntity {
     Long conversationId;
     String message;
-    Long userId;
 }

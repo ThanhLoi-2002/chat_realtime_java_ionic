@@ -114,6 +114,7 @@ import DetailUI from './component/Message/DetailUI.vue';
 import SelectionToolbar from './component/Chat/SelectionToolbar.vue';
 import ChatBlockedBar from './component/Chat/ChatBlockedBar.vue';
 import { useConversation } from '@/composables/useConversation';
+import { useJoinGroupStore } from '@/stores/joinGroupRequest';
 
 const props = defineProps<{
     isShowInfoSection: boolean
@@ -136,6 +137,7 @@ const scrollContainer = ref<HTMLElement | null>(null)
 const showScrollDownButton = ref(false)
 
 const actionStore = useChatActionStore();
+const joinGroupStore = useJoinGroupStore();
 const { t } = useTranslate()
 const detailsModal = ref()
 const shareModalRef = ref(); // Khai báo ref cho Modal
@@ -433,6 +435,7 @@ const reset = async () => {
         await waitForImages()
 
         // handleScrollBottom(false)
+        joinGroupStore.getJoinGroupRequests(conversationStorage.conversation.id)
     }
 }
 

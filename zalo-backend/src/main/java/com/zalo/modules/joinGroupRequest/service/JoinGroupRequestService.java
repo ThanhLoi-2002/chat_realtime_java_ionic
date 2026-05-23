@@ -9,15 +9,23 @@ import com.zalo.modules.conversation.service.ConversationMemberRepository;
 import com.zalo.modules.conversation.service.ConversationService;
 import com.zalo.modules.conversation.service.MemberService;
 import com.zalo.modules.joinGroupRequest.dto.request.JoinGroupDto;
+import com.zalo.modules.joinGroupRequest.dto.response.JoinGroupRequestResponse;
 import com.zalo.modules.joinGroupRequest.entity.JoinGroupRequest;
 import com.zalo.modules.message.dto.request.CreateSystemMessageRequest;
 import com.zalo.modules.message.entity.SystemMessageType;
 import com.zalo.modules.message.service.SystemMessageInterface;
+import com.zalo.modules.user.dto.response.UserResponse;
+import com.zalo.modules.user.entities.User;
+import com.zalo.modules.user.service.UserRepository;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -30,6 +38,7 @@ public class JoinGroupRequestService {
     ConversationMemberRepository memberRepo;
     SystemMessageInterface systemMessageInterface;
     MemberService memberService;
+    UserRepository userRepo;
 
     public void requestToJoinGroup(Long userId, JoinGroupDto dto) {
         Conversation conv = convService.findById(dto.convId);
@@ -38,11 +47,15 @@ public class JoinGroupRequestService {
             JoinGroupRequest e = new JoinGroupRequest();
             e.setConversationId(dto.getConvId());
             e.setMessage(dto.getMessage());
-            e.setUserId(userId);
+            e.setCu(userId);
 
             joinGroupRequestRepo.save(e);
 
-            websocketService.newJoinGroupRequest(e);
+            User u = userRepo.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
+
+            JoinGroupRequestResponse rp = new JoinGroupRequestResponse(e);
+            rp.createdBy = new UserResponse(u);
+            websocketService.newJoinGroupRequest(rp);
         } else {
             addMemberToGroup(dto.getConvId(), userId);
         }
@@ -65,5 +78,9 @@ public class JoinGroupRequestService {
 
         websocketService.addMembers(conversationId, memberService.getMembers(conversationId));
         systemMessageInterface.createSystemMessage(dto);
+    }
+
+    public List<JoinGroupRequest> getListByConvId(Long convId) {
+        return joinGroupRequestRepo.findByConversationId(convId);
     }
 }
