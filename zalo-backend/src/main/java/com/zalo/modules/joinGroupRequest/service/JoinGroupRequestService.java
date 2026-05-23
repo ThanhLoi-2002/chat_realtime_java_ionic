@@ -34,7 +34,7 @@ public class JoinGroupRequestService {
     public void requestToJoinGroup(Long userId, JoinGroupDto dto) {
         Conversation conv = convService.findById(dto.convId);
 
-        if (conv.getSettings().isMembershipApproval()) {
+        if (conv.getSettings() != null && conv.getSettings().isMembershipApproval()) {
             JoinGroupRequest e = new JoinGroupRequest();
             e.setConversationId(dto.getConvId());
             e.setMessage(dto.getMessage());

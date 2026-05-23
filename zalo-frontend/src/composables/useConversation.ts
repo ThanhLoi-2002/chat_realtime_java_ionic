@@ -44,7 +44,7 @@ export function useConversation() {
 
     const isAdmin = () => {
         if (convStorage.conversation) {
-            const me = convStorage.conversation?.members.find((m: MemberType) => m.id == userStorage.user?.id)
+            const me = convStorage.conversation?.members?.find((m: MemberType) => m.id == userStorage.user?.id)
             return me?.role == MemberRoleEnum.GOLDEN_KEY || me?.role == MemberRoleEnum.SILVER_KEY
         }
         return false

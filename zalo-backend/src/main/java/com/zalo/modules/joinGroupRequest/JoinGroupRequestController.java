@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/join-group-request")
 @RequiredArgsConstructor
 public class JoinGroupRequestController {
-    JoinGroupRequestService joinGroupRequestService;
+    private final JoinGroupRequestService joinGroupRequestService;
 
     @PostMapping("")
     public void joinGroupRequest(@CurrentUser User user, @RequestBody JoinGroupDto dto) {

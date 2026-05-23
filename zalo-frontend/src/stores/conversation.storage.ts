@@ -4,10 +4,11 @@ import { conversationApi } from '@/api/conversation.api'
 import { toast } from '@/utils/toast'
 import { appLimit } from '@/utils/constant'
 import { storage } from '@/services/storage.service.'
-import { ConversationFilter, GroupSetting } from '@/types/common'
+import { ConversationFilter, GroupSetting, JoinGroupRequestDto } from '@/types/common'
 import { useConversation } from '@/composables/useConversation'
 import { normalizeText } from '@/utils/helper'
 import { pinApi } from '@/api/pin.api'
+import { joinGroupApi } from '@/api/joinGroup.api'
 
 interface ConversationState {
     isLoading: boolean,
@@ -576,7 +577,19 @@ export const useConversationStore = defineStore('conversation', {
 
         saveSettingRealtime(convId: number, settings: GroupSetting) {
             const idx = this.conversations.findIndex(c => c.id == convId)
-            if(idx != -1) this.conversations[idx].settings = settings
+            if (idx != -1) this.conversations[idx].settings = settings
+        },
+
+        async joinGroup(data: JoinGroupRequestDto) {
+            try {
+                const result: any = await joinGroupApi.requestToJoinGroup(data);
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return undefined
+            }
         },
 
         reset() {

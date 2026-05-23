@@ -120,3 +120,8 @@ export type GroupSetting = {
   highlightAdminMessages: boolean;
   newMembersReadRecentMessages: boolean;
 }
+
+export type JoinGroupRequestDto = {
+    convId: number;
+    message?: string;
+};

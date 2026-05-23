@@ -59,7 +59,7 @@
 
                 <button v-else
                     class="mt-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 px-6 py-2 rounded-sm text-sm cursor-pointer w-[90%] transition"
-                    @click="requestToJoinTheGroup">
+                    @click="requestToJoinTheGroup(props.conversation.id)">
                     {{ t("requestToJoinTheGroup") }}
                 </button>
             </div>
@@ -263,9 +263,8 @@ const goToMessage = () => {
     dismiss?.()
 }
 
-const requestToJoinTheGroup = () => {
-    // convStorage.selectConversation(props.conversation)
-    // router.push(ROUTE.CHATS)
+const requestToJoinTheGroup = (id: number) => {
+    convStorage.joinGroup({convId: id})
     dismiss?.()
 }
 
