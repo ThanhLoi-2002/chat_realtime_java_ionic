@@ -16,5 +16,7 @@ public enum SystemMessageType {
 
     PIN_MESSAGE,
     REMOVE_PIN_MESSAGE,
-    UPDATE_SETTING
+    UPDATE_SETTING,
+
+    JOIN_GROUP
 }

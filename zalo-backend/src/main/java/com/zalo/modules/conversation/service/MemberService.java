@@ -61,7 +61,7 @@ public class MemberService {
 
                     return new MemberResponse(
                             user,
-                            memberInfo.getRole(),
+                            memberInfo,
                             addByUserMap.get(memberInfo.getAddById())
                     );
                 }).sorted(Comparator

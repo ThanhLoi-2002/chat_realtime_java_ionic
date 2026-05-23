@@ -6,6 +6,7 @@ import com.zalo.modules.conversation.dto.respone.MemberResponse;
 import com.zalo.modules.conversation.entities.Conversation;
 import com.zalo.modules.conversation.service.ConversationInterface;
 import com.zalo.modules.groupSetting.entities.GroupSetting;
+import com.zalo.modules.joinGroupRequest.entity.JoinGroupRequest;
 import com.zalo.modules.message.dto.response.MessagePinResponse;
 import com.zalo.modules.message.dto.response.MessageReactionResponse;
 import com.zalo.modules.message.dto.response.MessageResponse;
@@ -144,6 +145,13 @@ public class WebsocketService {
         payload.put("conversationId", conversationId);
 
         realtimeToConversation(conversationId, payload, "/queue/chat.saveSetting");
+    }
+
+    public void newJoinGroupRequest(JoinGroupRequest joinGroupRequest) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("joinGroupRequest", joinGroupRequest);
+
+        realtimeToConversation(joinGroupRequest.getConversationId(), payload, "/queue/group.newJoinGroupRequest");
     }
 
     public void realtimeToConversation(Long conversationId, Object payload, String destination){

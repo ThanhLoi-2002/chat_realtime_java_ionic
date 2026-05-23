@@ -88,11 +88,13 @@ public class ConversationService implements ConversationInterface {
         m1.setConversationId(conv.getId());
         m1.setUserId(creatorId);
         m1.setRole(MemberRole.MEMBER);
+        m1.setStatus(MemberStatus.ACTIVE);
 
         ConversationMember m2 = new ConversationMember();
         m2.setConversationId(conv.getId());
         m2.setUserId(otherUserId);
         m2.setRole(MemberRole.MEMBER);
+        m2.setStatus(MemberStatus.ACTIVE);
 
         memberRepo.saveAll(Arrays.asList(m1, m2));
 
@@ -118,6 +120,7 @@ public class ConversationService implements ConversationInterface {
             m.setUserId(id);
             m.setRole(id.equals(creatorId) ? MemberRole.GOLDEN_KEY : MemberRole.MEMBER);
             m.setAddById(creatorId.equals(id) ? null : id);
+            m.setStatus(MemberStatus.ACTIVE);
             members.add(m);
         }
         memberRepo.saveAll(members);
@@ -266,6 +269,7 @@ public class ConversationService implements ConversationInterface {
             m.setUserId(id);
             m.setRole(MemberRole.MEMBER);
             m.setAddById(inviterId);
+            m.setStatus(MemberStatus.ACTIVE);
             members.add(m);
         }
         memberRepo.saveAll(members);
@@ -298,7 +302,6 @@ public class ConversationService implements ConversationInterface {
     }
 
     public void kickMember(Long conversationId, Long userId, Long memberId) {
-        System.out.println("conversationId: " + conversationId + " memberId: " + memberId);
         ConversationMember member = memberRepo.findByConversationIdAndUserId(conversationId, memberId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
 
         memberRepo.delete(member);

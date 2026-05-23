@@ -21,6 +21,9 @@ public class ConversationMember extends BaseEntity {
     @Enumerated(EnumType.STRING)
     MemberRole role = MemberRole.MEMBER;
 
+    @Enumerated(EnumType.STRING)
+    MemberStatus status;
+
     Long addById;
 
     Long lastReadMessageId;
