@@ -1,7 +1,6 @@
 package com.zalo.modules.joinGroupRequest.service;
 
 import com.zalo.common.base.BaseEntity;
-import com.zalo.common.configuration.json.G;
 import com.zalo.common.service.WebsocketService;
 import com.zalo.modules.conversation.entities.Conversation;
 import com.zalo.modules.conversation.entities.ConversationMember;
@@ -28,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -94,6 +94,8 @@ public class JoinGroupRequestService {
         List<JoinGroupRequest> requests = joinGroupRequestRepo.findAllById(ids);
         List<Long> userIds = requests.stream().map(BaseEntity::getCu).toList();
         convService.addMembersToGroups(conversationId, userId, userIds);
+
+        removeRequests(ids);
     }
 
     public void removeRequests(List<Long> ids) {

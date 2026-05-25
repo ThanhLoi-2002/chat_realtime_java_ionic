@@ -22,7 +22,9 @@ export enum SystemMetadataEnum {
 
     UPDATE_SETTING = "UPDATE_SETTING",
 
-    ADD_FRIEND = "ADD_FRIEND"
+    ADD_FRIEND = "ADD_FRIEND",
+
+    JOIN_GROUP = "JOIN_GROUP"
 }
 
 export enum MessageEnum {

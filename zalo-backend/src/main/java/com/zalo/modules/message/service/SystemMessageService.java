@@ -71,8 +71,7 @@ public class SystemMessageService implements SystemMessageInterface {
             case PIN_MESSAGE, REMOVE_PIN_MESSAGE ->
                     metadata.setMessageId((Long) dto.info.get("messageId"));
 
-//            default ->
-//                    throw new IllegalArgumentException("Unsupported system message type: " + dto.systemMessageType);
+//            default -> throw new IllegalArgumentException("Unexpected value: " + dto.systemMessageType);
         }
 
         m.setSystemMetadata(metadata);

@@ -59,7 +59,7 @@
                                 <i class="fas fa-users"></i>
                                 <span>{{ conversationStorage.conversation?.members?.length }} {{ t('member') }}</span>
                             </div>
-                            <div :class="['hover:bg-gray-50 dark:hover:bg-slate-800 py-2 px-4 cursor-pointer flex gap-2 items-center', style.border.primary, style.text.secondary]"
+                            <div v-if="isAdmin()" :class="['hover:bg-gray-50 dark:hover:bg-slate-800 py-2 px-4 cursor-pointer flex gap-2 items-center', style.border.primary, style.text.secondary]"
                                 @click="currentView = 'approveMember'">
                                 <i class="fas fa-pray"></i>
                                 <span>{{ joinRequestStorage.joinGroupRequests?.length }} {{ t('joinRequestList') }}</span>
@@ -143,7 +143,7 @@ const emit = defineEmits(['close'])
 
 const conversationStorage = useConversationStore()
 const { t } = useTranslate()
-const { conversationName, isGoldenKey } = useConversation()
+const { conversationName, isGoldenKey, isAdmin } = useConversation()
 const currentView = ref<'info' | 'member' | 'storage/image' | 'storage/file' | 'storage/link' | 'pin' | 'groupManagement' | 'approveMember' | any>('info')
 const openMember = ref(true)
 const openCommunityBulletinBoard = ref(true)

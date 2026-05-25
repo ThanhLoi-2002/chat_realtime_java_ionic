@@ -123,6 +123,8 @@
                         systemType == SystemMetadataEnum.TRANSFER_GOLDEN_KEY
                     " :msg="msg" :isMeAction="isMeAction" :openProfile="openProfile" />
 
+                    <SystemJoinMessage v-else-if="systemType == SystemMetadataEnum.JOIN_GROUP" :msg="msg" :isMeAction="isMeAction" :openProfile="openProfile"/>
+
                     <template v-else>
                         {{ t(msg.content) }}
                     </template>
@@ -148,6 +150,7 @@ import { style } from "@/assets/tailwindcss";
 import CircleAvatar from "@/components/Avatar/CircleAvatar.vue";
 import SystemPinMessage from "./System/SystemPinMessage.vue";
 import SystemChangeKeyContent from "./System/SystemChangeKeyContent.vue";
+import SystemJoinMessage from "./System/SystemJoinMessage.vue";
 
 const props = defineProps<{
     msg: MessageType;
