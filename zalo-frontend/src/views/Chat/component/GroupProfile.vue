@@ -176,7 +176,7 @@ import { useRouter } from 'vue-router';
 import ImageOrVideo from '@/components/Media/ImageOrVideo.vue';
 import { toast } from '@/utils/toast';
 import { useConversation } from '@/composables/useConversation';
-import { useJoinGroupStore } from '@/stores/joinGroupRequest';
+import { useJoinGroupStore } from '@/stores/joinGroupRequest.storage';
 
 const props = defineProps<{
     conversation: ConversationType;

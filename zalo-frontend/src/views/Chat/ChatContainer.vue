@@ -114,7 +114,7 @@ import DetailUI from './component/Message/DetailUI.vue';
 import SelectionToolbar from './component/Chat/SelectionToolbar.vue';
 import ChatBlockedBar from './component/Chat/ChatBlockedBar.vue';
 import { useConversation } from '@/composables/useConversation';
-import { useJoinGroupStore } from '@/stores/joinGroupRequest';
+import { useJoinGroupStore } from '@/stores/joinGroupRequest.storage';
 
 const props = defineProps<{
     isShowInfoSection: boolean
@@ -125,6 +125,7 @@ const messageStorage = useMessageStore()
 const userStorage = useUserStore()
 const sysStorage = useSystemStore()
 const pinStorage = usePinStore()
+const joinRequestStorage = useJoinGroupStore();
 const { getTime, formatSeparatorTime } = useDateTime()
 const { onScroll, onScrollDown, scrollToBottom } = useScroll()
 const unreadCount = ref(0) // Số tin nhắn mới chưa đọc khi đang cuộn lên trên
@@ -473,6 +474,11 @@ const resetSubscribe = () => {
 
     sub = socketSubscribe(`/user/queue/chat.conversation.${convId}.pinMessage`, (msg: any) => {
         pinStorage.pinMessRealtime(JSON.parse(msg.body).messPin)
+    })
+
+    sub = socketSubscribe(`/user/queue/chat.conversation.${convId}.newJoinGroupRequest`, (msg: any) => {
+        joinRequestStorage.addNewRequestRealtime(JSON.parse(msg.body).joinGroupRequest)
+        console.log(JSON.parse(msg.body).joinGroupRequest)
     })
 }
 

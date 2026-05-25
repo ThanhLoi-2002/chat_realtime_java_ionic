@@ -28,4 +28,16 @@ public class JoinGroupRequestController {
     public List<JoinGroupRequestResponse> getGroupRequest(@CurrentUser User user, @PathVariable Long conversationId) {
         return joinGroupRequestService.getListByConvId(conversationId).stream().map(e -> new JoinGroupRequestResponse(e, "createdBy")).toList();
     }
+
+    @PostMapping("/{conversationId}/approve")
+    @RequireMemberRole(memberRoles = {MemberRole.GOLDEN_KEY, MemberRole.SILVER_KEY})
+    public void approveRequest(@CurrentUser User user, @RequestBody List<Long> ids, @PathVariable Long conversationId) {
+        joinGroupRequestService.approveRequests(ids, conversationId, user.getId());
+    }
+
+    @PostMapping("/{conversationId}/remove")
+    @RequireMemberRole(memberRoles = {MemberRole.GOLDEN_KEY, MemberRole.SILVER_KEY})
+    public void removeRequest(@CurrentUser User user, @RequestBody List<Long> ids, @PathVariable Long conversationId) {
+        joinGroupRequestService.removeRequests(ids);
+    }
 }

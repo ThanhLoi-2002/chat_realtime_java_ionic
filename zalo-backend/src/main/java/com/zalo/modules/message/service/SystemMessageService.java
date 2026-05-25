@@ -140,7 +140,7 @@ public class SystemMessageService implements SystemMessageInterface {
 
             if (e.getSystemMetadata().getType() == SystemMessageType.PIN_MESSAGE) {
                 Long messageId = e.getSystemMetadata().getMessageId();
-                System.out.println("messageId: " + messageId + ", SystemMessageType.PIN_MESSAGE: " + e.getId());
+//                System.out.println("messageId: " + messageId + ", SystemMessageType.PIN_MESSAGE: " + e.getId());
                 MessageResponse mr = findOneMessWithMedia(messageId);
 
                 metadataResponse.setMessage(mr);
@@ -148,7 +148,7 @@ public class SystemMessageService implements SystemMessageInterface {
 
             if (e.getSystemMetadata().getType() == SystemMessageType.REMOVE_PIN_MESSAGE) {
                 Long messageId = e.getSystemMetadata().getMessageId();
-                System.out.println("messageId: " + messageId + ", SystemMessageType.REMOVE_PIN_MESSAGE");
+//                System.out.println("messageId: " + messageId + ", SystemMessageType.REMOVE_PIN_MESSAGE");
                 MessageResponse mr = findOneMessWithMedia(messageId);
 
                 metadataResponse.setMessage(mr);

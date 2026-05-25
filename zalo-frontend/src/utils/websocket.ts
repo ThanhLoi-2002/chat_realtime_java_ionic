@@ -78,6 +78,7 @@ export const sockJSSendMessage = (data: any, destination: string) => {
 export const socketSubscribe = (destination: string, callback: (message: any) => void) => {
   // Nếu đã kết nối thì subscribe ngay
   if (stompClient.connected) {
+    console.log(`STOMP: Auto-subscribing to ${destination}`);
     return stompClient.subscribe(destination, callback);
   }
 

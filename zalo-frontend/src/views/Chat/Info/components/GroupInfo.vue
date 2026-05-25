@@ -53,11 +53,16 @@
                         </section>
 
                         <!-- COMMON GROUP -->
-                        <Collapse v-model:isOpen="openMember" :title="t('member')">
+                        <Collapse v-model:isOpen="openMember" :title="t('member')"> 
                             <div :class="['hover:bg-gray-50 dark:hover:bg-slate-800 py-2 px-4 cursor-pointer flex gap-2 items-center', style.border.primary, style.text.secondary]"
                                 @click="currentView = 'member'">
                                 <i class="fas fa-users"></i>
                                 <span>{{ conversationStorage.conversation?.members?.length }} {{ t('member') }}</span>
+                            </div>
+                            <div :class="['hover:bg-gray-50 dark:hover:bg-slate-800 py-2 px-4 cursor-pointer flex gap-2 items-center', style.border.primary, style.text.secondary]"
+                                @click="currentView = 'approveMember'">
+                                <i class="fas fa-pray"></i>
+                                <span>{{ joinRequestStorage.joinGroupRequests?.length }} {{ t('joinRequestList') }}</span>
                             </div>
                         </Collapse>
 
@@ -106,6 +111,11 @@
             <template v-else-if="currentView.startsWith('groupManagement')">
                 <GroupManagementPanel @back="currentView = 'info'" />
             </template>
+
+            <!-- ================= Approva member VIEW ================= -->
+            <template v-else-if="currentView.startsWith('approveMember')">
+                <ApproveMember @back="currentView = 'info'" :isShowBackButton="true"/>
+            </template>
         </transition>
     </div>
 </template>
@@ -126,17 +136,20 @@ import PinPanel from '../../component/Pin/PinPanel.vue'
 import { useSystemStore } from '@/stores/system.storage'
 import GroupManagementPanel from './GroupManagement/GroupManagementPanel.vue'
 import { useConfirmStore } from '@/composables/useConfirm'
+import ApproveMember from './ApproveMember.vue'
+import { useJoinGroupStore } from '@/stores/joinGroupRequest.storage'
 
 const emit = defineEmits(['close'])
 
 const conversationStorage = useConversationStore()
 const { t } = useTranslate()
 const { conversationName, isGoldenKey } = useConversation()
-const currentView = ref<'info' | 'member' | 'storage/image' | 'storage/file' | 'storage/link' | 'pin' | 'groupManagement' | any>('info')
+const currentView = ref<'info' | 'member' | 'storage/image' | 'storage/file' | 'storage/link' | 'pin' | 'groupManagement' | 'approveMember' | any>('info')
 const openMember = ref(true)
 const openCommunityBulletinBoard = ref(true)
 const systemStorage = useSystemStore()
 const confirmStore = useConfirmStore();
+const joinRequestStorage = useJoinGroupStore()
 
 /* ACTION */
 const toggleMute = () => console.log('mute')

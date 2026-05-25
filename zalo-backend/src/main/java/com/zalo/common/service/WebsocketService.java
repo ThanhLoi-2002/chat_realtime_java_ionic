@@ -152,7 +152,7 @@ public class WebsocketService {
         Map<String, Object> payload = new HashMap<>();
         payload.put("joinGroupRequest", joinGroupRequest);
 
-        realtimeToConversation(joinGroupRequest.conversationId, payload, "/queue/group.newJoinGroupRequest");
+        realtimeToConversation(joinGroupRequest.conversationId, payload, "/queue/chat.conversation." + joinGroupRequest.conversationId + ".newJoinGroupRequest");
     }
 
     public void realtimeToConversation(Long conversationId, Object payload, String destination){
@@ -171,11 +171,11 @@ public class WebsocketService {
     }
 
     public void broadcastStatus(Long userId, boolean online) {
-        if(online){
-            System.out.println("Send online truetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetrue");
-        }else{
-            System.out.println("Send online falsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalse");
-        }
+//        if(online){
+//            System.out.println("Send online truetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetruetrue");
+//        }else{
+//            System.out.println("Send online falsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalsefalse");
+//        }
         messagingTemplate.convertAndSend("/topic/user.status." + userId, (Object) Map.of("userId", userId, "online", online));
     }
 }

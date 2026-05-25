@@ -1,5 +1,5 @@
 import { joinGroupApi } from '@/api/joinGroup.api';
-import { JoinGroupRequestType } from './../types/entities';
+import { JoinGroupRequestType } from '../types/entities';
 import { JoinGroupRequestDto } from "@/types/common";
 import { toast } from "@/utils/toast";
 import { defineStore } from "pinia";
@@ -39,5 +39,38 @@ export const useJoinGroupStore = defineStore("joinGroup", {
                 return undefined
             }
         },
+
+        removeRequest(ids: number[]) {
+            this.joinGroupRequests = this.joinGroupRequests.filter(e => !ids.includes(e.id))
+        },
+
+        async approveRequests(ids: number[], convId: number) {
+            try {
+                const result: any = await joinGroupApi.approveRequests(ids, convId);
+                return true
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return false
+            }
+        },
+        async removeRequests(ids: number[], convId: number) {
+            try {
+                const result: any = await joinGroupApi.removeRequests(ids, convId);
+                return true
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return false
+            }
+        },
+
+        addNewRequestRealtime(data: JoinGroupRequestType) {
+            this.joinGroupRequests.push(data)
+        }
     },
 });

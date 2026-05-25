@@ -8,7 +8,7 @@
         </div>
 
         <transition name="collapse">
-            <div v-show="isOpen" class="flex flex-col gap-4 mb-2 overflow-hidden" :class="customClass">
+            <div v-show="isOpen" class="flex flex-col mb-2 overflow-hidden" :class="customClass">
                 <slot />
             </div>
         </transition>

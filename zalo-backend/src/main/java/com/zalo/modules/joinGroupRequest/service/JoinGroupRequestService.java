@@ -1,5 +1,6 @@
 package com.zalo.modules.joinGroupRequest.service;
 
+import com.zalo.common.base.BaseEntity;
 import com.zalo.common.configuration.json.G;
 import com.zalo.common.service.WebsocketService;
 import com.zalo.modules.conversation.entities.Conversation;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -42,6 +44,9 @@ public class JoinGroupRequestService {
     UserRepository userRepo;
 
     public void requestToJoinGroup(Long userId, JoinGroupDto dto) {
+        Optional<JoinGroupRequest> request = joinGroupRequestRepo.findByConversationIdAndCu(dto.convId, userId);
+        if(request.isPresent()) return;
+
         Conversation conv = convService.findById(dto.convId);
 
         if (conv.getSettings() != null && conv.getSettings().isMembershipApproval()) {
@@ -83,5 +88,15 @@ public class JoinGroupRequestService {
 
     public List<JoinGroupRequest> getListByConvId(Long convId) {
         return joinGroupRequestRepo.findByConversationId(convId);
+    }
+
+    public void approveRequests(List<Long> ids, Long conversationId, Long userId) {
+        List<JoinGroupRequest> requests = joinGroupRequestRepo.findAllById(ids);
+        List<Long> userIds = requests.stream().map(BaseEntity::getCu).toList();
+        convService.addMembersToGroups(conversationId, userId, userIds);
+    }
+
+    public void removeRequests(List<Long> ids) {
+        joinGroupRequestRepo.deleteAllById(ids);
     }
 }

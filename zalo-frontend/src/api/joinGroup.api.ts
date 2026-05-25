@@ -9,6 +9,14 @@ const getJoinGroupRequests = async (convId: number) => {
     return await axios.get<IResponse>(`/join-group-request/${convId}`);
 };
 
+const approveRequests = async (ids: number[], convId: number) => {
+    return await axios.post<IResponse>(`/join-group-request/${convId}/approve`, ids);
+};
+
+const removeRequests = async (ids: number[], convId: number) => {
+    return await axios.post<IResponse>(`/join-group-request/${convId}/remove`, ids);
+};
+
 export const joinGroupApi = {
-    requestToJoinGroup, getJoinGroupRequests
+    requestToJoinGroup, getJoinGroupRequests, approveRequests, removeRequests
 };
