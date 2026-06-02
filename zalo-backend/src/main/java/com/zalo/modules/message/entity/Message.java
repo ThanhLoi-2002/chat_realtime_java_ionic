@@ -39,12 +39,12 @@ public class Message extends BaseEntity {
     @JdbcTypeCode(SqlTypes.JSON)
 //    @Column(columnDefinition = "json")
     @ColumnTransformer(write = "?")// Ép Hibernate ghi thẳng giá trị, không dùng CAST(? as json)
-    private SystemMetadata systemMetadata;
+    SystemMetadata systemMetadata;
 
     @JdbcTypeCode(SqlTypes.JSON)
 //    @Column(columnDefinition = "json")
     @ColumnTransformer(write = "?")// Ép Hibernate ghi thẳng giá trị, không dùng CAST(? as json)
-    private LinkPreviewResponse linkMetadata;
+    LinkPreviewResponse linkMetadata;
 
     @Enumerated(EnumType.STRING)
     MessageType contentType = MessageType.TEXT;

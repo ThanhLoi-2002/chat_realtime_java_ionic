@@ -47,5 +47,10 @@ declare module 'vue' {
     Sidebar: typeof import('./src/components/Sidebar/Sidebar.vue')['default']
     Switch: typeof import('./src/components/Switch/Switch.vue')['default']
     ThemeToggle: typeof import('./src/components/Toggle/ThemeToggle.vue')['default']
+    ZaloSticker: typeof import('./src/components/Sticker/Zalo/ZaloSticker.vue')['default']
+    ZaloStickerGrid: typeof import('./src/components/Sticker/Zalo/ZaloStickerGrid.vue')['default']
+    ZaloStickerPackBar: typeof import('./src/components/Sticker/Zalo/ZaloStickerPackBar.vue')['default']
+    ZaloStickerPicker: typeof import('./src/components/Sticker/Zalo/ZaloStickerPicker.vue')['default']
+    ZaloStickerPreview: typeof import('./src/components/Sticker/Zalo/ZaloStickerPreview.vue')['default']
   }
 }

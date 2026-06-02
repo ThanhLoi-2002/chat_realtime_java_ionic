@@ -1,5 +1,9 @@
 <template>
     <div class="flex gap-2 border-b pb-1 border-gray-200 dark:border-slate-700">
+        <button @click.stop="$emit('toggle-sticker')"
+            class="text-sm md:text-xl text-gray-500 dark:text-gray-40 transition cursor-pointer" :class="['hover:text-blue-500']">
+            <i class="fas fa-sticky-note"></i>
+        </button>
         <button @click.stop="$emit('toggle-emoji')"
             class="text-sm md:text-xl text-gray-500 dark:text-gray-400 hover:text-blue-500 transition cursor-pointer">
             🙂
@@ -25,5 +29,5 @@ import { ref } from 'vue';
 const fileInput = ref<HTMLInputElement | null>(null);
 const docInput = ref<HTMLInputElement | null>(null);
 
-defineEmits(['toggle-emoji', 'select-media', 'select-doc']);
+defineEmits(['toggle-emoji', 'select-media', 'select-doc', 'toggle-sticker']);
 </script>

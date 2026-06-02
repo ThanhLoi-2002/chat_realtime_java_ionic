@@ -4,11 +4,14 @@ import com.zalo.common.configuration.anotation.ResponseMessage;
 import com.zalo.common.dto.ApiResponse;
 import com.zalo.modules.lang.service.LangService;
 import com.zalo.common.util.LangUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.*;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 @ControllerAdvice
@@ -18,6 +21,16 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
     public boolean supports(MethodParameter returnType, Class converterType) {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attributes != null) {
+            HttpServletRequest request = attributes.getRequest();
+            String uri = request.getRequestURI();
+
+            // Nếu URL chứa v3/api-docs hoặc swagger-ui -> Bỏ qua không wrap
+            if (uri.contains("/v3/api-docs") || uri.contains("/swagger-ui")) {
+                return false;
+            }
+        }
         return true;
     }
 

@@ -132,3 +132,17 @@ export type JoinGroupRequestType = BaseType & {
     conversationId: number
     message: string
 }
+
+export type StickerType = {
+    stickerId: string
+    name: string
+    thumbImg: string
+    iconUrl: string
+    items: StickerItemType[];
+}
+
+export type StickerItemType = {
+    id: string
+    url: string
+    frameCount: number
+}
