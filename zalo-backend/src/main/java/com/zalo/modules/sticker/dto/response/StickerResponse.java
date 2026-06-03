@@ -20,7 +20,7 @@ import java.util.*;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StickerResponse {
     String name;
-    String thumbImg;
+//    String thumbImg;
     String iconUrl;
     String source;
     List<StickerItem> items;

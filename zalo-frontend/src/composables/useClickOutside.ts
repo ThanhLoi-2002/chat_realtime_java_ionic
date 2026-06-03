@@ -13,12 +13,12 @@ export function useClickOutside(
     };
 
     onMounted(() => {
-        // Sử dụng sự kiện mousedown hoặc click (mousedown thường nhạy và mượt hơn)
-        window.addEventListener("mousedown", handler);
+        // Sử dụng sự kiện click hoặc click (click thường nhạy và mượt hơn)
+        window.addEventListener("click", handler);
     });
 
     onBeforeUnmount(() => {
         // Hủy lắng nghe khi component bị unmount để tránh rò rỉ bộ nhớ
-        window.removeEventListener("mousedown", handler);
+        window.removeEventListener("click", handler);
     });
 }

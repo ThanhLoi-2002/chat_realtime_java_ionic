@@ -3,13 +3,12 @@
         <!-- Typing indicator -->
         <TypingIndicator :users="typingUsers" />
 
-        <div ref="emojiWrapper">
-            <EmojiPicker v-show="showEmoji" class="fixed bottom-30" @select="handleSelectEmoji" />
-        </div>
+        <EmojiPicker v-if="showEmoji" class="fixed bottom-30" @close="showEmoji = false" @select="handleSelectEmoji"/>
 
         <FilePreview :files="previewFiles" @remove="removeImage" />
 
         <div class="relative w-full">
+            <ZaloStickerPicker v-if="showStickerPicker" @close="showStickerPicker = false" @handleSelectEmoji="handleSelectEmoji"/>
             <MentionSuggestions :suggestions="mentionSuggestions" :selected-index="selectedIndex"
                 @select="insertMention" />
 
@@ -20,7 +19,7 @@
                 <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-800 rounded-2xl px-2 py-0.5 md:px-4 md:py-1.5">
                     <!-- Left icons -->
                     <InputActions @toggle-emoji="toggleEmoji" @select-media="handleSelectImages"
-                        @select-doc="handleDirectUploadAndSend" />
+                        @select-doc="handleDirectUploadAndSend" @toggle-sticker="toggleSticker" />
 
                     <!-- Message Input -->
                     <div class="flex flex-col w-full gap-2 items-center">
@@ -28,9 +27,9 @@
                             :setReplyingMessage="setReplyingMessage" />
 
                         <div class="flex gap-2 w-full">
-                            <div class="relative flex-1 bg-gray-100 dark:bg-gray-800 rounded-2xl px-1 py-2">
+                            <div class="relative flex-1 bg-gray-100 dark:bg-gray-800 rounded-2xl p-1">
                                 <div ref="inputRef" contenteditable="true"
-                                    class="outline-none text-xs md:text-base dark:text-slate-200 min-h-[1.5em] max-h-[3em] overflow-y-auto wrap-break-word"
+                                    class="outline-none text-xs md:text-sm dark:text-slate-200 min-h-[0.5em] max-h-[2em] overflow-y-auto wrap-break-word"
                                     :placeholder="t('typeMessage')" @input="onInput" @keydown="onKeyDown" />
                             </div>
 
@@ -71,6 +70,7 @@ import FilePreview from './FilePreview.vue';
 import TypingIndicator from './TypingIndicator.vue';
 import { MessageType, UserType } from '@/types/entities';
 import ReplyingMessage from '../Message/ReplyingMessage.vue';
+import ZaloStickerPicker from '@/components/Sticker/Zalo/ZaloStickerPicker.vue';
 
 const props = defineProps<{
     scrollContainer: HTMLElement | null
@@ -88,11 +88,11 @@ const { scrollToBottom } = useScroll()
 const message = ref('')
 const inputRef = ref(null)
 const typingUsers = ref<Map<number, any>>(new Map())
-const emojiWrapper = ref<any>(null)
 
 const selectedRawFiles = ref<File[]>([])
 const previewFiles = ref<{ url: string, type: ResourceEnum, name?: string }[]>([])
 const showEmoji = ref(false)
+const showStickerPicker = ref(false)
 const isLoadingSendMessage = ref(false)
 const previewLink = ref<LinkMetadataType | undefined>(undefined)
 const { onPreviewLink } = useMessage()
@@ -230,6 +230,10 @@ const toggleEmoji = () => {
     showEmoji.value = !showEmoji.value
 }
 
+const toggleSticker = () => {
+    showStickerPicker.value = !showStickerPicker.value
+}
+
 const { debounced: sendTyping } = useDebounce(() => {
     sockJSSendMessage({
         conversationId: conversationStorage.conversation?.id,
@@ -244,7 +248,7 @@ const handleSelectEmoji = (emoji: string) => {
 
     // Đảm bảo input đang focus
     inputElement.focus();
-
+console.log(emoji)
     const selection = window.getSelection();
     if (!selection || !selection.rangeCount) return;
 
@@ -269,7 +273,7 @@ const handleSelectEmoji = (emoji: string) => {
     message.value = inputElement.innerText;
 
     // Đóng picker
-    showEmoji.value = false;
+    // showEmoji.value = false;
 };
 
 const sendMessage = async () => {
@@ -330,24 +334,13 @@ const sendMessage = async () => {
     isLoadingSendMessage.value = false
 }
 
-const handleClickOutside = (event: any) => {
-    if (!emojiWrapper.value) return
-
-    // nếu click KHÔNG nằm trong picker → đóng
-    if (!emojiWrapper.value.contains(event.target)) {
-        showEmoji.value = false
-    }
-}
-
 let subTyping: StompSubscription | undefined
 
 onMounted(() => {
-    document.addEventListener('click', handleClickOutside)
     resetSubscribe()
 })
 
 onUnmounted(() => {
-    document.removeEventListener('click', handleClickOutside)
     subTyping?.unsubscribe()
 })
 
@@ -541,6 +534,11 @@ const onInput = (e: Event) => {
     const target = e.target as HTMLElement;
     // Cập nhật giá trị text để xử lý gợi ý tag
     message.value = target.innerText;
+
+    // Nếu text trống hoặc chỉ toàn dấu cách/xuống dòng ép buộc của trình duyệt
+    if (target.innerText.trim() === '') {
+        target.innerHTML = ''; // Xóa sạch sành sanh để kích hoạt CSS :empty
+    }
     checkMention();
     sendTyping()
     showPreviewLink()
@@ -578,12 +576,12 @@ const handleTyping = (data: any) => {
 }
 </script>
 
-<style>
+<style scoped>
 [contenteditable=true]:empty:before {
     content: attr(placeholder);
     pointer-events: none;
     display: block;
     /* For Firefox */
-    color: #9ca3af;
+    color: #a6a9af;
 }
 </style>

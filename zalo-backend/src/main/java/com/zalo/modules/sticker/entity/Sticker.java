@@ -22,7 +22,7 @@ import java.util.List;
 public class Sticker extends BaseEntity {
     String stickerId;
     String name;
-    String thumbImg;
+//    String thumbImg;
     String iconUrl;
     String source;
 

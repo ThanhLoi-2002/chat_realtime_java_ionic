@@ -136,7 +136,6 @@ export type JoinGroupRequestType = BaseType & {
 export type StickerType = {
     stickerId: string
     name: string
-    thumbImg: string
     iconUrl: string
     items: StickerItemType[];
 }

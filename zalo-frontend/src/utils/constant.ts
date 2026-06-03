@@ -48,3 +48,5 @@ export const appLimit = {
     linksFirst: 4,
     links: 20
 }
+
+export const STICKER_URL = import.meta.env.VITE_API_STICKER_URL
