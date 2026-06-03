@@ -12,7 +12,7 @@
         </div>
 
         <div class="flex-1 min-w-0 flex gap-1 flex-col justify-center">
-            <div class="flex items-center gap-2 w-full">
+            <div class="flex items-start flex-col gap-2 w-full">
                 <p class="text-[11px] text-blue-500 font-bold flex items-center gap-1 truncate">
                     <i class="fa-solid fa-reply scale-x-[-1] shrink-0"></i>
                     <span class="truncate">
@@ -25,7 +25,7 @@
                 </span>
             </div>
 
-            <div class="text-[13px] text-gray-600 dark:text-slate-400 min-w-0 flex-1">
+            <div v-if="replyingMessage.stt != -1" class="text-[13px] text-gray-600 dark:text-slate-400 min-w-0 flex-1">
                 <span v-if="isImage" class="flex items-center gap-1 truncate">
                     <i class="fa-regular fa-image shrink-0"></i> {{ t('image') }}
                 </span>

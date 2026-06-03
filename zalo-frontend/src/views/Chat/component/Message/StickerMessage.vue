@@ -16,9 +16,13 @@
 
         <!-- CONTENT -->
         <div :class="[message.showTime ? 'py-1' : 'py-0.5']">
-            <span v-if="message.stt === -1" class="italic text-gray-700 dark:text-gray-400">
-                {{ isOwner ? t("youRecalledmessage") : t("messageHasBeenWithdrawn") }}
-            </span>
+            <div v-if="message.stt === -1"
+                class="flex flex-col justify-center items-center w-20 h-20 md:w-30 md:h-30 bg-slate-300 dark:bg-slate-500 rounded-xl cursor-pointer hover:opacity-90 transition">
+                <i class="fa-solid fa-image text-6xl md:text-8xl"></i>
+                <span class="italic text-gray-700 dark:text-gray-800 text-[10px] md:text-sm">
+                    {{ t('deleted') }}
+                </span>
+            </div>
 
             <ZaloSticker v-else :size="130" :sticker-item="message.sticker" :isHover="false" />
 

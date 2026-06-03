@@ -244,23 +244,36 @@ public class StickerService {
         if (sourceUrl == null || sourceUrl.isEmpty()) return null;
 
         try {
+            // 1. Kiểm tra file đã tồn tại trên server chưa
+            Path targetPath = Paths.get(fullTargetFilePath);
+            if (Files.exists(targetPath)) {
+                System.out.println("Ảnh đã tồn tại trên server, bỏ qua không tải lại: " + fullTargetFilePath);
+                return targetPath.toString().replace("\\", "/");
+            }
+
+            // 2. Nếu chưa tồn tại thì tiến hành tải như bình thường
             sourceUrl = sourceUrl.replace("×", "%C3%97");
             URL url = new URL(sourceUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-            // Giả lập thêm User-Agent trình duyệt để tránh bị Zalo chặn
+            // Giả lập thêm User-Agent trình duyệt để tránh bị chặn
             conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
             conn.setConnectTimeout(5000);
             conn.setReadTimeout(5000);
 
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                Path targetPath = Paths.get(fullTargetFilePath);
+
+                // Đảm bảo thư mục cha của file tồn tại (đề phòng thư mục chứa ảnh chưa được tạo)
+                if (targetPath.getParent() != null) {
+                    Files.createDirectories(targetPath.getParent());
+                }
 
                 try (InputStream in = conn.getInputStream()) {
                     Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
                 }
 
+                System.out.println("Tải ảnh thành công: " + fullTargetFilePath);
                 return targetPath.toString().replace("\\", "/");
             } else {
                 System.err.println("Zalo từ chối kết nối, HTTP Code: " + responseCode + " cho URL: " + sourceUrl);
