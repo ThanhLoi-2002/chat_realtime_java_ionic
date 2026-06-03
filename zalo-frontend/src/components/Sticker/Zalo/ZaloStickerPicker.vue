@@ -7,32 +7,32 @@ import { useStickerStore } from "@/stores/sticker.storage.ts";
 import ZaloStickerGrid from "./ZaloStickerGrid.vue";
 import ZaloStickerPackBar from "./ZaloStickerPackBar.vue";
 import ZaloStickerPreview from "./ZaloStickerPreview.vue";
-import { style } from "@/assets/tailwindcss.ts";
 import { useClickOutside } from "@/composables/useClickOutside.ts";
 import EmojiPicker from "@/components/Emoji/EmojiPicker.vue";
 import { normalizeText } from "@/utils/helper.ts";
+import { SendStickerType } from "@/types/common.ts";
+import { useConversationStore } from "@/stores/conversation.storage.ts";
+
+const props = defineProps<{
+    scrollToBottom: () => void
+}>()
 
 const emit = defineEmits(['close', "handleSelectEmoji"]);
 
 const { t } = useTranslate();
 const stickerStorage = useStickerStore();
-// 2. Khai báo ref trỏ tới khung cuộn (đặt tên trùng với ref ở template)
+const convStorage = useConversationStore()
+
 const scrollContainerRef = ref<HTMLElement | null>(null);
 
-// --- LOGIC CHUYỂN TAB ---
 type TabType = 'sticker' | 'emoji';
-const activeTab = ref<TabType>('sticker'); // Mặc định mở tab sticker trước
+const activeTab = ref<TabType>('sticker');
 
-const activePack = ref<StickerType | undefined>(stickerStorage.stickers[0] || undefined);
-
+const activePack = ref<StickerType | undefined>(undefined);
 const keyword = ref("");
-
 const previewSticker = ref<StickerItemType | null>(null);
-
-// 3. Tạo một template ref để trỏ tới khung picker
 const pickerRef = ref<HTMLElement | null>(null);
 
-// 4. Áp dụng composable: Khi click ra ngoài pickerRef, kích hoạt emit('close')
 useClickOutside(pickerRef, () => {
     emit('close');
 });
@@ -43,27 +43,76 @@ const stickers = computed(() => {
     );
 });
 
-const handleSelectSticker = (sticker: StickerItemType) => {
-    stickerStorage.addRecentSticker(sticker);
-
-    console.log("send sticker", sticker);
+// --- LOGIC CUỘN ĐẾN PACK ĐƯỢC CHỌN ---
+const handlePackSelect = (pack: StickerType) => {
+    activePack.value = pack;
+    
+    // Tìm thẻ div đại diện của pack dựa trên ID gắn ở template
+    const targetElement = document.getElementById(`pack-section-${pack.stickerId}`);
+    
+    if (targetElement && scrollContainerRef.value) {
+        // Tính toán khoảng cách chính xác từ đỉnh khung cuộn hiện tại đến phần tử đích
+        const targetTop = targetElement.offsetTop - scrollContainerRef.value.offsetTop;
+        
+        // Thực hiện cuộn mượt mà
+        scrollContainerRef.value.scrollTo({
+            top: targetTop,
+            behavior: "smooth"
+        });
+    }
 };
 
-// 3. Đặt watch để bắt sự kiện mỗi khi người dùng gõ tìm kiếm
+const handleRecentSelect = () => {
+    activePack.value = undefined;
+    
+    // Tìm thẻ div đại diện của pack dựa trên ID gắn ở template
+    const targetElement = document.getElementById(`pack-section-recent`);
+    
+    if (targetElement && scrollContainerRef.value) {
+        // Tính toán khoảng cách chính xác từ đỉnh khung cuộn hiện tại đến phần tử đích
+        const targetTop = targetElement.offsetTop - scrollContainerRef.value.offsetTop;
+        
+        // Thực hiện cuộn mượt mà
+        scrollContainerRef.value.scrollTo({
+            top: targetTop,
+            behavior: "smooth"
+        });
+    }
+};
+
+const sendSticker = async (sticker: StickerItemType) => {
+    const payload: SendStickerType = {
+        conversationId: convStorage.conversation?.id,
+        sticker
+    }
+
+    const success = await stickerStorage.sendSticker(payload);
+
+    if (success) {
+        emit('close')
+        props.scrollToBottom();
+    }
+} 
+
+const handleSelectSticker = (sticker: StickerItemType) => {
+    stickerStorage.addRecentSticker(sticker);
+    sendSticker(sticker)
+};
+
 watch(keyword, () => {
-    // nextTick đảm bảo Vue đã render xong giao diện mới sau khi lọc rồi mới cuộn
     nextTick(() => {
         if (scrollContainerRef.value) {
-            scrollContainerRef.value.scrollTop = 0; // Đẩy thanh cuộn lên đầu top 0
-
-            // Hoặc nếu muốn cuộn mượt mà (smooth), bạn có thể dùng dòng dưới:
-            // scrollContainerRef.value.scrollTo({ top: 0, behavior: 'smooth' });
+            scrollContainerRef.value.scrollTop = 0;
         }
     });
 });
 
-onMounted(() => {
-    stickerStorage.getAll();
+onMounted(async () => {
+    await stickerStorage.getAll();
+    // Gán pack đầu tiên làm mặc định sau khi đã load dữ liệu xong
+    if (stickerStorage.stickers.length > 0 && !stickerStorage.recentStickers.length) {
+        activePack.value = stickerStorage.stickers[0];
+    }
 });
 </script>
 
@@ -89,16 +138,21 @@ onMounted(() => {
                     class="w-full h-6 rounded-full dark:bg-slate-700/50 px-4 text-xs outline-none border border-white/5" />
             </div>
 
-            <div ref="scrollContainerRef" class="flex-1 overflow-y-auto pr-1">
+            <div ref="scrollContainerRef" class="flex-1 overflow-y-auto pr-1 scroll-smooth">
                 <div v-if="stickerStorage.recentStickers.length && !keyword" class="shrink-0">
-                    <div class="font-weight-400 text-sm mt-2">
+                    <div class="font-weight-400 text-sm mt-2" :id="`pack-section-recent`" >
                         {{ t("recent") }}
                     </div>
                     <ZaloStickerGrid :stickers="stickerStorage.recentStickers" @select="handleSelectSticker"
                         @preview="previewSticker = $event" :sticker-size="60" />
                 </div>
 
-                <div v-for="sticker in stickers" :key="sticker.stickerId" class="flex flex-col gap-1">
+                <div 
+                    v-for="sticker in stickers" 
+                    :key="sticker.stickerId" 
+                    :id="`pack-section-${sticker.stickerId}`" 
+                    class="flex flex-col gap-1"
+                >
                     <div class="font-weight-400 text-sm mt-2">{{ sticker.name }}</div>
                     <ZaloStickerGrid :stickers="sticker.items" @select="handleSelectSticker"
                         @preview="previewSticker = $event" :sticker-size="60" />
@@ -106,15 +160,19 @@ onMounted(() => {
             </div>
 
             <div class="pt-2 border-t border-slate-500/20 shrink-0">
-                <ZaloStickerPackBar :packs="stickerStorage.stickers" :active-pack="activePack"
-                    @select="activePack = $event" />
+                <ZaloStickerPackBar 
+                    :packs="stickerStorage.stickers" 
+                    :active-pack="activePack"
+                    @select="handlePackSelect" 
+                    @open-recent="handleRecentSelect"
+                />
             </div>
 
             <ZaloStickerPreview :sticker="previewSticker" @click="previewSticker = null" />
         </div>
 
         <div v-else class="flex-1 overflow-hidden">
-            <EmojiPicker @select="emit('handleSelectEmoji')" />
+            <EmojiPicker @select="(emoji: any) => emit('handleSelectEmoji', emoji)" />
         </div>
 
     </div>

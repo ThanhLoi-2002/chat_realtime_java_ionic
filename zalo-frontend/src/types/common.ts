@@ -1,4 +1,4 @@
-import { MediaType, MessageType } from "./entities";
+import { MediaType, MessageType, StickerItemType } from "./entities";
 import { ModuleEnum, MessageEnum, ResourceEnum } from "./enum";
 
 export type IResponse<T = any> = {
@@ -38,6 +38,11 @@ export type SendMessageType = {
   contentType: MessageEnum
   attachments?: MediaType[]
   linkMetadata?: LinkMetadataType
+}
+
+export type SendStickerType = {
+  conversationId?: number
+  sticker: StickerItemType
 }
 
 export type ShareMessageType = {

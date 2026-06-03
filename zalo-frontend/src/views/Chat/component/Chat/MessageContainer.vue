@@ -18,6 +18,9 @@
                 v-if="message.contentType == MessageEnum.IMAGE" :isOwner="isOwner"
                 :role="roles ? roles[message.sender?.id] : undefined" />
 
+            <sticker-message :message="message" :setBubbleRef="setBubbleRef"
+                v-if="message.contentType == MessageEnum.STICKER" :isOwner="isOwner" />
+
             <text-message :message="message" :setBubbleRef="setBubbleRef"
                 v-if="message.contentType == MessageEnum.TEXT || message.contentType == null" :isOwner="isOwner"
                 :role="roles ? roles[message.sender?.id] : undefined" />
@@ -59,6 +62,7 @@ import { MessageType } from '@/types/entities';
 import Key from '@/components/Key/Key.vue';
 import FileMessage from '../Message/FileMessage.vue';
 import { useChatActionStore } from '@/composables/useChatAction';
+import StickerMessage from '../Message/StickerMessage.vue';
 
 const props = defineProps<{
     message: MessageType & any

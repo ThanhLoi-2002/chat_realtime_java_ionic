@@ -11,7 +11,7 @@
             <i v-else-if="isFile" class="fa-solid fa-file-lines text-blue-500 text-sm"></i>
         </div>
 
-        <div class="flex-1 min-w-0 flex flex-col justify-center">
+        <div class="flex-1 min-w-0 flex gap-1 flex-col justify-center">
             <div class="flex items-center gap-2 w-full">
                 <p class="text-[11px] text-blue-500 font-bold flex items-center gap-1 truncate">
                     <i class="fa-solid fa-reply scale-x-[-1] shrink-0"></i>
@@ -35,6 +35,10 @@
                 <span v-else-if="isFile" class="flex items-center gap-1 text-blue-400 italic truncate">
                     <i class="fa-solid fa-paperclip shrink-0"></i> {{ replyingMessage.attachments?.[0]?.name || t('file') }}
                 </span>
+                <span v-else-if="replyingMessage.contentType === MessageEnum.STICKER" class="flex items-center gap-1 truncate">
+                    <ZaloSticker :size="40" :sticker-item="replyingMessage.sticker" :is-hover="false"/>
+                    [{{ t('Sticker') }}]
+                </span>
                 <p v-else v-html="formattedContent" class="truncate block w-full m-0 leading-tight overflow-hidden"></p>
             </div>
         </div>
@@ -46,12 +50,14 @@
     </div>
 </template>
 <script setup lang="ts">
+import ZaloSticker from '@/components/Sticker/Zalo/ZaloSticker.vue';
 import { useChatActionStore } from '@/composables/useChatAction';
 import { useMessage } from '@/composables/useMessage';
 import { useTranslate } from '@/composables/useTranslate';
 import { useUserStore } from '@/stores/user.storage';
 import { MessageType } from '@/types/entities';
 import { MessageEnum } from '@/types/enum';
+import { STICKER_URL } from '@/utils/constant';
 import { computed } from 'vue';
 
 const props = defineProps<{

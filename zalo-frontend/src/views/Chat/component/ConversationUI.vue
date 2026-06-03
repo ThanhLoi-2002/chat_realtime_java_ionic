@@ -144,6 +144,9 @@ const lastMessageContent = computed(() => {
   // 3. Xử lý tin nhắn thông thường (Image, File, Text)
   let content = ''
   switch (lastMessage.contentType) {
+    case MessageEnum.STICKER:
+      content = t("sentASticker")
+      break
     case MessageEnum.IMAGE:
       content = t("sentAnImage")
       break

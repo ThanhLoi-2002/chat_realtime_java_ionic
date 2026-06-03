@@ -1,4 +1,5 @@
 import { stickerApi } from '@/api/sticker.api'
+import { SendStickerType } from '@/types/common'
 import { StickerItemType, StickerType } from '@/types/entities'
 import { STORAGE_KEY } from '@/utils/constant'
 import { getKey, setKey } from '@/utils/local'
@@ -31,6 +32,19 @@ export const useStickerStore = defineStore('sticker', {
                     })
                     return undefined
                 }
+            }
+        },
+
+        async sendSticker(payload: SendStickerType) {
+            try {
+                const result: any = await stickerApi.sendSticker(payload);
+                return true
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return false
             }
         },
 

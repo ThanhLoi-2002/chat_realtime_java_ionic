@@ -7,4 +7,5 @@ public class StickerItem {
     String id;
     String url;
     int frameCount;
+    String stickerId;
 }

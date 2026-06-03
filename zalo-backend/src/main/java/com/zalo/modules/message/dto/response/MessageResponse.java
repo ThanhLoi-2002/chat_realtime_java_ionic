@@ -1,6 +1,7 @@
 package com.zalo.modules.message.dto.response;
 
 import com.zalo.common.base.BaseResponse;
+import com.zalo.modules.sticker.entity.StickerItem;
 import com.zalo.modules.user.dto.response.UserResponse;
 import com.zalo.common.entity.File;
 import com.zalo.modules.message.entity.Message;
@@ -22,7 +23,7 @@ public class MessageResponse extends BaseResponse {
     Long conversationId;
     String content;
     MessageType contentType;
-    File file;
+    StickerItem sticker;
 
     MessageResponse replyToMessage;
 

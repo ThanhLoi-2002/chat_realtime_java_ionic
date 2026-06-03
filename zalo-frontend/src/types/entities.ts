@@ -49,7 +49,8 @@ export type MessageType = BaseType & {
     sender: UserType
     content: string
     contentType: MessageEnum
-    file: FileType
+    // file: FileType
+    sticker: StickerItemType
     replyToMessageId: number
     replyToMessage: MessageType
     reactions: ReactionType[]
@@ -144,4 +145,5 @@ export type StickerItemType = {
     id: string
     url: string
     frameCount: number
+    stickerId: string
 }

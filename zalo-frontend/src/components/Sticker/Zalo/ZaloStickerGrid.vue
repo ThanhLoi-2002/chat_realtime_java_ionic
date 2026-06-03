@@ -16,6 +16,6 @@ const emit = defineEmits<{
 
 <template>
     <div class="grid grid-cols-4 gap-2 p-3">
-        <ZaloSticker v-for="item in stickers" :key="item.id" :stickerItem="item" :size="stickerSize" @select="emit('select', $event)" @preview="emit('preview', $event)" />
+        <ZaloSticker v-for="item in stickers" :key="item.id" :stickerItem="item" :size="stickerSize" @select="emit('select', $event)" @preview="emit('preview', $event)" :isHover="true"/>
     </div>
 </template>

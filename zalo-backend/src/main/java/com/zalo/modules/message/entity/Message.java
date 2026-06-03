@@ -1,23 +1,16 @@
 package com.zalo.modules.message.entity;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.zalo.common.base.BaseEntity;
-import com.zalo.common.entity.File;
-import com.zalo.common.covert.FileConverter;
 import com.zalo.common.entity.SystemMetadata;
-import com.zalo.modules.media.entities.Media;
 import com.zalo.modules.message.dto.response.LinkPreviewResponse;
+import com.zalo.modules.sticker.entity.StickerItem;
 import com.zalo.modules.user.entities.User;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.type.SqlTypes;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -37,21 +30,19 @@ public class Message extends BaseEntity {
     String content;
 
     @JdbcTypeCode(SqlTypes.JSON)
-//    @Column(columnDefinition = "json")
     @ColumnTransformer(write = "?")// Ép Hibernate ghi thẳng giá trị, không dùng CAST(? as json)
     SystemMetadata systemMetadata;
 
     @JdbcTypeCode(SqlTypes.JSON)
-//    @Column(columnDefinition = "json")
+    @ColumnTransformer(write = "?")// Ép Hibernate ghi thẳng giá trị, không dùng CAST(? as json)
+    StickerItem sticker;
+
+    @JdbcTypeCode(SqlTypes.JSON)
     @ColumnTransformer(write = "?")// Ép Hibernate ghi thẳng giá trị, không dùng CAST(? as json)
     LinkPreviewResponse linkMetadata;
 
     @Enumerated(EnumType.STRING)
     MessageType contentType = MessageType.TEXT;
-
-    @Convert(converter = FileConverter.class)
-    @Column(columnDefinition = "LONGTEXT")
-    File file;
 
     Long replyToMessageId;
 

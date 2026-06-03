@@ -1,10 +1,35 @@
 package com.zalo.modules.sticker.service;
 
 import com.zalo.common.service.ApiService;
+import com.zalo.common.service.WebsocketService;
+import com.zalo.modules.conversation.dto.respone.ConversationResponse;
+import com.zalo.modules.conversation.entities.Conversation;
+import com.zalo.modules.conversation.entities.ConversationMember;
+import com.zalo.modules.conversation.entities.ConversationType;
+import com.zalo.modules.conversation.service.ConversationMemberRepository;
+import com.zalo.modules.conversation.service.ConversationRepository;
+import com.zalo.modules.conversation.service.ConversationService;
+import com.zalo.modules.conversation.service.MemberService;
+import com.zalo.modules.media.dtos.requests.MediaRequest;
+import com.zalo.modules.media.dtos.responses.MediaResponse;
+import com.zalo.modules.media.entities.Media;
+import com.zalo.modules.media.entities.MediaType;
+import com.zalo.modules.media.service.MediaInterface;
+import com.zalo.modules.message.dto.response.LinkPreviewResponse;
+import com.zalo.modules.message.dto.response.MessageResponse;
+import com.zalo.modules.message.entity.DeliveryStatus;
+import com.zalo.modules.message.entity.Message;
+import com.zalo.modules.message.entity.MessageStatus;
+import com.zalo.modules.message.entity.MessageType;
+import com.zalo.modules.message.service.MessageRepository;
+import com.zalo.modules.message.service.MessageService;
+import com.zalo.modules.message.service.MessageStatusRepository;
 import com.zalo.modules.sticker.entity.Sticker;
 import com.zalo.modules.sticker.entity.StickerItem;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -31,25 +56,37 @@ import java.util.regex.Pattern;
 @Service
 @Transactional
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
 public class StickerService {
     ApiService apiService;
     StickerRepository stickerRepository;
+    WebsocketService websocketService;
+    MessageRepository messageRepo;
+    EntityManager em;
+    MessageStatusRepository statusRepo;
+    ConversationMemberRepository memberRepo;
+    ConversationRepository conversationRepository;
+    ConversationService conversationService;
+    MemberService memberService;
+    MessageService messageService;
 
     static String STORAGE_DIR = "uploads/stickers/";
     static String PACKAGE_URL = "https://stickers.zaloapp.com/sticker";
     static String ITEM_URL = "https://stickers.zaloapp.com/cate-stickers?cid=";
 
-    public StickerService(ApiService apiService, StickerRepository stickerRepository) {
-        this.apiService = apiService;
-        this.stickerRepository = stickerRepository;
-
-        try {
-            Files.createDirectories(Paths.get(STORAGE_DIR));
-            System.out.println("--> Đã kiểm tra và khởi tạo thư mục gốc: " + STORAGE_DIR);
-        } catch (IOException e) {
-            System.err.println("Không thể khởi tạo thư mục lưu trữ gốc: " + e.getMessage());
-        }
-    }
+//    public StickerService(ApiService apiService, StickerRepository stickerRepository, WebsocketService websocketService, MessageRepository messageRepo) {
+//        this.apiService = apiService;
+//        this.stickerRepository = stickerRepository;
+//        this.websocketService = websocketService;
+//        this.messageRepo = messageRepo;
+//
+//        try {
+//            Files.createDirectories(Paths.get(STORAGE_DIR));
+//            System.out.println("--> Đã kiểm tra và khởi tạo thư mục gốc: " + STORAGE_DIR);
+//        } catch (IOException e) {
+//            System.err.println("Không thể khởi tạo thư mục lưu trữ gốc: " + e.getMessage());
+//        }
+//    }
 
     public List<Sticker> getAll() {
         return stickerRepository.findAllByStt(1);
@@ -95,6 +132,13 @@ public class StickerService {
             List<Map<String, Object>> allList = (List<Map<String, Object>>) valueMap.get("all");
 
             if (allList != null) {
+                try {
+                    Files.createDirectories(Paths.get(STORAGE_DIR));
+                    System.out.println("--> Đã kiểm tra và khởi tạo thư mục gốc: " + STORAGE_DIR);
+                } catch (IOException e) {
+                    System.err.println("Không thể khởi tạo thư mục lưu trữ gốc: " + e.getMessage());
+                }
+
                 for (Map<String, Object> pack : allList) {
                     String cid = (String) pack.get("id");
                     String name = (String) pack.get("name");
@@ -178,6 +222,7 @@ public class StickerService {
 
                 StickerItem stickerItem = new StickerItem();
                 stickerItem.setId(id);
+                stickerItem.setStickerId(cid);
 
                 // Lưu link sạch bắt đầu bằng dấu gạch chéo phục vụ Static Web handler (ví dụ: /uploads/stickers/abc_123/items/item_xyz.png)
                 stickerItem.setUrl("/" + localSpriteUrl);
@@ -224,5 +269,50 @@ public class StickerService {
             System.err.println("Lỗi hệ thống khi tải ảnh: " + sourceUrl + " - " + e.getMessage());
         }
         return null;
+    }
+
+    public void sendSticker(Long conversationId, Long senderId, StickerItem stickerItem) {
+        // 1. Lưu Message chính
+        Message m = Message.builder()
+                .conversationId(conversationId)
+                .senderId(senderId)
+                .sticker(stickerItem)
+                .contentType(MessageType.STICKER)
+                .build();
+        messageRepo.save(m);
+
+        // 3. Đồng bộ Persistence Context (Flush/Refresh)
+        em.flush();
+        em.refresh(m);
+        Message finalMsg = messageService.findByIdWithRelationShip(m.getId(), conversationId);
+
+        // 4. Cập nhật Last Message cho Conversation
+        Conversation conv = conversationRepository.findById(conversationId).orElseThrow();
+        conv.setLastMessageId(finalMsg.getId());
+        conversationRepository.save(conv);
+
+        // 5. Tạo MessageStatus cho các thành viên
+        List<ConversationMember> members = memberRepo.findByConversationId(conversationId);
+        List<MessageStatus> statuses = members.stream().map(member ->
+                MessageStatus.builder()
+                        .messageId(finalMsg.getId())
+                        .userId(member.getUserId())
+                        .status(member.getUserId().equals(senderId) ? DeliveryStatus.DELIVERED : DeliveryStatus.SENT)
+                        .build()
+        ).collect(Collectors.toList());
+        statusRepo.saveAll(statuses);
+
+        // 6. Đánh dấu đã xem cho chính mình
+        messageService.markRead(conversationId, senderId, finalMsg.getId());
+
+        // 7. Bắn WebSocket
+        ConversationResponse convRes = new ConversationResponse(conversationService.findByIdWithRelationShip(conversationId), "recipient", "lastMessage", "createdBy", "avatar");
+        if (conv.getType() == ConversationType.GROUP) {
+            convRes.setMembers(memberService.getMembers(conv.getId()));
+        }
+
+        MessageResponse messageResponse = new MessageResponse(finalMsg, "sender");
+
+        websocketService.sendMessage(messageResponse, convRes, members);
     }
 }

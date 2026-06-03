@@ -3,12 +3,12 @@
         <!-- Typing indicator -->
         <TypingIndicator :users="typingUsers" />
 
-        <EmojiPicker v-if="showEmoji" class="fixed bottom-30" @close="showEmoji = false" @select="handleSelectEmoji"/>
-
         <FilePreview :files="previewFiles" @remove="removeImage" />
 
         <div class="relative w-full">
-            <ZaloStickerPicker v-if="showStickerPicker" @close="showStickerPicker = false" @handleSelectEmoji="handleSelectEmoji"/>
+            <ZaloStickerPicker v-if="showStickerPicker" @close="showStickerPicker = false"
+                @handleSelectEmoji="handleSelectEmoji"
+                :scroll-to-bottom="() => scrollToBottom(scrollContainer, true)" />
             <MentionSuggestions :suggestions="mentionSuggestions" :selected-index="selectedIndex"
                 @select="insertMention" />
 
@@ -18,8 +18,8 @@
             <div class="w-full p-1 md:p-3 border-t border-gray-200 dark:border-slate-700 dark:bg-gray-900">
                 <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-800 rounded-2xl px-2 py-0.5 md:px-4 md:py-1.5">
                     <!-- Left icons -->
-                    <InputActions @toggle-emoji="toggleEmoji" @select-media="handleSelectImages"
-                        @select-doc="handleDirectUploadAndSend" @toggle-sticker="toggleSticker" />
+                    <InputActions @select-media="handleSelectImages" @select-doc="handleDirectUploadAndSend"
+                        @toggle-sticker="toggleSticker" />
 
                     <!-- Message Input -->
                     <div class="flex flex-col w-full gap-2 items-center">
@@ -48,7 +48,6 @@
     </div>
 </template>
 <script setup lang="ts">
-import EmojiPicker from '@/components/Emoji/EmojiPicker.vue';
 import LoadingSpinner from '@/components/Loading/LoadingSpinner.vue';
 import { useDebounce } from '@/composables/useDebounce';
 import { useMessage } from '@/composables/useMessage';
@@ -91,7 +90,6 @@ const typingUsers = ref<Map<number, any>>(new Map())
 
 const selectedRawFiles = ref<File[]>([])
 const previewFiles = ref<{ url: string, type: ResourceEnum, name?: string }[]>([])
-const showEmoji = ref(false)
 const showStickerPicker = ref(false)
 const isLoadingSendMessage = ref(false)
 const previewLink = ref<LinkMetadataType | undefined>(undefined)
@@ -226,10 +224,6 @@ const sendImages = async () => {
     return data
 }
 
-const toggleEmoji = () => {
-    showEmoji.value = !showEmoji.value
-}
-
 const toggleSticker = () => {
     showStickerPicker.value = !showStickerPicker.value
 }
@@ -248,7 +242,7 @@ const handleSelectEmoji = (emoji: string) => {
 
     // Đảm bảo input đang focus
     inputElement.focus();
-console.log(emoji)
+    console.log(emoji)
     const selection = window.getSelection();
     if (!selection || !selection.rangeCount) return;
 
@@ -271,9 +265,6 @@ console.log(emoji)
 
     // 5. Cập nhật lại giá trị biến message
     message.value = inputElement.innerText;
-
-    // Đóng picker
-    // showEmoji.value = false;
 };
 
 const sendMessage = async () => {
