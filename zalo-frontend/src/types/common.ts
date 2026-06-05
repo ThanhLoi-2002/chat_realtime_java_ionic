@@ -130,3 +130,10 @@ export type JoinGroupRequestDto = {
     convId: number;
     message?: string;
 };
+
+export type StorageFilterType = {
+  keyword?: string
+  fileType?: string
+  senderId?: number
+  dateRange?: [Date | null, Date | null]
+}

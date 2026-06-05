@@ -1,5 +1,5 @@
 <template>
-  <div class="px-4 py-3 dark:text-white flex flex-col gap-3">
+  <div class="px-4 py-2.5 dark:text-white flex flex-col gap-2">
     <div class="flex justify-between items-center gap-2">
       <span class="text-lg font-light">
         {{ t('message') }}
@@ -27,12 +27,8 @@
       </transition>
     </modal>
 
-    <input v-model="keyword" :placeholder="t('search') + '...'" class="w-full px-4 py-2 rounded-lg
-         bg-white text-gray-800 text-base
-         dark:bg-gray-800 dark:text-gray-200
-         placeholder-gray-400 dark:placeholder-gray-500
-         border border-gray-200 dark:border-gray-700
-         focus:outline-none focus:ring-1 focus:ring-blue-400" />
+    <search v-model="keyword" :placeholder="`${t('search')} ...`" rounded="rounded-md" height="h-9" text-size="text-lg"
+      icon-left="left-2.5" icon-right="right-2.5" pxContent="px-9" />
   </div>
 
   <header-filter v-if="!isSmartDevice()" v-model="selectedClassCards" />
@@ -54,6 +50,7 @@ import { useScroll } from '@/composables/useScroll';
 import { useRouter } from 'vue-router';
 import { useDevice } from '@/composables/useDevice';
 import HeaderFilter from './component/HeaderFilter.vue';
+import Search from '@/components/Search/Search.vue';
 
 const CreateGroupUI = defineAsyncComponent(() => import('./component/CreateGroupUI.vue'));
 const AddFriendUI = defineAsyncComponent(() => import('./component/AddFriendUI.vue'));

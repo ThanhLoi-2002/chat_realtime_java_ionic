@@ -1,31 +1,5 @@
-<template lang="">
+<template>
   <div class='w-full h-full'>
-    <!-- SEARCH -->
-    <div class="p-3">
-      <div class="flex items-center bg-[#374151] rounded-full px-3 py-2">
-        <i class="fa fa-search text-gray-400 mr-2"></i>
-        <input
-          placeholder="Tìm kiếm File"
-          class="bg-transparent outline-none text-sm w-full placeholder-gray-400"
-        />
-      </div>
-    </div>
-
-    <!-- FILTER -->
-    <div class="flex gap-2 px-3 pb-2">
-      <select class="bg-[#374151] text-xs px-3 py-1 rounded-full outline-none">
-        <option>Loại</option>
-      </select>
-
-      <select class="bg-[#374151] text-xs px-3 py-1 rounded-full outline-none">
-        <option>Người gửi</option>
-      </select>
-
-      <select class="bg-[#374151] text-xs px-3 py-1 rounded-full outline-none">
-        <option>Ngày gửi</option>
-      </select>
-    </div>
-
     <!-- LIST -->
     <div class="flex-1 overflow-y-auto px-3 pb-4 space-y-4 w-full h-[80%]" ref="scrollRef"
       @scroll="handleScroll">
@@ -57,6 +31,7 @@ import { MessageFilter } from "@/types/common";
 import { MessageEnum } from "@/types/enum";
 import { computed, onMounted, ref } from "vue";
 import { appLimit } from "@/utils/constant";
+import FileContainer from "./FileContainer.vue";
 
 const convStorage = useConversationStore();
 const messStorage = useMessageStore();

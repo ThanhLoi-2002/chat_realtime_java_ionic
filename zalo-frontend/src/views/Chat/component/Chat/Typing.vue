@@ -120,7 +120,8 @@ const handleDirectUploadAndSend = async (event: Event) => {
         const params: UploadFileType[] = files.map((file) => ({
             file,
             resourceType: ResourceEnum.RAW, // Hoặc loại tương ứng backend quy định cho tài liệu
-            folder: rawFolder
+            folder: rawFolder,
+            
         }));
 
         const dto: UploadFileRequest = {

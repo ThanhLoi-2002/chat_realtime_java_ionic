@@ -11,7 +11,7 @@
                 </div>
             </div>
 
-            <ion-button class="btn mx-auto px-4 w-full normal-case" @click="goTo('storage/image')">
+            <ion-button class="btn mx-auto px-4 mt-2 w-full normal-case" @click="goTo('storage/image')">
                 {{ t("seeAll") }}
             </ion-button>
         </collapse>

@@ -9,7 +9,7 @@ export const style = {
   bg: {
     primary: "bg-white dark:bg-[#0f172a]",
     secondary: "bg-gray-100 dark:bg-slate-800",
-    hover: "hover:bg-gray-100 dark:hover:bg-slate-700",
+    hover: "hover:bg-gray-200 dark:hover:bg-slate-700",
     softHover: "hover:bg-gray-50 dark:hover:bg-slate-800",
   },
 

@@ -23,6 +23,8 @@
             </div>
         </div>
 
+        <StorageFilter :show-file-type="showFilterOptions.showFileType" :show-search="showFilterOptions.showSearch" @change="handleFilter"/>
+
         <transition name="slide">
             <template v-if="tab == tabs[0].key">
                 <ImageVideo />
@@ -41,13 +43,14 @@
 
 <script setup lang="ts">
 import { style } from '@/assets/tailwindcss';
-import { useDateTime } from '@/composables/useDateTime';
 import { useTranslate } from '@/composables/useTranslate';
-import { useConversationStore } from '@/stores/conversation.storage';
 import { computed, ref } from 'vue';
 import ImageVideo from './ImageVideo.vue';
 import File from './File.vue';
 import Link from './Link.vue';
+import StorageFilter from './components/StorageFilter.vue';
+import { StorageFilterType } from '@/types/common.ts';
+import { useMessageStore } from '@/stores/message.storage.ts';
 
 const props = defineProps<{
     type: string
@@ -55,6 +58,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['back'])
 const { t } = useTranslate()
+const messStorage = useMessageStore()
 
 const tabs = [
     { key: 'image', label: 'image/video' },
@@ -68,7 +72,18 @@ const activeTab = computed(() => {
 
 const tab = ref(activeTab.value)
 
+const showFilterOptions = computed(() => {
+    return {
+        showFileType: tab.value == tabs[1].key,
+        showSearch: tab.value == tabs[1].key || tab.value == tabs[2].key
+    }
+})
+
 const handleChangeTab = (key: string) => {
     tab.value = key
+}
+
+const handleFilter = (filter: StorageFilterType) => {
+
 }
 </script>

@@ -142,12 +142,12 @@
 
             <!-- ACTIONS -->
             <div v-if="isMember" class="border-t-2 border-gray-200 dark:border-gray-800">
-                <div class="px-4 py-3 flex items-center gap-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
+                <!-- <div class="px-4 py-3 flex items-center gap-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
                     <i class="fas fa-cog"></i>
                     <span>Quản lý nhóm</span>
-                </div>
+                </div> -->
 
-                <div
+                <div v-if="!isGoldenKey()"
                     class="px-4 py-3 flex items-center gap-3 cursor-pointer text-red-500 hover:bg-gray-100 dark:hover:bg-gray-800">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Rời nhóm</span>
@@ -192,7 +192,7 @@ const openQrCode = ref(false)
 const inviteUrl = `${qrCodeUrl}/${props.conversation.inviteCode}`
 const isUploading = ref(false)
 const { uploadFile, imageFolder } = useUpload()
-const { isAdmin } = useConversation()
+const { isAdmin, isGoldenKey } = useConversation()
 
 const dismiss = inject<() => void>("modalDismiss")
 

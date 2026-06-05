@@ -32,12 +32,15 @@ public interface LangRepository extends JpaRepository<Lang, Long> {
     @Query("""
                 SELECT l
                 FROM Lang l
-                WHERE (:code IS NULL OR LOWER(l.code) LIKE LOWER(CONCAT('%', :code, '%')))
+                WHERE (
+                    :code IS NULL
+                    OR LOWER(l.vi) LIKE LOWER(CONCAT('%', :code, '%'))
+                    OR LOWER(l.en) LIKE LOWER(CONCAT('%', :code, '%'))
+                    OR LOWER(l.cn) LIKE LOWER(CONCAT('%', :code, '%'))
+                    OR LOWER(l.tw) LIKE LOWER(CONCAT('%', :code, '%'))
+                )
                 AND l.stt = 1
                 ORDER BY l.ct DESC
             """)
-    Page<Lang> findAllLang(
-            @Param("code") String code,
-            Pageable pageable
-    );
+    Page<Lang> findAllLang(@Param("code") String code, Pageable pageable);
 }

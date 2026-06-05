@@ -1,6 +1,6 @@
 <template>
     <div
-        class="flex items-center py-3 mx-4 gap-4 text-sm font-medium border-b border-gray-400 dark:border-gray-800 dark:bg-slate-800">
+        class="flex items-center py-1 mx-4 gap-4 text-sm font-medium border-b border-gray-400 dark:border-gray-800 dark:bg-slate-800">
         <span
             class="text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 pb-1 cursor-pointer">{{
                 t("all") }}</span>

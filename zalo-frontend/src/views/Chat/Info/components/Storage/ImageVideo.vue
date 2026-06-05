@@ -1,25 +1,5 @@
 <template>
   <div class="h-full relative">
-    <!-- FILTER -->
-    <div class="flex gap-2 p-2 border-b border-slate-700">
-      <!-- FILTER USER -->
-      <select v-model="filterUser"
-        class="px-3 py-1 bg-slate-200 text-slate-500 dark:bg-slate-600 dark:text-slate-300 rounded-full text-xs outline-none">
-        <option value="">Người gửi</option>
-        <option value="me">Tôi</option>
-        <option value="other">Người khác</option>
-      </select>
-
-      <!-- FILTER DATE -->
-      <select v-model="filterDate"
-        class="px-3 py-1 bg-slate-200 text-slate-500 dark:bg-slate-600 dark:text-slate-300 rounded-full text-xs outline-none">
-        <option value="">Ngày gửi</option>
-        <option value="today">Hôm nay</option>
-        <option value="week">7 ngày qua</option>
-        <option value="month">30 ngày qua</option>
-      </select>
-    </div>
-
     <!-- MEDIA LIST -->
     <div ref="scrollRef" @scroll="handleScroll" class="flex-1 overflow-y-auto p-2 space-y-4 h-[92%] absolute">
       <div v-for="group in groupedMedia" :key="group.date">
@@ -66,7 +46,7 @@ const messStorage = useMessageStore();
 const { formatDate } = useDateTime();
 
 const scrollRef = ref<HTMLElement | null>(null);
-  const { isVideo } = useMedia()
+const { isVideo } = useMedia()
 
 const groupedMedia = computed(() => {
   const map: Record<string, MediaType[]> = {};
@@ -83,7 +63,6 @@ const groupedMedia = computed(() => {
   }));
 });
 
-const filterUser = ref("");
 const filterDate = ref("");
 
 const filteredImages = computed(() => {

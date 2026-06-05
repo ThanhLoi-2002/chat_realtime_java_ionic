@@ -1,6 +1,5 @@
 package com.zalo.modules.message.service;
 
-import com.google.firebase.messaging.FirebaseMessagingException;
 import com.zalo.common.base.BaseEntity;
 import com.zalo.common.configuration.json.G;
 import com.zalo.common.gateway.UserOnlineStorage;

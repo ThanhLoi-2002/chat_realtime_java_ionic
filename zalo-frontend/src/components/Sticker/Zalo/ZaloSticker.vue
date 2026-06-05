@@ -34,7 +34,7 @@ const currentFrame = ref(0)
 const positionX = ref(0)
 const timer = ref<ReturnType<typeof setInterval> | null>(null)
 const loopCount = ref(0) // Bộ đếm số lần lặp (chạy hết tất cả các frame là 1 lần)
-const MAX_LOOP = 3
+const MAX_LOOP = props.stickerItem.frameCount >= 10 ? 3 : 6;
 
 // Hàm khởi động animation
 const startAnimation = () => {

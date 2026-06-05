@@ -57,7 +57,6 @@ import { useTranslate } from '@/composables/useTranslate';
 import { useUserStore } from '@/stores/user.storage';
 import { MessageType } from '@/types/entities';
 import { MessageEnum } from '@/types/enum';
-import { STICKER_URL } from '@/utils/constant';
 import { computed } from 'vue';
 
 const props = defineProps<{
