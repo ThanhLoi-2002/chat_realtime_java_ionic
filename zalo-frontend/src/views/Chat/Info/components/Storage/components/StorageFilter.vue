@@ -4,13 +4,12 @@ import { useDebounceFn } from "@vueuse/core";
 
 import FilterSender from "./FilterSender.vue";
 import FilterDate from "./FilterDate.vue";
-import { StorageFilterType } from "@/types/common.ts";
+import { MessageFilter } from "@/types/common.ts";
 import FilterFileType from "./FilterFileType.vue";
 import Search from "@/components/Search/Search.vue";
 import { useTranslate } from "@/composables/useTranslate.ts";
 import { useConversationStore } from "@/stores/conversation.storage.ts";
 import { useConversation } from "@/composables/useConversation.ts";
-import { UserType } from "@/types/entities.ts";
 
 const props = defineProps<{
     showSearch: boolean
@@ -25,7 +24,8 @@ const { t } = useTranslate()
 const convStorage = useConversationStore()
 const { isGroup } = useConversation()
 
-const filter = reactive<StorageFilterType>({
+const filter = reactive<MessageFilter>({
+    conversationId: convStorage.conversation!.id,
     keyword: "",
     fileType: "",
     senderId: 0,

@@ -77,6 +77,10 @@ export type MessageFilter = BaseFilter & {
   linkMetadata?: boolean
   firstId?: number
   aroundId?: number
+  keyword?: string
+  fileType?: string
+  senderId?: number
+  dateRange?: [Date | null, Date | null]
 }
 
 export type ConversationFilter = BaseFilter & {
@@ -127,13 +131,6 @@ export type GroupSetting = {
 }
 
 export type JoinGroupRequestDto = {
-    convId: number;
-    message?: string;
+  convId: number;
+  message?: string;
 };
-
-export type StorageFilterType = {
-  keyword?: string
-  fileType?: string
-  senderId?: number
-  dateRange?: [Date | null, Date | null]
-}

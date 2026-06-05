@@ -318,7 +318,7 @@ const scrollMore = () => {
             conversationId: conversationStorage.conversation!.id,
             lastId: messageStorage.messages[0]?.id,
         }
-        console.log('123')
+
         onScroll(scrollContainer.value, () =>
             messageStorage.getMessages(options)
         )
@@ -435,7 +435,7 @@ const reset = async () => {
         await nextTick()
         await waitForImages()
 
-        // handleScrollBottom(false)
+        handleScrollBottom(false)
         isAdmin() && joinGroupStore.getJoinGroupRequests(conversationStorage.conversation.id)
     }
 }

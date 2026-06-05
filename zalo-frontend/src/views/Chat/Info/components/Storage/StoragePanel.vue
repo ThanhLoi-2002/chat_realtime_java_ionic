@@ -23,7 +23,8 @@
             </div>
         </div>
 
-        <StorageFilter :show-file-type="showFilterOptions.showFileType" :show-search="showFilterOptions.showSearch" @change="handleFilter"/>
+        <StorageFilter :show-file-type="showFilterOptions.showFileType" :show-search="showFilterOptions.showSearch"
+            @change="handleFilter" />
 
         <transition name="slide">
             <template v-if="tab == tabs[0].key">
@@ -49,7 +50,7 @@ import ImageVideo from './ImageVideo.vue';
 import File from './File.vue';
 import Link from './Link.vue';
 import StorageFilter from './components/StorageFilter.vue';
-import { StorageFilterType } from '@/types/common.ts';
+import { MessageFilter } from '@/types/common.ts';
 import { useMessageStore } from '@/stores/message.storage.ts';
 
 const props = defineProps<{
@@ -83,7 +84,16 @@ const handleChangeTab = (key: string) => {
     tab.value = key
 }
 
-const handleFilter = (filter: StorageFilterType) => {
-
+const handleFilter = (filter: MessageFilter) => {
+    console.log('filter')
+    filter.page = 1
+    switch (tab.value) {
+        case tabs[0].key:
+            break
+        case tabs[1].key:
+            break
+        case tabs[2].key:
+            break
+    }
 }
 </script>
