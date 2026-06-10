@@ -1,12 +1,28 @@
 import { Storage } from '@ionic/storage';
+import * as CordovaSQLiteDriver from 'localforage-cordovasqlitedriver';
 
-const store = new Storage();
+const store = new Storage({
+  name: 'chat_app',
+  // Ép buộc hệ thống: Tìm SQLite trước, nếu không có (như chạy trên Web) thì mới dùng IndexedDB
+  driverOrder: ['cordovaSQLiteDriver', 'indexedDB', 'asyncStorage']
+});
 let storageCreated = false;
 
 const initStorage = async (): Promise<void> => {
   if (!storageCreated) {
-    await store.create();
-    storageCreated = true;
+    try {
+      // BẮT BUỘC: Đăng ký driver SQLite với mã nguồn Ionic Storage trước khi tạo
+      await store.defineDriver(CordovaSQLiteDriver);
+
+      await store.create();
+      storageCreated = true;
+      console.log(`🔥 Storage initialized successfully. Active Driver: ${store.driver}`);
+    } catch (error) {
+      console.error("❌ Lỗi cấu hình Driver SQLite, tự động hạ cấp xuống IndexedDB:", error);
+      // Fallback: Nếu lỗi (như chạy trên môi trường Web không định nghĩa được driver native), khởi tạo mặc định
+      await store.create();
+      storageCreated = true;
+    }
   }
 };
 
@@ -44,7 +60,6 @@ export const storage = {
   },
 
   async checkTotalQuota() {
-    console.log(navigator)
     if (navigator.storage && navigator.storage.estimate) {
       const estimate = await navigator.storage.estimate();
 

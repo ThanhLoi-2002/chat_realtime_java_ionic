@@ -28,9 +28,13 @@
       <div v-else class="flex flex-col gap-2">
         <ReplyingMessage v-if="message.replyToMessage" :replying-message="message.replyToMessage" />
 
-        <span :class="isOwner ? 'text-white' : 'text-slate-800 dark:text-slate-100'" v-html="formattedContent"
-          @click="(e) => !actionStore.isSelectionMode && handleContentClick(e)">
-        </span>
+        <div class="flex flex-col gap-1.5">
+          <span :class="isOwner ? 'text-white' : 'text-slate-800 dark:text-slate-100'" v-html="formattedContent"
+            @click="(e) => !actionStore.isSelectionMode && handleContentClick(e)">
+          </span>
+
+          <TranslateToggle :message="message" :is-owner="isOwner"/>
+        </div>
 
         <div v-if="linkPreview" @click="() => !actionStore.isSelectionMode && openLink(linkPreview.url)"
           class="mt-1 flex flex-col w-full max-w-full border rounded-xl overflow-hidden bg-white/10 dark:bg-gray-900/50 shadow-sm cursor-pointer hover:bg-black/5 transition">
@@ -90,6 +94,7 @@ import { qrCodeUrl } from "@/utils/constant";
 import GroupProfile from "../GroupProfile.vue";
 import { useUserStore } from "@/stores/user.storage";
 import { useChatActionStore } from "@/composables/useChatAction";
+import TranslateToggle from "./Translate/TranslateToggle.vue";
 
 const props = defineProps<{
   setBubbleRef?: (el: HTMLElement | null) => void;

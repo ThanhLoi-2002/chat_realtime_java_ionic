@@ -3,6 +3,7 @@ import fasttext
 from deep_translator import GoogleTranslator
 from fastapi import HTTPException
 from app.dto.Translate import TranslateRequest, TranslateResponse, DetectLanguageRequest
+import re
 
 class TranslateService:
     # Biến static cấp Class - Python chỉ chạy dòng này 1 lần duy nhất khi khởi động hệ thống
@@ -31,15 +32,20 @@ class TranslateService:
     @staticmethod
     def detectLanguage(request: DetectLanguageRequest) -> dict:
         text = request.text.strip()
-        if not text:
-            return {"language": "unknown", "confidence": 0}
+
+        # Loại bỏ memntion trả về text thuần @name
+        pattern = r'\[mention:\d+\]@([^\[]+)\[/mention\]'
+
+         # re.sub sẽ thay thế toàn bộ cụm regex khớp bằng giá trị của Group 1 (\1)
+        cleanText = re.sub(pattern, r'\1', text)
+        print(cleanText)
 
         try:
-            # Làm sạch chuỗi xuống dòng chống sập FastText
-            clean_text = text.replace("\n", " ").replace("\r", " ")
-            
-            # Gọi thông qua tên Class: TranslateService.ai_model
-            labels, scores = TranslateService.ai_model.predict(clean_text)
+            labels, scores = TranslateService.ai_model.predict(cleanText)
+            # print({
+            #     "language": labels[0].replace("__label__", ""),
+            #     "confidence": round(float(scores[0]), 4)
+            # })
 
             return {
                 "language": labels[0].replace("__label__", ""),

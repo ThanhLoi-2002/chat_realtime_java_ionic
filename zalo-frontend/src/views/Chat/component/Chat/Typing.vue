@@ -113,7 +113,7 @@ const handleDirectUploadAndSend = async (event: Event) => {
     if (!target.files || target.files.length === 0) return;
 
     const files = Array.from(target.files);
-    isLoadingSendMessage.value = true;
+    // isLoadingSendMessage.value = true;
 
     try {
         // 1. Chuẩn bị dữ liệu upload
@@ -161,7 +161,7 @@ const handleDirectUploadAndSend = async (event: Event) => {
     } catch (error) {
         console.error("Gửi file thất bại:", error);
     } finally {
-        isLoadingSendMessage.value = false;
+        // isLoadingSendMessage.value = false;
         target.value = ''; // Reset input để có thể chọn lại file đó lần sau
     }
 };
@@ -277,7 +277,7 @@ const sendMessage = async () => {
     // Kiểm tra nếu không có chữ và cũng không có file thì thoát
     if (!content && previewFiles.value.length === 0) return;
 
-    isLoadingSendMessage.value = true
+    // isLoadingSendMessage.value = true
 
     // Upload file
     const filesData = await sendImages()
@@ -309,7 +309,7 @@ const sendMessage = async () => {
         replyToId: props.replyingMessage?.id
     }
 
-    const success = await messageStorage.sendMessage(payload);
+    const success = messageStorage.sendMessage(payload);
 
     if (success) {
         // QUAN TRỌNG: Xóa trắng thẻ div contenteditable
@@ -323,7 +323,7 @@ const sendMessage = async () => {
         scrollToBottom(props.scrollContainer, true);
     }
 
-    isLoadingSendMessage.value = false
+    // isLoadingSendMessage.value = false
 }
 
 let subTyping: StompSubscription | undefined

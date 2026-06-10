@@ -29,6 +29,8 @@ public class Message extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     String content;
 
+    String lang;
+
     @JdbcTypeCode(SqlTypes.JSON)
     @ColumnTransformer(write = "?")// Ép Hibernate ghi thẳng giá trị, không dùng CAST(? as json)
     SystemMetadata systemMetadata;

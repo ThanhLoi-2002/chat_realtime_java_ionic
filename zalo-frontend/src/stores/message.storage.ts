@@ -39,9 +39,9 @@ export const useMessageStore = defineStore('message', {
             this.previewImage = previewImage
         },
 
-        async sendMessage(data: SendMessageType) {
+        sendMessage(data: SendMessageType) {
             try {
-                await messageApi.sendMessage(data);
+                messageApi.sendMessage(data);
                 return true
             } catch (e: any) {
                 toast({

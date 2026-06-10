@@ -6,6 +6,9 @@ import com.zalo.common.gateway.UserOnlineStorage;
 import com.zalo.common.service.PushNotificationService;
 import com.zalo.common.service.WebsocketService;
 import com.zalo.common.filter.MessageFilter;
+import com.zalo.modules.ai.translate.dto.request.DetectLangRequest;
+import com.zalo.modules.ai.translate.dto.response.DetectLangResponse;
+import com.zalo.modules.ai.translate.service.TranslateService;
 import com.zalo.modules.conversation.service.*;
 import com.zalo.modules.media.dtos.responses.MediaResponse;
 import com.zalo.modules.media.entities.Media;
@@ -68,6 +71,7 @@ public class MessageService {
     UserRepository userRepository;
     MessagePinRepository messagePinRepository;
     MediaRepository mediaRepository;
+    TranslateService translateService;
 
     public void sendMessage(Long conversationId, Long senderId, CreateMessageRequest dto) throws IOException {
         // optional check replyTo exists
@@ -199,6 +203,8 @@ public class MessageService {
         processBubbleNotify(messageResponse, avatar, conversationId, members.stream()
                 .map(ConversationMember::getUserId) // Hoặc .map(member -> member.getUserId())
                 .collect(Collectors.toList()));
+
+        detectLang(messageResponse, finalMsg);
     }
 
     public void processMentionAndSendNotify(String rawContent, String groupName, String imageUrl, Long conversationId) {
@@ -227,6 +233,23 @@ public class MessageService {
                     );
                 }
             });
+        }
+    }
+
+    private void detectLang(MessageResponse messageResponse, Message mess) {
+        if(messageResponse.getContent().length() >= 5){
+            DetectLangRequest detectLangRequest = new DetectLangRequest();
+            detectLangRequest.setText(messageResponse.getContent());
+            DetectLangResponse response = translateService.detectLanguage(detectLangRequest);
+
+            // độ tin cậy >= 80% thì lưu vào db
+            if(response.getConfidence() >= 0.8) {
+                messageResponse.setLang(response.getLanguage());
+                websocketService.updateMessage(messageResponse);
+
+                mess.setLang(response.getLanguage());
+                messageRepo.save(mess);
+            }
         }
     }
 

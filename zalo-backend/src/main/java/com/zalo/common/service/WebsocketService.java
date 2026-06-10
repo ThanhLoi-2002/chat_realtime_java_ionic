@@ -67,6 +67,13 @@ public class WebsocketService {
         realtimeToConversation(message.getConversationId(), payload, "/queue/chat.updateMessages");
     }
 
+    public void updateMessage(MessageResponse message) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("message", message);
+
+        realtimeToConversation(message.getConversationId(), payload, "/queue/chat.updateMessages");
+    }
+
     public void addReaction(Long conversationId, MessageReaction mr) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("reaction", new MessageReactionResponse(mr, "createdBy"));

@@ -48,8 +48,8 @@ export type MessageType = BaseType & {
     senderId: number
     sender: UserType
     content: string
+    lang: string
     contentType: MessageEnum
-    // file: FileType
     sticker: StickerItemType
     replyToMessageId: number
     replyToMessage: MessageType

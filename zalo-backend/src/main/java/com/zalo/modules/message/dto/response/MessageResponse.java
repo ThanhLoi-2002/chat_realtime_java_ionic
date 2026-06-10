@@ -36,6 +36,7 @@ public class MessageResponse extends BaseResponse {
 
     List<MediaResponse> attachments;
     LinkPreviewResponse linkMetadata;
+    String lang;
 
     public MessageResponse(Message m, String... relations) {
         super(m, relations);

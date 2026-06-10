@@ -6,6 +6,25 @@ spring:
   application:
     name: zalo
 
+  kafka:
+    consumer:
+      group-id: notification-consumers
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+      enable-auto-commit: false # Tự quản lý commit để đảm bảo không mất tin nhắn nếu sập nguồn
+
+      # TỐI ƯU CONSUMER:
+      max-poll-records: 1000     # Mỗi lần pull dữ liệu từ Kafka, lấy hẳn 1000 tin nhắn về xử lý 1 lượt.
+      properties:
+        fetch.min.bytes: 1048576 # 1MB - Thắt nút cổ chai: Chỉ kéo về khi Kafka gom đủ 1MB dữ liệu.
+        fetch.max.wait.ms: 500   # Nếu quá 500ms không đủ 1MB thì vẫn kéo về.
+
+    # Chuyển đổi cơ chế lắng nghe từ từng cái sang dạng BATCH
+    listener:
+      type: batch
+      ack-mode: manual_immediate # Commit ngay sau khi xử lý xong lô dữ liệu
+
   ai:
     openai:
       api-key: ${OPENAI_API_KEY}
@@ -42,3 +61,6 @@ logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36}.%M(%line) : %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36}.%M(%line) : %msg%n"
+
+kafka:
+  url: "localhost:9092"

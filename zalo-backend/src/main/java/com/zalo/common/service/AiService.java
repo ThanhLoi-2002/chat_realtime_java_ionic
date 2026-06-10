@@ -18,9 +18,6 @@ import java.util.Map;
 public class AiService {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    @Value("${spring.ai.ai-url}")
-    private String aiUrl;
-
     private final WebClient webClient;
 
     public AiService(

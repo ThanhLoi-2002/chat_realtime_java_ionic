@@ -134,3 +134,9 @@ export type JoinGroupRequestDto = {
   convId: number;
   message?: string;
 };
+
+export type TranslateMessageType = {
+  text: string
+  sourceLang: string
+  targetLang: string
+}
