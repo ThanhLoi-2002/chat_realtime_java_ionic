@@ -6,7 +6,7 @@
         <FilePreview :files="previewFiles" @remove="removeImage" />
 
         <div class="relative w-full">
-            <ZaloStickerPicker v-if="showStickerPicker" @close="showStickerPicker = false"
+            <ZaloStickerPicker v-if="stickerStorage.openPicker" @close="stickerStorage.togglePicker"
                 @handleSelectEmoji="handleSelectEmoji"
                 :scroll-to-bottom="() => scrollToBottom(scrollContainer, true)" />
             <MentionSuggestions :suggestions="mentionSuggestions" :selected-index="selectedIndex"
@@ -19,7 +19,7 @@
                 <div class="flex flex-col gap-2 bg-gray-100 dark:bg-gray-800 rounded-2xl px-2 py-0.5 md:px-4 md:py-1.5">
                     <!-- Left icons -->
                     <InputActions @select-media="handleSelectImages" @select-doc="handleDirectUploadAndSend"
-                        @toggle-sticker="toggleSticker" />
+                        @toggle-sticker="stickerStorage.togglePicker" />
 
                     <!-- Message Input -->
                     <div class="flex flex-col w-full gap-2 items-center">
@@ -70,6 +70,7 @@ import TypingIndicator from './TypingIndicator.vue';
 import { MessageType, UserType } from '@/types/entities';
 import ReplyingMessage from '../Message/ReplyingMessage.vue';
 import ZaloStickerPicker from '@/components/Sticker/Zalo/ZaloStickerPicker.vue';
+import { useStickerStore } from '@/stores/sticker.storage.ts';
 
 const props = defineProps<{
     scrollContainer: HTMLElement | null
@@ -90,7 +91,7 @@ const typingUsers = ref<Map<number, any>>(new Map())
 
 const selectedRawFiles = ref<File[]>([])
 const previewFiles = ref<{ url: string, type: ResourceEnum, name?: string }[]>([])
-const showStickerPicker = ref(false)
+const stickerStorage = useStickerStore()
 const isLoadingSendMessage = ref(false)
 const previewLink = ref<LinkMetadataType | undefined>(undefined)
 const { onPreviewLink } = useMessage()
@@ -223,10 +224,6 @@ const sendImages = async () => {
     previewFiles.value = []
 
     return data
-}
-
-const toggleSticker = () => {
-    showStickerPicker.value = !showStickerPicker.value
 }
 
 const { debounced: sendTyping } = useDebounce(() => {

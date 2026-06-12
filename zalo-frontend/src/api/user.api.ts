@@ -1,6 +1,7 @@
 import { IResponse } from "@/types/common";
 import axios from "./axios";
 import type { UserType } from "@/types/entities";
+import { AccountTypeEnum } from "@/types/enum";
 
 const getMe = async () => {
     return await axios.get<IResponse<UserType>>(`/users/me`);
@@ -22,6 +23,10 @@ const deleteOne = async (id: number) => {
     return await axios.delete<IResponse>(`/users/${id}`);
 }
 
+const toggleOA = async (aType: AccountTypeEnum) => {
+    return await axios.put<IResponse>(`/users/toggle-oa`, { aType });
+}
+
 const uploadAvatar = async (file: File) => {
     return await axios.post<IResponse<UserType>>(`/users/upload-avatar`, { file }, {
         headers: {
@@ -39,5 +44,5 @@ const uploadCover = async (file: File) => {
 }
 
 export const userApi = {
-    getDetail, deleteOne, getMe, uploadAvatar, uploadCover, getList, searchByPhone
+    getDetail, deleteOne, getMe, uploadAvatar, uploadCover, getList, searchByPhone, toggleOA
 }

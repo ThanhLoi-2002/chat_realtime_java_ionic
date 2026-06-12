@@ -94,6 +94,29 @@ const sendSticker = async (sticker: StickerItemType) => {
     }
 }
 
+const scrollToPack = async (pack: StickerType) => {
+    activePack.value = pack;
+
+    await nextTick();
+
+    const targetElement = document.getElementById(
+        `pack-section-${pack.stickerId}`
+    );
+
+    if (!targetElement || !scrollContainerRef.value) return;
+
+    const targetTop =
+        targetElement.offsetTop -
+        scrollContainerRef.value.offsetTop;
+
+    // scrollContainerRef.value.scrollTop = targetTop;
+
+    scrollContainerRef.value.scrollTo({
+        top: targetTop,
+        behavior: "auto"
+    });
+};
+
 // Thêm hàm theo dõi vị trí cuộn để đồng bộ ngược lại thanh đáy
 const handleScrollSpy = (event: Event) => {
     // Nếu đang tìm kiếm bằng từ khóa thì không chạy tính năng đồng bộ cuộn tránh xung đột
@@ -141,8 +164,21 @@ watch(keyword, () => {
 
 onMounted(async () => {
     await stickerStorage.getAll();
-    // Gán pack đầu tiên làm mặc định sau khi đã load dữ liệu xong
-    if (stickerStorage.stickers.length > 0 && !stickerStorage.recentStickers.length) {
+
+    if (stickerStorage.pointToStickerId) {
+        const targetPack = stickerStorage.stickers.find(
+            pack =>
+                pack.stickerId ===
+                stickerStorage.pointToStickerId
+        );
+
+        if (targetPack) {
+            await scrollToPack(targetPack);
+            return;
+        }
+    }
+
+    if (stickerStorage.stickers.length > 0) {
         activePack.value = stickerStorage.stickers[0];
     }
 });
@@ -170,7 +206,7 @@ onMounted(async () => {
                     class="w-full h-6 rounded-full dark:bg-slate-700/50 px-4 text-xs outline-none border border-white/5" />
             </div>
 
-            <div ref="scrollContainerRef" class="flex-1 overflow-y-auto pr-1 scroll-smooth" @scroll="handleScrollSpy">
+            <div ref="scrollContainerRef" class="flex-1 overflow-y-auto pr-1 scroll-auto" @scroll="handleScrollSpy">
                 <div v-if="stickerStorage.recentStickers.length && !keyword" class="shrink-0">
                     <div class="font-weight-400 text-sm mt-2" :id="`pack-section-recent`">
                         {{ t("recent") }}

@@ -3,7 +3,9 @@ package com.zalo.modules.user;
 import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
 import com.zalo.common.configuration.anotation.ResponseMessage;
 import com.zalo.common.filter.UserFilter;
+import com.zalo.modules.user.dto.request.UpdateOARequest;
 import com.zalo.modules.user.dto.response.UserResponse;
+import com.zalo.modules.user.entities.AccountType;
 import com.zalo.modules.user.entities.User;
 import com.zalo.modules.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +44,17 @@ public class UserController {
             @CurrentUser User user
     ) throws Exception {
         user = userService.uploadCover(file, user);
+
+        return new UserResponse(user);
+    }
+
+    @PutMapping("/toggle-oa")
+    @ResponseMessage("success")
+    public UserResponse toggleOA(
+            @CurrentUser User user,
+            @RequestBody UpdateOARequest req
+    ) {
+        user = userService.toggleOA(req.getAType(), user.getId());
 
         return new UserResponse(user);
     }

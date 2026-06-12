@@ -3,6 +3,7 @@ package com.zalo.modules.user.service;
 import com.cloudinary.api.exceptions.NotFound;
 import com.zalo.common.filter.UserFilter;
 import com.zalo.common.entity.File;
+import com.zalo.modules.user.entities.AccountType;
 import com.zalo.modules.user.entities.User;
 import com.zalo.modules.media.service.MediaService;
 import com.zalo.common.service.JwtService;
@@ -109,5 +110,20 @@ public class UserService {
 
     public List<User> findByIdIn(List<Long> ids) {
         return userRepository.findByIdIn(ids);
+    }
+
+    public User toggleOA(AccountType aType, Long userId) {
+        UserFilter filter = new UserFilter();
+        filter.setId(userId);
+        Optional<User> userExisted = findOne(filter);
+
+        if (userExisted.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound");
+        }
+
+        userExisted.get().setAccountType(aType);
+        userRepository.save(userExisted.get());
+
+        return userExisted.get();
     }
 }

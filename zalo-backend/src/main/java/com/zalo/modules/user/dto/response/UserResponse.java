@@ -2,6 +2,7 @@ package com.zalo.modules.user.dto.response;
 
 import com.zalo.common.base.BaseResponse;
 import com.zalo.common.entity.File;
+import com.zalo.modules.user.entities.AccountType;
 import com.zalo.modules.user.entities.User;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -17,6 +18,7 @@ public class UserResponse extends BaseResponse {
     String phone;
     File avatar;
     File cover;
+    AccountType accountType;
 
     public UserResponse(User u, String... relations) {
         super(u, relations);

@@ -24,7 +24,8 @@
                 </span>
             </div>
 
-            <ZaloSticker v-else :size="130" :sticker-item="message.sticker" :isHover="false" />
+            <ZaloSticker v-else :size="130" :sticker-item="message.sticker" :isHover="false"
+                @select="openStickerMenu(message.sticker.stickerId)" />
 
         </div>
 
@@ -38,10 +39,9 @@
 import { useDateTime } from "@/composables/useDateTime";
 import { useTranslate } from "@/composables/useTranslate";
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import { useConversationStore } from "@/stores/conversation.storage";
-import { useUserStore } from "@/stores/user.storage";
 import ZaloSticker from "@/components/Sticker/Zalo/ZaloSticker.vue";
 import { MessageType } from "@/types/entities";
+import { useStickerStore } from "@/stores/sticker.storage";
 
 type Message = MessageType & {
     isFirst: boolean
@@ -54,14 +54,17 @@ const props = defineProps<{
     isOwner: boolean;
 }>();
 
+const stickerStorage = useStickerStore()
 const { formatTime } = useDateTime();
 const { t } = useTranslate();
-const convStorage = useConversationStore()
-const userStorage = useUserStore()
 const emit = defineEmits(['visible']);
 let observer: IntersectionObserver | null = null;
 
 const el = ref<HTMLElement | null>(null);
+
+const openStickerMenu = (stickerId: string) => {
+    stickerStorage.togglePicker(stickerId)
+}
 
 onMounted(() => {
     // Cấu hình: Khi tin nhắn hiện ra 50% diện tích thì tính là "đã xem"

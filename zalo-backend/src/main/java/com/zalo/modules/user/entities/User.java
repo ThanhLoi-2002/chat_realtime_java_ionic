@@ -28,6 +28,9 @@ public class User extends BaseEntity implements UserDetails {
     @Column(nullable = false, unique = true)
     String phone;
 
+    @Enumerated(EnumType.STRING)
+    AccountType accountType;
+
     @Convert(converter = FileConverter.class)
     @Column(columnDefinition = "LONGTEXT")
     File avatar;
@@ -37,10 +40,10 @@ public class User extends BaseEntity implements UserDetails {
     File cover;
 
     @Column(unique = true)
-    private String deviceId;    // ID duy nhất của điện thoại (UUID)
+    String deviceId;    // ID duy nhất của điện thoại (UUID)
 
     @Column(columnDefinition = "TEXT")
-    private String fcmToken;    // Token dài do Firebase cấp
+    String fcmToken;    // Token dài do Firebase cấp
 
 //    List<String> roles;
 

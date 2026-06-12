@@ -2,14 +2,9 @@
 import { onMounted, ref } from 'vue'
 import data from '@emoji-mart/data'
 import { Picker } from 'emoji-mart'
-import { useClickOutside } from '@/composables/useClickOutside';
 
 const pickerRef = ref<HTMLElement | null>(null)
-const emit = defineEmits(['select', 'close'])
-
-useClickOutside(pickerRef, () => {
-  emit('close');
-});
+const emit = defineEmits(['select'])
 
 onMounted(() => {
   const picker = new Picker({

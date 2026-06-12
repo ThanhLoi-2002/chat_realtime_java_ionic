@@ -1,5 +1,5 @@
 // @/composables/useClickOutside.ts
-import { onBeforeUnmount, onMounted, type Ref } from "vue";
+import { nextTick, onBeforeUnmount, onMounted, type Ref } from "vue";
 
 export function useClickOutside(
     targetRef: Ref<HTMLElement | null>,
@@ -12,9 +12,12 @@ export function useClickOutside(
         }
     };
 
-    onMounted(() => {
-        // Sử dụng sự kiện click hoặc click (click thường nhạy và mượt hơn)
-        window.addEventListener("click", handler);
+    onMounted(async () => {
+        await nextTick();
+
+        setTimeout(() => {
+            window.addEventListener("click", handler);
+        }, 0);
     });
 
     onBeforeUnmount(() => {

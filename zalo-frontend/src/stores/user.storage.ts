@@ -2,6 +2,7 @@ import { userApi } from '@/api/user.api'
 import router from '@/router'
 import { storage } from '@/services/storage.service.'
 import { UserType } from '@/types/entities'
+import { AccountTypeEnum } from '@/types/enum'
 import { ACCESS_TOKEN, ROUTE } from '@/utils/constant'
 import { deleteKey } from '@/utils/local'
 import { toast } from '@/utils/toast'
@@ -89,6 +90,23 @@ export const useUserStore = defineStore('user', {
                 return undefined
             }
         },
+
+        async toggleOA() {
+            try {
+                const aType = this.user?.accountType == AccountTypeEnum.OA ? AccountTypeEnum.NULL : AccountTypeEnum.OA
+                const result: any = await userApi.toggleOA(aType);
+                this.user = result.result
+                await storage.set('user', result.result);
+
+                await this.loadUserLocal()
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+            }
+        },
+
         async logout() {
             this.user = undefined
             await storage.remove('user');

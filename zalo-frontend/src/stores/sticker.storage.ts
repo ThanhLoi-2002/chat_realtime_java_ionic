@@ -10,6 +10,8 @@ interface State {
     stickers: StickerType[]
     recentStickers: StickerItemType[]
     isLoading: boolean
+    openPicker: boolean
+    pointToStickerId?: string
 }
 
 export const useStickerStore = defineStore('sticker', {
@@ -17,6 +19,7 @@ export const useStickerStore = defineStore('sticker', {
         stickers: [],
         recentStickers: [],
         isLoading: false,
+        openPicker: false
     }),
     actions: {
         async getAll() {
@@ -57,6 +60,11 @@ export const useStickerStore = defineStore('sticker', {
             ].slice(0, 24)
 
             setKey(STORAGE_KEY, this.recentStickers)
+        },
+
+        togglePicker(stickerId?: string) {
+            this.openPicker = !this.openPicker
+            this.pointToStickerId = stickerId
         }
     }
 })

@@ -28,7 +28,7 @@ const centerActiveIcon = (stickerId: number | string) => {
         const activeBtn = document.getElementById(`pack-btn-${stickerId}`);
         if (activeBtn && !isDown) { // Chỉ tự cuộn vào giữa khi người dùng không giữ kéo tay
             activeBtn.scrollIntoView({
-                behavior: 'smooth',
+                behavior: 'auto',
                 block: 'nearest',
                 inline: 'center'
             });
@@ -82,7 +82,7 @@ const onRecentClick = () => {
     centerActiveIcon('recent');
 };
 
-// --- 🌟 TỐI ƯU LĂN CHUỘT SMOOTH WHEEL ---
+// --- 🌟 TỐI ƯU LĂN CHUỘT auto WHEEL ---
 const handleWheel = (e: WheelEvent) => {
     if (!navScrollRef.value) return;
     e.preventDefault(); 
@@ -90,19 +90,19 @@ const handleWheel = (e: WheelEvent) => {
     // Sử dụng scrollBy mượt mà thay vì cộng trực tiếp pixel thô
     navScrollRef.value.scrollBy({
         left: e.deltaY * 0.8, // Nhân 0.8 giúp tốc độ lướt vừa vặn, không bị quá nhanh
-        behavior: 'smooth'    // Tạo hiệu ứng lướt quán tính êm ái
+        behavior: 'auto'    // Tạo hiệu ứng lướt quán tính êm ái
     });
 };
 
-// --- 🌟 TỐI ƯU KÉO CHUỘT KHÔNG BỊ KHỰNG (SMOOTH DRAG) ---
+// --- 🌟 TỐI ƯU KÉO CHUỘT KHÔNG BỊ KHỰNG (auto DRAG) ---
 const handleMouseDown = (e: MouseEvent) => {
     if (!navScrollRef.value) return;
     isDown = true;
     isDragging = false;
     
     // TẬP TRUNG TỐI ƯU Ở ĐÂY: 
-    // Gỡ bỏ tính năng snap và smooth tạm thời để thanh cuộn bám khít tuyệt đối theo tay người dùng
-    navScrollRef.value.classList.remove('snap-x', 'snap-mandatory', 'scroll-smooth');
+    // Gỡ bỏ tính năng snap và auto tạm thời để thanh cuộn bám khít tuyệt đối theo tay người dùng
+    navScrollRef.value.classList.remove('snap-x', 'snap-mandatory', 'scroll-auto');
     
     startX = e.pageX - navScrollRef.value.offsetLeft;
     scrollLeft = navScrollRef.value.scrollLeft;
@@ -113,8 +113,8 @@ const handleMouseLeaveOrUp = () => {
     isDown = false;
     
     if (navScrollRef.value) {
-        // Sau khi người dùng buông tay: Khôi phục lại snap và smooth để các nút bấm hoạt động bình thường
-        navScrollRef.value.classList.add('snap-x', 'snap-mandatory', 'scroll-smooth');
+        // Sau khi người dùng buông tay: Khôi phục lại snap và auto để các nút bấm hoạt động bình thường
+        navScrollRef.value.classList.add('snap-x', 'snap-mandatory', 'scroll-auto');
     }
     
     setTimeout(() => { isDragging = false; }, 50);
@@ -157,7 +157,7 @@ onUnmounted(() => {
             </button>
 
             <div ref="navScrollRef"
-                class="w-full h-full flex items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden snap-x snap-mandatory px-5 scroll-smooth cursor-grab active:cursor-grabbing will-change-scroll"
+                class="w-full h-full flex items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden snap-x snap-mandatory px-5 scroll-auto cursor-grab active:cursor-grabbing will-change-scroll"
                 @mousedown="handleMouseDown"
                 @mouseleave="handleMouseLeaveOrUp"
                 @mouseup="handleMouseLeaveOrUp"

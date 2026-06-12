@@ -31,6 +31,34 @@
 
         <!-- Menu items -->
         <nav class="px-4 py-4 space-y-2">
+            <label class="flex items-center justify-between px-3 cursor-pointer">
+                <span class="text-gray-700 dark:text-gray-300">
+                    {{ t('acctiveOA') }}
+                </span>
+
+                <input type="checkbox" :checked="userStorage.user?.accountType === AccountTypeEnum.OA"
+                    @change="toggleOA" class="sr-only peer">
+
+                <div class="relative w-10 h-5 bg-gray-300 rounded-full
+               dark:bg-gray-600
+               peer-checked:bg-blue-600
+               transition-colors duration-300
+
+               after:content-['']
+               after:absolute
+               after:top-0.5
+               after:left-0.5
+               after:w-4
+               after:h-4
+               after:bg-white
+               after:rounded-full
+               after:shadow-sm
+               after:transition-transform
+               after:duration-300
+
+               peer-checked:after:translate-x-5">
+                </div>
+            </label>
             <button v-for="(item, index) in menuItems" :key="index" @click="item.onClick"
                 class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition cursor-pointer">
                 <i :class="item.icon" />
@@ -61,8 +89,9 @@ import { useConversationStore } from '@/stores/conversation.storage';
 import { useMessageStore } from '@/stores/message.storage';
 import { useUserStore } from '@/stores/user.storage';
 import { SettingPageType } from '@/types/common';
+import { AccountTypeEnum } from '@/types/enum';
 import { RANDOM_AVATAR } from '@/utils/constant'
-import { computed, inject } from 'vue';
+import { computed, inject, ref } from 'vue';
 
 const props = defineProps<{
     goPage: (value: SettingPageType) => void
@@ -75,6 +104,7 @@ const userStorage = useUserStore()
 const convStorage = useConversationStore()
 const messStorage = useMessageStore()
 const confirmStore = useConfirmStore();
+const isOALoading = ref(false)
 
 const menuItems = computed(() => [
     {
@@ -83,6 +113,14 @@ const menuItems = computed(() => [
         onClick: () => props.goPage('profile')
     },
 ])
+
+const toggleOA = async () => {
+    isOALoading.value = true
+
+    await userStorage.toggleOA()
+
+    isOALoading.value = false
+}
 
 function onLogout() {
     confirmStore.open({
