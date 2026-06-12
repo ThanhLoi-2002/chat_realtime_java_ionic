@@ -3,15 +3,13 @@ package com.zalo.modules.ai.translate;
 import com.zalo.modules.ai.translate.dto.request.DetectLangRequest;
 import com.zalo.modules.ai.translate.dto.request.TranslateRequest;
 import com.zalo.modules.ai.translate.dto.response.DetectLangResponse;
+import com.zalo.modules.ai.translate.dto.response.LanguageResponse;
 import com.zalo.modules.ai.translate.dto.response.TranslateResponse;
 import com.zalo.modules.ai.translate.service.TranslateService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/ai/translate")
@@ -27,5 +25,10 @@ public class TranslateController {
     @PostMapping("/detect-language")
     public DetectLangResponse detectLanguage(@RequestBody DetectLangRequest text) {
         return translateService.detectLanguage(text);
+    }
+
+    @GetMapping("/languages/{lang}")
+    public List<LanguageResponse> getLanguages(@PathVariable String lang) {
+        return translateService.getLanguages(lang);
     }
 }

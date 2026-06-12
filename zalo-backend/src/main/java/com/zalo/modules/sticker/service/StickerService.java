@@ -10,12 +10,7 @@ import com.zalo.modules.conversation.service.ConversationMemberRepository;
 import com.zalo.modules.conversation.service.ConversationRepository;
 import com.zalo.modules.conversation.service.ConversationService;
 import com.zalo.modules.conversation.service.MemberService;
-import com.zalo.modules.media.dtos.requests.MediaRequest;
-import com.zalo.modules.media.dtos.responses.MediaResponse;
-import com.zalo.modules.media.entities.Media;
-import com.zalo.modules.media.entities.MediaType;
-import com.zalo.modules.media.service.MediaInterface;
-import com.zalo.modules.message.dto.response.LinkPreviewResponse;
+import com.zalo.modules.media.service.MinioService;
 import com.zalo.modules.message.dto.response.MessageResponse;
 import com.zalo.modules.message.entity.DeliveryStatus;
 import com.zalo.modules.message.entity.Message;
@@ -26,6 +21,7 @@ import com.zalo.modules.message.service.MessageService;
 import com.zalo.modules.message.service.MessageStatusRepository;
 import com.zalo.modules.sticker.entity.Sticker;
 import com.zalo.modules.sticker.entity.StickerItem;
+import io.minio.GetObjectArgs;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -33,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
+
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -49,6 +46,7 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.regex.Pattern;
@@ -69,24 +67,11 @@ public class StickerService {
     ConversationService conversationService;
     MemberService memberService;
     MessageService messageService;
+    MinioService minioService;
 
-    static String STORAGE_DIR = "uploads/stickers/";
+    static String STORAGE_DIR = "stickers/";
     static String PACKAGE_URL = "https://stickers.zaloapp.com/sticker";
     static String ITEM_URL = "https://stickers.zaloapp.com/cate-stickers?cid=";
-
-//    public StickerService(ApiService apiService, StickerRepository stickerRepository, WebsocketService websocketService, MessageRepository messageRepo) {
-//        this.apiService = apiService;
-//        this.stickerRepository = stickerRepository;
-//        this.websocketService = websocketService;
-//        this.messageRepo = messageRepo;
-//
-//        try {
-//            Files.createDirectories(Paths.get(STORAGE_DIR));
-//            System.out.println("--> Đã kiểm tra và khởi tạo thư mục gốc: " + STORAGE_DIR);
-//        } catch (IOException e) {
-//            System.err.println("Không thể khởi tạo thư mục lưu trữ gốc: " + e.getMessage());
-//        }
-//    }
 
     public List<Sticker> getAll() {
         return stickerRepository.findAllByStt(1);
@@ -105,8 +90,7 @@ public class StickerService {
             String temp = Normalizer.normalize(input, Normalizer.Form.NFD);
             Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
             String noAccent = pattern.matcher(temp).replaceAll("").toLowerCase();
-            return noAccent.replaceAll("đ", "d")
-                    .replaceAll("[^a-z0-9\\s-]", "") // Xóa ký tự đặc biệt
+            return noAccent.replaceAll("đ", "d").replaceAll("[^a-z0-9\\s-]", "") // Xóa ký tự đặc biệt
                     .replaceAll("\\s+", "-")         // Thay khoảng trắng bằng dấu gạch ngang
                     .replaceAll("-+", "-");          // Thu gọn nhiều dấu gạch ngang liên tiếp
         } catch (Exception e) {
@@ -116,11 +100,7 @@ public class StickerService {
 
     public List<Sticker> syncZaloStickers() throws IOException {
         List<Sticker> allStickers = stickerRepository.findAllByStt(1);
-        Map<String, Sticker> stickerMap = allStickers.stream()
-                .collect(Collectors.toMap(
-                        Sticker::getStickerId,
-                        Function.identity()
-                ));
+        Map<String, Sticker> stickerMap = allStickers.stream().collect(Collectors.toMap(Sticker::getStickerId, Function.identity()));
 
         Object rawResponse = apiService.get(PACKAGE_URL);
         Map<String, Object> responseMap = (Map<String, Object>) rawResponse;
@@ -132,12 +112,6 @@ public class StickerService {
             List<Map<String, Object>> allList = (List<Map<String, Object>>) valueMap.get("all");
 
             if (allList != null) {
-                try {
-                    Files.createDirectories(Paths.get(STORAGE_DIR));
-                    System.out.println("--> Đã kiểm tra và khởi tạo thư mục gốc: " + STORAGE_DIR);
-                } catch (IOException e) {
-                    System.err.println("Không thể khởi tạo thư mục lưu trữ gốc: " + e.getMessage());
-                }
 
                 for (Map<String, Object> pack : allList) {
                     String cid = (String) pack.get("id");
@@ -145,22 +119,14 @@ public class StickerService {
                     String iconUrl = (String) pack.get("iconUrl");
 
                     // 1. Tạo đường dẫn thư mục riêng cho Pack: uploads/stickers/ten-pack_cid/
-                    String safePackName = makeSafeFileName(name) + "_" + cid;
-                    String packDirPath = STORAGE_DIR + safePackName + "/";
+                    String safePackName = makeSafeFileName(name);
+                    String packDirPath = STORAGE_DIR + "zalo/" + safePackName + "/";
 
                     // 2. Tạo đường dẫn thư mục items bên trong thư mục Pack: uploads/stickers/ten-pack_cid/items/
                     String itemsDirPath = packDirPath + "items/";
 
-                    // Tạo các thư mục vật lý trên ổ cứng
-                    try {
-                        Files.createDirectories(Paths.get(itemsDirPath));
-                    } catch (IOException e) {
-                        System.err.println("Không thể tạo cấu trúc thư mục cho pack: " + name);
-                        continue;
-                    }
-
                     // 3. Tải icon của pack vào ngay trong thư mục của Pack đó
-                    String localIconUrl = downloadImageToServer(iconUrl, packDirPath + "pack_icon.png");
+                    String localIconUrl = uploadImageToMinio(iconUrl, packDirPath + "icon.png");
 
                     Sticker sticker = stickerMap.get(cid);
 
@@ -200,22 +166,31 @@ public class StickerService {
                 String url = (String) item.get("url");
                 String id = (String) item.get("id");
 
-                String eid = UriComponentsBuilder
-                        .fromUriString(url)
-                        .build()
-                        .getQueryParams()
-                        .getFirst("eid");
+                String eid = UriComponentsBuilder.fromUriString(url).build().getQueryParams().getFirst("eid");
 
                 if (eid == null) continue;
 
                 String spriteUrl = getSprite(eid);
 
                 // Tải ảnh vào thư mục items đích của Pack hiện tại thay vì dồn chung vào một chỗ
-                String localSpriteUrl = downloadImageToServer(spriteUrl, itemsDirPath + "item_" + id + ".png");
+                String localSpriteUrl = uploadImageToMinio(spriteUrl, itemsDirPath + id + ".png");
                 if (localSpriteUrl == null) continue;
 
-                File localFile = new File(localSpriteUrl);
-                BufferedImage image = ImageIO.read(localFile);
+                BufferedImage image;
+
+                try (
+                        InputStream input =
+                                minioService.minioClient.getObject(
+                                        GetObjectArgs.builder()
+                                                .bucket(minioService.bucket)
+                                                .object(localSpriteUrl)
+                                                .build()
+                                )
+                ) {
+
+                    image = ImageIO.read(input);
+                }
+
                 if (image == null) continue;
 
                 int frameCount = image.getWidth() / image.getHeight();
@@ -237,61 +212,51 @@ public class StickerService {
         return stickerItems;
     }
 
-    /**
-     * Hàm helper: Nhận vào đường dẫn đích đầy đủ (gồm cả thư mục và tên file) để tải và lưu ảnh
-     */
-    private String downloadImageToServer(String sourceUrl, String fullTargetFilePath) {
-        if (sourceUrl == null || sourceUrl.isEmpty()) return null;
-
+    private String uploadImageToMinio(String sourceUrl, String objectName) {
+        if (sourceUrl == null || sourceUrl.isBlank()) return null;
         try {
-            // 1. Kiểm tra file đã tồn tại trên server chưa
-            Path targetPath = Paths.get(fullTargetFilePath);
-            if (Files.exists(targetPath)) {
-                System.out.println("Ảnh đã tồn tại trên server, bỏ qua không tải lại: " + fullTargetFilePath);
-                return targetPath.toString().replace("\\", "/");
-            }
-
-            // 2. Nếu chưa tồn tại thì tiến hành tải như bình thường
             sourceUrl = sourceUrl.replace("×", "%C3%97");
+
             URL url = new URL(sourceUrl);
+
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
-            // Giả lập thêm User-Agent trình duyệt để tránh bị chặn
-            conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+            conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
+
             conn.setConnectTimeout(5000);
             conn.setReadTimeout(5000);
 
             int responseCode = conn.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
 
-                // Đảm bảo thư mục cha của file tồn tại (đề phòng thư mục chứa ảnh chưa được tạo)
-                if (targetPath.getParent() != null) {
-                    Files.createDirectories(targetPath.getParent());
-                }
+            if (responseCode != HttpURLConnection.HTTP_OK) {
 
-                try (InputStream in = conn.getInputStream()) {
-                    Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
-                }
-
-                System.out.println("Tải ảnh thành công: " + fullTargetFilePath);
-                return targetPath.toString().replace("\\", "/");
-            } else {
                 System.err.println("Zalo từ chối kết nối, HTTP Code: " + responseCode + " cho URL: " + sourceUrl);
+
+                return null;
             }
+
+            String contentType = Optional.ofNullable(conn.getContentType()).orElse("image/png");
+
+            try (InputStream input = conn.getInputStream()) {
+
+                minioService.upload(input, conn.getContentLengthLong(), objectName, contentType);
+            }
+
+            System.out.println("Upload MinIO thành công: " + objectName);
+
+            return objectName;
+
         } catch (Exception e) {
-            System.err.println("Lỗi hệ thống khi tải ảnh: " + sourceUrl + " - " + e.getMessage());
+
+            System.err.println("Lỗi upload MinIO: " + sourceUrl + " - " + e.getMessage());
+
+            return null;
         }
-        return null;
     }
 
     public void sendSticker(Long conversationId, Long senderId, StickerItem stickerItem) {
         // 1. Lưu Message chính
-        Message m = Message.builder()
-                .conversationId(conversationId)
-                .senderId(senderId)
-                .sticker(stickerItem)
-                .contentType(MessageType.STICKER)
-                .build();
+        Message m = Message.builder().conversationId(conversationId).senderId(senderId).sticker(stickerItem).contentType(MessageType.STICKER).build();
         messageRepo.save(m);
 
         // 3. Đồng bộ Persistence Context (Flush/Refresh)
@@ -306,13 +271,7 @@ public class StickerService {
 
         // 5. Tạo MessageStatus cho các thành viên
         List<ConversationMember> members = memberRepo.findByConversationId(conversationId);
-        List<MessageStatus> statuses = members.stream().map(member ->
-                MessageStatus.builder()
-                        .messageId(finalMsg.getId())
-                        .userId(member.getUserId())
-                        .status(member.getUserId().equals(senderId) ? DeliveryStatus.DELIVERED : DeliveryStatus.SENT)
-                        .build()
-        ).collect(Collectors.toList());
+        List<MessageStatus> statuses = members.stream().map(member -> MessageStatus.builder().messageId(finalMsg.getId()).userId(member.getUserId()).status(member.getUserId().equals(senderId) ? DeliveryStatus.DELIVERED : DeliveryStatus.SENT).build()).collect(Collectors.toList());
         statusRepo.saveAll(statuses);
 
         // 6. Đánh dấu đã xem cho chính mình
