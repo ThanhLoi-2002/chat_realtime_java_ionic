@@ -3,6 +3,7 @@ package com.zalo.modules.message.dto.request;
 import com.zalo.modules.message.dto.response.LinkPreviewResponse;
 import com.zalo.modules.message.entity.MessageType;
 import com.zalo.modules.media.dtos.requests.MediaRequest;
+import com.zalo.modules.sticker.entity.StickerItem;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

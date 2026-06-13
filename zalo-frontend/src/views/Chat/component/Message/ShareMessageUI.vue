@@ -131,10 +131,15 @@
                             <img :src="actionStore.shareMessage.attachments[0].secureUrl"
                                 class="w-full h-full object-cover" />
                         </div>
+                        <div v-if="actionStore.shareMessage.contentType === MessageEnum.STICKER"
+                            class="size-12 rounded overflow-hidden shrink-0">
+                            <ZaloSticker :sticker-item="actionStore.shareMessage.sticker" :is-hover="false" :size="65"/>
+                        </div>
                         <div class="min-w-0">
                             <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">
                                 {{ actionStore.shareMessage.contentType == MessageEnum.IMAGE ? t('shareImages') :
                                     actionStore.shareMessage.contentType == MessageEnum.FILE ? t('shareFiles') :
+                                    actionStore.shareMessage.contentType == MessageEnum.STICKER ? t('shareSticker') :
                                         t('shareMessages') }}
                             </p>
 
@@ -207,6 +212,7 @@ import { normalizeText } from '@/utils/helper';
 import { computed, inject, onMounted, ref } from 'vue';
 import FileContainer from '../../Info/components/Storage/FileContainer.vue';
 import { useChatActionStore } from '@/composables/useChatAction';
+import ZaloSticker from '@/components/Sticker/Zalo/ZaloSticker.vue';
 
 // const props = defineProps<{
 //     message?: MessageType

@@ -27,7 +27,7 @@
 
                 <div v-else class="flex items-center gap-2 group w-full px-1 relative" :class="[actionStore.isSelectionMode ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800/50' : '',
                 msg.sender.id == userStorage.user?.id ? 'flex-row-reverse' : ''
-                ]" @click="() => msg.stt == 1 && handleContainerClick(msg)">
+                ]" @click.stop="() => msg.stt == 1 && handleContainerClick(msg)">
 
                     <!-- CHECKBOX (Chỉ hiện khi ở chế độ chọn nhiều) -->
                     <div v-if="actionStore.isSelectionMode && msg.stt == 1" class="shrink-0">
@@ -331,6 +331,7 @@ const scrollMore = () => {
             // Kiểm tra xem message cuối cùng đã là message mới nhất chưa
             // Nếu conversationStorage.conversation?.lastMessage?.id > lastMessage.id → còn tin mới hơn
             const newestId = conversationStorage.conversation?.lastMessage?.id ?? 0
+
             if (newestId > lastMessage.id) {
                 const options: MessageFilter = {
                     conversationId: conversationStorage.conversation!.id,

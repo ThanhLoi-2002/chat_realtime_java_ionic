@@ -1,5 +1,6 @@
 package com.zalo.modules.message.dto.request;
 
+import com.zalo.modules.sticker.entity.StickerItem;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

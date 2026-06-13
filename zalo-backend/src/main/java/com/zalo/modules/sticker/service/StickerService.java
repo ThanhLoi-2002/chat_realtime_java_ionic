@@ -33,15 +33,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
@@ -255,36 +250,6 @@ public class StickerService {
     }
 
     public void sendSticker(Long conversationId, Long senderId, StickerItem stickerItem) {
-        // 1. Lưu Message chính
-        Message m = Message.builder().conversationId(conversationId).senderId(senderId).sticker(stickerItem).contentType(MessageType.STICKER).build();
-        messageRepo.save(m);
-
-        // 3. Đồng bộ Persistence Context (Flush/Refresh)
-        em.flush();
-        em.refresh(m);
-        Message finalMsg = messageService.findByIdWithRelationShip(m.getId(), conversationId);
-
-        // 4. Cập nhật Last Message cho Conversation
-        Conversation conv = conversationRepository.findById(conversationId).orElseThrow();
-        conv.setLastMessageId(finalMsg.getId());
-        conversationRepository.save(conv);
-
-        // 5. Tạo MessageStatus cho các thành viên
-        List<ConversationMember> members = memberRepo.findByConversationId(conversationId);
-        List<MessageStatus> statuses = members.stream().map(member -> MessageStatus.builder().messageId(finalMsg.getId()).userId(member.getUserId()).status(member.getUserId().equals(senderId) ? DeliveryStatus.DELIVERED : DeliveryStatus.SENT).build()).collect(Collectors.toList());
-        statusRepo.saveAll(statuses);
-
-        // 6. Đánh dấu đã xem cho chính mình
-        messageService.markRead(conversationId, senderId, finalMsg.getId());
-
-        // 7. Bắn WebSocket
-        ConversationResponse convRes = new ConversationResponse(conversationService.findByIdWithRelationShip(conversationId), "recipient", "lastMessage", "createdBy", "avatar");
-        if (conv.getType() == ConversationType.GROUP) {
-            convRes.setMembers(memberService.getMembers(conv.getId()));
-        }
-
-        MessageResponse messageResponse = new MessageResponse(finalMsg, "sender");
-
-        websocketService.sendMessage(messageResponse, convRes, members);
+        messageService.sendSticker(conversationId, senderId, stickerItem);
     }
 }

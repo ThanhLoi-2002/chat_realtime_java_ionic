@@ -26,6 +26,7 @@ import com.zalo.modules.conversation.entities.ConversationMember;
 import com.zalo.modules.media.dtos.requests.MediaRequest;
 import com.zalo.modules.media.entities.MediaType;
 import com.zalo.modules.media.service.MediaInterface;
+import com.zalo.modules.sticker.entity.StickerItem;
 import com.zalo.modules.user.entities.User;
 import com.zalo.modules.user.service.UserRepository;
 import jakarta.persistence.EntityManager;
@@ -237,13 +238,13 @@ public class MessageService {
     }
 
     private void detectLang(MessageResponse messageResponse, Message mess) {
-        if(messageResponse.getContent().length() >= 5){
+        if (messageResponse.getContent().length() >= 5) {
             DetectLangRequest detectLangRequest = new DetectLangRequest();
             detectLangRequest.setText(messageResponse.getContent());
             DetectLangResponse response = translateService.detectLanguage(detectLangRequest);
 
             // độ tin cậy >= 80% thì lưu vào db
-            if(response.getConfidence() >= 0.8) {
+            if (response.getConfidence() >= 0.8) {
                 messageResponse.setLang(response.getLanguage());
                 websocketService.updateMessage(messageResponse);
 
@@ -502,7 +503,8 @@ public class MessageService {
         CreateMessageRequest createMessageRequest = new CreateMessageRequest();
         createMessageRequest.contentType = originalMsg.getContentType();
         createMessageRequest.linkMetadata = originalMsg.getLinkMetadata();
-        createMessageRequest.attachments = originalMedias.stream().map(MediaRequest::new).toList();;
+        createMessageRequest.attachments = originalMedias.stream().map(MediaRequest::new).toList();
+        ;
 
         // if be imaged -> isAttachDesc must equal true
         if (dto.isAttachDesc && originalMsg.getContentType() == MessageType.IMAGE) {
@@ -522,7 +524,12 @@ public class MessageService {
         // 3. Lặp qua danh sách các hội thoại được chia sẻ đến
         dto.conversationIds.forEach(targetConvId -> {
             try {
-                sendMessage(targetConvId, senderId, createMessageRequest);
+                if (originalMsg.getContentType() == MessageType.STICKER) {
+                    sendSticker(targetConvId, senderId, originalMsg.getSticker());
+                } else {
+                    sendMessage(targetConvId, senderId, createMessageRequest);
+                }
+
                 if (!dto.content.isEmpty()) {
                     sendMessage(targetConvId, senderId, createMessageRequest2);
                 }
@@ -558,7 +565,11 @@ public class MessageService {
             // 3. Lặp qua danh sách các hội thoại được chia sẻ đến
             dto.conversationIds.forEach(targetConvId -> {
                 try {
-                    sendMessage(targetConvId, senderId, createMessageRequest);
+                    if (originalMsg.getContentType() == MessageType.STICKER) {
+                        sendSticker(targetConvId, senderId, originalMsg.getSticker());
+                    } else {
+                        sendMessage(targetConvId, senderId, createMessageRequest);
+                    }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -580,6 +591,40 @@ public class MessageService {
                 }
             });
         }
+    }
+
+    public void sendSticker(Long conversationId, Long senderId, StickerItem stickerItem) {
+        // 1. Lưu Message chính
+        Message m = Message.builder().conversationId(conversationId).senderId(senderId).sticker(stickerItem).contentType(MessageType.STICKER).build();
+        messageRepo.save(m);
+
+        // 3. Đồng bộ Persistence Context (Flush/Refresh)
+        em.flush();
+        em.refresh(m);
+        Message finalMsg = findByIdWithRelationShip(m.getId(), conversationId);
+
+        // 4. Cập nhật Last Message cho Conversation
+        Conversation conv = conversationRepository.findById(conversationId).orElseThrow();
+        conv.setLastMessageId(finalMsg.getId());
+        conversationRepository.save(conv);
+
+        // 5. Tạo MessageStatus cho các thành viên
+        List<ConversationMember> members = memberRepo.findByConversationId(conversationId);
+        List<MessageStatus> statuses = members.stream().map(member -> MessageStatus.builder().messageId(finalMsg.getId()).userId(member.getUserId()).status(member.getUserId().equals(senderId) ? DeliveryStatus.DELIVERED : DeliveryStatus.SENT).build()).collect(Collectors.toList());
+        statusRepo.saveAll(statuses);
+
+        // 6. Đánh dấu đã xem cho chính mình
+        markRead(conversationId, senderId, finalMsg.getId());
+
+        // 7. Bắn WebSocket
+        ConversationResponse convRes = new ConversationResponse(conversationService.findByIdWithRelationShip(conversationId), "recipient", "lastMessage", "createdBy", "avatar");
+        if (conv.getType() == ConversationType.GROUP) {
+            convRes.setMembers(memberService.getMembers(conv.getId()));
+        }
+
+        MessageResponse messageResponse = new MessageResponse(finalMsg, "sender");
+
+        websocketService.sendMessage(messageResponse, convRes, members);
     }
 
     public List<MessageStatus> getStatusById(Long id) {
