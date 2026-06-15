@@ -1,5 +1,5 @@
 import { FileType, GroupSetting, LinkMetadataType } from "./common"
-import { AccountTypeEnum, ConversationEnum, DeliveryStatusEnum, FriendshipStatusEnum, MemberRoleEnum, MessageEnum, ModuleEnum, ReactionEnum, ResourceEnum, SystemMetadataEnum } from "./enum"
+import { ConversationEnum, DeliveryStatusEnum, FriendshipStatusEnum, MemberRoleEnum, MessageEnum, ModuleEnum, ReactionEnum, ResourceEnum, SystemMetadataEnum } from "./enum"
 
 export type BaseType = {
     id: number
@@ -25,7 +25,9 @@ export type UserType = BaseType & {
     phone: string
     avatar: FileType
     cover: FileType
-    accountType: AccountTypeEnum
+    isOa: number
+    oaId: number
+    ownerOaId: number
 }
 
 export type ConversationType = BaseType & {

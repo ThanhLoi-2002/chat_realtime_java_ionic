@@ -3,9 +3,7 @@ package com.zalo.modules.user;
 import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
 import com.zalo.common.configuration.anotation.ResponseMessage;
 import com.zalo.common.filter.UserFilter;
-import com.zalo.modules.user.dto.request.UpdateOARequest;
 import com.zalo.modules.user.dto.response.UserResponse;
-import com.zalo.modules.user.entities.AccountType;
 import com.zalo.modules.user.entities.User;
 import com.zalo.modules.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -51,10 +49,9 @@ public class UserController {
     @PutMapping("/toggle-oa")
     @ResponseMessage("success")
     public UserResponse toggleOA(
-            @CurrentUser User user,
-            @RequestBody UpdateOARequest req
+            @CurrentUser User user
     ) {
-        user = userService.toggleOA(req.getAType(), user.getId());
+        user = userService.toggleOA(user.getId());
 
         return new UserResponse(user);
     }

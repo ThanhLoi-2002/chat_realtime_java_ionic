@@ -2,20 +2,11 @@ package com.zalo.modules.sticker.service;
 
 import com.zalo.common.service.ApiService;
 import com.zalo.common.service.WebsocketService;
-import com.zalo.modules.conversation.dto.respone.ConversationResponse;
-import com.zalo.modules.conversation.entities.Conversation;
-import com.zalo.modules.conversation.entities.ConversationMember;
-import com.zalo.modules.conversation.entities.ConversationType;
 import com.zalo.modules.conversation.service.ConversationMemberRepository;
 import com.zalo.modules.conversation.service.ConversationRepository;
 import com.zalo.modules.conversation.service.ConversationService;
 import com.zalo.modules.conversation.service.MemberService;
 import com.zalo.modules.media.service.MinioService;
-import com.zalo.modules.message.dto.response.MessageResponse;
-import com.zalo.modules.message.entity.DeliveryStatus;
-import com.zalo.modules.message.entity.Message;
-import com.zalo.modules.message.entity.MessageStatus;
-import com.zalo.modules.message.entity.MessageType;
 import com.zalo.modules.message.service.MessageRepository;
 import com.zalo.modules.message.service.MessageService;
 import com.zalo.modules.message.service.MessageStatusRepository;
@@ -53,14 +44,6 @@ import java.util.regex.Pattern;
 public class StickerService {
     ApiService apiService;
     StickerRepository stickerRepository;
-    WebsocketService websocketService;
-    MessageRepository messageRepo;
-    EntityManager em;
-    MessageStatusRepository statusRepo;
-    ConversationMemberRepository memberRepo;
-    ConversationRepository conversationRepository;
-    ConversationService conversationService;
-    MemberService memberService;
     MessageService messageService;
     MinioService minioService;
 

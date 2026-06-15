@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -28,8 +29,11 @@ public class User extends BaseEntity implements UserDetails {
     @Column(nullable = false, unique = true)
     String phone;
 
-    @Enumerated(EnumType.STRING)
-    AccountType accountType;
+    @Column(name = "oa_id", unique = true)
+    Long oaId;
+    Long ownerOaId;
+
+    int isOa;
 
     @Convert(converter = FileConverter.class)
     @Column(columnDefinition = "LONGTEXT")
@@ -51,5 +55,13 @@ public class User extends BaseEntity implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
 //        return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+    }
+
+    public void generateOaId() {
+        long timestamp = System.currentTimeMillis();
+        long randomNumber = ThreadLocalRandom.current().nextLong(100, 1000);
+
+        // Gán trực tiếp số Nguyên vào, không cần ép kiểu qua String nữa
+        this.oaId = timestamp * 1000 + randomNumber;
     }
 }

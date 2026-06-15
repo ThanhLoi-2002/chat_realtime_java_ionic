@@ -9,7 +9,7 @@ export function useDevice() {
   const platforms = getPlatforms();
 
   function check() {
-    isMobile.value = window.innerWidth < 768
+    isMobile.value = isSmartDevice()
   }
 
   const checkDevice = () => {

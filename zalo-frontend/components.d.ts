@@ -11,6 +11,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AOHeader: typeof import('./src/components/OA/Header/AOHeader.vue')['default']
     AvatarModal: typeof import('./src/components/Avatar/AvatarModal.vue')['default']
     BaseButton: typeof import('./src/components/Button/BaseButton.vue')['default']
     CircleAvatar: typeof import('./src/components/Avatar/CircleAvatar.vue')['default']
@@ -43,6 +44,9 @@ declare module 'vue' {
     LoadingSpinner: typeof import('./src/components/Loading/LoadingSpinner.vue')['default']
     MobileBackButton: typeof import('./src/components/Button/MobileBackButton.vue')['default']
     Modal: typeof import('./src/components/Modal/Modal.vue')['default']
+    OAHeader: typeof import('./src/components/OA/Header/OAHeader.vue')['default']
+    OAPageHeader: typeof import('./src/components/OA/Header/OAPageHeader.vue')['default']
+    OASidebar: typeof import('./src/components/OA/Sidebar/OASidebar.vue')['default']
     PaginationTable: typeof import('./src/components/Table/PaginationTable.vue')['default']
     PopoverButton: typeof import('./src/components/Dropdown/PopoverButton.vue')['default']
     ProfileUI: typeof import('./src/components/Sidebar/components/ProfileUI.vue')['default']

@@ -23,16 +23,29 @@ export const ROUTE = {
     FRIENDS: "/friends",
     JOIN_GROUP: "/g",
     SCAN: "/scan",
+    OA_DASHBOARD: {
+        INDEX: "/oa-dashboard",
+        HOME: "home",
+        CHATBOT: "chatbot",
+        MANAGEMENT: "management"
+    },
+
     NOT_FOUND: "/notFound"
 }
 
+export const OA_ROUTE = {
+    home: () => `${ROUTE.OA_DASHBOARD.INDEX}/${ROUTE.OA_DASHBOARD.HOME}`,
+    chatbot: () => `${ROUTE.OA_DASHBOARD.INDEX}/${ROUTE.OA_DASHBOARD.CHATBOT}`,
+    management: () => `${ROUTE.OA_DASHBOARD.INDEX}/${ROUTE.OA_DASHBOARD.MANAGEMENT}`,
+}
+
 export const EMOJI_MAP = {
-  LIKE: '👍',
-  LOVE: '❤️',
-  HAHA: '😂',
-  WOW: '😮',
-  SAD: '😢',
-  ANGRY: '😡'
+    LIKE: '👍',
+    LOVE: '❤️',
+    HAHA: '😂',
+    WOW: '😮',
+    SAD: '😢',
+    ANGRY: '😡'
 }
 
 export type ReactionKey = keyof typeof EMOJI_MAP;

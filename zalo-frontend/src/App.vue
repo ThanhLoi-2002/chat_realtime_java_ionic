@@ -21,7 +21,7 @@
 import { useRoute } from 'vue-router';
 import LoadingSpinner from './components/Loading/LoadingSpinner.vue';
 import { useLangStore } from './stores/lang.storage';
-import { defineAsyncComponent, onMounted, watch } from 'vue';
+import { onMounted, watch } from 'vue';
 import { useUserStore } from './stores/user.storage';
 import AvatarModal from './components/Avatar/AvatarModal.vue';
 import { getKey } from './utils/local';
@@ -36,6 +36,10 @@ import { storage } from './services/storage.service.';
 import { useClassificationCardStore } from './stores/classificationCard.storage';
 import { useFriendshipStore } from './stores/friendship.storage';
 import { useConfirmStore } from './composables/useConfirm';
+import MainLayout from './layouts/MainLayout.vue';
+import AuthLayout from './layouts/AuthLayout.vue';
+import NoLayout from './layouts/NoLayout.vue';
+import OALayout from './layouts/OALayout.vue'
 
 const route: any = useRoute();
 const langStore = useLangStore()
@@ -48,9 +52,10 @@ const { isMobile, logDeviceInfo, isSmartDevice } = useDevice()
 const confirmStore = useConfirmStore();
 
 const layouts: any = {
-  main: defineAsyncComponent(() => import('./layouts/MainLayout.vue')),
-  auth: defineAsyncComponent(() => import('./layouts/AuthLayout.vue')),
-  nolayout: defineAsyncComponent(() => import('./layouts/NoLayout.vue'))
+  main: MainLayout,
+  auth: AuthLayout,
+  oa: OALayout,
+  nolayout: NoLayout
 }
 
 logDeviceInfo()

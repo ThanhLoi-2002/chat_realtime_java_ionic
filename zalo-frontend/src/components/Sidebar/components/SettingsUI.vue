@@ -36,8 +36,8 @@
                     {{ t('acctiveOA') }}
                 </span>
 
-                <input type="checkbox" :checked="userStorage.user?.accountType === AccountTypeEnum.OA"
-                    @change="toggleOA" class="sr-only peer">
+                <input type="checkbox" :checked="userStorage.user?.isOa === 1"
+                    @change="toggleOA" class="sr-only peer" :disabled="userStorage.user?.isOa === 1">
 
                 <div class="relative w-10 h-5 bg-gray-300 rounded-full
                dark:bg-gray-600
@@ -89,7 +89,6 @@ import { useConversationStore } from '@/stores/conversation.storage';
 import { useMessageStore } from '@/stores/message.storage';
 import { useUserStore } from '@/stores/user.storage';
 import { SettingPageType } from '@/types/common';
-import { AccountTypeEnum } from '@/types/enum';
 import { RANDOM_AVATAR } from '@/utils/constant'
 import { computed, inject, ref } from 'vue';
 

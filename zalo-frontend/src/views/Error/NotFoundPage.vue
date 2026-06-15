@@ -7,10 +7,26 @@
     </p>
     
     <button 
-      @click="$router.push('/')"
+      @click="goBack"
       class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition-all shadow-lg"
     >
       Quay về trang chủ
     </button>
   </div>
 </template>
+
+<script setup lang="ts">
+import { useRouter } from 'vue-router';
+
+
+const router = useRouter();
+const goBack = () => {
+  // Kiểm tra nếu có lịch sử trình duyệt thì back, không thì đẩy về trang chủ tránh bị kẹt
+  if (window.history.length > 1) {
+    router.back(); 
+    // Hoặc router.go(-1);
+  } else {
+    router.push('/');
+  }
+};
+</script>

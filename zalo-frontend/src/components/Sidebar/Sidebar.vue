@@ -58,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import { RANDOM_AVATAR, ROUTE } from '@/utils/constant';
+import { OA_ROUTE, RANDOM_AVATAR, ROUTE } from '@/utils/constant';
 import { useRoute } from 'vue-router';
 import { useDevice } from '@/composables/useDevice';
 import { computed, defineAsyncComponent, ref } from 'vue';
@@ -85,7 +85,7 @@ const pages = {
     profile: ProfileUI
 }
 
-const items = [
+const items = computed(() => [
     {
         icon: 'fa-solid fa-comment',
         to: ROUTE.CHATS
@@ -95,14 +95,19 @@ const items = [
         to: ROUTE.LANGUAGES,
         hideOnMobile: true
     },
+    ...(userStorage.user?.isOa ? [{
+        icon: 'fas fa-tachometer-alt',
+        to: OA_ROUTE.home(),
+        hideOnMobile: true
+    }] : []),
     {
         icon: 'fa-solid fa-book',
         to: ROUTE.FRIENDS,
     },
-]
+])
 
 const visibleItems = computed(() =>
-    items.filter(i => !(isMobile.value && i.hideOnMobile))
+    items.value.filter(i => !(isMobile.value && i?.hideOnMobile))
 )
 
 const goPage = (page: SettingPageType) => {
