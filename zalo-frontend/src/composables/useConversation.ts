@@ -1,8 +1,8 @@
-import { useUserStore } from "@/stores/user.storage"
+import { useUserStore } from "@/stores/App/user.storage"
 import { ConversationType, MemberType, MessageType } from "@/types/entities"
 import { ConversationEnum, MemberRoleEnum, MessageEnum } from "@/types/enum"
 import { useTranslate } from "./useTranslate"
-import { useConversationStore } from "@/stores/conversation.storage"
+import { useConversationStore } from "@/stores/App/conversation.storage"
 
 export function useConversation() {
     const userStorage = useUserStore()

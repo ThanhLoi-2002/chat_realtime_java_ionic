@@ -71,7 +71,7 @@ import { nextTick, ref, watch } from 'vue';
 import { style } from '@/assets/tailwindcss';
 import { useTranslate } from '@/composables/useTranslate';
 import { IonToggle } from '@ionic/vue';
-import { useConversationStore } from '@/stores/conversation.storage';
+import { useConversationStore } from '@/stores/App/conversation.storage';
 import { capitalize } from '@/utils/helper';
 import { GroupSetting } from '@/types/common';
 import { useConversation } from '@/composables/useConversation';

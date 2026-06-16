@@ -39,9 +39,9 @@
 import { useDateTime } from "@/composables/useDateTime";
 import { useTranslate } from "@/composables/useTranslate";
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import ZaloSticker from "@/components/Sticker/Zalo/ZaloSticker.vue";
+import ZaloSticker from "@/components/Shared/Sticker/Zalo/ZaloSticker.vue";
 import { MessageType } from "@/types/entities";
-import { useStickerStore } from "@/stores/sticker.storage";
+import { useStickerStore } from "@/stores/App/sticker.storage";
 
 type Message = MessageType & {
     isFirst: boolean

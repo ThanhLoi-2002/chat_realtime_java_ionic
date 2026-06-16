@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
+import CircleAvatar from '@/components/Shared/Avatar/CircleAvatar.vue';
 defineProps<{ suggestions: any[], selectedIndex: number }>();
 defineEmits(['select']);
 </script>

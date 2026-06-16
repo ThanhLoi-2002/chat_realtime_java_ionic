@@ -93,7 +93,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useConversationStore } from '@/stores/conversation.storage'
+import { useConversationStore } from '@/stores/App/conversation.storage.ts'
 import { useConversation } from '@/composables/useConversation'
 import { useTranslate } from '@/composables/useTranslate'
 import { style } from '@/assets/tailwindcss'
@@ -101,7 +101,7 @@ import CommonGroupPanel from './CommonGroupPanel.vue'
 import StoragePanel from './Storage/StoragePanel.vue'
 import StorageComponent from './Storage/StorageComponent.vue'
 import Security from './Security.vue'
-import { useSystemStore } from '@/stores/system.storage'
+import { useSystemStore } from '@/stores/App/system.storage.ts'
 import PinPanel from '../../component/Pin/PinPanel.vue'
 
 const emit = defineEmits(['close'])

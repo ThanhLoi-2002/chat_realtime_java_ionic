@@ -84,37 +84,37 @@
 </template>
 <script setup lang="ts">
 import { useTranslate } from '@/composables/useTranslate';
-import { useConversationStore } from '@/stores/conversation.storage';
+import { useConversationStore } from '@/stores/App/conversation.storage.ts';
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
-import { useMessageStore } from '@/stores/message.storage';
+import { useMessageStore } from '@/stores/App/message.storage.ts';
 import ChatHeader from './component/Chat/ChatHeader.vue';
 import MessageContainer from './component/Chat/MessageContainer.vue';
 import { useDateTime } from '@/composables/useDateTime';
-import LoadingSpinner from '@/components/Loading/LoadingSpinner.vue';
+import LoadingSpinner from '@/components/Shared/Loading/LoadingSpinner.vue';
 import { useScroll } from '@/composables/useScroll';
 import Typing from './component/Chat/Typing.vue';
-import { useSystemStore } from '@/stores/system.storage';
+import { useSystemStore } from '@/stores/App/system.storage.ts';
 import AddFriendBar from './component/Chat/AddFriendBar.vue';
 import { MemberRoleEnum, MessageEnum } from '@/types/enum';
 import { StompSubscription } from '@stomp/stompjs';
 import { socketSubscribe } from '@/utils/websocket';
 import { MessageFilter } from '@/types/common';
-import { useUserStore } from '@/stores/user.storage';
+import { useUserStore } from '@/stores/App/user.storage.ts';
 import SystemMessage from './component/Message/SystemMessage.vue';
 import { MessageType } from '@/types/entities';
 import { useDebounce } from '@/composables/useDebounce';
 import { appLimit } from '@/utils/constant';
 import PinList from './component/Pin/PinList.vue';
-import { usePinStore } from '@/stores/pin.storage';
+import { usePinStore } from '@/stores/App/pin.storage.ts';
 import { useChatActionStore } from '@/composables/useChatAction';
 import MessageContextMenu from './component/Message/MessageContextMenu.vue';
 import ShareMessageUI from './component/Message/ShareMessageUI.vue';
-import Modal from '@/components/Modal/Modal.vue';
+import Modal from '@/components/Shared/Modal/Modal.vue';
 import DetailUI from './component/Message/DetailUI.vue';
 import SelectionToolbar from './component/Chat/SelectionToolbar.vue';
 import ChatBlockedBar from './component/Chat/ChatBlockedBar.vue';
 import { useConversation } from '@/composables/useConversation';
-import { useJoinGroupStore } from '@/stores/joinGroupRequest.storage';
+import { useJoinGroupStore } from '@/stores/App/joinGroupRequest.storage.ts';
 
 const props = defineProps<{
     isShowInfoSection: boolean

@@ -97,9 +97,9 @@
 
 <script setup lang="ts">
 import { style } from '@/assets/tailwindcss'
-import GroupAvatar from '@/components/Avatar/GroupAvatar.vue'
+import GroupAvatar from '@/components/Shared/Avatar/GroupAvatar.vue'
 import { useTranslate } from '@/composables/useTranslate'
-import { useConversationStore } from '@/stores/conversation.storage'
+import { useConversationStore } from '@/stores/App/conversation.storage'
 import { ConversationType } from '@/types/entities'
 import GroupProfile from '@/views/Chat/component/GroupProfile.vue'
 import Member from '@/views/Chat/Info/components/Member.vue'

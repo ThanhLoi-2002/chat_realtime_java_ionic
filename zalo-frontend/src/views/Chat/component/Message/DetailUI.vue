@@ -63,11 +63,11 @@
 
 <script setup lang="ts">
 import { style } from '@/assets/tailwindcss';
-import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
+import CircleAvatar from '@/components/Shared/Avatar/CircleAvatar.vue';
 import { useDateTime } from '@/composables/useDateTime';
 import { useMessage } from '@/composables/useMessage';
 import { useTranslate } from '@/composables/useTranslate';
-import { useMessageStore } from '@/stores/message.storage';
+import { useMessageStore } from '@/stores/App/message.storage.ts';
 import { MessageStatusType, MessageType } from '@/types/entities';
 import { MessageEnum } from '@/types/enum';
 import { onMounted, ref, computed } from 'vue';

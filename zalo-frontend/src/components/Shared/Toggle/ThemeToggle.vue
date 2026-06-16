@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useSystemStore } from '@/stores/system.storage';
+import { useSystemStore } from '@/stores/App/system.storage';
 import { THEME } from '@/utils/constant'
 import { getKey, setKey } from '@/utils/local'
 import { ref } from 'vue'

@@ -19,11 +19,11 @@
 </template>
 
 <script setup lang="ts">
-import PaginationTable from "@/components/Table/PaginationTable.vue"
+import PaginationTable from "@/components/Shared/Table/PaginationTable.vue"
 import { useConfirmStore } from "@/composables/useConfirm"
 import { useDebounce } from "@/composables/useDebounce"
 import { useTranslate } from "@/composables/useTranslate"
-import { useLangStore } from "@/stores/lang.storage"
+import { useLangStore } from "@/stores/App/lang.storage"
 import { LangType } from "@/types/entities"
 import { IonButton, IonInput } from "@ionic/vue"
 import { ref, h, onMounted, computed } from "vue"

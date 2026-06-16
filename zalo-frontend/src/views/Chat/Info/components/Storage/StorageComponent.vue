@@ -40,16 +40,16 @@
 </template>
 <script setup lang="ts">
 import { useTranslate } from '@/composables/useTranslate';
-import { useConversationStore } from '@/stores/conversation.storage';
-import { useMessageStore } from '@/stores/message.storage';
+import { useConversationStore } from '@/stores/App/conversation.storage.ts';
+import { useMessageStore } from '@/stores/App/message.storage.ts';
 import { MessageFilter } from '@/types/common';
 import { MediaType } from '@/types/entities';
 import { MessageEnum } from '@/types/enum';
 import { onMounted, reactive, watch } from 'vue';
 import FileContainer from './FileContainer.vue';
-import Collapse from '@/components/collapse/Collapse.vue';
+import Collapse from '@/components/Shared/collapse/Collapse.vue';
 import LinkContainer from './LinkContainer.vue';
-import ImageOrVideo from '@/components/Media/ImageOrVideo.vue';
+import ImageOrVideo from '@/components/Shared/Media/ImageOrVideo.vue';
 import { appLimit } from '@/utils/constant';
 
 const emit = defineEmits<{

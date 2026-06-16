@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { style } from '@/assets/tailwindcss'
-import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
-import Search from '@/components/Search/Search.vue';
+import CircleAvatar from '@/components/Shared/Avatar/CircleAvatar.vue';
+import Search from '@/components/Shared/Search/Search.vue';
 import { useTranslate } from '@/composables/useTranslate'
 import { UserType } from '@/types/entities';
 import { computed, ref } from 'vue'

@@ -42,7 +42,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { useLangStore } from '@/stores/lang.storage';
+import { useLangStore } from '@/stores/App/lang.storage';
 import { oaStyle } from '@/assets/tailwindcss';
 
 // Nhận prop đóng mở từ Sidebar cha

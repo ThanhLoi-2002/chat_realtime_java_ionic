@@ -62,11 +62,11 @@ import { OA_ROUTE, RANDOM_AVATAR, ROUTE } from '@/utils/constant';
 import { useRoute } from 'vue-router';
 import { useDevice } from '@/composables/useDevice';
 import { computed, defineAsyncComponent, ref } from 'vue';
-import Modal from '../Modal/Modal.vue';
 import { useTranslate } from '@/composables/useTranslate';
 import { SettingPageType } from '@/types/common';
-import { useUserStore } from '@/stores/user.storage';
-import { useSystemStore } from '@/stores/system.storage';
+import { useUserStore } from '@/stores/App/user.storage.ts';
+import { useSystemStore } from '@/stores/App/system.storage.ts';
+import Modal from '@/components/Shared/Modal/Modal.vue';
 
 const ProfileUI = defineAsyncComponent(() => import('./components/ProfileUI.vue'));
 const SettingsUI = defineAsyncComponent(() => import('./components/SettingsUI.vue'));

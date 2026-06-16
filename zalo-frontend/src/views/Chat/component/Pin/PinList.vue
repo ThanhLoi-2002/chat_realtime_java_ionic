@@ -124,9 +124,9 @@
 import { style } from '@/assets/tailwindcss';
 import { useMessage } from '@/composables/useMessage';
 import { useTranslate } from '@/composables/useTranslate';
-import { useConversationStore } from '@/stores/conversation.storage';
-import { usePinStore } from '@/stores/pin.storage';
-import { useSystemStore } from '@/stores/system.storage';
+import { useConversationStore } from '@/stores/App/conversation.storage';
+import { usePinStore } from '@/stores/App/pin.storage';
+import { useSystemStore } from '@/stores/App/system.storage';
 import { MessageEnum } from '@/types/enum';
 import { onClickOutside } from '@vueuse/core';
 import { ref, watch } from 'vue';

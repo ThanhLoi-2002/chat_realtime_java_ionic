@@ -74,7 +74,7 @@ import { useDateTime } from '@/composables/useDateTime';
 import { useTranslate } from '@/composables/useTranslate';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { style } from '@/assets/tailwindcss';
-import { useMessageStore } from '@/stores/message.storage';
+import { useMessageStore } from '@/stores/App/message.storage.ts';
 import Reactions from '../Reaction/Reactions.vue';
 import { MediaType, MessageType } from '@/types/entities';
 import { MemberRoleEnum } from '@/types/enum';

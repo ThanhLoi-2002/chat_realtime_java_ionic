@@ -6,9 +6,9 @@ import FilterSender from "./FilterSender.vue";
 import FilterDate from "./FilterDate.vue";
 import { MessageFilter } from "@/types/common.ts";
 import FilterFileType from "./FilterFileType.vue";
-import Search from "@/components/Search/Search.vue";
+import Search from "@/components/Shared/Search/Search.vue";
 import { useTranslate } from "@/composables/useTranslate.ts";
-import { useConversationStore } from "@/stores/conversation.storage.ts";
+import { useConversationStore } from "@/stores/App/conversation.storage.ts";
 import { useConversation } from "@/composables/useConversation.ts";
 
 const props = defineProps<{

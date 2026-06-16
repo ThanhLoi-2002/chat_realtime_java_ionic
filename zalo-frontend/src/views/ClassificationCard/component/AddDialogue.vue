@@ -90,13 +90,13 @@
 <script setup lang="ts">
 // ... các imports giữ nguyên ...
 import { style } from '@/assets/tailwindcss';
-import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
-import GroupAvatar from '@/components/Avatar/GroupAvatar.vue';
-import ClassificationChip from '@/components/Chip/ClassificationChip.vue';
+import CircleAvatar from '@/components/Shared/Avatar/CircleAvatar.vue';
+import GroupAvatar from '@/components/Shared/Avatar/GroupAvatar.vue';
+import ClassificationChip from '@/components/Shared/Chip/ClassificationChip.vue';
 import { useConversation } from '@/composables/useConversation';
 import { useTranslate } from '@/composables/useTranslate';
-import { useClassificationCardStore } from '@/stores/classificationCard.storage';
-import { useConversationStore } from '@/stores/conversation.storage';
+import { useClassificationCardStore } from '@/stores/App/classificationCard.storage';
+import { useConversationStore } from '@/stores/App/conversation.storage';
 import { ConversationType } from '@/types/entities';
 import { ConversationEnum } from '@/types/enum'
 import { normalizeText } from '@/utils/helper';

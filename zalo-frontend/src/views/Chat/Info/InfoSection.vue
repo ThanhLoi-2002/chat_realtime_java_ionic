@@ -4,7 +4,7 @@
 </template>
 
 <script setup lang="ts">
-import { useConversationStore } from '@/stores/conversation.storage'
+import { useConversationStore } from '@/stores/App/conversation.storage.ts'
 import { useConversation } from '@/composables/useConversation'
 import ProfileInfo from './components/ProfileInfo.vue'
 import GroupInfo from './components/GroupInfo.vue'

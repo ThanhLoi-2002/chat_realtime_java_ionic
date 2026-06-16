@@ -122,22 +122,22 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useConversationStore } from '@/stores/conversation.storage'
+import { useConversationStore } from '@/stores/App/conversation.storage.ts'
 import { useConversation } from '@/composables/useConversation'
 import { useTranslate } from '@/composables/useTranslate'
 import { style } from '@/assets/tailwindcss'
-import GroupAvatar from '@/components/Avatar/GroupAvatar.vue'
+import GroupAvatar from '@/components/Shared/Avatar/GroupAvatar.vue'
 import StoragePanel from './Storage/StoragePanel.vue'
 import StorageComponent from './Storage/StorageComponent.vue'
 import Member from './Member.vue'
 import Security from './Security.vue'
-import Collapse from '@/components/collapse/Collapse.vue'
+import Collapse from '@/components/Shared/collapse/Collapse.vue'
 import PinPanel from '../../component/Pin/PinPanel.vue'
-import { useSystemStore } from '@/stores/system.storage'
+import { useSystemStore } from '@/stores/App/system.storage.ts'
 import GroupManagementPanel from './GroupManagement/GroupManagementPanel.vue'
 import { useConfirmStore } from '@/composables/useConfirm'
 import ApproveMember from './ApproveMember.vue'
-import { useJoinGroupStore } from '@/stores/joinGroupRequest.storage'
+import { useJoinGroupStore } from '@/stores/App/joinGroupRequest.storage.ts'
 
 const emit = defineEmits(['close'])
 

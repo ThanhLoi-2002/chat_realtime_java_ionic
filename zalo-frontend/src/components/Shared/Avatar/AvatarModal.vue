@@ -26,7 +26,7 @@
 import { computed, defineAsyncComponent, ref, watch } from "vue";
 import { useAvatarModal } from "@/composables/useAvatarModal";
 import { useTranslate } from "@/composables/useTranslate";
-import Modal from "@/components/Modal/Modal.vue";
+import Modal from "@/components/Shared/Modal/Modal.vue";
 import FriendProfileUI from "@/views/Chat/component/FriendProfileUI.vue";
 
 const GroupProfile = defineAsyncComponent(() => import("@/views/Chat/component/GroupProfile.vue"));

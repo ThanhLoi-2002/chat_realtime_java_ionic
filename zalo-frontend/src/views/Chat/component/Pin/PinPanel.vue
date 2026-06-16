@@ -75,12 +75,12 @@
 </template>
 <script setup lang="ts">
 import { style } from '@/assets/tailwindcss';
-import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
+import CircleAvatar from '@/components/Shared/Avatar/CircleAvatar.vue';
 import { useDateTime } from '@/composables/useDateTime';
 import { useMessage } from '@/composables/useMessage';
 import { useTranslate } from '@/composables/useTranslate';
-import { useConversationStore } from '@/stores/conversation.storage';
-import { usePinStore } from '@/stores/pin.storage';
+import { useConversationStore } from '@/stores/App/conversation.storage';
+import { usePinStore } from '@/stores/App/pin.storage';
 import { MessageEnum } from '@/types/enum';
 import { chatbubbleOutline, documentOutline } from 'ionicons/icons';
 import { onMounted } from 'vue';

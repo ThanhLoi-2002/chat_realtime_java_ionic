@@ -1,6 +1,6 @@
-import { FriendshipType, UserType } from './../types/entities';
 import { friendshipApi } from "@/api/friendship.api";
 import { SendAddFriendRequestType } from "@/types/common";
+import { FriendshipType, UserType } from "@/types/entities";
 import { toast } from "@/utils/toast";
 import { defineStore } from "pinia";
 

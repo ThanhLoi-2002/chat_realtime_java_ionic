@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { style } from '@/assets/tailwindcss';
-import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
+import CircleAvatar from '@/components/Shared/Avatar/CircleAvatar.vue';
 import { useTranslate } from '@/composables/useTranslate';
 import { ReactionType } from '@/types/entities';
 import { EMOJI_MAP, ReactionKey } from '@/utils/constant';

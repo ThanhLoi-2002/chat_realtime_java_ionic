@@ -95,22 +95,22 @@
 
 <script setup lang="ts">
 import { style } from '@/assets/tailwindcss'
-import CircleAvatar from '@/components/Avatar/CircleAvatar.vue'
+import CircleAvatar from '@/components/Shared/Avatar/CircleAvatar.vue'
 import { useTranslate } from '@/composables/useTranslate'
-import { useConversationStore } from '@/stores/conversation.storage'
-import { useFriendshipStore } from '@/stores/friendship.storage'
-import { useUserStore } from '@/stores/user.storage'
+import { useConversationStore } from '@/stores/App/conversation.storage.ts'
+import { useUserStore } from '@/stores/App/user.storage.ts'
 import { normalizeText } from '@/utils/helper'
 import AddFriendRequestUI from '@/views/Friend/component/AddFriendRequestUI.vue'
 import { computed, onMounted, ref } from 'vue'
 import FriendProfileUI from '../../component/FriendProfileUI.vue'
 import { MemberType } from '@/types/entities'
-import Key from '@/components/Key/Key.vue'
-import Modal from '@/components/Modal/Modal.vue'
+import Key from '@/components/Shared/Key/Key.vue'
+import Modal from '@/components/Shared/Modal/Modal.vue'
 import AddMember from '../../component/Member/AddMember.vue'
 import MemberManagement from './MemberManagement/MemberManagement.vue'
 import { useConversation } from '@/composables/useConversation'
 import { MemberRoleEnum } from '@/types/enum'
+import { useFriendshipStore } from '@/stores/App/friendship.storage.ts'
 
 const props = defineProps<{
     isShowBackButton: boolean

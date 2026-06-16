@@ -1,10 +1,10 @@
-import { useNotificationStore } from "@/stores/notification.storage";
-import { useUserStore } from "@/stores/user.storage";
+import { useUserStore } from "@/stores/App/user.storage";
 import { Capacitor } from "@capacitor/core";
 import { PushNotifications } from "@capacitor/push-notifications";
 import { useRouter } from "vue-router";
 import { Device } from '@capacitor/device';
-import { useConversationStore } from "@/stores/conversation.storage";
+import { useConversationStore } from "@/stores/App/conversation.storage";
+import { useNotificationStore } from "@/stores/App/notification.storage";
 
 export function usePushNotification() {
     const router = useRouter();

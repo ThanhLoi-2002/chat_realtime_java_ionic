@@ -160,23 +160,23 @@
 </template>
 <script setup lang="ts">
 import { style } from '@/assets/tailwindcss';
-import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
-import LoadingSpinner from '@/components/Loading/LoadingSpinner.vue';
-import QrCode from '@/components/QrCode/QrCode.vue';
+import CircleAvatar from '@/components/Shared/Avatar/CircleAvatar.vue';
+import LoadingSpinner from '@/components/Shared/Loading/LoadingSpinner.vue';
+import QrCode from '@/components/Shared/QrCode/QrCode.vue';
 import { useTranslate } from '@/composables/useTranslate';
 import { useUpload } from '@/composables/useUpload';
-import { useConversationStore } from '@/stores/conversation.storage';
-import { useMessageStore } from '@/stores/message.storage';
+import { useConversationStore } from '@/stores/App/conversation.storage';
+import { useMessageStore } from '@/stores/App/message.storage';
 import { UploadFileType } from '@/types/common';
 import { ConversationType } from '@/types/entities';
 import { ModuleEnum, ResourceEnum } from '@/types/enum';
 import { qrCodeUrl, ROUTE } from '@/utils/constant';
 import { computed, inject, nextTick, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import ImageOrVideo from '@/components/Media/ImageOrVideo.vue';
+import ImageOrVideo from '@/components/Shared/Media/ImageOrVideo.vue';
 import { toast } from '@/utils/toast';
 import { useConversation } from '@/composables/useConversation';
-import { useJoinGroupStore } from '@/stores/joinGroupRequest.storage';
+import { useJoinGroupStore } from '@/stores/App/joinGroupRequest.storage';
 
 const props = defineProps<{
     conversation: ConversationType;

@@ -48,10 +48,10 @@
 import { computed, ref } from 'vue'
 import { MessageType } from '@/types/entities'
 import { ReactionEnum } from '@/types/enum';
-import { useMessageStore } from '@/stores/message.storage';
+import { useMessageStore } from '@/stores/App/message.storage.ts';
 import { EMOJI_MAP } from '@/utils/constant';
-import { useUserStore } from '@/stores/user.storage';
-import Modal from '@/components/Modal/Modal.vue';
+import { useUserStore } from '@/stores/App/user.storage.ts';
+import Modal from '@/components/Shared/Modal/Modal.vue';
 import { useTranslate } from '@/composables/useTranslate';
 import ReactionModal from './ReactionModal.vue';
 import { style } from '@/assets/tailwindcss';

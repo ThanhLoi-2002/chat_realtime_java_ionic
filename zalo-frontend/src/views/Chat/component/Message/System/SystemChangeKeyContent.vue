@@ -19,9 +19,9 @@
 </template>
 
 <script setup lang="ts">
-import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
+import CircleAvatar from '@/components/Shared/Avatar/CircleAvatar.vue';
 import { useTranslate } from '@/composables/useTranslate';
-import { useUserStore } from '@/stores/user.storage';
+import { useUserStore } from '@/stores/App/user.storage';
 import { MessageType, UserType } from '@/types/entities';
 
 const props = defineProps<{

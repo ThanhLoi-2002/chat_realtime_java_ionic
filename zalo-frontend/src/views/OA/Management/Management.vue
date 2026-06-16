@@ -14,7 +14,7 @@
 </template>
 <script setup lang="ts">
 import { oaStyle } from '@/assets/tailwindcss';
-import LangDropdown from '@/components/Dropdown/LangDropdown.vue';
+import LangDropdown from '@/components/Shared/Dropdown/LangDropdown.vue';
 import OAPageHeader from '@/components/OA/Header/OAPageHeader.vue';
 import { useTranslate } from '@/composables/useTranslate';
 import { ref } from 'vue';

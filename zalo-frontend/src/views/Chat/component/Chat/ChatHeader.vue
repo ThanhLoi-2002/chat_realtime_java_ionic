@@ -8,8 +8,7 @@
                 <!-- Back button (mobile only) -->
                 <MobileBackButton :onClick="onBack" />
 
-                <GroupAvatar v-if="isGroup(convStorage.conversation)"
-                    :conversation="convStorage.conversation!" />
+                <GroupAvatar v-if="isGroup(convStorage.conversation)" :conversation="convStorage.conversation!" />
                 <circle-avatar v-else :user="getRecipient(convStorage.conversation)" size="size-10" />
 
                 <div class="flex flex-col">
@@ -56,14 +55,15 @@
             class="custom-popover">
             <div class="dark:text-gray-200 w-56 py-2 shadow-xl border border-gray-500 dark:border-gray-700 rounded-lg"
                 :class="[style.bg.primary]">
-                <div v-for="tag in classificationCardStorage.cards" :key="tag.id" @click="assignClassCard(tag.id, convStorage.conversation?.id)"
+                <div v-for="tag in classificationCardStorage.cards" :key="tag.id"
+                    @click="assignClassCard(tag.id, convStorage.conversation?.id)"
                     class="flex items-center justify-between px-4 py-2.5 hover:bg-gray-300/30 dark:hover:bg-gray-700 cursor-pointer transition-colors">
 
                     <ClassificationCard :color="tag.color">
                         <span class="text-[14px]">{{ tag.name }}</span>
                     </ClassificationCard>
 
-                    <i class="fa fa-check" v-if="getClassCard(convStorage.conversation?.id)?.color == tag.color"/>
+                    <i class="fa fa-check" v-if="getClassCard(convStorage.conversation?.id)?.color == tag.color" />
                 </div>
 
                 <div class="h-px bg-gray-400 dark:bg-gray-700 m-2"></div>
@@ -84,24 +84,24 @@
     </header>
 </template>
 <script setup lang="ts">
-import MobileBackButton from '@/components/Button/MobileBackButton.vue';
 import { useConversation } from '@/composables/useConversation';
 import { useTranslate } from '@/composables/useTranslate';
-import { useConversationStore } from '@/stores/conversation.storage';
-import { useSystemStore } from '@/stores/system.storage';
-import GroupAvatar from '@/components/Avatar/GroupAvatar.vue';
+import { useConversationStore } from '@/stores/App/conversation.storage.ts';
+import { useSystemStore } from '@/stores/App/system.storage.ts';
+import GroupAvatar from '@/components/Shared/Avatar/GroupAvatar.vue';
 import { style } from '@/assets/tailwindcss';
-import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
-import Modal from '@/components/Modal/Modal.vue';
+import CircleAvatar from '@/components/Shared/Avatar/CircleAvatar.vue';
+import Modal from '@/components/Shared/Modal/Modal.vue';
 import Member from '../../Info/components/Member.vue';
 import { onMounted, ref, watch } from 'vue';
 import { StompSubscription } from '@stomp/stompjs';
 import { socketSubscribe, sockJSSendMessage } from '@/utils/websocket';
 import ClassificationCards from '@/views/ClassificationCard/ClassificationCards.vue';
 import AddOrUpdateClassificationCard from '@/views/ClassificationCard/AddOrUpdateClassificationCard.vue';
-import { useClassificationCardStore } from '@/stores/classificationCard.storage';
+import { useClassificationCardStore } from '@/stores/App/classificationCard.storage.ts';
 import { useClassCard } from '@/composables/useClassCard';
-import ClassificationCard from '@/components/Classification/ClassificationCard.vue';
+import ClassificationCard from '@/components/Shared/Classification/ClassificationCard.vue';
+import MobileBackButton from '@/components/Shared/Button/MobileBackButton.vue';
 
 const props = defineProps<{
     isShowInfoSection: boolean
@@ -159,7 +159,7 @@ const emitCheckUserOnline = () => {
 }
 
 const assignClassCard = (classCardId: number, convId?: number) => {
-    if(convId){
+    if (convId) {
         const type = getClassCard(convStorage.conversation?.id)?.id == classCardId ? "remove" : "add";
         classificationCardStorage.assignConvToCard(classCardId, convId, type)
     }

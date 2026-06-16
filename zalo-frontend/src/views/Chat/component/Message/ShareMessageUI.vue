@@ -194,17 +194,16 @@
     </div>
 </template>
 <script setup lang="ts">
-import GroupAvatar from '@/components/Avatar/GroupAvatar.vue';
-import LoadingSpinner from '@/components/Loading/LoadingSpinner.vue';
-import Switch from '@/components/Switch/Switch.vue';
+import GroupAvatar from '@/components/Shared/Avatar/GroupAvatar.vue';
+import LoadingSpinner from '@/components/Shared/Loading/LoadingSpinner.vue';
+import Switch from '@/components/Shared/Switch/Switch.vue';
 import { useConversation } from '@/composables/useConversation';
 import { useMessage } from '@/composables/useMessage';
 import { useTranslate } from '@/composables/useTranslate';
-import { useClassificationCardStore } from '@/stores/classificationCard.storage';
-import { useConversationStore } from '@/stores/conversation.storage';
-import { useFriendshipStore } from '@/stores/friendship.storage';
-import { useMessageStore } from '@/stores/message.storage';
-import { useUserStore } from '@/stores/user.storage';
+import { useClassificationCardStore } from '@/stores/App/classificationCard.storage.ts';
+import { useConversationStore } from '@/stores/App/conversation.storage.ts';
+import { useMessageStore } from '@/stores/App/message.storage.ts';
+import { useUserStore } from '@/stores/App/user.storage.ts';
 import { ShareMessagesType, ShareMessageType } from '@/types/common';
 import { ConversationType, MessageType } from '@/types/entities';
 import { ConversationEnum, MessageEnum } from '@/types/enum';
@@ -212,7 +211,8 @@ import { normalizeText } from '@/utils/helper';
 import { computed, inject, onMounted, ref } from 'vue';
 import FileContainer from '../../Info/components/Storage/FileContainer.vue';
 import { useChatActionStore } from '@/composables/useChatAction';
-import ZaloSticker from '@/components/Sticker/Zalo/ZaloSticker.vue';
+import ZaloSticker from '@/components/Shared/Sticker/Zalo/ZaloSticker.vue';
+import { useFriendshipStore } from '@/stores/App/friendship.storage.ts';
 
 // const props = defineProps<{
 //     message?: MessageType

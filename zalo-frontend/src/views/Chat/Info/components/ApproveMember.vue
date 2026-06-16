@@ -77,11 +77,11 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { style } from "@/assets/tailwindcss";
-import CircleAvatar from "@/components/Avatar/CircleAvatar.vue";
+import CircleAvatar from "@/components/Shared/Avatar/CircleAvatar.vue";
 import { useTranslate } from "@/composables/useTranslate";
-import { useJoinGroupStore } from "@/stores/joinGroupRequest.storage";
 import { useConfirmStore } from "@/composables/useConfirm";
-import { useConversationStore } from "@/stores/conversation.storage";
+import { useConversationStore } from "@/stores/App/conversation.storage";
+import { useJoinGroupStore } from "@/stores/App/joinGroupRequest.storage";
 
 const props = defineProps<{
     isShowBackButton: boolean;

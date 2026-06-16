@@ -5,7 +5,7 @@ import { IonIcon, IonButton } from '@ionic/vue';
 import { menuOutline, add } from 'ionicons/icons';
 import { useTranslate } from '@/composables/useTranslate';
 import { ClassificationCardType } from '@/types/entities';
-import { useClassificationCardStore } from '@/stores/classificationCard.storage';
+import { useClassificationCardStore } from '@/stores/App/classificationCard.storage';
 import { useConfirmStore } from '@/composables/useConfirm';
 
 const props = defineProps<{

@@ -1,4 +1,4 @@
-import { useUserStore } from "@/stores/user.storage"
+import { useUserStore } from "@/stores/App/user.storage"
 import { FriendshipType } from "@/types/entities"
 
 export function useFriendship() {

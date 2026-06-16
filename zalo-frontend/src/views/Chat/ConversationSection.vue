@@ -42,15 +42,15 @@
 import { useTranslate } from '@/composables/useTranslate';
 import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue';
 import ConversationUI from './component/ConversationUI.vue';
-import { useConversationStore } from '@/stores/conversation.storage';
+import { useConversationStore } from '@/stores/App/conversation.storage.ts';
 import { SearchFriendPageType } from '@/types/common';
-import Modal from '@/components/Modal/Modal.vue';
+import Modal from '@/components/Shared/Modal/Modal.vue';
 import { ClassificationCardType, ConversationType, UserType } from '@/types/entities';
 import { useScroll } from '@/composables/useScroll';
 import { useRouter } from 'vue-router';
 import { useDevice } from '@/composables/useDevice';
 import HeaderFilter from './component/HeaderFilter.vue';
-import Search from '@/components/Search/Search.vue';
+import Search from '@/components/Shared/Search/Search.vue';
 
 const CreateGroupUI = defineAsyncComponent(() => import('./component/CreateGroupUI.vue'));
 const AddFriendUI = defineAsyncComponent(() => import('./component/AddFriendUI.vue'));

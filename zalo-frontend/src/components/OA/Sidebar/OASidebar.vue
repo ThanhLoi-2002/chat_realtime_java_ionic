@@ -86,7 +86,7 @@
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { oaStyle } from '@/assets/tailwindcss';
-import { useOASystemStore } from '@/stores/oa/oaSystem.storage';
+import { useOASystemStore } from '@/stores/Oa/oaSystem.storage';
 
 interface SubMenu {
     name: string;

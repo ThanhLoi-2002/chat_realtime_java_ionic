@@ -29,6 +29,10 @@ export const ROUTE = {
         CHATBOT: "chatbot",
         MANAGEMENT: "management"
     },
+    ADMIN_DASHBOARD: {
+        INDEX: "/admin",
+        STRUCTURE: "structure"
+    },
 
     NOT_FOUND: "/notFound"
 }
@@ -37,6 +41,10 @@ export const OA_ROUTE = {
     home: () => `${ROUTE.OA_DASHBOARD.INDEX}/${ROUTE.OA_DASHBOARD.HOME}`,
     chatbot: () => `${ROUTE.OA_DASHBOARD.INDEX}/${ROUTE.OA_DASHBOARD.CHATBOT}`,
     management: () => `${ROUTE.OA_DASHBOARD.INDEX}/${ROUTE.OA_DASHBOARD.MANAGEMENT}`,
+}
+
+export const ADMIN_ROUTE = {
+    structure: () => `${ROUTE.ADMIN_DASHBOARD.INDEX}/${ROUTE.ADMIN_DASHBOARD.STRUCTURE}`,
 }
 
 export const EMOJI_MAP = {

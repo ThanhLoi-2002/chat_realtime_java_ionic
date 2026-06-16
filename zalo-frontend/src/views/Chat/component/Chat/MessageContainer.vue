@@ -53,13 +53,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import { useUserStore } from '@/stores/user.storage'
-import CircleAvatar from '@/components/Avatar/CircleAvatar.vue'
+import { useUserStore } from '@/stores/App/user.storage.ts'
+import CircleAvatar from '@/components/Shared/Avatar/CircleAvatar.vue'
 import { MemberRoleEnum, MessageEnum } from '@/types/enum';
 import ImageMessage from '../Message/ImageMessage.vue';
 import TextMessage from '../Message/TextMessage.vue';
 import { MessageType } from '@/types/entities';
-import Key from '@/components/Key/Key.vue';
+import Key from '@/components/Shared/Key/Key.vue';
 import FileMessage from '../Message/FileMessage.vue';
 import { useChatActionStore } from '@/composables/useChatAction';
 import StickerMessage from '../Message/StickerMessage.vue';

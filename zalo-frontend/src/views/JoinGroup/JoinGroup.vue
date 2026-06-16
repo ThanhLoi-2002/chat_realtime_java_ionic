@@ -63,14 +63,14 @@
 import { ref, onMounted } from 'vue'
 import { useTranslate } from '@/composables/useTranslate'
 import { useRoute, useRouter } from 'vue-router'
-import LangDropdown from '@/components/Dropdown/LangDropdown.vue'
-import ThemeToggle from '@/components/Toggle/ThemeToggle.vue'
-import { useConversationStore } from '@/stores/conversation.storage'
+import LangDropdown from '@/components/Shared/Dropdown/LangDropdown.vue'
+import ThemeToggle from '@/components/Shared/Toggle/ThemeToggle.vue'
+import { useConversationStore } from '@/stores/App/conversation.storage'
 import { ConversationType } from '@/types/entities'
-import GroupAvatar from '@/components/Avatar/GroupAvatar.vue'
+import GroupAvatar from '@/components/Shared/Avatar/GroupAvatar.vue'
 import { ROUTE } from '@/utils/constant'
 import { ConversationEnum } from '@/types/enum'
-import QrCode from '@/components/QrCode/QrCode.vue'
+import QrCode from '@/components/Shared/QrCode/QrCode.vue'
 
 const { t } = useTranslate()
 const convStorage = useConversationStore()

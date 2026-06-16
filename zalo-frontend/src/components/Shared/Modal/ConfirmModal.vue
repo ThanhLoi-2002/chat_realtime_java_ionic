@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { useTranslate } from '@/composables/useTranslate';
-import { useSystemStore } from '@/stores/system.storage';
+import { useSystemStore } from '@/stores/App/system.storage';
 
 const props = defineProps<{
     showConfirm: boolean

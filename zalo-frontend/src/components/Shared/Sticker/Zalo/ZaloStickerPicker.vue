@@ -3,15 +3,15 @@ import { computed, nextTick, onMounted, ref, watch } from "vue";
 
 import { useTranslate } from "@/composables/useTranslate.ts";
 import { StickerItemType, StickerType } from "@/types/entities.ts";
-import { useStickerStore } from "@/stores/sticker.storage.ts";
+import { useStickerStore } from "@/stores/App/sticker.storage.ts";
 import ZaloStickerGrid from "./ZaloStickerGrid.vue";
 import ZaloStickerPackBar from "./ZaloStickerPackBar.vue";
 import ZaloStickerPreview from "./ZaloStickerPreview.vue";
 import { useClickOutside } from "@/composables/useClickOutside.ts";
-import EmojiPicker from "@/components/Emoji/EmojiPicker.vue";
+import EmojiPicker from "@/components/Shared/Emoji/EmojiPicker.vue";
 import { normalizeText } from "@/utils/helper.ts";
 import { SendStickerType } from "@/types/common.ts";
-import { useConversationStore } from "@/stores/conversation.storage.ts";
+import { useConversationStore } from "@/stores/App/conversation.storage.ts";
 
 const props = defineProps<{
     scrollToBottom: () => void

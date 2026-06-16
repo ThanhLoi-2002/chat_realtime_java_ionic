@@ -93,12 +93,12 @@
 </template>
 
 <script setup lang="ts">
-import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
+import CircleAvatar from '@/components/Shared/Avatar/CircleAvatar.vue';
 import { useConversation } from '@/composables/useConversation';
 import { useTranslate } from '@/composables/useTranslate';
-import { useClassificationCardStore } from '@/stores/classificationCard.storage';
-import { useConversationStore } from '@/stores/conversation.storage';
-import { useFriendshipStore } from '@/stores/friendship.storage';
+import { useClassificationCardStore } from '@/stores/App/classificationCard.storage';
+import { useConversationStore } from '@/stores/App/conversation.storage';
+import { useFriendshipStore } from '@/stores/App/friendship.storage';
 import { ConversationType, UserType } from '@/types/entities';
 import { normalizeText } from '@/utils/helper';
 import { computed, inject, onMounted, ref } from 'vue';

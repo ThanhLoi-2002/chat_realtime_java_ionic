@@ -1,4 +1,4 @@
-import { useClassificationCardStore } from "@/stores/classificationCard.storage"
+import { useClassificationCardStore } from "@/stores/App/classificationCard.storage"
 
 export function useClassCard() {
     const classCardStorage = useClassificationCardStore()

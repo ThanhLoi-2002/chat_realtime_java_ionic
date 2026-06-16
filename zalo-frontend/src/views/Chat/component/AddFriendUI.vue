@@ -35,7 +35,7 @@
 </template>
 <script setup lang="ts">
 import { useTranslate } from '@/composables/useTranslate';
-import { useUserStore } from '@/stores/user.storage';
+import { useUserStore } from '@/stores/App/user.storage';
 import { SearchFriendPageType } from '@/types/common';
 import { UserType } from '@/types/entities';
 import { RANDOM_AVATAR, SEARCH_USERS_RECENT } from '@/utils/constant';

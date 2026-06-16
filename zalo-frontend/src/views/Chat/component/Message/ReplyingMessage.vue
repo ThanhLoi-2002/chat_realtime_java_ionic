@@ -50,11 +50,11 @@
     </div>
 </template>
 <script setup lang="ts">
-import ZaloSticker from '@/components/Sticker/Zalo/ZaloSticker.vue';
+import ZaloSticker from '@/components/Shared/Sticker/Zalo/ZaloSticker.vue';
 import { useChatActionStore } from '@/composables/useChatAction';
 import { useMessage } from '@/composables/useMessage';
 import { useTranslate } from '@/composables/useTranslate';
-import { useUserStore } from '@/stores/user.storage';
+import { useUserStore } from '@/stores/App/user.storage';
 import { MessageType } from '@/types/entities';
 import { MessageEnum } from '@/types/enum';
 import { computed } from 'vue';

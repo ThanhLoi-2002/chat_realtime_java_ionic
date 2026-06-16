@@ -7,7 +7,7 @@
             {{ loadingLabel || "Loading" }}
         </span>
         <span v-else class="flex gap-2">
-            <i :class="icon" v-if="icon"/>
+            <i :class="icon" v-if="icon" />
             {{ label }}
         </span>
     </button>

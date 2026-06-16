@@ -6,15 +6,15 @@ import {
 } from '@ionic/vue';
 import { addOutline, checkmarkOutline } from 'ionicons/icons';
 import { useTranslate } from '@/composables/useTranslate';
-import { useClassificationCardStore } from '@/stores/classificationCard.storage';
-import LoadingSpinner from '@/components/Loading/LoadingSpinner.vue';
+import { useClassificationCardStore } from '@/stores/App/classificationCard.storage.ts';
+import LoadingSpinner from '@/components/Shared/Loading/LoadingSpinner.vue';
 import { ConversationType } from '@/types/entities';
-import Modal from '@/components/Modal/Modal.vue';
+import Modal from '@/components/Shared/Modal/Modal.vue';
 import AddDialogue from './component/AddDialogue.vue';
-import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
+import CircleAvatar from '@/components/Shared/Avatar/CircleAvatar.vue';
 import { useConversation } from '@/composables/useConversation';
-import GroupAvatar from '@/components/Avatar/GroupAvatar.vue';
-import { useConversationStore } from '@/stores/conversation.storage';
+import GroupAvatar from '@/components/Shared/Avatar/GroupAvatar.vue';
+import { useConversationStore } from '@/stores/App/conversation.storage.ts';
 
 const props = defineProps<{
     goPage: (value: "classificationTagManagement" | "detail") => void

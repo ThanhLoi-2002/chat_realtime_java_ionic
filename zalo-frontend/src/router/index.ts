@@ -1,5 +1,5 @@
 import { useDevice } from '@/composables/useDevice';
-import { useUserStore } from '@/stores/user.storage';
+import { useUserStore } from '@/stores/App/user.storage.ts';
 import { ACCESS_TOKEN, ROUTE } from '@/utils/constant';
 import { getKey } from '@/utils/local';
 import { isPlatform } from '@ionic/vue';

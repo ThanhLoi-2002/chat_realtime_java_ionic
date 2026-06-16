@@ -51,7 +51,7 @@ import File from './File.vue';
 import Link from './Link.vue';
 import StorageFilter from './components/StorageFilter.vue';
 import { MessageFilter } from '@/types/common.ts';
-import { useMessageStore } from '@/stores/message.storage.ts';
+import { useMessageStore } from '@/stores/App/message.storage.ts';
 
 const props = defineProps<{
     type: string

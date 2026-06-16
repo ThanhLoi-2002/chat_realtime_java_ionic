@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useTranslate } from '@/composables/useTranslate'
 import { ref } from 'vue'
-import PopoverButton from '@/components/Dropdown/PopoverButton.vue'
+import PopoverButton from '@/components/Shared/Dropdown/PopoverButton.vue'
 import { style } from '@/assets/tailwindcss'
 
 const model = defineModel<string>()

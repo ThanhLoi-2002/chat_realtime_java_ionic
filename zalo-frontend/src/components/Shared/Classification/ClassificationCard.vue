@@ -9,7 +9,7 @@
 </template>
 <script setup lang="ts">
 import { useClassCard } from '@/composables/useClassCard';
-import { useClassificationCardStore } from '@/stores/classificationCard.storage';
+import { useClassificationCardStore } from '@/stores/App/classificationCard.storage';
 import { ConversationType } from '@/types/entities';
 import { ref, watch } from 'vue';
 

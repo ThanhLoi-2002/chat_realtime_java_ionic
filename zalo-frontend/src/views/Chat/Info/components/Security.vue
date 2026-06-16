@@ -28,7 +28,7 @@
 </template>
 <script setup lang="ts">
 import { style } from '@/assets/tailwindcss';
-import Switch from '@/components/Switch/Switch.vue';
+import Switch from '@/components/Shared/Switch/Switch.vue';
 import { useTranslate } from '@/composables/useTranslate';
 import { ref } from 'vue';
 

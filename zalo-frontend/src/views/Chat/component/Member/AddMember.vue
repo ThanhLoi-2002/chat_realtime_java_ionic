@@ -93,9 +93,9 @@
 <script setup lang="ts">
 import { useConversation } from '@/composables/useConversation';
 import { useTranslate } from '@/composables/useTranslate';
-import { useClassificationCardStore } from '@/stores/classificationCard.storage';
-import { useConversationStore } from '@/stores/conversation.storage';
-import { useFriendshipStore } from '@/stores/friendship.storage';
+import { useClassificationCardStore } from '@/stores/App/classificationCard.storage';
+import { useConversationStore } from '@/stores/App/conversation.storage';
+import { useFriendshipStore } from '@/stores/App/friendship.storage';
 import { ConversationType, UserType } from '@/types/entities';
 import { normalizeText } from '@/utils/helper';
 import { modalController } from '@ionic/vue';

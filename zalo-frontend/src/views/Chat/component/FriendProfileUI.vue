@@ -63,12 +63,12 @@
     </div>
 </template>
 <script setup lang="ts">
-import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
-import ProfileUI from '@/components/Sidebar/components/ProfileUI.vue';
+import ProfileUI from '@/components/App/Sidebar/components/ProfileUI.vue';
+import CircleAvatar from '@/components/Shared/Avatar/CircleAvatar.vue';
 import { useConversation } from '@/composables/useConversation';
 import { useTranslate } from '@/composables/useTranslate';
-import { useConversationStore } from '@/stores/conversation.storage';
-import { useUserStore } from '@/stores/user.storage';
+import { useConversationStore } from '@/stores/App/conversation.storage';
+import { useUserStore } from '@/stores/App/user.storage';
 import { SearchFriendPageType } from '@/types/common';
 import { UserType } from '@/types/entities';
 import { RANDOM_AVATAR, ROUTE } from '@/utils/constant';
@@ -84,7 +84,7 @@ const { t } = useTranslate()
 const router = useRouter()
 const userStorage = useUserStore()
 const conversationStorage = useConversationStore()
-const {getRecipient} = useConversation()
+const { getRecipient } = useConversation()
 
 const items = [
     {
@@ -115,7 +115,7 @@ const goToMessage = async () => {
     }
 
     const c = conversationStorage.conversation;
-    if (getRecipient(c)?.id == props.user?.id ) return
+    if (getRecipient(c)?.id == props.user?.id) return
 
     // sau đó mới xử lý logic
     const success = await conversationStorage.createPrivate(props.user!)

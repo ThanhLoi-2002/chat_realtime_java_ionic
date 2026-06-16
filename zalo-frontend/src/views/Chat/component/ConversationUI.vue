@@ -62,13 +62,13 @@
 </template>
 <script setup lang="ts">
 import { style } from '@/assets/tailwindcss';
-import GroupAvatar from '@/components/Avatar/GroupAvatar.vue';
-import ClassificationCard from '@/components/Classification/ClassificationCard.vue';
+import GroupAvatar from '@/components/Shared/Avatar/GroupAvatar.vue';
+import ClassificationCard from '@/components/Shared/Classification/ClassificationCard.vue';
 import { useConversation } from '@/composables/useConversation';
 import { useDateTime } from '@/composables/useDateTime';
 import { useMessage } from '@/composables/useMessage';
 import { useTranslate } from '@/composables/useTranslate';
-import { useUserStore } from '@/stores/user.storage';
+import { useUserStore } from '@/stores/App/user.storage';
 import { ConversationType, MessageType } from '@/types/entities';
 import { MessageEnum, SystemMetadataEnum } from '@/types/enum';
 import { RANDOM_AVATAR } from '@/utils/constant';

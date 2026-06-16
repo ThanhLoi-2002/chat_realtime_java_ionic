@@ -33,8 +33,8 @@
 <script setup lang="ts">
 import { useDateTime } from "@/composables/useDateTime";
 import { useMedia } from "@/composables/useMedia";
-import { useConversationStore } from "@/stores/conversation.storage";
-import { useMessageStore } from "@/stores/message.storage";
+import { useConversationStore } from "@/stores/App/conversation.storage";
+import { useMessageStore } from "@/stores/App/message.storage";
 import { MessageFilter } from "@/types/common";
 import { MediaType } from "@/types/entities";
 import { MessageEnum } from "@/types/enum";

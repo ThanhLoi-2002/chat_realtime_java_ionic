@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { style } from '@/assets/tailwindcss'
 import { useTranslate } from '@/composables/useTranslate'
-import DateRangePicker from '@/components/DatePicker/DateRangePicker.vue'
+import DateRangePicker from '@/components/Shared/DatePicker/DateRangePicker.vue'
 
 const { t } = useTranslate()
 const model = defineModel<[Date | null, Date | null]>() // Định dạng: [Date, Date] hoặc null

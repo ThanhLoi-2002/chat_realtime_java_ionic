@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ThemeToggle from "@/components/Toggle/ThemeToggle.vue";
+import ThemeToggle from "@/components/Shared/Toggle/ThemeToggle.vue";
 import { IonContent, IonPage } from '@ionic/vue'
 </script>
 

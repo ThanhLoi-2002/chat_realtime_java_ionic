@@ -103,11 +103,11 @@
 import { useDateTime } from "@/composables/useDateTime";
 import { useFriendship } from "@/composables/useFriendship";
 import { useTranslate } from "@/composables/useTranslate";
-import { useFriendshipStore } from "@/stores/friendship.storage";
 import { FriendshipType } from "@/types/entities";
 import { onMounted, ref } from "vue";
-import CircleAvatar from "@/components/Avatar/CircleAvatar.vue";
+import CircleAvatar from "@/components/Shared/Avatar/CircleAvatar.vue";
 import { useConfirmStore } from "@/composables/useConfirm";
+import { useFriendshipStore } from "@/stores/App/friendship.storage";
 
 const friendshipStorage = useFriendshipStore();
 const { getOther } = useFriendship();

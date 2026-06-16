@@ -33,7 +33,7 @@
 
 <script setup lang="ts">
 import { oaStyle } from '@/assets/tailwindcss';
-import { useOASystemStore } from '@/stores/oa/oaSystem.storage';
+import { useOASystemStore } from '@/stores/Oa/oaSystem.storage';
 
 // Khai báo cấu trúc dữ liệu cho breadcrumb mang tính động
 interface Breadcrumb {

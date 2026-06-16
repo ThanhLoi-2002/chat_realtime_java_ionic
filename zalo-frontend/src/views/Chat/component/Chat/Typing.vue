@@ -48,15 +48,15 @@
     </div>
 </template>
 <script setup lang="ts">
-import LoadingSpinner from '@/components/Loading/LoadingSpinner.vue';
+import LoadingSpinner from '@/components/Shared/Loading/LoadingSpinner.vue';
 import { useDebounce } from '@/composables/useDebounce';
 import { useMessage } from '@/composables/useMessage';
 import { useScroll } from '@/composables/useScroll';
 import { useTranslate } from '@/composables/useTranslate';
 import { useUpload } from '@/composables/useUpload';
-import { useConversationStore } from '@/stores/conversation.storage';
-import { useMessageStore } from '@/stores/message.storage';
-import { useUserStore } from '@/stores/user.storage';
+import { useConversationStore } from '@/stores/App/conversation.storage.ts';
+import { useMessageStore } from '@/stores/App/message.storage.ts';
+import { useUserStore } from '@/stores/App/user.storage.ts';
 import { LinkMetadataType, SendMessageType, UploadFileRequest, UploadFileType } from '@/types/common';
 import { ConversationEnum, MessageEnum, ModuleEnum, ResourceEnum } from '@/types/enum';
 import { socketSubscribe, sockJSSendMessage } from '@/utils/websocket';
@@ -69,8 +69,8 @@ import FilePreview from './FilePreview.vue';
 import TypingIndicator from './TypingIndicator.vue';
 import { MessageType, UserType } from '@/types/entities';
 import ReplyingMessage from '../Message/ReplyingMessage.vue';
-import ZaloStickerPicker from '@/components/Sticker/Zalo/ZaloStickerPicker.vue';
-import { useStickerStore } from '@/stores/sticker.storage.ts';
+import ZaloStickerPicker from '@/components/Shared/Sticker/Zalo/ZaloStickerPicker.vue';
+import { useStickerStore } from '@/stores/App/sticker.storage.ts';
 
 const props = defineProps<{
     scrollContainer: HTMLElement | null

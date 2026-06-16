@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useConversationStore } from '@/stores/conversation.storage';
+import { useConversationStore } from '@/stores/App/conversation.storage.ts';
 import { defineAsyncComponent, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useDevice } from '@/composables/useDevice';
 import { StompSubscription } from '@stomp/stompjs';
 import { socketSubscribe } from '@/utils/websocket';
-import { useMessageStore } from '@/stores/message.storage';
+import { useMessageStore } from '@/stores/App/message.storage.ts';
 import { ConversationType, MessageType } from '@/types/entities';
-import { useUserStore } from '@/stores/user.storage';
+import { useUserStore } from '@/stores/App/user.storage.ts';
 
 const ConversationSection = defineAsyncComponent(() => import('./ConversationSection.vue'));
 const ChatContainer = defineAsyncComponent(() => import('./ChatContainer.vue'));

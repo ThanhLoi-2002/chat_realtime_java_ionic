@@ -43,10 +43,10 @@
     </div>
 </template>
 <script setup lang="ts">
-import Modal from '@/components/Modal/Modal.vue';
+import Modal from '@/components/Shared/Modal/Modal.vue';
 import { useConfirmStore } from '@/composables/useConfirm';
 import { useTranslate } from '@/composables/useTranslate';
-import { useConversationStore } from '@/stores/conversation.storage';
+import { useConversationStore } from '@/stores/App/conversation.storage';
 import { MemberType } from '@/types/entities';
 import { MemberRoleEnum } from '@/types/enum';
 import { RANDOM_AVATAR } from '@/utils/constant';

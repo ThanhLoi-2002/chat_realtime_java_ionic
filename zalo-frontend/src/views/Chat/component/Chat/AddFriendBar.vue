@@ -73,19 +73,19 @@
 
 <script setup lang="ts">
 import { style } from '@/assets/tailwindcss'
-import Modal from '@/components/Modal/Modal.vue'
+import Modal from '@/components/Shared/Modal/Modal.vue'
 import { useTranslate } from '@/composables/useTranslate'
 import AddFriendRequestUI from '@/views/Friend/component/AddFriendRequestUI.vue'
 import FriendProfileUI from '../FriendProfileUI.vue'
 import { computed, ref, watch } from 'vue'
 import { useConversation } from '@/composables/useConversation'
-import { useConversationStore } from '@/stores/conversation.storage'
+import { useConversationStore } from '@/stores/App/conversation.storage.ts'
 import { FriendshipType } from '@/types/entities'
 import { FriendshipStatusEnum } from '@/types/enum'
-import { useFriendshipStore } from '@/stores/friendship.storage'
 import { useFriendship } from '@/composables/useFriendship'
-import { useUserStore } from '@/stores/user.storage'
+import { useUserStore } from '@/stores/App/user.storage.ts'
 import { useConfirmStore } from '@/composables/useConfirm'
+import { useFriendshipStore } from '@/stores/App/friendship.storage.ts'
 
 const { t } = useTranslate()
 const { getRecipient, isGroup } = useConversation()

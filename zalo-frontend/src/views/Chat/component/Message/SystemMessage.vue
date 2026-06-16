@@ -141,13 +141,13 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useTranslate } from "@/composables/useTranslate";
-import { useUserStore } from "@/stores/user.storage";
-import Modal from "@/components/Modal/Modal.vue";
+import { useUserStore } from "@/stores/App/user.storage.ts";
+import Modal from "@/components/Shared/Modal/Modal.vue";
 import FriendProfileUI from "../FriendProfileUI.vue";
 import { MessageType, UserType } from "@/types/entities";
 import { SystemMetadataEnum } from "@/types/enum";
 import { style } from "@/assets/tailwindcss";
-import CircleAvatar from "@/components/Avatar/CircleAvatar.vue";
+import CircleAvatar from "@/components/Shared/Avatar/CircleAvatar.vue";
 import SystemPinMessage from "./System/SystemPinMessage.vue";
 import SystemChangeKeyContent from "./System/SystemChangeKeyContent.vue";
 import SystemJoinMessage from "./System/SystemJoinMessage.vue";

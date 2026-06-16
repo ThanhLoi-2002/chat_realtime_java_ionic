@@ -19,11 +19,9 @@
 </template>
 
 <script setup lang="ts">
+import Sidebar from '@/components/App/Sidebar/Sidebar.vue';
 import { useDevice } from '@/composables/useDevice';
 import { IonPage, IonContent } from '@ionic/vue';
-import { defineAsyncComponent } from 'vue';
-
-const Sidebar = defineAsyncComponent(() => import('../components/Sidebar/Sidebar.vue'));
 
 const { isMobile, isSmartDevice } = useDevice()
 </script>

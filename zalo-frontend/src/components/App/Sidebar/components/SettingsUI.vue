@@ -81,13 +81,13 @@
     </div>
 </template>
 <script setup lang="ts">
-import LangDropdown from '@/components/Dropdown/LangDropdown.vue';
-import ThemeToggle from '@/components/Toggle/ThemeToggle.vue';
+import LangDropdown from '@/components/Shared/Dropdown/LangDropdown.vue';
+import ThemeToggle from '@/components/Shared/Toggle/ThemeToggle.vue';
 import { useConfirmStore } from '@/composables/useConfirm';
 import { useTranslate } from '@/composables/useTranslate'
-import { useConversationStore } from '@/stores/conversation.storage';
-import { useMessageStore } from '@/stores/message.storage';
-import { useUserStore } from '@/stores/user.storage';
+import { useConversationStore } from '@/stores/App/conversation.storage';
+import { useMessageStore } from '@/stores/App/message.storage';
+import { useUserStore } from '@/stores/App/user.storage';
 import { SettingPageType } from '@/types/common';
 import { RANDOM_AVATAR } from '@/utils/constant'
 import { computed, inject, ref } from 'vue';

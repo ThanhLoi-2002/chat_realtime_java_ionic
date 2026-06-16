@@ -1,5 +1,5 @@
-import { useMessageStore } from "@/stores/message.storage";
-import { useConversationStore } from "@/stores/conversation.storage";
+import { useMessageStore } from "@/stores/App/message.storage";
+import { useConversationStore } from "@/stores/App/conversation.storage";
 import { nextTick } from "vue";
 
 export function useMessage() {

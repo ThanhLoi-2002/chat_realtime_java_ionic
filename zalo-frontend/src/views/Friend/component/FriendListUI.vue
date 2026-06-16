@@ -54,7 +54,7 @@
 <script setup lang="ts">
 import { useConfirmStore } from "@/composables/useConfirm";
 import { useTranslate } from "@/composables/useTranslate";
-import { useFriendshipStore } from "@/stores/friendship.storage";
+import { useFriendshipStore } from "@/stores/App/friendship.storage";
 import { UserType } from "@/types/entities";
 import { normalizeText } from "@/utils/helper";
 import { computed, onBeforeUnmount, onMounted, ref, } from "vue";

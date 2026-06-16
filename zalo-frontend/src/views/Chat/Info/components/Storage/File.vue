@@ -25,8 +25,8 @@
 </template>
 <script setup lang="ts">
 import { useMedia } from "@/composables/useMedia";
-import { useConversationStore } from "@/stores/conversation.storage";
-import { useMessageStore } from "@/stores/message.storage";
+import { useConversationStore } from "@/stores/App/conversation.storage.ts";
+import { useMessageStore } from "@/stores/App/message.storage.ts";
 import { MessageFilter } from "@/types/common";
 import { MessageEnum } from "@/types/enum";
 import { computed, onMounted, ref } from "vue";

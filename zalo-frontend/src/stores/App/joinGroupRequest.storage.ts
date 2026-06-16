@@ -1,5 +1,5 @@
 import { joinGroupApi } from '@/api/joinGroup.api';
-import { JoinGroupRequestType } from '../types/entities';
+import { JoinGroupRequestType } from '@/types/entities';
 import { JoinGroupRequestDto } from "@/types/common";
 import { toast } from "@/utils/toast";
 import { defineStore } from "pinia";

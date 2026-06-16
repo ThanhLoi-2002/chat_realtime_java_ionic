@@ -66,9 +66,9 @@
 </template>
 
 <script setup lang="ts">
-import LoadingSpinner from '@/components/Loading/LoadingSpinner.vue';
+import LoadingSpinner from '@/components/Shared/Loading/LoadingSpinner.vue';
 import { useTranslate } from '@/composables/useTranslate'
-import { useUserStore } from '@/stores/user.storage';
+import { useUserStore } from '@/stores/App/user.storage';
 import { SearchFriendPageType, SettingPageType } from '@/types/common';
 import { RANDOM_AVATAR } from '@/utils/constant';
 import { inject, reactive, ref } from 'vue';

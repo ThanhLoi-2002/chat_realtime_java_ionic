@@ -49,9 +49,9 @@
 
 <script setup lang="ts">
 import { oaStyle } from '@/assets/tailwindcss';
-import CircleAvatar from '@/components/Avatar/CircleAvatar.vue';
+import CircleAvatar from '@/components/Shared/Avatar/CircleAvatar.vue';
 import { useTranslate } from '@/composables/useTranslate';
-import { useUserStore } from '@/stores/user.storage';
+import { useUserStore } from '@/stores/App/user.storage';
 import { IonHeader } from '@ionic/vue';
 import { useRoute } from 'vue-router';
 

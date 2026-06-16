@@ -119,10 +119,10 @@
   </div>
 </template>
 <script setup lang="ts">
-import CircleAvatar from "@/components/Avatar/CircleAvatar.vue";
+import CircleAvatar from "@/components/Shared/Avatar/CircleAvatar.vue";
 import { useDateTime } from "@/composables/useDateTime";
-import { useConversationStore } from "@/stores/conversation.storage";
-import { useMessageStore } from "@/stores/message.storage";
+import { useConversationStore } from "@/stores/App/conversation.storage";
+import { useMessageStore } from "@/stores/App/message.storage";
 import { MediaType } from "@/types/entities";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 import { useScroll } from "@/composables/useScroll";

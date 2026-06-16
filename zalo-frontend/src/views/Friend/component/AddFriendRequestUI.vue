@@ -77,8 +77,8 @@
 </template>
 <script setup lang="ts">
 import { useTranslate } from "@/composables/useTranslate";
-import { useFriendshipStore } from "@/stores/friendship.storage";
-import { useUserStore } from "@/stores/user.storage";
+import { useFriendshipStore } from "@/stores/App/friendship.storage";
+import { useUserStore } from "@/stores/App/user.storage";
 import { UserType } from "@/types/entities";
 import { inject, ref } from "vue";
 

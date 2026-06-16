@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { IonIcon } from '@ionic/vue';
 import { useTranslate } from '@/composables/useTranslate';
 import { chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
-import { useClassificationCardStore } from '@/stores/classificationCard.storage';
+import { useClassificationCardStore } from '@/stores/App/classificationCard.storage';
 
 const classCardStorage = useClassificationCardStore()
 const { t } = useTranslate()

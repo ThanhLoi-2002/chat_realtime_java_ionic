@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import FormInput from "@/components/Input/FormInput.vue"
-import LoadingSpinner from "@/components/Loading/LoadingSpinner.vue"
+import FormInput from "@/components/Shared/Input/FormInput.vue"
+import LoadingSpinner from "@/components/Shared/Loading/LoadingSpinner.vue"
 import { useTranslate } from "@/composables/useTranslate"
 import { LoginFormType, loginSchema } from "@/schema/auth.schema"
-import { useAuthStore } from "@/stores/auth.storage"
+import { useAuthStore } from "@/stores/App/auth.storage"
 import { ROUTE } from "@/utils/constant"
 import { useForm } from "vee-validate"
 

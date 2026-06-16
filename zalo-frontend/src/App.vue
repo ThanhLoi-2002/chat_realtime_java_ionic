@@ -19,27 +19,28 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
-import LoadingSpinner from './components/Loading/LoadingSpinner.vue';
-import { useLangStore } from './stores/lang.storage';
+import LoadingSpinner from './components/Shared/Loading/LoadingSpinner.vue';
+import { useLangStore } from './stores/App/lang.storage.ts';
 import { onMounted, watch } from 'vue';
-import { useUserStore } from './stores/user.storage';
-import AvatarModal from './components/Avatar/AvatarModal.vue';
+import { useUserStore } from './stores/App/user.storage.ts';
+import AvatarModal from './components/Shared/Avatar/AvatarModal.vue';
 import { getKey } from './utils/local';
 import { THEME } from './utils/constant';
 import { connectSocket, disconnectSocket } from './utils/websocket';
 import { useDevice } from './composables/useDevice';
-import { useSystemStore } from './stores/system.storage';
+import { useSystemStore } from './stores/App/system.storage.ts';
 import { Network } from '@capacitor/network';
 import { toast } from './utils/toast';
 import { usePushNotification } from './composables/usePushNotification';
 import { storage } from './services/storage.service.';
-import { useClassificationCardStore } from './stores/classificationCard.storage';
-import { useFriendshipStore } from './stores/friendship.storage';
+import { useClassificationCardStore } from './stores/App/classificationCard.storage.ts';
 import { useConfirmStore } from './composables/useConfirm';
 import MainLayout from './layouts/MainLayout.vue';
 import AuthLayout from './layouts/AuthLayout.vue';
 import NoLayout from './layouts/NoLayout.vue';
 import OALayout from './layouts/OALayout.vue'
+import AdminLayout from './layouts/AdminLayout.vue';
+import { useFriendshipStore } from './stores/App/friendship.storage.ts';
 
 const route: any = useRoute();
 const langStore = useLangStore()
@@ -55,6 +56,7 @@ const layouts: any = {
   main: MainLayout,
   auth: AuthLayout,
   oa: OALayout,
+  admin: AdminLayout,
   nolayout: NoLayout
 }
 

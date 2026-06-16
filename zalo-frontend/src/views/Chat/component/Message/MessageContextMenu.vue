@@ -39,16 +39,16 @@
 <script setup lang="ts">
 import { style } from '@/assets/tailwindcss';
 import { useTranslate } from '@/composables/useTranslate';
-import { usePinStore } from '@/stores/pin.storage';
-import { useUserStore } from '@/stores/user.storage';
+import { usePinStore } from '@/stores/App/pin.storage';
+import { useUserStore } from '@/stores/App/user.storage';
 import { MessageType } from '@/types/entities';
 import { toast } from '@/utils/toast';
 import { ref } from 'vue';
 import { useConfirmStore } from '@/composables/useConfirm';
-import { useMessageStore } from '@/stores/message.storage';
+import { useMessageStore } from '@/stores/App/message.storage';
 import { useChatActionStore } from '@/composables/useChatAction';
 import { useConversation } from '@/composables/useConversation';
-import { useConversationStore } from '@/stores/conversation.storage';
+import { useConversationStore } from '@/stores/App/conversation.storage';
 
 const props = defineProps<{
     message: MessageType
