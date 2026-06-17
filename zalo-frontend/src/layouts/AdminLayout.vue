@@ -1,9 +1,9 @@
 <template>
     <ion-page>
-        <!-- <OAHeader /> -->
+        <admin-header />
         <ion-content :scroll-y="false">
             <div :class="['flex h-full w-full overflow-hidden', oaStyle.bg.primary]">
-                <!-- <OASidebar /> -->
+                <admin-sidebar />
                 <main class="flex-1 h-full overflow-auto py-2 px-4">
                     <slot />
                 </main>
@@ -13,9 +13,10 @@
 </template>
 
 <script setup lang="ts">
-import OASidebar from '@/components/OA/Sidebar/OASidebar.vue';
 import OAHeader from '@/components/OA/Header/OAHeader.vue';
 import { IonPage, IonContent } from '@ionic/vue';
 import { oaStyle } from '@/assets/tailwindcss';
+import AdminSidebar from '@/components/Admin/Sidebar/AdminSidebar.vue';
+import AdminHeader from '@/components/Admin/Header/AdminHeader.vue';
 
 </script>

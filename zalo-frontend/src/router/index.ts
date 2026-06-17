@@ -70,6 +70,22 @@ const routes: Array<RouteRecordRaw> = [
     ]
   },
 
+  // -------------------- ADMIN ROUTES --------------------
+  {
+    path: ROUTE.ADMIN_DASHBOARD.INDEX,
+    meta: { layout: "admin", requiresAuth: true },
+    children: [
+      {
+        path: ROUTE.ADMIN_DASHBOARD.STRUCTURE,
+        component: () => import('../views/Admin/Structure/Structure.vue')
+      },
+      {
+        path: ROUTE.ADMIN_DASHBOARD.ROLE,
+        component: () => import('../views/Admin/Role/Role.vue')
+      },
+    ]
+  },
+
   // -------------------- AUTH ROUTES --------------------
   {
     path: "",

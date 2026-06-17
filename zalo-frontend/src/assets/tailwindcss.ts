@@ -83,8 +83,8 @@ export const oaStyle = {
 
   bg: {
     active: `
-      bg-blue-50
-      dark:bg-blue-950/50
+      bg-blue-500
+      dark:bg-blue-600
     `,
     primary: `
       bg-white
@@ -113,6 +113,11 @@ export const oaStyle = {
 
     hoverBlue: `
       hover:bg-blue-200/60 
+      dark:hover:bg-blue-700
+    `,
+
+    hoverActive: `
+      hover:bg-blue-600
       dark:hover:bg-blue-700
     `,
   },

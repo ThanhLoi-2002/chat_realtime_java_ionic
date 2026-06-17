@@ -13,63 +13,45 @@ import { IonButton } from "@ionic/vue"
 const props = defineProps<{
     data: any[];
     columns: any[];
+    pageSize?: number
+    height?: string
 }>()
 
 const sorting = ref<any>([])
 const globalFilter = ref("")
 
-// Make a reactive source from props.data
-const dataRef = computed(() => props.data ?? [])
-
-// Create table using the reactive dataRef
-const table = useVueTable({
-    data: dataRef,
-    // columns: props.columns,
-
-    get columns() {
-        return props.columns
+const tableOptions = computed(() => ({
+    get data() {
+        return props.data ?? []
     },
-
+    columns: props.columns,
     initialState: {
-        pagination: { pageSize: 15 }
+        pagination: { pageSize: props.pageSize ?? 15 }
     },
-
     state: {
         get sorting() { return sorting.value },
         get globalFilter() { return globalFilter.value }
     },
-
-    onSortingChange: updater => {
+    onSortingChange: (updater: any) => {
         sorting.value = typeof updater === "function" ? updater(sorting.value) : updater
     },
-
-    onGlobalFilterChange: value => {
+    onGlobalFilterChange: (value: any) => {
         globalFilter.value = value
     },
-
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel()
-})
+}))
 
-watch(
-    () => props.columns,
-    (newColumns) => {
-        table.setOptions(prev => ({
-            ...prev,
-            columns: newColumns
-        }))
-    },
-    { deep: true }
-)
+const table = useVueTable(tableOptions.value)
 </script>
 
 <template>
 
     <!-- SEARCH -->
     <!-- <input v-model="globalFilter" placeholder="Search..." class="border p-2 mb-3" /> -->
-    <div class="w-full overflow-x-auto max-h-[75vh]">
+    <div class="w-full overflow-x-auto" :class="[props.height ?? 'max-h-[75vh]']">
         <table class="w-full min-w-max border border-gray-200 dark:border-gray-700
             bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
 

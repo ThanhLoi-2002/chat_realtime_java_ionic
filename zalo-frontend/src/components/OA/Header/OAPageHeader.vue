@@ -33,7 +33,7 @@
 
 <script setup lang="ts">
 import { oaStyle } from '@/assets/tailwindcss';
-import { useOASystemStore } from '@/stores/Oa/oaSystem.storage';
+import { useSystemStore } from '@/stores/system.storage';
 
 // Khai báo cấu trúc dữ liệu cho breadcrumb mang tính động
 interface Breadcrumb {
@@ -45,5 +45,5 @@ defineProps<{
     breadcrumbs: Breadcrumb[]
 }>();
 
-const sysStorage = useOASystemStore()
+const sysStorage = useSystemStore()
 </script>

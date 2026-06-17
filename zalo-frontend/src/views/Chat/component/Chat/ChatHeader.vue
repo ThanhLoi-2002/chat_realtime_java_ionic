@@ -87,7 +87,7 @@
 import { useConversation } from '@/composables/useConversation';
 import { useTranslate } from '@/composables/useTranslate';
 import { useConversationStore } from '@/stores/App/conversation.storage.ts';
-import { useSystemStore } from '@/stores/App/system.storage.ts';
+import { useSystemStore } from '@/stores/system.storage.ts';
 import GroupAvatar from '@/components/Shared/Avatar/GroupAvatar.vue';
 import { style } from '@/assets/tailwindcss';
 import CircleAvatar from '@/components/Shared/Avatar/CircleAvatar.vue';

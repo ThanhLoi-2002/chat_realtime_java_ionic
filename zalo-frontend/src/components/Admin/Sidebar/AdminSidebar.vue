@@ -5,12 +5,6 @@
         sysStorage.showSidebar ? 'w-20' : 'w-64',
         'border-r p-4 hidden md:flex flex-col min-h-screen transition-all duration-300 ease-in-out relative select-none'
     ]">
-        <!-- <button @click="isCollapsed = !isCollapsed"
-            :class="[oaStyle.bg.secondary, oaStyle.bg.hover, oaStyle.text.primary]"
-            class="absolute -right-3 top-4 border border-slate-500/50 dark:border-slate-400/70 rounded-full p-1 shadow-md z-50 flex items-center justify-center size-6 cursor-pointer transition-transform active:scale-95">
-            <i :class="[isCollapsed ? 'fa-solid fa-chevron-right' : 'fa-solid fa-chevron-left', 'text-xs']" />
-        </button> -->
-
         <div
             :class="[oaStyle.text.primary, oaStyle.border.primary, 'flex items-center cursor-pointer px-2 pb-2 h-10 border-b overflow-hidden']">
             <circle-avatar size="size-8 shrink-0" />

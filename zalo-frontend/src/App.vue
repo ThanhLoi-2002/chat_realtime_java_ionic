@@ -28,7 +28,7 @@ import { getKey } from './utils/local';
 import { THEME } from './utils/constant';
 import { connectSocket, disconnectSocket } from './utils/websocket';
 import { useDevice } from './composables/useDevice';
-import { useSystemStore } from './stores/App/system.storage.ts';
+import { useSystemStore } from './stores/system.storage.ts';
 import { Network } from '@capacitor/network';
 import { toast } from './utils/toast';
 import { usePushNotification } from './composables/usePushNotification';

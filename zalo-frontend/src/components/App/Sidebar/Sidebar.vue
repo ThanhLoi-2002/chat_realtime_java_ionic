@@ -65,7 +65,7 @@ import { computed, defineAsyncComponent, ref } from 'vue';
 import { useTranslate } from '@/composables/useTranslate';
 import { SettingPageType } from '@/types/common';
 import { useUserStore } from '@/stores/App/user.storage.ts';
-import { useSystemStore } from '@/stores/App/system.storage.ts';
+import { useSystemStore } from '@/stores/system.storage.ts';
 import Modal from '@/components/Shared/Modal/Modal.vue';
 
 const ProfileUI = defineAsyncComponent(() => import('./components/ProfileUI.vue'));

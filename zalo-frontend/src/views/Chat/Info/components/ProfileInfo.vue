@@ -101,7 +101,7 @@ import CommonGroupPanel from './CommonGroupPanel.vue'
 import StoragePanel from './Storage/StoragePanel.vue'
 import StorageComponent from './Storage/StorageComponent.vue'
 import Security from './Security.vue'
-import { useSystemStore } from '@/stores/App/system.storage.ts'
+import { useSystemStore } from '@/stores/system.storage.ts'
 import PinPanel from '../../component/Pin/PinPanel.vue'
 
 const emit = defineEmits(['close'])

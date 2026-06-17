@@ -140,3 +140,15 @@ export type TranslateMessageType = {
   sourceLang: string
   targetLang: string
 }
+
+export interface SubMenu {
+    name: string;
+    href: string;
+}
+
+export interface Menu {
+    name: string;
+    icon: string;
+    href?: string;
+    items?: SubMenu[];
+}

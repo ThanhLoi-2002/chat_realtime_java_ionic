@@ -93,7 +93,7 @@ import { useDateTime } from '@/composables/useDateTime';
 import LoadingSpinner from '@/components/Shared/Loading/LoadingSpinner.vue';
 import { useScroll } from '@/composables/useScroll';
 import Typing from './component/Chat/Typing.vue';
-import { useSystemStore } from '@/stores/App/system.storage.ts';
+import { useSystemStore } from '@/stores/system.storage.ts';
 import AddFriendBar from './component/Chat/AddFriendBar.vue';
 import { MemberRoleEnum, MessageEnum } from '@/types/enum';
 import { StompSubscription } from '@stomp/stompjs';

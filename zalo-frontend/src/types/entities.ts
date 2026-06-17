@@ -150,3 +150,9 @@ export type StickerItemType = {
     frameCount: number
     stickerId: string
 }
+
+export type RoleType = {
+    id: number
+    name: string
+    description: string
+}
