@@ -5,6 +5,7 @@ import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
 import com.zalo.modules.conversation.entities.MemberRole;
 import com.zalo.modules.groupSetting.entities.GroupSetting;
 import com.zalo.modules.groupSetting.service.GroupSettingService;
+import com.zalo.modules.user.dto.response.UserPayload;
 import com.zalo.modules.user.entities.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,7 @@ public class GroupSettingController {
 
     @PostMapping()
     @RequireMemberRole(memberRoles = {MemberRole.GOLDEN_KEY, MemberRole.SILVER_KEY})
-    public void saveSettings(@CurrentUser User user, @PathVariable Long conversationId, @RequestBody GroupSetting dto) {
+    public void saveSettings(@CurrentUser UserPayload user, @PathVariable Long conversationId, @RequestBody GroupSetting dto) {
         service.saveSetting(conversationId, user.getId(), dto);
     }
 }

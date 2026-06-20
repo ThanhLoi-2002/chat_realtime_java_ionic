@@ -3,6 +3,7 @@ package com.zalo.common.configuration.security;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -26,6 +27,18 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtFilter jwtFilter;
+
+    @Bean
+    public FilterRegistrationBean<JwtFilter> jwtFilterRegistration() {
+
+        FilterRegistrationBean<JwtFilter> registration =
+                new FilterRegistrationBean<>();
+
+        registration.setFilter(jwtFilter);
+        registration.addUrlPatterns("/*");
+
+        return registration;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

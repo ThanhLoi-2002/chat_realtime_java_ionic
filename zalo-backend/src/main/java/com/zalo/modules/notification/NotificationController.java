@@ -3,6 +3,7 @@ package com.zalo.modules.notification;
 import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
 import com.zalo.modules.notification.dto.request.SaveFcmTokenRequest;
 import com.zalo.modules.notification.service.NotificationService;
+import com.zalo.modules.user.dto.response.UserPayload;
 import com.zalo.modules.user.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +19,7 @@ public class NotificationController {
     private NotificationService service;
 
     @PostMapping("/save-fcm-token")
-    public void saveToken(@RequestBody SaveFcmTokenRequest req, @CurrentUser User user) {
+    public void saveToken(@RequestBody SaveFcmTokenRequest req, @CurrentUser UserPayload user) {
         service.saveFcmToken(req, user.getId());
     }
 }

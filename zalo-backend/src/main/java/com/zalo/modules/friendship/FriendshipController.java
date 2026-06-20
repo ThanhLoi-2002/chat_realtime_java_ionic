@@ -3,6 +3,7 @@ package com.zalo.modules.friendship;
 import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
 import com.zalo.modules.friendship.dto.request.CreateFriendship;
 import com.zalo.modules.friendship.dto.response.FriendshipResponse;
+import com.zalo.modules.user.dto.response.UserPayload;
 import com.zalo.modules.user.dto.response.UserResponse;
 import com.zalo.modules.friendship.entity.Friendship;
 import com.zalo.modules.user.entities.User;
@@ -21,54 +22,54 @@ public class FriendshipController {
 
     // 📤 gửi lời mời
     @PostMapping("/request")
-    public FriendshipResponse send(@CurrentUser User user, @RequestBody CreateFriendship dto) {
+    public FriendshipResponse send(@CurrentUser UserPayload user, @RequestBody CreateFriendship dto) {
         return new FriendshipResponse(service.sendRequest(user.getId(), dto), "user1", "user2");
     }
 
     // ✅ accept
     @PostMapping("/accept/{otherId}")
-    public void accept(@CurrentUser User user, @PathVariable Long otherId) {
+    public void accept(@CurrentUser UserPayload user, @PathVariable Long otherId) {
         service.accept(user.getId(), otherId);
     }
 
     // ❌ reject
     @PostMapping("/reject/{otherId}")
-    public void reject(@CurrentUser User user, @PathVariable Long otherId) {
+    public void reject(@CurrentUser UserPayload user, @PathVariable Long otherId) {
         service.reject(user.getId(), otherId);
     }
 
     // 🗑️ cancel
     @DeleteMapping("/cancel/{otherId}")
-    public void cancel(@CurrentUser User user, @PathVariable Long otherId) {
+    public void cancel(@CurrentUser UserPayload user, @PathVariable Long otherId) {
         service.cancelRequest(user.getId(), otherId);
     }
 
     // 💔 unfriend
     @DeleteMapping("/unfriend/{otherId}")
-    public void unfriend(@CurrentUser User user, @PathVariable Long otherId) {
+    public void unfriend(@CurrentUser UserPayload user, @PathVariable Long otherId) {
         service.unfriend(user.getId(), otherId);
     }
 
     // 📋 list bạn
     @GetMapping
-    public List<UserResponse> getFriends(@CurrentUser User user) {
+    public List<UserResponse> getFriends(@CurrentUser UserPayload user) {
         return service.getFriends(user.getId());
     }
 
     // 📥 request nhận
     @GetMapping("/received")
-    public List<FriendshipResponse> received(@CurrentUser User user) {
+    public List<FriendshipResponse> received(@CurrentUser UserPayload user) {
         return service.getReceived(user.getId()).stream().map(e -> new FriendshipResponse(e, "user1", "user2")).toList();
     }
 
     // 📤 request gửi
     @GetMapping("/sent")
-    public List<FriendshipResponse> sent(@CurrentUser User user) {
+    public List<FriendshipResponse> sent(@CurrentUser UserPayload user) {
         return service.getSent(user.getId()).stream().map(e -> new FriendshipResponse(e, "user1", "user2")).toList();
     }
 
     @GetMapping("/friend/{otherId}")
-    public FriendshipResponse getFriend(@CurrentUser User user, @PathVariable Long otherId) {
+    public FriendshipResponse getFriend(@CurrentUser UserPayload user, @PathVariable Long otherId) {
         Friendship f = service.getFriend(user.getId(), otherId);
 
         if (f == null) {

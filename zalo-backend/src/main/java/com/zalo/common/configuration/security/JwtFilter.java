@@ -1,5 +1,9 @@
 package com.zalo.common.configuration.security;
 
+import com.cloudinary.api.exceptions.NotFound;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zalo.common.configuration.json.G;
+import com.zalo.modules.user.dto.response.UserPayload;
 import com.zalo.modules.user.entities.User;
 import com.zalo.modules.user.service.UserRepository;
 import com.zalo.common.service.JwtService;
@@ -23,7 +27,17 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final UserRepository userRepository;
+
+    public UserPayload getOneByToken(String token) throws NotFound {
+        Claims claims = jwtService.extractAllClaims(token);
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        return mapper.convertValue(
+                claims.get("payload"),
+                UserPayload.class
+        );
+    }
 
     @Override
     protected void doFilterInternal(
@@ -33,35 +47,15 @@ public class JwtFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
-        SecurityContext context = SecurityContextHolder.getContext();
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ") || context.getAuthentication() != null) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+        if (authHeader != null && !authHeader.isBlank()) {
 
-        String token = authHeader.substring(7);
+            try {
+                UserPayload user = getOneByToken(authHeader);
 
-        Claims claims = jwtService.extractAllClaims(token);
-        Long userId = claims.get("id", Long.class);
+                request.setAttribute("currentUser", user);
 
-        System.out.println(userId + "     userid");
-        if (userId != null) {
-            User user = userRepository.findById(userId).orElse(null);
-
-            if (user != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
-                UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(
-                                user,
-                                null,
-                                user.getAuthorities()
-                        );
-
-                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                // 🔥 GÁN USER VÀO CONTEXT
-                context.setAuthentication(auth);
+            } catch (Exception ignored) {
             }
         }
 

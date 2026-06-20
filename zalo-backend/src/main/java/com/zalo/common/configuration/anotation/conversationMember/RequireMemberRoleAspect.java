@@ -3,6 +3,7 @@ package com.zalo.common.configuration.anotation.conversationMember;
 import com.zalo.modules.conversation.entities.ConversationMember;
 import com.zalo.modules.conversation.entities.MemberRole;
 import com.zalo.modules.conversation.service.ConversationMemberRepository;
+import com.zalo.modules.user.dto.response.UserPayload;
 import com.zalo.modules.user.entities.User;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -29,16 +30,21 @@ public class RequireMemberRoleAspect {
 
     @Before("@annotation(role)")
     public void checkMemberRole(JoinPoint joinPoint, RequireMemberRole role) {
-
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        String[] parameterNames = signature.getParameterNames();
-        Object[] args = joinPoint.getArgs();
-
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes == null) {
             throw new RuntimeException("Không thể lấy Request từ context hiện tại");
         }
         HttpServletRequest request = attributes.getRequest();
+
+        UserPayload currentUser =
+                (UserPayload) request.getAttribute("currentUser");
+
+        if (currentUser == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Unauthorized"
+            );
+        }
 
         // 2. Lấy các biến Path Variable từ URL
         Map<String, String> pathVariables = (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
@@ -55,15 +61,7 @@ public class RequireMemberRoleAspect {
 
         Long conversationId = Long.parseLong(idValue);
 
-        Long userId = null;
-
-        // 👉 Lấy param từ method
-        for (int i = 0; i < parameterNames.length; i++) {
-            // 2. Tìm User từ tham số (dựa trên kiểu dữ liệu User)
-            if (args[i] instanceof User user) {
-                userId = user.getId();
-            }
-        }
+        Long userId = currentUser.getId();
 
         if (userId == null) {
             throw new RuntimeException("Thiếu dữ liệu userId");

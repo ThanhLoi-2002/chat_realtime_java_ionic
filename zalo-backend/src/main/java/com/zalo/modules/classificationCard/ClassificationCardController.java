@@ -6,6 +6,7 @@ import com.zalo.modules.classificationCard.dto.request.ClassificationCardRequest
 import com.zalo.modules.classificationCard.dto.request.PositionUpdateRequest;
 import com.zalo.modules.classificationCard.dto.response.ClassificationCardResponse;
 import com.zalo.modules.classificationCard.service.ClassificationCardService;
+import com.zalo.modules.user.dto.response.UserPayload;
 import com.zalo.modules.user.entities.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -19,17 +20,17 @@ public class ClassificationCardController {
     private final ClassificationCardService service;
 
     @GetMapping
-    public List<ClassificationCardResponse> getAll(@CurrentUser User user) {
+    public List<ClassificationCardResponse> getAll(@CurrentUser UserPayload user) {
         return service.getAll(user.getId());
     }
 
     @PostMapping
-    public ClassificationCardResponse create(@CurrentUser User user, @RequestBody ClassificationCardRequest card) {
+    public ClassificationCardResponse create(@CurrentUser UserPayload user, @RequestBody ClassificationCardRequest card) {
         return new ClassificationCardResponse(service.create(card, user.getId()));
     }
 
     @PutMapping("/{id}")
-    public ClassificationCardResponse update(@PathVariable Long id, @RequestBody ClassificationCardRequest card, @CurrentUser User user) {
+    public ClassificationCardResponse update(@PathVariable Long id, @RequestBody ClassificationCardRequest card, @CurrentUser UserPayload user) {
         return new ClassificationCardResponse(service.update(id, card, user.getId()));
     }
 
@@ -47,7 +48,7 @@ public class ClassificationCardController {
     public void assignCard(
             @PathVariable Long id,
             @RequestBody AssignClassificationCard dto,
-            @CurrentUser User user) {
+            @CurrentUser UserPayload user) {
 
         service.assignCardToConversation(id, dto, user.getId());
     }

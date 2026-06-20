@@ -5,6 +5,7 @@ import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
 import com.zalo.modules.sticker.dto.response.StickerResponse;
 import com.zalo.modules.sticker.entity.StickerItem;
 import com.zalo.modules.sticker.service.StickerService;
+import com.zalo.modules.user.dto.response.UserPayload;
 import com.zalo.modules.user.entities.User;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
@@ -34,7 +35,7 @@ public class StickerController {
 
     @PostMapping("/{conversationId}")
     @CheckConversationMember
-    public void sendSticker(@CurrentUser User user, @PathVariable Long conversationId, @RequestBody StickerItem sticker) {
+    public void sendSticker(@CurrentUser UserPayload user, @PathVariable Long conversationId, @RequestBody StickerItem sticker) {
         stickerService.sendSticker(conversationId, user.getId(), sticker);
     }
 }

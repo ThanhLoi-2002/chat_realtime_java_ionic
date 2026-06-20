@@ -1,6 +1,8 @@
 package com.zalo.common.configuration.anotation.conversationMember;
 
+import com.zalo.common.configuration.json.G;
 import com.zalo.modules.conversation.entities.ConversationMember;
+import com.zalo.modules.user.dto.response.UserPayload;
 import com.zalo.modules.user.entities.User;
 import com.zalo.modules.conversation.service.ConversationMemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,55 +30,51 @@ public class ConversationMemberAspect {
     @Before("@annotation(check)")
     public void checkMember(JoinPoint joinPoint, CheckConversationMember check) {
 
-        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        String[] parameterNames = signature.getParameterNames();
-        Object[] args = joinPoint.getArgs();
+        ServletRequestAttributes attributes =
+                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes == null) {
             throw new RuntimeException("Không thể lấy Request từ context hiện tại");
         }
+
         HttpServletRequest request = attributes.getRequest();
 
-        // 2. Lấy các biến Path Variable từ URL
-        Map<String, String> pathVariables = (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+        UserPayload currentUser =
+                (UserPayload) request.getAttribute("currentUser");
 
-        // 3. Lấy conversationId dựa trên tên trong Annotation
-        String paramName = check.conversationIdParam(); // mặc định là "conversationId"
+        if (currentUser == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Unauthorized"
+            );
+        }
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> pathVariables =
+                (Map<String, String>) request.getAttribute(
+                        HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE
+                );
+
+        String paramName = check.conversationIdParam();
         String idValue = pathVariables.get(paramName);
 
         if (idValue == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "URL thiếu tham số " + paramName);
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "URL thiếu tham số " + paramName
+            );
         }
 
         Long conversationId = Long.parseLong(idValue);
 
-        Long userId = null;
-//        System.out.println("targetParamName " + targetParamName + " parameterNames: " + Arrays.toString(parameterNames));
+        boolean isMember = repository
+                .findByConversationIdAndUserId(
+                        conversationId,
+                        currentUser.getId()
+                )
+                .isPresent();
 
-        // 👉 Lấy param từ method
-        for (int i = 0; i < parameterNames.length; i++) {
-            // 1. Tìm conversationId theo tên đã cấu hình
-//            if (parameterNames[i].equals(targetParamName)) {
-//                if (args[i] instanceof Long) {
-//                    conversationId = (Long) args[i];
-//                }
-//            }
-
-            // 2. Tìm User từ tham số (dựa trên kiểu dữ liệu User)
-            if (args[i] instanceof User user) {
-                userId = user.getId();
-            }
-        }
-
-        if (userId == null) {
-            throw new RuntimeException("Thiếu dữ liệu check");
-        }
-
-        Optional<ConversationMember> isMember = repository
-                .findByConversationIdAndUserId(conversationId, userId);
-
-        if (isMember.isEmpty()) {
+        if (!isMember) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
                     "Bạn không thuộc cuộc trò chuyện này"

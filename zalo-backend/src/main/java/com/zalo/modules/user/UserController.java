@@ -3,6 +3,7 @@ package com.zalo.modules.user;
 import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
 import com.zalo.common.configuration.anotation.ResponseMessage;
 import com.zalo.common.filter.UserFilter;
+import com.zalo.modules.user.dto.response.UserPayload;
 import com.zalo.modules.user.dto.response.UserResponse;
 import com.zalo.modules.user.entities.User;
 import com.zalo.modules.user.service.UserService;
@@ -19,41 +20,47 @@ public class UserController {
 
     @GetMapping("/me")
     public UserResponse getMe(
-            @CurrentUser User user
+            @CurrentUser UserPayload user
     ) {
-        return new UserResponse(user);
+        User u = userService.findById(user.getId());
+
+        UserResponse userResponse = new UserResponse(u);
+        userResponse.roles = user.roles;
+        userResponse.permissions = user.permissions;
+
+        return new UserResponse(u);
     }
 
     @PostMapping("/upload-avatar")
     @ResponseMessage("success")
     public UserResponse uploadAvatar(
             @RequestParam MultipartFile file,
-            @CurrentUser User user
+            @CurrentUser UserPayload user
     ) throws Exception {
-        user = userService.uploadAvatar(file, user);
+        User u = userService.uploadAvatar(file, user.getId());
 
-        return new UserResponse(user);
+        return new UserResponse(u);
     }
 
     @PostMapping("/upload-cover")
     @ResponseMessage("success")
     public UserResponse uploadCover(
             @RequestParam MultipartFile file,
-            @CurrentUser User user
+            @CurrentUser UserPayload user
     ) throws Exception {
-        user = userService.uploadCover(file, user);
+        User u = userService.uploadCover(file, user.getId());
 
-        return new UserResponse(user);
+        return new UserResponse(u);
     }
 
     @PutMapping("/toggle-oa")
     @ResponseMessage("success")
     public UserResponse toggleOA(
-            @CurrentUser User user
+            @CurrentUser UserPayload user
     ) {
-        user = userService.toggleOA(user.getId());
+        User u = userService.toggleOA(user.getId());
 
-        return new UserResponse(user);
+        return new UserResponse(u);
     }
 
     @GetMapping

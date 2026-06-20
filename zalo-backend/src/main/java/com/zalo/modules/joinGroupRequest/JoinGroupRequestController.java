@@ -6,6 +6,7 @@ import com.zalo.modules.conversation.entities.MemberRole;
 import com.zalo.modules.joinGroupRequest.dto.request.JoinGroupDto;
 import com.zalo.modules.joinGroupRequest.dto.response.JoinGroupRequestResponse;
 import com.zalo.modules.joinGroupRequest.service.JoinGroupRequestService;
+import com.zalo.modules.user.dto.response.UserPayload;
 import com.zalo.modules.user.entities.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -19,25 +20,25 @@ public class JoinGroupRequestController {
     private final JoinGroupRequestService joinGroupRequestService;
 
     @PostMapping("")
-    public void joinGroupRequest(@CurrentUser User user, @RequestBody JoinGroupDto dto) {
+    public void joinGroupRequest(@CurrentUser UserPayload user, @RequestBody JoinGroupDto dto) {
         joinGroupRequestService.requestToJoinGroup(user.getId(), dto);
     }
 
     @GetMapping("/{conversationId}")
     @RequireMemberRole(memberRoles = {MemberRole.GOLDEN_KEY, MemberRole.SILVER_KEY})
-    public List<JoinGroupRequestResponse> getGroupRequest(@CurrentUser User user, @PathVariable Long conversationId) {
+    public List<JoinGroupRequestResponse> getGroupRequest(@CurrentUser UserPayload user, @PathVariable Long conversationId) {
         return joinGroupRequestService.getListByConvId(conversationId).stream().map(e -> new JoinGroupRequestResponse(e, "createdBy")).toList();
     }
 
     @PostMapping("/{conversationId}/approve")
     @RequireMemberRole(memberRoles = {MemberRole.GOLDEN_KEY, MemberRole.SILVER_KEY})
-    public void approveRequest(@CurrentUser User user, @RequestBody List<Long> ids, @PathVariable Long conversationId) {
+    public void approveRequest(@CurrentUser UserPayload user, @RequestBody List<Long> ids, @PathVariable Long conversationId) {
         joinGroupRequestService.approveRequests(ids, conversationId, user.getId());
     }
 
     @PostMapping("/{conversationId}/remove")
     @RequireMemberRole(memberRoles = {MemberRole.GOLDEN_KEY, MemberRole.SILVER_KEY})
-    public void removeRequest(@CurrentUser User user, @RequestBody List<Long> ids, @PathVariable Long conversationId) {
+    public void removeRequest(@CurrentUser UserPayload user, @RequestBody List<Long> ids, @PathVariable Long conversationId) {
         joinGroupRequestService.removeRequests(ids);
     }
 }

@@ -1,6 +1,7 @@
 package com.zalo.common.configuration.anotation.currentUser;
 
-import com.zalo.modules.user.entities.User;
+import com.zalo.common.configuration.json.G;
+import com.zalo.modules.user.dto.response.UserPayload;
 import com.zalo.modules.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
@@ -21,7 +22,7 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         return parameter.hasParameterAnnotation(CurrentUser.class)
-                && parameter.getParameterType().equals(User.class);
+                && parameter.getParameterType().equals(UserPayload.class);
     }
 
     @Override
@@ -36,6 +37,14 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing Authorization header");
         }
 
-        return userService.getOneByToken(authHeader);
+        UserPayload user = userService.getOneByToken(authHeader);
+System.out.println(G.toJson(user));
+        webRequest.setAttribute(
+                "currentUser",
+                user,
+                NativeWebRequest.SCOPE_REQUEST
+        );
+
+        return user;
     }
 }

@@ -6,6 +6,7 @@ import com.zalo.common.filter.LangFilter;
 import com.zalo.modules.lang.dto.request.LangCreationRequest;
 import com.zalo.modules.lang.dto.request.LangUpdateRequest;
 import com.zalo.modules.lang.dto.response.LangResponse;
+import com.zalo.modules.user.dto.response.UserPayload;
 import com.zalo.modules.user.entities.User;
 import com.zalo.modules.lang.service.LangService;
 import jakarta.validation.Valid;
@@ -39,7 +40,7 @@ public class LangController {
 
     @PostMapping
     @ResponseMessage("success")
-    public LangResponse create(@RequestBody @Valid LangCreationRequest lang, @CurrentUser User user) {
+    public LangResponse create(@RequestBody @Valid LangCreationRequest lang, @CurrentUser UserPayload user) {
         return langService.create(lang, user.getId());
     }
 
@@ -47,7 +48,7 @@ public class LangController {
     @ResponseMessage("success")
     public LangResponse update(
             @PathVariable Long id,
-            @RequestBody @Valid LangUpdateRequest lang, @CurrentUser User user
+            @RequestBody @Valid LangUpdateRequest lang, @CurrentUser UserPayload user
     ) {
         return langService.update(id, lang, user.getId());
     }

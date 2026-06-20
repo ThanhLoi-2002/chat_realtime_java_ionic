@@ -1,8 +1,11 @@
 package com.zalo.modules.user.service;
 
 import com.cloudinary.api.exceptions.NotFound;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zalo.common.configuration.json.G;
 import com.zalo.common.filter.UserFilter;
 import com.zalo.common.entity.File;
+import com.zalo.modules.user.dto.response.UserPayload;
 import com.zalo.modules.user.entities.User;
 import com.zalo.modules.media.service.MediaService;
 import com.zalo.common.service.JwtService;
@@ -33,33 +36,34 @@ public class UserService {
     private final JwtService jwtService;
     private final MediaService cloudinaryService;
 
-    public User getOneByToken(String token) throws NotFound {
+    public UserPayload getOneByToken(String token) throws NotFound {
         Claims claims = jwtService.extractAllClaims(token);
-        Long id = claims.get("id", Long.class);
 
-        return userRepository.findById(id).orElseThrow(
-                () -> new NotFound("notFound")
+        ObjectMapper mapper = new ObjectMapper();
+
+        return mapper.convertValue(
+                claims.get("payload"),
+                UserPayload.class
         );
     }
 
-    public User uploadAvatar(MultipartFile file, User user) throws IOException {
+    public User findById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
+    }
+
+    public User uploadAvatar(MultipartFile file, Long userId) throws IOException {
         File avatar = cloudinaryService.uploadFile(file);
 
-        if (Boolean.parseBoolean(String.valueOf(user.getAvatar())) && Boolean.parseBoolean(user.getAvatar().getPublicId())) {
-            cloudinaryService.deleteFile(user.getAvatar().getPublicId());
-        }
+        User user = findById(userId);
         user.setAvatar(avatar);
 
         return userRepository.save(user);
     }
 
-    public User uploadCover(MultipartFile file, User user) throws IOException {
+    public User uploadCover(MultipartFile file, Long userId) throws IOException {
         File cover = cloudinaryService.uploadFile(file);
 
-        if (Boolean.parseBoolean(String.valueOf(user.getCover())) && Boolean.parseBoolean(user.getCover().getPublicId())) {
-            cloudinaryService.deleteFile(user.getCover().getPublicId());
-        }
-
+        User user = findById(userId);
         user.setCover(cover);
 
         return userRepository.save(user);
