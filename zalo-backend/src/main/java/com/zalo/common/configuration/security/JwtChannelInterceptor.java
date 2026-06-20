@@ -1,6 +1,8 @@
 package com.zalo.common.configuration.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zalo.common.service.JwtService;
+import com.zalo.modules.app.user.dto.response.UserPayload;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;
@@ -39,7 +41,15 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
 
             // 🔥 decode JWT
             Claims claims = jwtService.extractAllClaims(token);
-            Long userId = claims.get("id", Long.class);
+
+            ObjectMapper mapper = new ObjectMapper();
+
+            UserPayload userPayload = mapper.convertValue(
+                    claims.get("payload"),
+                    UserPayload.class
+            );
+            
+            Long userId = userPayload.getId();
 
             Principal principal = userId::toString;
 
