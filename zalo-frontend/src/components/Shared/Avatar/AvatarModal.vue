@@ -27,10 +27,10 @@ import { computed, defineAsyncComponent, ref, watch } from "vue";
 import { useAvatarModal } from "@/composables/useAvatarModal";
 import { useTranslate } from "@/composables/useTranslate";
 import Modal from "@/components/Shared/Modal/Modal.vue";
-import FriendProfileUI from "@/views/Chat/component/FriendProfileUI.vue";
+import FriendProfileUI from "@/views/App/Chat/component/FriendProfileUI.vue";
 
-const GroupProfile = defineAsyncComponent(() => import("@/views/Chat/component/GroupProfile.vue"));
-const Member = defineAsyncComponent(() => import("@/views/Chat/Info/components/Member.vue"));
+const GroupProfile = defineAsyncComponent(() => import("@/views/App/Chat/component/GroupProfile.vue"));
+const Member = defineAsyncComponent(() => import("@/views/App/Chat/Info/components/Member.vue"));
 
 const { isOpen, modalType, user, conversation, groupView, isMember, closeModal, setGroupView } = useAvatarModal();
 const { t } = useTranslate();

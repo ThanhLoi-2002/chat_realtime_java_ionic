@@ -1,4 +1,4 @@
-import { langApi } from '@/api/lang.api'
+import { langApi } from '@/api/App/lang.api'
 import { LangFormType } from '@/schema/lang.schema'
 import { LangType } from '@/types/entities'
 import { LANG } from '@/utils/constant'

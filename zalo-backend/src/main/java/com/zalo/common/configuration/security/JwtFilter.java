@@ -2,10 +2,7 @@ package com.zalo.common.configuration.security;
 
 import com.cloudinary.api.exceptions.NotFound;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zalo.common.configuration.json.G;
-import com.zalo.modules.user.dto.response.UserPayload;
-import com.zalo.modules.user.entities.User;
-import com.zalo.modules.user.service.UserRepository;
+import com.zalo.modules.app.user.dto.response.UserPayload;
 import com.zalo.common.service.JwtService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -13,10 +10,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 

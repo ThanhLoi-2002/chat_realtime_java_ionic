@@ -17,17 +17,17 @@ const routes: Array<RouteRecordRaw> = [
   },
   {
     path: ROUTE.CHATS,
-    component: () => import('../views/Chat/ChatPage.vue'),
+    component: () => import('../views/App/Chat/ChatPage.vue'),
     meta: { layout: "main", requiresAuth: true }
   },
   {
     path: `${ROUTE.JOIN_GROUP}/:code`,
-    component: () => import('../views/JoinGroup/JoinGroup.vue'),
+    component: () => import('../views/App/JoinGroup/JoinGroup.vue'),
     meta: { layout: "noLayout", requiresAuth: false }
   },
   {
     path: `${ROUTE.SCAN}`,
-    component: () => import('../views/Scan/QrCodeScannerPage.vue'),
+    component: () => import('../views/App/Scan/QrCodeScannerPage.vue'),
     meta: { layout: "noLayout", requiresAuth: false }
   },
   {
@@ -36,21 +36,21 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: "",
-        component: () => import('../views/Lang/LangPage.vue')
+        component: () => import('../views/App/Lang/LangPage.vue')
       },
       {
         path: ":id",
-        component: () => import('../views/Lang/EditLang.vue')
+        component: () => import('../views/App/Lang/EditLang.vue')
       },
       {
         path: "add",
-        component: () => import('../views/Lang/AddLang.vue')
+        component: () => import('../views/App/Lang/AddLang.vue')
       }
     ]
   },
   {
     path: ROUTE.FRIENDS,
-    component: () => import('../views/Friend/FriendPage.vue'),
+    component: () => import('../views/App/Friend/FriendPage.vue'),
     meta: { layout: "main", requiresAuth: true },
   },
 
@@ -97,12 +97,12 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: ROUTE.LOGIN,
-        component: () => import('../views/Auth/LoginPage.vue'),
+        component: () => import('../views/App/Auth/LoginPage.vue'),
         meta: { guestOnly: true }
       },
       {
         path: ROUTE.REGISTER,
-        component: () => import('../views/Auth/RegisterPage.vue'),
+        component: () => import('../views/App/Auth/RegisterPage.vue'),
         meta: { guestOnly: true }
       }
     ]
@@ -111,14 +111,14 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: ROUTE.NOT_FOUND,
     name: 'NotFound',
-    component: () => import('../views/Error/NotFoundPage.vue'),
+    component: () => import('../views/App/Error/NotFoundPage.vue'),
     meta: { layout: "noLayout", requiresAuth: false }
   },
 
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFoundAll',
-    component: () => import('../views/Error/NotFoundPage.vue'),
+    component: () => import('../views/App/Error/NotFoundPage.vue'),
     meta: { layout: "noLayout", requiresAuth: false }
   },
 ]

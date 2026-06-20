@@ -1,16 +1,14 @@
 package com.zalo.common.configuration.anotation.conversationMember;
 
-import com.zalo.modules.conversation.entities.ConversationMember;
-import com.zalo.modules.conversation.entities.MemberRole;
-import com.zalo.modules.conversation.service.ConversationMemberRepository;
-import com.zalo.modules.user.dto.response.UserPayload;
-import com.zalo.modules.user.entities.User;
+import com.zalo.modules.app.conversation.entities.ConversationMember;
+import com.zalo.modules.app.conversation.entities.MemberRole;
+import com.zalo.modules.app.conversation.service.ConversationMemberRepository;
+import com.zalo.modules.app.user.dto.response.UserPayload;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;

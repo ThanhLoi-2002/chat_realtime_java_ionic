@@ -1,7 +1,7 @@
 import { toast } from '@/utils/toast'
 import { defineStore } from 'pinia'
 import { MessagePinType } from '@/types/entities'
-import { pinApi } from '@/api/pin.api'
+import { pinApi } from '@/api/App/pin.api'
 
 interface State {
     isLoading: boolean

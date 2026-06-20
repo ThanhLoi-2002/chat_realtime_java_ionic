@@ -1,4 +1,4 @@
-import { stickerApi } from '@/api/sticker.api'
+import { stickerApi } from '@/api/App/sticker.api'
 import { SendStickerType } from '@/types/common'
 import { StickerItemType, StickerType } from '@/types/entities'
 import { STORAGE_KEY } from '@/utils/constant'

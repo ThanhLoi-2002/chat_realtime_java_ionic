@@ -1,0 +1,12 @@
+package com.zalo.modules.app.classificationCard.entity;
+
+import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
+
+@EqualsAndHashCode
+public class ClassificationConversationId implements Serializable {
+    private Long classificationId;
+    private Long conversationId;
+    private Long userId;
+}

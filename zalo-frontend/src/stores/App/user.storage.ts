@@ -1,4 +1,4 @@
-import { userApi } from '@/api/user.api'
+import { userApi } from '@/api/App/user.api'
 import router from '@/router'
 import { storage } from '@/services/storage.service.'
 import { UserType } from '@/types/entities'

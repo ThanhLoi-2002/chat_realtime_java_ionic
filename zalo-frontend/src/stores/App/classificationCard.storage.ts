@@ -1,4 +1,4 @@
-import { classificationCardApi } from '@/api/classificationCard.api'
+import { classificationCardApi } from '@/api/App/classificationCard.api'
 import { ClassificationCardFormType } from '@/schema/classificationCard.schema'
 import { UpdateClassificationPositionType } from '@/types/common'
 import { ClassificationCardType } from '@/types/entities'

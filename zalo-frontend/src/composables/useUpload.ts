@@ -1,4 +1,4 @@
-import { mediaApi } from "@/api/media.api";
+import { mediaApi } from "@/api/App/media.api";
 import { GetPresignedUrlType, UploadFileRequest, UploadFileType } from "@/types/common";
 import { MediaType } from "@/types/entities";
 import { ModuleEnum } from "@/types/enum";

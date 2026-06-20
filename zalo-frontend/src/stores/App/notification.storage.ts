@@ -1,6 +1,6 @@
 import { toast } from '@/utils/toast'
 import { defineStore } from 'pinia'
-import { notificationApi } from '@/api/notification.api'
+import { notificationApi } from '@/api/App/notification.api'
 import { SaveFcmTokenType } from '@/types/common'
 
 interface LangState {

@@ -1,4 +1,4 @@
-import { authApi } from '@/api/auth.api'
+import { authApi } from '@/api/App/auth.api'
 import { LoginFormType, RegisterFormType } from '@/schema/auth.schema'
 import { ACCESS_TOKEN, REFRESH_TOKEN } from '@/utils/constant'
 import { setKey } from '@/utils/local'

@@ -1,4 +1,4 @@
-import { friendshipApi } from "@/api/friendship.api";
+import { friendshipApi } from "@/api/App/friendship.api";
 import { SendAddFriendRequestType } from "@/types/common";
 import { FriendshipType, UserType } from "@/types/entities";
 import { toast } from "@/utils/toast";

@@ -1,4 +1,4 @@
-import { translateApi } from '@/api/translate.api'
+import { translateApi } from '@/api/App/translate.api'
 import { storage } from '@/services/storage.service.'
 import { TranslateMessageType } from '@/types/common'
 import { MessageType } from '@/types/entities'

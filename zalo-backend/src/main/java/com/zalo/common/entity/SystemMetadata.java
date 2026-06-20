@@ -1,8 +1,8 @@
 package com.zalo.common.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.zalo.modules.media.entities.Media;
-import com.zalo.modules.message.entity.SystemMessageType;
+import com.zalo.modules.app.media.entities.Media;
+import com.zalo.modules.app.message.entity.SystemMessageType;
 import lombok.Data;
 
 import java.util.List;

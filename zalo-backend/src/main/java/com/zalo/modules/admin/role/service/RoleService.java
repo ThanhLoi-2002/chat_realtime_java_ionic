@@ -9,7 +9,7 @@ import com.zalo.modules.admin.role.entity.UserRole;
 import com.zalo.modules.admin.role.repo.RolePermissionRepo;
 import com.zalo.modules.admin.role.repo.RoleRepo;
 import com.zalo.modules.admin.role.repo.UserRoleRepo;
-import com.zalo.modules.user.service.UserRepository;
+import com.zalo.modules.app.user.service.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

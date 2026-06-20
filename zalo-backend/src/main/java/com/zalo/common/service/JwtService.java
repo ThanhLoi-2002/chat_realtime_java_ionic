@@ -1,8 +1,8 @@
 package com.zalo.common.service;
 
 import com.zalo.modules.admin.role.service.RoleService;
-import com.zalo.modules.user.dto.response.UserPayload;
-import com.zalo.modules.user.entities.User;
+import com.zalo.modules.app.user.dto.response.UserPayload;
+import com.zalo.modules.app.user.entities.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;

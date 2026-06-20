@@ -1,13 +1,13 @@
 import { defineStore } from 'pinia'
 import { ConversationType, MediaType, MemberType, MessageType, UserType } from '@/types/entities'
-import { conversationApi } from '@/api/conversation.api'
+import { conversationApi } from '@/api/App/conversation.api'
 import { toast } from '@/utils/toast'
 import { appLimit } from '@/utils/constant'
 import { storage } from '@/services/storage.service.'
 import { ConversationFilter, GroupSetting } from '@/types/common'
 import { useConversation } from '@/composables/useConversation'
 import { normalizeText } from '@/utils/helper'
-import { pinApi } from '@/api/pin.api'
+import { pinApi } from '@/api/App/pin.api'
 
 interface ConversationState {
     isLoading: boolean,

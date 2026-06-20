@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
 import { MediaType, MessageType, ReactionType } from '@/types/entities'
 import { MessageFilter, SendMessageType, ShareMessagesType, ShareMessageType } from '@/types/common';
-import { messageApi } from '@/api/message.api';
+import { messageApi } from '@/api/App/message.api';
 import { toast } from '@/utils/toast';
 import { MessageEnum, ReactionEnum } from '@/types/enum';
-import { pinApi } from '@/api/pin.api';
+import { pinApi } from '@/api/App/pin.api';
 
 interface State {
     isLoading: boolean,

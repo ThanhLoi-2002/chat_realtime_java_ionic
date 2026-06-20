@@ -1,6 +1,6 @@
 package com.zalo.common.base;
 
-import com.zalo.modules.user.dto.response.UserResponse;
+import com.zalo.modules.app.user.dto.response.UserResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
