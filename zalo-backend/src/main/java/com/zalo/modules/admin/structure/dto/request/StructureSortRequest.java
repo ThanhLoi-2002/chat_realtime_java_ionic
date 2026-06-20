@@ -7,6 +7,5 @@ import lombok.Setter;
 @Setter
 public class StructureSortRequest {
     Integer id;
-    Integer pid;
     Integer sort;
 }

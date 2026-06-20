@@ -1,6 +1,7 @@
 package com.zalo.modules.auth.service;
 
 import com.cloudinary.api.exceptions.NotFound;
+import com.zalo.modules.admin.role.service.RoleService;
 import com.zalo.modules.auth.dto.request.LoginRequest;
 import com.zalo.modules.auth.dto.request.RegisterRequest;
 import com.zalo.modules.auth.dto.response.LoginResponse;
@@ -14,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor

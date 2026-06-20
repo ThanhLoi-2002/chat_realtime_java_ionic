@@ -2,6 +2,7 @@ package com.zalo.modules.admin.structure;
 
 import com.zalo.common.configuration.anotation.ResponseMessage;
 import com.zalo.common.configuration.anotation.permission.RequiresPermission;
+import com.zalo.common.configuration.json.G;
 import com.zalo.common.util.PermissionConstant;
 import com.zalo.modules.admin.structure.dto.request.StructureSortRequest;
 import com.zalo.modules.admin.structure.dto.response.StructureResponse;

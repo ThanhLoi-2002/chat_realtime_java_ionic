@@ -6,6 +6,10 @@ import { isPlatform } from '@ionic/vue';
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
 
+export const modules = import.meta.glob(
+  '../views/**/*.vue'
+)
+
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',

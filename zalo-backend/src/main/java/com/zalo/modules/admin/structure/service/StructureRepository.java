@@ -14,6 +14,6 @@ public interface StructureRepository extends JpaRepository<Structure, Long> {
     List<Structure> findByStt(int stt);
 
     @Modifying
-    @Query("UPDATE Structure s SET s.pid = :pid, s.sort = :sort WHERE s.id = :id")
-    void updateParentAndSort(Integer id, Integer pid, Integer sort);
+    @Query("UPDATE Structure s SET s.sort = :sort WHERE s.id = :id")
+    void updateParentAndSort(Integer id, Integer sort);
 }

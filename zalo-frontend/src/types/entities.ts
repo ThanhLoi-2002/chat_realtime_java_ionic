@@ -6,10 +6,10 @@ export type BaseType = {
     stt: number
     cu?: number
     createdBy?: UserType
-    ct: Date
+    ct?: Date
     eu?: number
     updatedBy?: UserType
-    et: Date
+    et?: Date
 }
 
 export type LangType = BaseType & {
@@ -155,4 +155,18 @@ export type RoleType = {
     id: number
     name: string
     description: string
+}
+
+export type StructureType = BaseType & {
+    pid: number;
+    code: string;
+    icon: string;
+    description: string;
+    type: number;
+    sort: number;
+    appType: string;
+    permissions: string;
+    component: string;
+    path: string;
+    children?: StructureType[];
 }

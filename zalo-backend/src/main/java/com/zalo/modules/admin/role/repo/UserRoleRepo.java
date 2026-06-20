@@ -1,0 +1,33 @@
+package com.zalo.modules.admin.role.repo;
+
+import com.zalo.modules.admin.role.entity.UserRole;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface UserRoleRepo
+        extends JpaRepository<UserRole, Long> {
+
+    void deleteByUserId(Long userId);
+
+    List<UserRole> findByUserId(Long userId);
+
+    @Query("""
+        SELECT DISTINCT rp.permission
+        FROM UserRole ur,
+             RolePermission rp
+        WHERE ur.roleId = rp.roleId
+        AND ur.userId = :userId
+    """)
+    List<String> getPermissions(Long userId);
+
+    @Query("""
+        SELECT DISTINCT ur.roleId
+        FROM UserRole ur
+        WHERE ur.userId = :userId
+    """)
+    List<String> getRoles(Long userId);
+}

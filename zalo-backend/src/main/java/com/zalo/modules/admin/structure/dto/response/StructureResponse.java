@@ -27,6 +27,9 @@ public class StructureResponse extends BaseResponse {
     String description;
     Integer type;
     Integer sort;
+    String permissions;
+    String component;
+    String path;
     List<StructureResponse> children = new ArrayList<>();
 
     public StructureResponse(Structure e, String... relations) {

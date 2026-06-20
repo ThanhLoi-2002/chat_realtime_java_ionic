@@ -31,6 +31,7 @@ export const ROUTE = {
     },
     ADMIN_DASHBOARD: {
         INDEX: "/admin",
+        HOME: "home",
         STRUCTURE: "structure",
         ROLE: "role"
     },
@@ -45,6 +46,7 @@ export const OA_ROUTE = {
 }
 
 export const ADMIN_ROUTE = {
+    home: () => `${ROUTE.OA_DASHBOARD.INDEX}/${ROUTE.OA_DASHBOARD.HOME}`,
     structure: () => `${ROUTE.ADMIN_DASHBOARD.INDEX}/${ROUTE.ADMIN_DASHBOARD.STRUCTURE}`,
     role: () => `${ROUTE.ADMIN_DASHBOARD.INDEX}/${ROUTE.ADMIN_DASHBOARD.ROLE}`,
 }

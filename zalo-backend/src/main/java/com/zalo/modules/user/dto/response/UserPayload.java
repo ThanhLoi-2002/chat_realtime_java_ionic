@@ -1,6 +1,5 @@
 package com.zalo.modules.user.dto.response;
 
-import com.zalo.common.base.BaseResponse;
 import com.zalo.common.entity.File;
 import com.zalo.modules.user.entities.User;
 import lombok.*;
@@ -9,25 +8,26 @@ import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PUBLIC)
-public class UserResponse extends BaseResponse {
+public class UserPayload {
+    Long id;
     String username;
     String phone;
-    File avatar;
-    File cover;
+//    File avatar;
+//    File cover;
+
     int isOa;
     Long oaId;
     Long ownerOaId;
 
     List<String> roles;
     List<String> permissions;
+    int stt;
 
-    public UserResponse(User u, String... relations) {
-        super(u, relations);
-        BeanUtils.copyProperties(u, this, "createdBy", "updatedBy");
+    public UserPayload(User u) {
+        BeanUtils.copyProperties(u, this);
     }
 }

@@ -10,10 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,7 +84,11 @@ public class StructureService {
 
     public void updateMenuOrder(List<StructureSortRequest> updates) {
         for (StructureSortRequest dto : updates) {
-            structureRepository.updateParentAndSort(dto.getId(), dto.getPid(), dto.getSort());
+            structureRepository.updateParentAndSort(dto.getId(), dto.getSort());
         }
+    }
+
+    public void getMenuByUser() {
+
     }
 }

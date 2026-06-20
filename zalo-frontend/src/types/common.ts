@@ -152,3 +152,8 @@ export interface Menu {
     href?: string;
     items?: SubMenu[];
 }
+
+export type StructureSortType = {
+  id: number
+  sort: number
+}

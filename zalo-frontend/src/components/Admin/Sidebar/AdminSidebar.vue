@@ -100,6 +100,7 @@ const menuItems = ref<Menu[]>([
         ]
     },
     { name: 'Tin nhắn chào mừng', icon: 'fa-solid fa-comment-dots', href: '/oa/welcome' },
+    { name: 'userRole', icon: 'fa-solid fa-comment-dots', href: '/admin/user-role' },
 ]);
 
 const toggleSubMenu = (menuName: string) => {

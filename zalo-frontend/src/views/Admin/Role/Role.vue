@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import axios from '@/api/axios'
 import { oaStyle } from '@/assets/tailwindcss'
 import PaginationTable from '@/components/Shared/Table/PaginationTable.vue'
 import { useConfirmStore } from '@/composables/useConfirm'
@@ -7,7 +6,7 @@ import { useTranslate } from '@/composables/useTranslate'
 import { useAdminRoleStore } from '@/stores/Admin/role.storage'
 import { RoleType } from '@/types/entities'
 import { IonButton } from '@ionic/vue'
-import { ref, reactive, computed, onMounted, h, watch } from 'vue'
+import { ref, reactive, computed, onMounted, h } from 'vue'
 
 const { t } = useTranslate()
 const roleStor = useAdminRoleStore()

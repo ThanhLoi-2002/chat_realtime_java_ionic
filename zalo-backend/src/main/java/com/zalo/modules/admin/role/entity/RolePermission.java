@@ -10,7 +10,14 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "role_permission")
+@Table(
+        name = "role_permissions",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        columnNames = {"role_id", "permission"}
+                )
+        }
+)
 public class RolePermission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

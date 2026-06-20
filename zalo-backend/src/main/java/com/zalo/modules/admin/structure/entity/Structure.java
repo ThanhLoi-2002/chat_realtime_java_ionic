@@ -41,4 +41,10 @@ public class Structure extends BaseEntity {
     // Thứ tự sắp xếp hiển thị giữa các menu đồng cấp
     @Column(name = "sort")
     private Integer sort = 0;
+
+    private String permissions;
+
+    private String component;
+
+    private String path;
 }
