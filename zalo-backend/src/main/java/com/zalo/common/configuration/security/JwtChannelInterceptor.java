@@ -48,7 +48,7 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
                     claims.get("payload"),
                     UserPayload.class
             );
-            
+
             Long userId = userPayload.getId();
 
             Principal principal = userId::toString;

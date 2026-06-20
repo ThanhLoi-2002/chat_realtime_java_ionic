@@ -1,9 +1,14 @@
 import { IResponse, StructureSortType } from "@/types/common";
 import axios from "../axios";
 import { StructureType } from "@/types/entities";
+import { AppTypeEnum } from "@/types/enum";
 
 const getTree = async () => {
     return await axios.get<IResponse>(`/structure/tree`);
+};
+
+const getMenuByUser = async (appType: AppTypeEnum) => {
+    return await axios.get<IResponse>(`/structure/menu-by-user?appType=${appType}`);
 };
 
 const createOrUpdate = async (data: Omit<StructureType, 'id'> & { id?: number; }) => {
@@ -27,5 +32,5 @@ const restore = async (id: number) => {
 };
 
 export const structureApi = {
-    getTree, createOrUpdate, getTrash, sort, deleteOne, restore
+    getTree, createOrUpdate, getTrash, sort, deleteOne, restore, getMenuByUser
 }

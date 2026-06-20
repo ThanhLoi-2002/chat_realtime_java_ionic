@@ -60,3 +60,8 @@ export enum ModuleEnum {
     CONVERSATION = "CONVERSATION",
     MESSAGE = "MESSAGE"
 }
+
+export enum AppTypeEnum {
+    OA = "OA",
+    ADMIN = "ADMIN"
+}

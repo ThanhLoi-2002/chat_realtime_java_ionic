@@ -47,27 +47,5 @@ export const useAdminRoleStore = defineStore('adminRole', {
                 return false
             }
         },
-        async delete(id: number) {
-            try {
-                const result: any = await roleApi.deleteOne(id);
-                this.roles = this.roles.filter(item => item.id !== id)
-            } catch (e: any) {
-                toast({
-                    color: "danger",
-                    message: e.message
-                })
-            }
-        },
-        async getList() {
-            try {
-                const result: any = await roleApi.getList();
-                this.roles = result.result
-            } catch (e: any) {
-                toast({
-                    color: "danger",
-                    message: e.message
-                })
-            }
-        },
     }
 })

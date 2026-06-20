@@ -88,7 +88,8 @@ public class StructureService {
         }
     }
 
-    public void getMenuByUser() {
-
+    public List<StructureResponse> getMenuByUser(Long userId, AppType appType, List<String> permissions, List<String> roles) {
+        List<Structure> menus = structureRepository.findBySttAndAppTypeOrderBySortAsc(1, appType);
+        return buildTree(menus);
     }
 }

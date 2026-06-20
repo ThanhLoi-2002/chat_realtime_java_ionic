@@ -19,10 +19,11 @@ import AdminSidebar from '@/components/Admin/Sidebar/AdminSidebar.vue';
 import AdminHeader from '@/components/Admin/Header/AdminHeader.vue';
 import { onMounted } from 'vue';
 import { useAdminStructureStore } from '@/stores/Admin/structure.storage';
+import { AppTypeEnum } from '@/types/enum';
 
 const structureStor = useAdminStructureStore()
 
 onMounted(async () => {
-    await structureStor.getTree()
+    await structureStor.getMenuByUser(AppTypeEnum.ADMIN)
 })
 </script>

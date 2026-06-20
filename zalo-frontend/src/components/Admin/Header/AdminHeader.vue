@@ -7,15 +7,15 @@
             </button>
 
             <nav class="flex space-x-6 text-sm font-medium mt-2">
-                <router-link v-for="item in menu" :key="item.title" :to="item.to" v-slot="{ isActive }" custom>
-                    <div @click="$router.push(item.to)" :class="[
+                <router-link v-for="item in getMenusByType(2)" :key="item.code" :to="buildFirstRoute(item)" v-slot="{ isActive, navigate }" custom>
+                    <div v-if="item.children.length > 0" @click="navigate" :class="[
                         'flex flex-col items-center cursor-pointer pb-2 border-b-2 transition-all',
                         isActive
                             ? [oaStyle.text.active, oaStyle.border.active, 'font-semibold']
                             : 'text-gray-500 border-transparent hover:text-blue-600'
                     ]">
-                        <i :class="item.icon" />
-                        <p class="mt-1">{{ item.title }}</p>
+                        <p v-html="item.icon" />
+                        <p class="mt-1">{{ item.code }}</p>
                     </div>
                 </router-link>
             </nav>
@@ -42,9 +42,12 @@
 <script setup lang="ts">
 import { oaStyle } from '@/assets/tailwindcss';
 import CircleAvatar from '@/components/Shared/Avatar/CircleAvatar.vue';
+import { useStructure } from '@/composables/useStructure';
 import { useTranslate } from '@/composables/useTranslate';
 import { useUserStore } from '@/stores/App/user.storage';
 import { useSystemStore } from '@/stores/system.storage';
+import { StructureType } from '@/types/entities';
+import { ADMIN_ROUTE } from '@/utils/constant';
 import { IonHeader } from '@ionic/vue';
 import { useRoute } from 'vue-router';
 
@@ -52,30 +55,12 @@ import { useRoute } from 'vue-router';
 const route = useRoute();
 const userStorage = useUserStore()
 const sysStorage = useSystemStore()
-
-interface MenuType {
-    title: string
-    icon: string
-    to: string
-}
+const { getMenusByType } = useStructure()
 
 const { t } = useTranslate()
 
-const menu: MenuType[] = [
-    {
-        title: t('home'),
-        icon: 'fas fa-home',
-        to: 'home'
-    },
-    {
-        title: t('structure'),
-        icon: 'fas fa-sitemap',
-        to: 'structure'
-    },
-    {
-        title: t('role'),
-        icon: 'fas fa-lock',
-        to: 'role'
-    },
-]
+const buildFirstRoute = (node: StructureType) => {
+    return node.children.length > 0 ? '/' + node.children[0].path : ''
+}
+
 </script>

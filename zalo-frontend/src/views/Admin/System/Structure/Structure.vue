@@ -70,7 +70,7 @@
                     <form @submit.prevent="submitForm" class="space-y-3.5">
                         <div>
                             <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{ t('PID')
-                                }}</label>
+                            }}</label>
                             <select v-model="form.pid" @change="onPidChange"
                                 :class="[oaStyle.border.primary, oaStyle.bg.primary, oaStyle.text.secondary, 'w-full p-2 border rounded outline-none']">
                                 <option v-for="opt in allNodesFlat" :key="opt.id" :value="opt.id">
@@ -112,7 +112,7 @@
 
                         <div>
                             <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{ t('icon')
-                                }}</label>
+                            }}</label>
                             <input v-model="form.icon" type="text"
                                 :class="[oaStyle.border.primary, 'w-full p-2 border rounded outline-none focus:border-blue-600/50']" />
                         </div>
@@ -133,7 +133,7 @@
 
                         <div>
                             <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{ t('status')
-                                }}</label>
+                            }}</label>
                             <div :class="[oaStyle.text.secondary, 'flex gap-4 mt-1 font-medium']">
                                 <label class="flex items-center gap-1 cursor-pointer"><input type="radio"
                                         v-model="form.stt" :value="1"> {{ t('active') }}</label>
@@ -185,6 +185,8 @@ import { oaStyle } from '@/assets/tailwindcss.ts';
 import { useTranslate } from '@/composables/useTranslate.ts';
 import { StructureType } from '@/types/entities.ts';
 import { useAdminStructureStore } from '@/stores/Admin/structure.storage.ts';
+import { AppTypeEnum } from '@/types/enum.ts';
+import { useStructure } from '@/composables/useStructure.ts';
 
 const allNodesFlat = ref<StructureType[]>([]);
 const selectedNode = ref<StructureType | null>(null);
@@ -192,13 +194,15 @@ const isEditMode = ref(false);
 const isSortMode = ref(false);
 const { t } = useTranslate()
 const structureStor = useAdminStructureStore()
+const { findParent } = useStructure()
 
-const structureDefault = {
-    id: undefined, pid: 1, code: '', icon: '', description: '', type: 0, sort: 0, stt: 1, appType: 'OA', component: '', path: "", permissions: ''
+const structureDefault: Omit<StructureType, 'id'> & { id?: number; } = {
+    id: undefined, pid: 1, code: '', icon: '', description: '', type: 0, sort: 0, stt: 1, appType: AppTypeEnum.OA, component: '', path: "", permissions: '', children: []
 }
 const form = ref<Omit<StructureType, 'id'> & { id?: number; }>(structureDefault);
 
 onMounted(async () => {
+    await structureStor.getTree()
     await structureStor.getTrash()
 });
 
@@ -216,9 +220,13 @@ const onPidChange = (event: Event) => {
         item => item.id === pid
     );
 
+    resetForm()
+
     if (parent) {
         form.value.appType = parent.appType
         form.value.type = parent.type + 1
+        form.value.path = parent.path + '/?'
+        form.value.component = parent.component + '/?'
     }
     form.value.id = undefined
 };
@@ -238,7 +246,16 @@ const toggleSortMode = () => {
 const selectNode = (node: StructureType) => {
     selectedNode.value = node;
     isEditMode.value = true;
-    form.value = { ...node, children: [] };
+
+    const parent = findParent(
+        Object.values(structureStor.tree).flat(), node.id
+    )
+    form.value = {
+        ...node,
+        path: node.path ? node.path : (parent?.path + '/?'),
+        component: node.component ? node.component : (parent?.component + '/?'),
+        children: []
+    };
     // if(node.pid == 0){
     //     form.value.pid = node.id
     // }
@@ -251,7 +268,9 @@ const addChildNode = (parent: StructureType) => {
         ...structureDefault,
         pid: parent.id,
         type: parent.type + 1,
-        appType: parent.appType
+        appType: parent.appType,
+        path: parent.path + '/?',
+        component: parent.component + '/?'
     };
 };
 

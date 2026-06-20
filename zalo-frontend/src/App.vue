@@ -33,21 +33,17 @@ import { Network } from '@capacitor/network';
 import { toast } from './utils/toast';
 import { usePushNotification } from './composables/usePushNotification';
 import { storage } from './services/storage.service.';
-import { useClassificationCardStore } from './stores/App/classificationCard.storage.ts';
 import { useConfirmStore } from './composables/useConfirm';
 import MainLayout from './layouts/MainLayout.vue';
 import AuthLayout from './layouts/AuthLayout.vue';
 import NoLayout from './layouts/NoLayout.vue';
 import OALayout from './layouts/OALayout.vue'
 import AdminLayout from './layouts/AdminLayout.vue';
-import { useFriendshipStore } from './stores/App/friendship.storage.ts';
 
 const route: any = useRoute();
 const langStore = useLangStore()
 const userStorage = useUserStore()
 const systemStorage = useSystemStore()
-const classificationCardStorage = useClassificationCardStore()
-const friendshipStorage = useFriendshipStore()
 const { initPush } = usePushNotification()
 const { isMobile, logDeviceInfo, isSmartDevice } = useDevice()
 const confirmStore = useConfirmStore();
@@ -129,8 +125,6 @@ watch(() => userStorage.user, async (newVal, oldVal) => {
 
     initPush()
     await connectSocket();
-    classificationCardStorage.getList()
-    friendshipStorage.getFriends()
   } else {
     await disconnectSocket();
     // userStorage.logout()

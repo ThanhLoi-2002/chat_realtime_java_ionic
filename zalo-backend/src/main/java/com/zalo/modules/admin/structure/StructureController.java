@@ -1,6 +1,7 @@
 package com.zalo.modules.admin.structure;
 
 import com.zalo.common.configuration.anotation.ResponseMessage;
+import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
 import com.zalo.common.configuration.anotation.permission.RequiresPermission;
 import com.zalo.common.configuration.json.G;
 import com.zalo.common.util.PermissionConstant;
@@ -9,6 +10,7 @@ import com.zalo.modules.admin.structure.dto.response.StructureResponse;
 import com.zalo.modules.admin.structure.entity.AppType;
 import com.zalo.modules.admin.structure.entity.Structure;
 import com.zalo.modules.admin.structure.service.StructureService;
+import com.zalo.modules.app.user.dto.response.UserPayload;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -33,6 +35,11 @@ public class StructureController {
     @GetMapping("/trash")
     public List<StructureResponse> getTrash() {
         return structureService.getTrashMenu().stream().map(StructureResponse::new).toList();
+    }
+
+    @GetMapping("/menu-by-user")
+    public List<StructureResponse> getMenuByUser(@CurrentUser UserPayload user, @RequestParam AppType appType) {
+        return structureService.getMenuByUser(user.getId(), appType, user.getPermissions(), user.getRoles());
     }
 
     @PostMapping

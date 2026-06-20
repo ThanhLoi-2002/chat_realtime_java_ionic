@@ -1,12 +1,14 @@
 import { structureApi } from '@/api/Admin/structure.api'
 import { StructureSortType } from '@/types/common'
 import { StructureType } from '@/types/entities'
+import { AppTypeEnum } from '@/types/enum'
 import { toast } from '@/utils/toast'
 import { defineStore } from 'pinia'
 
 interface State {
     tree: Record<string, StructureType[]>
     trashes: StructureType[]
+    menu: StructureType[]
     isLoading: boolean
 }
 
@@ -14,6 +16,7 @@ export const useAdminStructureStore = defineStore('adminStructure', {
     state: (): State => ({
         tree: {},
         trashes: [],
+        menu: [],
         isLoading: false,
     }),
     actions: {
@@ -32,6 +35,18 @@ export const useAdminStructureStore = defineStore('adminStructure', {
             try {
                 const result: any = await structureApi.getTrash();
                 this.trashes = result.result
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+            }
+        },
+
+        async getMenuByUser(appType: AppTypeEnum) {
+            try {
+                const result: any = await structureApi.getMenuByUser(appType);
+                this.menu = result.result
             } catch (e: any) {
                 toast({
                     color: "danger",
@@ -63,31 +78,5 @@ export const useAdminStructureStore = defineStore('adminStructure', {
                 })
             }
         },
-
-        // async deleteOne(id: number) {
-        //     try {
-        //         const result: any = await structureApi.deleteOne(id);
-        //         this.getTree()
-        //         this.getTrash()
-        //     } catch (e: any) {
-        //         toast({
-        //             color: "danger",
-        //             message: e.message
-        //         })
-        //     }
-        // },
-
-        // async restore(id: number) {
-        //     try {
-        //         const result: any = await structureApi.restore(id);
-        //         this.getTree()
-        //         this.getTrash()
-        //     } catch (e: any) {
-        //         toast({
-        //             color: "danger",
-        //             message: e.message
-        //         })
-        //     }
-        // },
     }
 })

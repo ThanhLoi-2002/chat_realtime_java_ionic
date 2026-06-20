@@ -80,12 +80,29 @@ const routes: Array<RouteRecordRaw> = [
     meta: { layout: "admin", requiresAuth: true },
     children: [
       {
-        path: ROUTE.ADMIN_DASHBOARD.STRUCTURE,
-        component: () => import('../views/Admin/Structure/Structure.vue')
+        path: '',
+        component: () => import('../views/Admin/Index.vue')
       },
       {
-        path: ROUTE.ADMIN_DASHBOARD.ROLE,
-        component: () => import('../views/Admin/Role/Role.vue')
+        path: ROUTE.ADMIN_DASHBOARD.SYSTEM,
+        children: [
+          {
+            path: ROUTE.ADMIN_DASHBOARD.STRUCTURE,
+            component: () => import('../views/Admin/System/Structure/Structure.vue')
+          },
+          {
+            path: ROUTE.ADMIN_DASHBOARD.ROLE,
+            component: () => import('../views/Admin/System/Role/Role.vue')
+          },
+          {
+            path: ROUTE.ADMIN_DASHBOARD.USER,
+            component: () => import('../views/Admin/System/User/User.vue')
+          },
+          {
+            path: ROUTE.ADMIN_DASHBOARD.USER_ROLE,
+            component: () => import('../views/Admin/System/UserRole/UserRole.vue')
+          },
+        ],
       },
     ]
   },
@@ -130,6 +147,7 @@ const router = createRouter({
 
 // -------------------- GLOBAL GUARD --------------------
 router.beforeEach(async (to) => {
+  console.log(routes)
   const userStore = useUserStore()
   const accessToken = getKey(ACCESS_TOKEN)
   // const { isSmartDevice } = useDevice()

@@ -17,5 +17,12 @@ import OASidebar from '@/components/OA/Sidebar/OASidebar.vue';
 import OAHeader from '@/components/OA/Header/OAHeader.vue';
 import { IonPage, IonContent } from '@ionic/vue';
 import { oaStyle } from '@/assets/tailwindcss';
+import { onMounted } from 'vue';
+import { useAdminStructureStore } from '@/stores/Admin/structure.storage';
+import { AppTypeEnum } from '@/types/enum';
 
+const structureStor = useAdminStructureStore()
+onMounted(async () => {
+    await structureStor.getMenuByUser(AppTypeEnum.OA)
+})
 </script>
