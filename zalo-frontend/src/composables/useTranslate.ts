@@ -1,4 +1,4 @@
-import { useLangStore } from "@/stores/App/lang.storage"
+import { useLangStore } from "@/stores/Admin/lang.storage"
 
 export const useTranslate = () => {
     const langStore = useLangStore()

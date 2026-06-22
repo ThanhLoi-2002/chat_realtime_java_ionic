@@ -1,17 +1,12 @@
 <template>
-    <div class="p-6">
-        <div class="flex justify-between items-center">
-            <div class="flex items-center gap-2 mb-3
-            bg-white dark:bg-gray-800
-            border border-gray-300 dark:border-gray-600
-            rounded-lg px-3 py-1
-            focus-within:ring-2 focus-within:ring-blue-500
-            w-62.5">
-                <i class="fa-solid fa-search text-gray-400"></i>
-
-                <IonInput v-model="search" :placeholder="t('search') + ' ...'" class="flex-1 search-input"  @input="handleSearch"/>
+    <div class="p-2">
+        <div class="flex justify-between items-center mb-2">
+            <div class="">
+                <Search v-model="search" :placeholder="`${t('search')} ...`" rounded="rounded-md" height="h-10"
+                    text-size="text-lg" icon-left="left-2.5" icon-right="right-2.5" pxContent="px-9" />
             </div>
-            <ion-button size="small" class="h-10" color="success" @click="router.push('/languages/add')"><i
+
+            <ion-button size="small" class="h-10" color="success" @click="router.push('/admin/system/lang/add')"><i
                     class="fa fa-plus"></i></ion-button>
         </div>
         <PaginationTable :data="langStore.languages" :columns="columns" />
@@ -19,14 +14,15 @@
 </template>
 
 <script setup lang="ts">
+import Search from "@/components/Shared/Search/Search.vue"
 import PaginationTable from "@/components/Shared/Table/PaginationTable.vue"
 import { useConfirmStore } from "@/composables/useConfirm"
 import { useDebounce } from "@/composables/useDebounce"
 import { useTranslate } from "@/composables/useTranslate"
-import { useLangStore } from "@/stores/App/lang.storage"
+import { useLangStore } from "@/stores/Admin/lang.storage"
 import { LangType } from "@/types/entities"
-import { IonButton, IonInput } from "@ionic/vue"
-import { ref, h, onMounted, computed } from "vue"
+import { IonButton } from "@ionic/vue"
+import { ref, h, onMounted, computed, watch } from "vue"
 import { useRouter } from "vue-router"
 
 const router = useRouter()
@@ -88,7 +84,7 @@ const columns = computed(() => [
                     {
                         size: "small",
                         color: "primary",
-                        onClick: () => router.push(`/languages/${data.id}`)
+                        onClick: () => router.push(`/admin/system/lang/${data.id}`)
                     },
                     () => t("edit")
                 ),
@@ -110,6 +106,10 @@ const columns = computed(() => [
 const { debounced: handleSearch } = useDebounce(() => {
     langStore.getList(search.value)
 }, 300)
+
+watch(() => search.value, () => {
+    handleSearch()
+})
 
 const openModal = (item: LangType) => {
     confirmStore.open({

@@ -32,11 +32,11 @@ export const ROUTE = {
     ADMIN_DASHBOARD: {
         INDEX: "/admin",
         SYSTEM: 'system',
-        HOME: "home",
         STRUCTURE: "structure",
         ROLE: "role",
         USER_ROLE: "user-role",
-        USER: "user"
+        USER: "user",
+        LANG: "lang"
     },
 
     NOT_FOUND: "/notFound"
@@ -49,9 +49,10 @@ export const OA_ROUTE = {
 }
 
 export const ADMIN_ROUTE = {
-    home: () => `${ROUTE.ADMIN_DASHBOARD.INDEX}/${ROUTE.ADMIN_DASHBOARD.HOME}`,
+    home: () => `${ROUTE.ADMIN_DASHBOARD.INDEX}`,
     structure: () => `${ROUTE.ADMIN_DASHBOARD.INDEX}/${ROUTE.ADMIN_DASHBOARD.SYSTEM}/${ROUTE.ADMIN_DASHBOARD.STRUCTURE}`,
     role: () => `${ROUTE.ADMIN_DASHBOARD.INDEX}/${ROUTE.ADMIN_DASHBOARD.SYSTEM}/${ROUTE.ADMIN_DASHBOARD.ROLE}`,
+    lang: () => `${ROUTE.ADMIN_DASHBOARD.INDEX}/${ROUTE.ADMIN_DASHBOARD.SYSTEM}/${ROUTE.ADMIN_DASHBOARD.LANG}`,
 }
 
 export const EMOJI_MAP = {

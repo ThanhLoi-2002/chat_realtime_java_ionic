@@ -7,10 +7,10 @@
             </button>
 
             <nav class="flex space-x-6 text-sm font-medium mt-2">
-                <router-link v-for="item in getMenusByType(2)" :key="item.code" :to="buildFirstRoute(item)" v-slot="{ isActive, navigate }" custom>
-                    <div v-if="item.children.length > 0" @click="navigate" :class="[
+                <router-link v-for="item in getMenusByType(2)" :key="item.code" :to="item.path" custom>
+                    <div v-if="item.children.length > 0" @click="$router.push(buildFirstRoute(item))" :class="[
                         'flex flex-col items-center cursor-pointer pb-2 border-b-2 transition-all',
-                        isActive
+                        checkRouteActive(item.path)
                             ? [oaStyle.text.active, oaStyle.border.active, 'font-semibold']
                             : 'text-gray-500 border-transparent hover:text-blue-600'
                     ]">
@@ -47,7 +47,6 @@ import { useTranslate } from '@/composables/useTranslate';
 import { useUserStore } from '@/stores/App/user.storage';
 import { useSystemStore } from '@/stores/system.storage';
 import { StructureType } from '@/types/entities';
-import { ADMIN_ROUTE } from '@/utils/constant';
 import { IonHeader } from '@ionic/vue';
 import { useRoute } from 'vue-router';
 
@@ -55,12 +54,13 @@ import { useRoute } from 'vue-router';
 const route = useRoute();
 const userStorage = useUserStore()
 const sysStorage = useSystemStore()
-const { getMenusByType } = useStructure()
+const { getMenusByType, checkRouteActive } = useStructure()
 
 const { t } = useTranslate()
 
 const buildFirstRoute = (node: StructureType) => {
-    return node.children.length > 0 ? '/' + node.children[0].path : ''
+    console.log(node.children.length > 0 ? node.children[0].path : '')
+    return node.children.length > 0 ? node.children[0].path : ''
 }
 
 </script>

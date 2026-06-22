@@ -31,24 +31,6 @@ const routes: Array<RouteRecordRaw> = [
     meta: { layout: "noLayout", requiresAuth: false }
   },
   {
-    path: ROUTE.LANGUAGES,
-    meta: { layout: "main", requiresAuth: true },
-    children: [
-      {
-        path: "",
-        component: () => import('../views/App/Lang/LangPage.vue')
-      },
-      {
-        path: ":id",
-        component: () => import('../views/App/Lang/EditLang.vue')
-      },
-      {
-        path: "add",
-        component: () => import('../views/App/Lang/AddLang.vue')
-      }
-    ]
-  },
-  {
     path: ROUTE.FRIENDS,
     component: () => import('../views/App/Friend/FriendPage.vue'),
     meta: { layout: "main", requiresAuth: true },
@@ -101,6 +83,23 @@ const routes: Array<RouteRecordRaw> = [
           {
             path: ROUTE.ADMIN_DASHBOARD.USER_ROLE,
             component: () => import('../views/Admin/System/UserRole/UserRole.vue')
+          },
+          {
+            path: ROUTE.ADMIN_DASHBOARD.LANG,
+            children: [
+              {
+                path: "",
+                component: () => import('../views/Admin/System/Lang/LangPage.vue')
+              },
+              {
+                path: ":id",
+                component: () => import('../views/Admin/System/Lang/EditLang.vue')
+              },
+              {
+                path: "add",
+                component: () => import('../views/Admin/System/Lang/AddLang.vue')
+              }
+            ]
           },
         ],
       },

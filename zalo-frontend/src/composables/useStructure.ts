@@ -1,9 +1,24 @@
 import { useAdminStructureStore } from "@/stores/Admin/structure.storage"
-import { useLangStore } from "@/stores/App/lang.storage"
 import { StructureType } from "@/types/entities";
+import { useRoute } from "vue-router";
 
 export const useStructure = () => {
     const structureStor = useAdminStructureStore()
+
+    const route = useRoute()
+
+    const normalizePath = (path: string) => {
+        return path.replace(/^\/+/, '')
+    }
+
+    const checkRouteActive = (path: string) => {
+        const currentPath = route.path
+        const menuPath = path
+        console.log(route.path, path)
+
+        return currentPath === menuPath ||
+            currentPath.startsWith(menuPath + '/')
+    }
 
     function getMenusByType(
         type: number
@@ -22,8 +37,7 @@ export const useStructure = () => {
             });
         };
 
-        traverse(structureStor.menu);
-        console.log(result)
+        traverse(structureStor.menu?.children || []);
         return result;
     }
 
@@ -55,5 +69,5 @@ export const useStructure = () => {
         return null;
     }
 
-    return { getMenusByType, findParent }
+    return { getMenusByType, findParent, checkRouteActive }
 }

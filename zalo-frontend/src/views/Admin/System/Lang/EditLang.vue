@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { LangFormType, langSchema } from "@/schema/lang.schema";
-import { useLangStore } from "@/stores/App/lang.storage"
+import { useLangStore } from "@/stores/Admin/lang.storage"
 import { LANG_LABELS } from "@/utils/constant"
 import { onMounted } from "vue"
 import { useRoute, useRouter } from "vue-router";
@@ -8,6 +8,7 @@ import { useForm } from "vee-validate"
 import { IonButton } from "@ionic/vue";
 import { useTranslate } from "@/composables/useTranslate";
 import { useDevice } from "@/composables/useDevice";
+import { oaStyle } from "@/assets/tailwindcss";
 
 type LangKey = keyof LangFormType
 const fields: LangKey[] = ["code", "vi", "en", "tw", "cn"]
@@ -29,12 +30,10 @@ const { values, errors, handleSubmit, setValues, setFieldValue } = useForm<LangF
 })
 const id = +route.params.id
 
-const { isMobile } = useDevice()
-
 const labels: Record<string, string> = LANG_LABELS
 
 const onSubmit = handleSubmit((values) => {
-    langStore.update(values, id, () => router.push("/languages"))
+    langStore.update(values, id, () => router.push("/admin/system/lang"))
 },
     (errors) => {
         console.log("submit fail", errors)
@@ -45,17 +44,14 @@ onMounted(async () => {
     if (detail) {
         setValues(detail)
     } else {
-        router.push('/languages')
+        router.push('/admin/system/lang')
     }
 })
 </script>
 
 <template>
-    <div class="p-6 bg-gray-100 dark:bg-gray-900 min-h-screen">
-        <ion-buttons slot="start" v-if="isMobile">
-            <ion-back-button default-href="/languages"></ion-back-button>
-        </ion-buttons>
-        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow p-6">
+    <div :class="[oaStyle.bg.primary, 'min-h-screen']">
+        <div :class="[oaStyle.bg.primary, oaStyle.border.primary, 'border rounded-lg shadow p-6']">
             <form @submit.prevent="onSubmit">
                 <div class="grid grid-cols-[200px_1fr] gap-x-6 gap-y-4 items-start">
                     <template v-for="key in fields" :key="key">
@@ -65,13 +61,10 @@ onMounted(async () => {
                         <div>
                             <textarea :value="values[key]"
                                 @input="setFieldValue(key, ($event.target as HTMLTextAreaElement).value)" rows="1"
-                                class="w-full px-3 py-2 rounded-md
-                                        border border-gray-300 dark:border-gray-600
-                                        bg-white dark:bg-gray-900
-                                        text-gray-800 dark:text-gray-200
-                                        focus:outline-none
-                                        focus:ring-2 focus:ring-blue-500
-                                        resize-y" />
+                                :class="[oaStyle.bg.primary, oaStyle.border.primary, oaStyle.text.primary,
+                                    `w-full px-3 py-2 rounded-md border
+                                        focus:outline-none focus:ring-1 focus:ring-blue-400
+                                        resize - y`]" />
 
                             <p v-if="errors[key]" class="text-red-500 text-xs">
                                 {{ errors[key] }}

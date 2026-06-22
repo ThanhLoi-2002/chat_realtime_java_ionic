@@ -58,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import { OA_ROUTE, RANDOM_AVATAR, ROUTE } from '@/utils/constant';
+import { ADMIN_ROUTE, OA_ROUTE, RANDOM_AVATAR, ROUTE } from '@/utils/constant';
 import { useRoute } from 'vue-router';
 import { useDevice } from '@/composables/useDevice';
 import { computed, defineAsyncComponent, ref } from 'vue';
@@ -90,14 +90,14 @@ const items = computed(() => [
         icon: 'fa-solid fa-comment',
         to: ROUTE.CHATS
     },
-    {
-        icon: 'fa-solid fa-earth-americas',
-        to: ROUTE.LANGUAGES,
-        hideOnMobile: true
-    },
     ...(userStorage.user?.isOa ? [{
         icon: 'fas fa-tachometer-alt',
         to: OA_ROUTE.home(),
+        hideOnMobile: true
+    }] : []),
+    ...(userStorage.user?.isOa ? [{
+        icon: 'fas fa-street-view',
+        to: ADMIN_ROUTE.home(),
         hideOnMobile: true
     }] : []),
     {

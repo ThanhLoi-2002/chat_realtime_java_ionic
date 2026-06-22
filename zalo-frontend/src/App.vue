@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
 import LoadingSpinner from './components/Shared/Loading/LoadingSpinner.vue';
-import { useLangStore } from './stores/App/lang.storage.ts';
+import { useLangStore } from './stores/Admin/lang.storage.ts';
 import { onMounted, watch } from 'vue';
 import { useUserStore } from './stores/App/user.storage.ts';
 import AvatarModal from './components/Shared/Avatar/AvatarModal.vue';
@@ -56,7 +56,7 @@ const layouts: any = {
   nolayout: NoLayout
 }
 
-logDeviceInfo()
+// logDeviceInfo()
 
 // Khởi tạo theme từ localStorage hoặc system preference
 onMounted(async () => {
@@ -93,15 +93,15 @@ onMounted(async () => {
     }
   });
 
-  storage.checkTotalQuota()
-  // Sử dụng
-  let size = await storage.getStorageSize('conversations');
-  console.log(`Dung lượng danh sách chat: ${size}`);
+  // storage.checkTotalQuota()
+  // // Sử dụng
+  // let size = await storage.getStorageSize('conversations');
+  // console.log(`Dung lượng danh sách chat: ${size}`);
 
-  size = await storage.getStorageSize('user');
-  console.log(`Dung lượng user: ${size}`);
+  // size = await storage.getStorageSize('user');
+  // console.log(`Dung lượng user: ${size}`);
 
-  await storage.calculateAllKeysSize()
+  // await storage.calculateAllKeysSize()
 })
 
 // Optional: theo dõi system thay đổi

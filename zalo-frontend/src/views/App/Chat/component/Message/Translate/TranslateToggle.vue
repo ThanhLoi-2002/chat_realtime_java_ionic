@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import { useMessage } from '@/composables/useMessage';
 import { useTranslate } from '@/composables/useTranslate';
-import { useLangStore } from '@/stores/App/lang.storage';
+import { useLangStore } from '@/stores/Admin/lang.storage';
 import { useTranslateStore } from '@/stores/App/translate.storage';
 import { MessageType } from '@/types/entities';
 import { computed, ref } from 'vue';
