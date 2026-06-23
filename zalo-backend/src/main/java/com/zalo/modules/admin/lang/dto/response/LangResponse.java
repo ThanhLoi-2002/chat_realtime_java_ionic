@@ -1,7 +1,7 @@
-package com.zalo.modules.app.lang.dto.response;
+package com.zalo.modules.admin.lang.dto.response;
 
 import com.zalo.common.base.BaseResponse;
-import com.zalo.modules.app.lang.entity.Lang;
+import com.zalo.modules.admin.lang.entity.Lang;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.BeanUtils;

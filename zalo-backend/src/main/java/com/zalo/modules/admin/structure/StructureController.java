@@ -5,6 +5,7 @@ import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
 import com.zalo.common.configuration.anotation.permission.RequiresPermission;
 import com.zalo.common.configuration.json.G;
 import com.zalo.common.util.PermissionConstant;
+import com.zalo.modules.admin.role.dto.response.PermissionResponse;
 import com.zalo.modules.admin.structure.dto.request.StructureSortRequest;
 import com.zalo.modules.admin.structure.dto.response.StructureResponse;
 import com.zalo.modules.admin.structure.entity.AppType;
@@ -20,14 +21,14 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/structure")
+@RequestMapping("/system/structure")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StructureController {
     StructureService structureService;
 
     @GetMapping("/tree")
-    @RequiresPermission(PermissionConstant.Admin.Structure.VIEW_TREE)
+    @RequiresPermission(PermissionConstant.ADMIN.Structure.READ)
     public Map<AppType, List<StructureResponse>> getTree() {
         return structureService.getMenuTree();
     }
@@ -40,6 +41,16 @@ public class StructureController {
     @GetMapping("/menu-by-user")
     public List<StructureResponse> getMenuByUser(@CurrentUser UserPayload user, @RequestParam AppType appType) {
         return structureService.getMenuByUser(user.getId(), appType, user.getPermissions(), user.getRoles());
+    }
+
+    @GetMapping("/module-by-app-type")
+    public List<StructureResponse> getModuleByAppType(@RequestParam AppType appType) {
+        return structureService.getModuleByAppType(appType).stream().map(StructureResponse::new).toList();
+    }
+
+    @GetMapping("/controller-by-module")
+    public List<StructureResponse> getControllersByModule(@RequestParam Long moduleId) {
+        return structureService.getControllersByModule(moduleId).stream().map(StructureResponse::new).toList();
     }
 
     @PostMapping

@@ -62,6 +62,7 @@ export enum ModuleEnum {
 }
 
 export enum AppTypeEnum {
+    APP = "APP",
     OA = "OA",
     ADMIN = "ADMIN"
 }

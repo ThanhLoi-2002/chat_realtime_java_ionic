@@ -55,6 +55,32 @@ export const useAdminStructureStore = defineStore('adminStructure', {
             }
         },
 
+        async getModuleByAppType(appType: AppTypeEnum) {
+            try {
+                const result: any = await structureApi.getModuleByAppType(appType);
+                return result.result as StructureType[]
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return []
+            }
+        },
+
+        async getControllersByModule(moduleId: number) {
+            try {
+                const result: any = await structureApi.getControllersByModule(moduleId);
+                return result.result as StructureType[]
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return []
+            }
+        },
+
         async sort(payload: StructureSortType[]) {
             try {
                 const result: any = await structureApi.sort(payload);

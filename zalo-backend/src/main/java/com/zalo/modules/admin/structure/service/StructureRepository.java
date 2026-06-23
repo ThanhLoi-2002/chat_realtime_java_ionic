@@ -15,6 +15,8 @@ public interface StructureRepository extends JpaRepository<Structure, Long> {
     List<Structure> findByStt(int stt);
 
     List<Structure> findBySttAndAppTypeOrderBySortAsc(int stt, AppType appType);
+    List<Structure> findBySttAndAppTypeAndTypeOrderBySortAsc(int stt, AppType appType, int type);
+    List<Structure> findBySttAndPidOrderBySortAsc(int stt, Long pid);
 
     @Modifying
     @Query("UPDATE Structure s SET s.sort = :sort WHERE s.id = :id")

@@ -4,37 +4,42 @@ import PaginationTable from '@/components/Shared/Table/PaginationTable.vue'
 import { useConfirmStore } from '@/composables/useConfirm'
 import { useTranslate } from '@/composables/useTranslate'
 import { useAdminRoleStore } from '@/stores/Admin/role.storage'
-import { RoleType } from '@/types/entities'
+import { useAdminStructureStore } from '@/stores/Admin/structure.storage'
+import { RoleType, StructureType } from '@/types/entities'
+import { AppTypeEnum } from '@/types/enum'
 import { IonButton } from '@ionic/vue'
-import { ref, reactive, computed, onMounted, h } from 'vue'
+import { ref, reactive, computed, onMounted, h, watch } from 'vue'
 
 const { t } = useTranslate()
 const roleStor = useAdminRoleStore()
 const confirmStore = useConfirmStore();
+const structureStor = useAdminStructureStore()
 
 // form dùng chung cho cả create và update
-const form = reactive<Omit<RoleType, 'id'>>({
+const formDefault = {
     name: '',
     description: '',
-})
+    moduleId: 0,
+    appType: AppTypeEnum.ADMIN
+}
+let form = reactive<Omit<RoleType, 'id' | 'module'>>(formDefault)
+
+const modules = ref<StructureType[]>([])
 
 const editingId = ref<number | null>(null) // null = đang ở mode create
 const isEditing = computed(() => editingId.value !== null)
 const submitting = ref(false)
-const formError = ref('')
 
 const resetForm = () => {
-    form.name = ''
-    form.description = ''
+    form = formDefault
     editingId.value = null
-    formError.value = ''
 }
 
 const startEdit = (role: RoleType) => {
     editingId.value = role.id
-    form.name = role.name
-    form.description = role.description
-    formError.value = ''
+    // form.name = role.name
+    // form.description = role.description
+    Object.assign(form, role)
 }
 
 const submitForm = async () => {
@@ -52,28 +57,38 @@ const submitForm = async () => {
 
 onMounted(async () => await roleStor.getList())
 
-const columns = [
+const columns = computed(() => [
     {
         id: "stt",
-        header: t("orderNum"),
+        header: () => t("orderNum"),
         trClass: "text-nowrap",
         cell: ({ row }: any) => row.index + 1,
     },
     {
         accessorKey: "name",
-        header: t('name'),
+        header: () => t('name'),
         cell: ({ getValue }: any) =>
             h("span", { class: "whitespace-nowrap" }, getValue())
     },
     {
+        accessorKey: "appType",
+        header: () => t("appType"),
+        cell: ({ row }: any) =>
+            h(
+                "span",
+                { class: "whitespace-nowrap" },
+                `${row.original.appType}: ${row.original.module}`
+            )
+    },
+    {
         accessorKey: "description",
-        header: t('description'),
+        header: () => t('description'),
         cell: ({ getValue }: any) =>
             h("span", { class: "whitespace-nowrap" }, getValue())
     },
     {
         id: "action",
-        header: t('action'),
+        header: () => t('action'),
         cell: ({ row }: any) => {
             const data = row.original
 
@@ -100,7 +115,7 @@ const columns = [
             ])
         }
     }
-]
+])
 
 const openModal = (item: RoleType) => {
     confirmStore.open({
@@ -111,6 +126,14 @@ const openModal = (item: RoleType) => {
         }
     });
 }
+
+watch(() => form.appType, async () => {
+    if (form.appType) {
+        modules.value = await structureStor.getModuleByAppType(form.appType)
+    } else {
+        modules.value = []
+    }
+}, { immediate: true })
 </script>
 
 <template>
@@ -137,11 +160,34 @@ const openModal = (item: RoleType) => {
                             class="w-full rounded-lg border px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:border-slate-500" />
                     </div>
                     <div>
-                        <label :class="[oaStyle.text.secondary, 'mb-1 block text-sm font-medium']">{{ t('desciption')
+                        <label :class="[oaStyle.text.secondary, 'mb-1 block text-sm font-medium']">{{ t('description')
                         }}</label>
-                        <input v-model="form.description" type="text" :placeholder="t('desciption')"
+                        <input v-model="form.description" type="text" :placeholder="t('description')"
                             :class="[oaStyle.border.primary, oaStyle.text.secondary]"
                             class="w-full rounded-lg border px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:border-slate-500" />
+                    </div>
+                </div>
+
+                <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label :class="[oaStyle.text.secondary, 'mb-1 block text-xs font-medium']">{{ t('appType')
+                            }}</label>
+                        <select v-model="form.appType" required
+                            :class="[oaStyle.border.primary, oaStyle.bg.primary, oaStyle.text.secondary, 'w-full p-2 border rounded outline-none']">
+                            <option v-for="(key, value) in AppTypeEnum" :key="key" :value="value">
+                                {{ value }}
+                            </option>
+                        </select>
+                    </div>
+                    <div>
+                        <label :class="[oaStyle.text.secondary, 'mb-1 block text-xs font-medium']">{{ t('module')
+                            }}</label>
+                        <select v-model="form.moduleId"
+                            :class="[oaStyle.border.primary, oaStyle.bg.primary, oaStyle.text.secondary, 'w-full p-2 border rounded outline-none']">
+                            <option v-for="item in modules" :key="item.id" :value="item.id">
+                                {{ item.code }}
+                            </option>
+                        </select>
                     </div>
                 </div>
 
@@ -158,6 +204,6 @@ const openModal = (item: RoleType) => {
             </form>
         </div>
 
-        <PaginationTable :data="roleStor.roles" :columns="columns" :pageSize="20" height="max-h-[50vh]"/>
+        <PaginationTable :data="roleStor.roles" :columns="columns" :pageSize="20" height="max-h-[50vh]" />
     </div>
 </template>

@@ -3,12 +3,15 @@ package com.zalo.modules.admin.role.service;
 import com.zalo.modules.admin.role.dto.request.AssignPermissionRequest;
 import com.zalo.modules.admin.role.dto.request.AssignRoleRequest;
 import com.zalo.modules.admin.role.dto.request.RoleRequest;
+import com.zalo.modules.admin.role.dto.response.RoleResponse;
 import com.zalo.modules.admin.role.entity.Role;
 import com.zalo.modules.admin.role.entity.RolePermission;
 import com.zalo.modules.admin.role.entity.UserRole;
 import com.zalo.modules.admin.role.repo.RolePermissionRepo;
 import com.zalo.modules.admin.role.repo.RoleRepo;
 import com.zalo.modules.admin.role.repo.UserRoleRepo;
+import com.zalo.modules.admin.structure.entity.Structure;
+import com.zalo.modules.admin.structure.service.StructureRepository;
 import com.zalo.modules.app.user.service.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -19,6 +22,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -29,8 +36,9 @@ public class RoleService {
     RolePermissionRepo rolePermissionRepo;
     UserRepository userRepo;
     UserRoleRepo userRoleRepo;
+    StructureRepository structureRepository;
 
-    public Role create(RoleRequest req) {
+    public RoleResponse create(RoleRequest req) {
         Role existed = roleRepo.findByName(req.getName());
         if (existed != null) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "nameExisted");
@@ -39,28 +47,75 @@ public class RoleService {
         Role role = new Role();
         role.setName(req.getName());
         role.setDescription(req.getDescription());
-        return roleRepo.save(role);
+        role.setAppType(req.getAppType());
+        role.setModuleId(req.getModuleId());
+        roleRepo.save(role);
+
+        return getRoleModule(role);
     }
 
-    public List<Role> getAll() {
-        return roleRepo.findAll();
+    private RoleResponse getRoleModule(Role role) {
+        Optional<Structure> structure = structureRepository.findById(role.getId());
+
+        RoleResponse res = new RoleResponse(role);
+        structure.ifPresent(value -> res.setModule(value.getCode()));
+
+        return res;
     }
 
-    public Role update(Long id, RoleRequest req) {
+    public List<RoleResponse> getAll() {
+        List<Role> roles = roleRepo.findAll();
+
+        // Lấy danh sách moduleId
+        List<Long> moduleIds = roles.stream()
+                .map(Role::getModuleId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+
+        // Query 1 lần
+        Map<Long, String> moduleMap = structureRepository.findAllById(moduleIds)
+                .stream()
+                .collect(Collectors.toMap(Structure::getId, Structure::getCode));
+
+        // Map response
+        return roles.stream()
+                .map(role -> {
+                    RoleResponse res = new RoleResponse(role);
+
+                    String module = moduleMap.get(role.getModuleId());
+                    if (module != null) {
+                        res.setModule(module);
+                    }
+
+                    return res;
+                })
+                .toList();
+    }
+
+    public RoleResponse update(Long id, RoleRequest req) {
         Role role = roleRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "roleNotFound"));
 
-        // Nếu đổi tên thì kiểm tra tên mới đã bị trùng với role khác chưa
-        if (!role.getName().equals(req.getName())) {
-            Role existed = roleRepo.findByName(req.getName());
-            if (existed != null) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "nameExisted");
-            }
+        Role existed = roleRepo.findByNameAndIdNot(
+                req.getName(),
+                id
+        );
+
+        if (existed != null) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "nameExisted"
+            );
         }
 
         role.setName(req.getName());
         role.setDescription(req.getDescription());
-        return roleRepo.save(role);
+        role.setAppType(req.getAppType());
+        role.setModuleId(req.getModuleId());
+        roleRepo.save(role);
+
+        return getRoleModule(role);
     }
 
     public void delete(Long id) {

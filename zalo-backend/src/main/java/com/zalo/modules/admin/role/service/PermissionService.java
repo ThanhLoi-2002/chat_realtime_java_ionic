@@ -1,58 +1,61 @@
 package com.zalo.modules.admin.role.service;
 
 import com.zalo.common.util.PermissionConstant;
+import com.zalo.modules.admin.role.dto.response.ModulePermissionResponse;
 import com.zalo.modules.admin.role.dto.response.PermissionResponse;
+import com.zalo.modules.admin.role.dto.response.PermissionTreeResponse;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PermissionService {
 
-    public List<PermissionResponse> getAllPermissions() {
+    public List<PermissionTreeResponse> getAllPermissions() {
 
-        List<PermissionResponse> result = new ArrayList<>();
+        List<PermissionTreeResponse> result = new ArrayList<>();
 
-        extract(PermissionConstant.class, "", result);
+        for (Class<?> appClass : PermissionConstant.class.getDeclaredClasses()) {
 
-        return result;
-    }
+            List<ModulePermissionResponse> modules = new ArrayList<>();
 
-    private void extract(Class<?> clazz,
-                         String prefix,
-                         List<PermissionResponse> result) {
+            for (Class<?> moduleClass : appClass.getDeclaredClasses()) {
 
-        List<String> permissions = Arrays.stream(clazz.getDeclaredFields())
-                .filter(f -> Modifier.isStatic(f.getModifiers()))
-                .filter(f -> f.getType().equals(String.class))
-                .map(f -> {
-                    try {
-                        return (String) f.get(null);
-                    } catch (Exception e) {
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .toList();
+                List<String> permissions = Arrays.stream(moduleClass.getDeclaredFields())
+                        .filter(f -> Modifier.isStatic(f.getModifiers()))
+                        .filter(f -> f.getType().equals(String.class))
+                        .map(f -> {
+                            try {
+                                return (String) f.get(null);
+                            } catch (Exception e) {
+                                return null;
+                            }
+                        })
+                        .filter(Objects::nonNull)
+                        .toList();
 
-        if (!permissions.isEmpty()) {
-            result.add(new PermissionResponse(
-                    prefix,
-                    permissions
+                modules.add(new ModulePermissionResponse(
+                        moduleClass.getSimpleName().toLowerCase(),
+                        permissions
+                ));
+            }
+
+            result.add(new PermissionTreeResponse(
+                    appClass.getSimpleName(),
+                    modules
             ));
         }
 
-        for (Class<?> nested : clazz.getDeclaredClasses()) {
-
-            String group = prefix.isBlank()
-                    ? nested.getSimpleName()
-                    : prefix + "." + nested.getSimpleName();
-
-            extract(nested, group, result);
-        }
+        return result;
     }
 }

@@ -1,11 +1,11 @@
-package com.zalo.modules.app.lang.service;
+package com.zalo.modules.admin.lang.service;
 
 import com.zalo.common.filter.LangFilter;
-import com.zalo.modules.app.lang.dto.request.LangCreationRequest;
-import com.zalo.modules.app.lang.dto.request.LangUpdateRequest;
-import com.zalo.modules.app.lang.dto.response.LangResponse;
-import com.zalo.modules.app.lang.entity.Lang;
-import com.zalo.modules.app.lang.dto.LangDto;
+import com.zalo.modules.admin.lang.dto.request.LangCreationRequest;
+import com.zalo.modules.admin.lang.dto.request.LangUpdateRequest;
+import com.zalo.modules.admin.lang.dto.response.LangResponse;
+import com.zalo.modules.admin.lang.entity.Lang;
+import com.zalo.modules.admin.lang.dto.LangDto;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

@@ -79,6 +79,7 @@ public class StructureService {
     }
 
     public Structure saveOrUpdate(Structure structure) {
+        structure.setMenu(!structure.getComponent().endsWith(".vue"));
         return structureRepository.save(structure);
     }
 
@@ -91,5 +92,13 @@ public class StructureService {
     public List<StructureResponse> getMenuByUser(Long userId, AppType appType, List<String> permissions, List<String> roles) {
         List<Structure> menus = structureRepository.findBySttAndAppTypeOrderBySortAsc(1, appType);
         return buildTree(menus);
+    }
+
+    public List<Structure> getModuleByAppType(AppType appType) {
+        return structureRepository.findBySttAndAppTypeAndTypeOrderBySortAsc(1, appType, 2);
+    }
+
+    public List<Structure> getControllersByModule(Long moduleId) {
+        return structureRepository.findBySttAndPidOrderBySortAsc(1, moduleId);
     }
 }

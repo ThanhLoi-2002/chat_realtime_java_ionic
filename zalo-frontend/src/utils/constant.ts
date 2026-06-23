@@ -36,7 +36,9 @@ export const ROUTE = {
         ROLE: "role",
         USER_ROLE: "user-role",
         USER: "user",
-        LANG: "lang"
+        LANG: "lang",
+        PERMISSION: 'permission',
+        SET_ACCESS: 'set-access'
     },
 
     NOT_FOUND: "/notFound"
@@ -53,6 +55,7 @@ export const ADMIN_ROUTE = {
     structure: () => `${ROUTE.ADMIN_DASHBOARD.INDEX}/${ROUTE.ADMIN_DASHBOARD.SYSTEM}/${ROUTE.ADMIN_DASHBOARD.STRUCTURE}`,
     role: () => `${ROUTE.ADMIN_DASHBOARD.INDEX}/${ROUTE.ADMIN_DASHBOARD.SYSTEM}/${ROUTE.ADMIN_DASHBOARD.ROLE}`,
     lang: () => `${ROUTE.ADMIN_DASHBOARD.INDEX}/${ROUTE.ADMIN_DASHBOARD.SYSTEM}/${ROUTE.ADMIN_DASHBOARD.LANG}`,
+    permission: () => `${ROUTE.ADMIN_DASHBOARD.INDEX}/${ROUTE.ADMIN_DASHBOARD.SYSTEM}/${ROUTE.ADMIN_DASHBOARD.PERMISSION}`,
 }
 
 export const EMOJI_MAP = {

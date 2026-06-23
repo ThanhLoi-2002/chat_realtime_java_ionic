@@ -16,25 +16,25 @@ const getList = async (filters: any) => {
                 }`;
     }
 
-    return await axios.get<IResponse<PaginationType<LangType>>>(`/languages?${filterOptions}`);
+    return await axios.get<IResponse<PaginationType<LangType>>>(`/system/languages?${filterOptions}`);
 };
 
 const getListByLang = async (lang: string) => {
-    return await axios.get<IResponse<any>>(`/languages/getByLang/${lang}`);
+    return await axios.get<IResponse<any>>(`/system/languages/getByLang/${lang}`);
 };
 
 const getDetail = async (id: number) => {
-    return await axios.get<IResponse<LangType>>(`/languages/${id}`);
+    return await axios.get<IResponse<LangType>>(`/system/languages/${id}`);
 }
 
 const createOrUpdate = async (data: LangFormType, id?: number) => {
     if (id)
-        return await axios.put<IResponse<LangType>>(`/languages/${id}`, data);
-    else return await axios.post<IResponse<LangType>>(`/languages`, data);
+        return await axios.put<IResponse<LangType>>(`/system/languages/${id}`, data);
+    else return await axios.post<IResponse<LangType>>(`/system/languages`, data);
 }
 
 const deleteOne = async (id: number) => {
-    return await axios.delete<IResponse>(`/languages/${id}`);
+    return await axios.delete<IResponse>(`/system/languages/${id}`);
 }
 
 export const langApi = {

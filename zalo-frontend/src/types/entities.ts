@@ -154,6 +154,9 @@ export type StickerItemType = {
 export type RoleType = {
     id: number
     name: string
+    moduleId: number
+    module: string
+    appType?: AppTypeEnum
     description: string
 }
 
@@ -168,5 +171,6 @@ export type StructureType = BaseType & {
     permissions: string;
     component: string;
     path: string;
+    isMenu: boolean;
     children: StructureType[];
 }

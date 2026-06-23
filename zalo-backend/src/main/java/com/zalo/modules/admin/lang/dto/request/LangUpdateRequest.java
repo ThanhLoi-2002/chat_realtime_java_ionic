@@ -1,4 +1,4 @@
-package com.zalo.modules.app.lang.dto.request;
+package com.zalo.modules.admin.lang.dto.request;
 
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LangCreationRequest {
+public class LangUpdateRequest {
     @Size(min = 1, message = "CODE_INVALID")
     String code;
 
@@ -18,4 +18,3 @@ public class LangCreationRequest {
     String tw;
     String cn;
 }
-

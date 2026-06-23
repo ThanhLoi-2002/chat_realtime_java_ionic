@@ -1,13 +1,13 @@
-package com.zalo.modules.app.lang;
+package com.zalo.modules.admin.lang;
 
 import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
 import com.zalo.common.configuration.anotation.ResponseMessage;
 import com.zalo.common.filter.LangFilter;
-import com.zalo.modules.app.lang.dto.request.LangCreationRequest;
-import com.zalo.modules.app.lang.dto.request.LangUpdateRequest;
-import com.zalo.modules.app.lang.dto.response.LangResponse;
+import com.zalo.modules.admin.lang.dto.request.LangCreationRequest;
+import com.zalo.modules.admin.lang.dto.request.LangUpdateRequest;
+import com.zalo.modules.admin.lang.dto.response.LangResponse;
 import com.zalo.modules.app.user.dto.response.UserPayload;
-import com.zalo.modules.app.lang.service.LangService;
+import com.zalo.modules.admin.lang.service.LangService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/languages")
+@RequestMapping("/system/languages")
 @RequiredArgsConstructor
 public class LangController {
 

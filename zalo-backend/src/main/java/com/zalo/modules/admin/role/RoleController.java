@@ -3,8 +3,8 @@ package com.zalo.modules.admin.role;
 import com.zalo.modules.admin.role.dto.request.AssignPermissionRequest;
 import com.zalo.modules.admin.role.dto.request.AssignRoleRequest;
 import com.zalo.modules.admin.role.dto.request.RoleRequest;
-import com.zalo.modules.admin.role.dto.response.PermissionResponse;
-import com.zalo.modules.admin.role.entity.Role;
+import com.zalo.modules.admin.role.dto.response.PermissionTreeResponse;
+import com.zalo.modules.admin.role.dto.response.RoleResponse;
 import com.zalo.modules.admin.role.service.PermissionService;
 import com.zalo.modules.admin.role.service.RoleService;
 import lombok.AccessLevel;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/role")
+@RequestMapping("/system/role")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RoleController {
@@ -23,17 +23,17 @@ public class RoleController {
     PermissionService permissionService;
 
     @PostMapping
-    public Role create(@RequestBody RoleRequest req) {
+    public RoleResponse create(@RequestBody RoleRequest req) {
         return roleService.create(req);
     }
 
     @GetMapping
-    public List<Role> getAll() {
+    public List<RoleResponse> getAll() {
         return roleService.getAll();
     }
 
     @PutMapping("/{id}")
-    public Role update(@PathVariable Long id, @RequestBody RoleRequest req) {
+    public RoleResponse update(@PathVariable Long id, @RequestBody RoleRequest req) {
         return roleService.update(id, req);
     }
 
@@ -43,7 +43,7 @@ public class RoleController {
     }
 
     @GetMapping("/permissions")
-    public List<PermissionResponse> getPermissions() {
+    public List<PermissionTreeResponse> getPermissions() {
         return permissionService.getAllPermissions();
     }
 

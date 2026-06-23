@@ -134,8 +134,8 @@ export const oaStyle = {
     `,
 
     secondary: `
-      border-slate-100
-      dark:border-slate-900
+      border-slate-300
+      dark:border-slate-700
     `,
   },
 

@@ -5,16 +5,26 @@ import { defineStore } from 'pinia'
 
 interface State {
     roles: RoleType[]
+    permissions: PermissionTree[],
     isLoading: boolean
+}
+
+interface PermissionTree {
+    app: string
+    modules: {
+        module: string
+        permissions: string[]
+    }[]
 }
 
 export const useAdminRoleStore = defineStore('adminRole', {
     state: (): State => ({
         roles: [],
+        permissions: [],
         isLoading: false,
     }),
     actions: {
-        async add(data: Omit<RoleType, 'id'>) {
+        async add(data: Omit<RoleType, 'id' | 'module'>) {
             try {
                 const result: any = await roleApi.createOrUpdate(data);
                 // reassign cả mảng (reference mới) thay vì push in-place,
@@ -29,7 +39,7 @@ export const useAdminRoleStore = defineStore('adminRole', {
                 return false
             }
         },
-        async update(data: Omit<RoleType, 'id'>, id: number) {
+        async update(data: Omit<RoleType, 'id' | 'module'>, id: number) {
             try {
                 const result: any = await roleApi.createOrUpdate(data, id);
                 const index = this.roles.findIndex(i => i.id === id)
@@ -45,6 +55,41 @@ export const useAdminRoleStore = defineStore('adminRole', {
                     message: e.message
                 })
                 return false
+            }
+        },
+        async getList() {
+            try {
+                const result: any = await roleApi.getList();
+                this.roles = result.result
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+            }
+        },
+
+        async getPermissions() {
+            try {
+                const result: any = await roleApi.getPermissions();
+                console.log(result.result)
+                this.permissions = result.result
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+            }
+        },
+        async delete(id: number) {
+            try {
+                const result: any = await roleApi.deleteOne(id);
+                this.roles = this.roles.filter(item => item.id !== id)
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
             }
         },
     }

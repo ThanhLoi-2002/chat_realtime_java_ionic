@@ -1,10 +1,10 @@
-package com.zalo.modules.app.lang.service;
+package com.zalo.modules.admin.lang.service;
 
-import com.zalo.modules.app.lang.dto.LangDto;
+import com.zalo.modules.admin.lang.dto.LangDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import com.zalo.modules.app.lang.entity.Lang;
+import com.zalo.modules.admin.lang.entity.Lang;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;

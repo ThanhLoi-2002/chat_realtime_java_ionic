@@ -3,6 +3,7 @@ package com.zalo.common.configuration.anotation.currentUser;
 import com.zalo.common.configuration.json.G;
 import com.zalo.modules.app.user.dto.response.UserPayload;
 import com.zalo.modules.app.user.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.server.ResponseStatusException;
 
+@Slf4j
 @Component
 public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -38,7 +40,7 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
         }
 
         UserPayload user = userService.getOneByToken(authHeader);
-System.out.println(G.toJson(user));
+        log.info("user={}", G.toJson(user));
         webRequest.setAttribute(
                 "currentUser",
                 user,

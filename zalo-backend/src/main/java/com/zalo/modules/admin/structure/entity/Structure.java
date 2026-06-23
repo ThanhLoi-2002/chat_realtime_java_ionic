@@ -26,6 +26,9 @@ public class Structure extends BaseEntity {
     @Column(name = "code", length = 100)
     private String code;
 
+    @Column(name = "is_menu")
+    private boolean isMenu;
+
     // Chuỗi lưu class icon (ví dụ: 'fas fa-home' hoặc nguyên thẻ '<i class="fas fa-home"></i>')
     @Column(name = "icon")
     private String icon;

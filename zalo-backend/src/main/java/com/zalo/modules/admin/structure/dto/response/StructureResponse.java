@@ -26,6 +26,7 @@ public class StructureResponse extends BaseResponse {
     String permissions;
     String component;
     String path;
+    boolean isMenu;
     List<StructureResponse> children = new ArrayList<>();
 
     public StructureResponse(Structure e, String... relations) {

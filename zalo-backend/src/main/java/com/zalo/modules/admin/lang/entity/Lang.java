@@ -1,4 +1,4 @@
-package com.zalo.modules.app.lang.entity;
+package com.zalo.modules.admin.lang.entity;
 
 import com.zalo.common.base.BaseEntity;
 import jakarta.persistence.*;

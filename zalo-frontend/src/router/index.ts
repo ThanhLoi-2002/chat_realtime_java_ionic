@@ -5,138 +5,22 @@ import { getKey } from '@/utils/local';
 import { isPlatform } from '@ionic/vue';
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
+import { adminRoutes } from './admin.routes.ts';
+import { oaRoutes } from './oa.routes.ts';
+import { appRoutes } from './app.routes.ts';
 
-export const modules = import.meta.glob(
-  '../views/**/*.vue'
-)
+// export const modules = import.meta.glob(
+//   '../views/**/*.vue'
+// )
 
 const routes: Array<RouteRecordRaw> = [
-  {
-    path: '/',
-    redirect: ROUTE.CHATS
-  },
-  {
-    path: ROUTE.CHATS,
-    component: () => import('../views/App/Chat/ChatPage.vue'),
-    meta: { layout: "main", requiresAuth: true }
-  },
-  {
-    path: `${ROUTE.JOIN_GROUP}/:code`,
-    component: () => import('../views/App/JoinGroup/JoinGroup.vue'),
-    meta: { layout: "noLayout", requiresAuth: false }
-  },
-  {
-    path: `${ROUTE.SCAN}`,
-    component: () => import('../views/App/Scan/QrCodeScannerPage.vue'),
-    meta: { layout: "noLayout", requiresAuth: false }
-  },
-  {
-    path: ROUTE.FRIENDS,
-    component: () => import('../views/App/Friend/FriendPage.vue'),
-    meta: { layout: "main", requiresAuth: true },
-  },
+  ...appRoutes,
 
   // -------------------- OA ROUTES --------------------
-  {
-    path: ROUTE.OA_DASHBOARD.INDEX,
-    meta: { layout: "oa", requiresAuth: true },
-    children: [
-      {
-        path: ROUTE.OA_DASHBOARD.HOME,
-        component: () => import('../views/OA/Home/Home.vue')
-      },
-      {
-        path: ROUTE.OA_DASHBOARD.CHATBOT,
-        component: () => import('../views/OA/Chatbot/Chatbot.vue')
-      },
-      {
-        path: ROUTE.OA_DASHBOARD.MANAGEMENT,
-        component: () => import('../views/OA/Management/Management.vue')
-      },
-    ]
-  },
+  oaRoutes,
 
   // -------------------- ADMIN ROUTES --------------------
-  {
-    path: ROUTE.ADMIN_DASHBOARD.INDEX,
-    meta: { layout: "admin", requiresAuth: true },
-    children: [
-      {
-        path: '',
-        component: () => import('../views/Admin/Index.vue')
-      },
-      {
-        path: ROUTE.ADMIN_DASHBOARD.SYSTEM,
-        children: [
-          {
-            path: ROUTE.ADMIN_DASHBOARD.STRUCTURE,
-            component: () => import('../views/Admin/System/Structure/Structure.vue')
-          },
-          {
-            path: ROUTE.ADMIN_DASHBOARD.ROLE,
-            component: () => import('../views/Admin/System/Role/Role.vue')
-          },
-          {
-            path: ROUTE.ADMIN_DASHBOARD.USER,
-            component: () => import('../views/Admin/System/User/User.vue')
-          },
-          {
-            path: ROUTE.ADMIN_DASHBOARD.USER_ROLE,
-            component: () => import('../views/Admin/System/UserRole/UserRole.vue')
-          },
-          {
-            path: ROUTE.ADMIN_DASHBOARD.LANG,
-            children: [
-              {
-                path: "",
-                component: () => import('../views/Admin/System/Lang/LangPage.vue')
-              },
-              {
-                path: ":id",
-                component: () => import('../views/Admin/System/Lang/EditLang.vue')
-              },
-              {
-                path: "add",
-                component: () => import('../views/Admin/System/Lang/AddLang.vue')
-              }
-            ]
-          },
-        ],
-      },
-    ]
-  },
-
-  // -------------------- AUTH ROUTES --------------------
-  {
-    path: "",
-    meta: { layout: "auth" },
-    children: [
-      {
-        path: ROUTE.LOGIN,
-        component: () => import('../views/App/Auth/LoginPage.vue'),
-        meta: { guestOnly: true }
-      },
-      {
-        path: ROUTE.REGISTER,
-        component: () => import('../views/App/Auth/RegisterPage.vue'),
-        meta: { guestOnly: true }
-      }
-    ]
-  },
-
-  {
-    path: ROUTE.NOT_FOUND,
-    name: 'NotFound',
-    component: () => import('../views/App/Error/NotFoundPage.vue'),
-    meta: { layout: "noLayout", requiresAuth: false }
-  },
-
-  {
-    path: '/:pathMatch(.*)*',
-    name: 'NotFoundAll',
-    component: () => import('../views/App/Error/NotFoundPage.vue'),
-    meta: { layout: "noLayout", requiresAuth: false }
-  },
+  adminRoutes,
 ]
 
 const router = createRouter({

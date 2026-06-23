@@ -70,7 +70,7 @@
                     <form @submit.prevent="submitForm" class="space-y-3.5">
                         <div>
                             <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{ t('PID')
-                            }}</label>
+                                }}</label>
                             <select v-model="form.pid" @change="onPidChange"
                                 :class="[oaStyle.border.primary, oaStyle.bg.primary, oaStyle.text.secondary, 'w-full p-2 border rounded outline-none']">
                                 <option v-for="opt in allNodesFlat" :key="opt.id" :value="opt.id">
@@ -95,24 +95,22 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{
-                                    t('path') }}</label>
-                                <input v-model="form.path" type="text" required
-                                    :class="[oaStyle.border.primary, 'w-full p-2 border rounded outline-none focus:border-blue-600/50']" />
-                            </div>
-                            <div>
-                                <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{
-                                    t('component') }}</label>
-                                <input v-model="form.component" type="text"
-                                    :class="[oaStyle.border.primary, 'w-full p-2 border rounded outline-none focus:border-blue-600/50']" />
-                            </div>
+                        <!-- <div>
+                            <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{
+                                t('path') }}</label>
+                            <input v-model="form.path" type="text" required
+                                :class="[oaStyle.border.primary, 'w-full p-2 border rounded outline-none focus:border-blue-600/50']" />
                         </div>
+                        <div>
+                            <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{
+                                t('component') }}</label>
+                            <input v-model="form.component" type="text"
+                                :class="[oaStyle.border.primary, 'w-full p-2 border rounded outline-none focus:border-blue-600/50']" />
+                        </div> -->
 
                         <div>
                             <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{ t('icon')
-                            }}</label>
+                                }}</label>
                             <input v-model="form.icon" type="text"
                                 :class="[oaStyle.border.primary, 'w-full p-2 border rounded outline-none focus:border-blue-600/50']" />
                         </div>
@@ -133,7 +131,7 @@
 
                         <div>
                             <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{ t('status')
-                            }}</label>
+                                }}</label>
                             <div :class="[oaStyle.text.secondary, 'flex gap-4 mt-1 font-medium']">
                                 <label class="flex items-center gap-1 cursor-pointer"><input type="radio"
                                         v-model="form.stt" :value="1"> {{ t('active') }}</label>
@@ -197,7 +195,7 @@ const structureStor = useAdminStructureStore()
 const { findParent } = useStructure()
 
 const structureDefault: Omit<StructureType, 'id'> & { id?: number; } = {
-    id: undefined, pid: 1, code: '', icon: '', description: '', type: 0, sort: 0, stt: 1, appType: AppTypeEnum.OA, component: '', path: "", permissions: '', children: []
+    id: undefined, pid: 1, code: '', icon: '', description: '', type: 0, sort: 0, stt: 1, appType: AppTypeEnum.OA, component: '', path: "", permissions: '', isMenu: false, children: []
 }
 const form = ref<Omit<StructureType, 'id'> & { id?: number; }>(structureDefault);
 

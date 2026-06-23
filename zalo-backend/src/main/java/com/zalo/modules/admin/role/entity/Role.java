@@ -1,5 +1,6 @@
 package com.zalo.modules.admin.role.entity;
 
+import com.zalo.modules.admin.structure.entity.AppType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -18,4 +19,7 @@ public class Role {
     String name;
     String description;
 
+    @Enumerated(EnumType.STRING)
+    AppType appType;
+    Long moduleId;
 }

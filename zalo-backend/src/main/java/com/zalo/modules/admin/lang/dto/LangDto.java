@@ -1,4 +1,4 @@
-package com.zalo.modules.app.lang.dto;
+package com.zalo.modules.admin.lang.dto;
 
 public interface LangDto {
     String getCode();

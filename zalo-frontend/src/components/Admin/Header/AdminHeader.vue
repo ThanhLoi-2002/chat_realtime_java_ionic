@@ -1,35 +1,50 @@
 <template>
     <ion-header :class="[oaStyle.bg.primary, oaStyle.border.primary, oaStyle.text.primary, 'border-b']">
         <div class="flex items-center justify-between px-6 h-16">
-            <button @click="sysStorage.toggleSidebar()"
-                :class="[oaStyle.bg.hover, oaStyle.text.secondary, 'p-1.5 rounded cursor-pointer flex items-center justify-center']">
-                <i class="fa-solid fa-bars text-sm" />
-            </button>
+            <div :class="[oaStyle.border.primary, 'flex items-center justify-between w-58 pr-4 border-r']">
+                <button @click="sysStorage.toggleSidebar()"
+                    :class="[oaStyle.bg.hover, oaStyle.text.secondary, 'p-1.5 rounded cursor-pointer flex items-center justify-center']">
+                    <i class="fa-solid fa-bars text-sm" />
+                </button>
 
-            <nav class="flex space-x-6 text-sm font-medium mt-2">
-                <router-link v-for="item in getMenusByType(2)" :key="item.code" :to="item.path" custom>
-                    <div v-if="item.children.length > 0" @click="$router.push(buildFirstRoute(item))" :class="[
-                        'flex flex-col items-center cursor-pointer pb-2 border-b-2 transition-all',
-                        checkRouteActive(item.path)
-                            ? [oaStyle.text.active, oaStyle.border.active, 'font-semibold']
-                            : 'text-gray-500 border-transparent hover:text-blue-600'
+                <a href="/oa-dashboard/home">
+                    <div :class="[
+                        oaStyle.text.secondary,
+                        oaStyle.text.hover,
+                        'flex flex-col items-center cursor-pointer',
                     ]">
-                        <p v-html="item.icon" />
-                        <p class="mt-1">{{ item.code }}</p>
+                        <i class="fas fa-undo text-sm"></i>
+                        <p class="mt-1">{{ t('oa') }}</p>
                     </div>
-                </router-link>
-            </nav>
+                </a>
 
-            <a href="/chats">
-                <div :class="[
-                    oaStyle.text.secondary,
-                    oaStyle.text.hover,
-                    'flex flex-col items-center cursor-pointer',
-                ]">
-                    <i class="fas fa-undo"></i>
-                    <p class="mt-1">{{ t('back') }}</p>
-                </div>
-            </a>
+                <a href="/chats">
+                    <div :class="[
+                        oaStyle.text.secondary,
+                        oaStyle.text.hover,
+                        'flex flex-col items-center cursor-pointer',
+                    ]">
+                        <i class="fas fa-undo text-sm"></i>
+                        <p class="mt-1">{{ t('chat') }}</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="flex-1 px-4">
+                <nav class="flex space-x-6 text-sm font-medium mt-2">
+                    <router-link v-for="item in getMenusByType(2)" :key="item.code" :to="item.path" custom>
+                        <div v-if="item.children.length > 0" @click="$router.push(buildFirstRoute(item))" :class="[
+                            'flex flex-col items-center cursor-pointer pb-2 border-b-2 transition-all',
+                            checkRouteActive(item.path)
+                                ? [oaStyle.text.active, oaStyle.border.active, 'font-semibold']
+                                : 'text-gray-500 border-transparent hover:text-blue-600'
+                        ]">
+                            <p v-html="item.icon" />
+                            <p class="mt-1">{{ item.code }}</p>
+                        </div>
+                    </router-link>
+                </nav>
+            </div>
 
             <div class="flex items-center space-x-4">
                 <theme-toggle custom-class="p-2" />
