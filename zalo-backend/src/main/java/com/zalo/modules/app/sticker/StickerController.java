@@ -5,7 +5,7 @@ import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
 import com.zalo.modules.app.sticker.dto.response.StickerResponse;
 import com.zalo.modules.app.sticker.entity.StickerItem;
 import com.zalo.modules.app.sticker.service.StickerService;
-import com.zalo.modules.app.user.dto.response.UserPayload;
+import com.zalo.modules.admin.system.user.dto.response.UserPayload;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

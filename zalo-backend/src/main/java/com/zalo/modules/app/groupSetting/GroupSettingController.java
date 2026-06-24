@@ -5,7 +5,7 @@ import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
 import com.zalo.modules.app.conversation.entities.MemberRole;
 import com.zalo.modules.app.groupSetting.entities.GroupSetting;
 import com.zalo.modules.app.groupSetting.service.GroupSettingService;
-import com.zalo.modules.app.user.dto.response.UserPayload;
+import com.zalo.modules.admin.system.user.dto.response.UserPayload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

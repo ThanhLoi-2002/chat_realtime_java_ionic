@@ -32,7 +32,7 @@
 
         <!-- Controllers -->
         <div class="flex flex-wrap gap-3 mt-3">
-            <button v-for="item in controllers" :key="item.id" @click="goTo(item.id, item.code)"
+            <button v-for="item in controllers" :key="item.id" @click="goTo(item.code)"
                 :class="[oaStyle.bg.primary, oaStyle.border.primary, oaStyle.bg.hover, oaStyle.text.primary, 'px-4 py-2 rounded-lg border transition cursor-pointer']">
                 {{ item.code }}
             </button>
@@ -46,7 +46,7 @@ import { useAdminRoleStore } from '@/stores/Admin/role.storage';
 import { useAdminStructureStore } from '@/stores/Admin/structure.storage';
 import { StructureType } from '@/types/entities';
 import { AppTypeEnum } from '@/types/enum';
-import { computed, onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter()
@@ -61,8 +61,8 @@ const apps = Object.values(AppTypeEnum)
 const controllers = ref<StructureType[]>([])
 const modules = ref<StructureType[]>([])
 
-const goTo = (id: number, code: string) => {
-    router.push(`/admin/system/permission/set-access?controllerId=${id}&&controllerCode=${code}&&moduleId=${selectedModule.value}&&appType=${selectedApp.value}`)
+const goTo = (code: string) => {
+    router.push(`/admin/system/permission/set-access?controllerCode=${code}&&moduleId=${selectedModule.value}&&appType=${selectedApp.value}`)
 }
 
 watch(

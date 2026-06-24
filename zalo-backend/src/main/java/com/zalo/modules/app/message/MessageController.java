@@ -11,7 +11,7 @@ import com.zalo.modules.app.message.dto.response.LinkPreviewResponse;
 import com.zalo.modules.app.message.dto.response.MessagePinResponse;
 import com.zalo.modules.app.message.dto.response.MessageResponse;
 import com.zalo.modules.app.message.dto.response.MessageStatusResponse;
-import com.zalo.modules.app.user.dto.response.UserPayload;
+import com.zalo.modules.admin.system.user.dto.response.UserPayload;
 import com.zalo.modules.app.message.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

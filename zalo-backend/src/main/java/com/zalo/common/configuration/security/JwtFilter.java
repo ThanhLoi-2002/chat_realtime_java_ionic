@@ -2,7 +2,7 @@ package com.zalo.common.configuration.security;
 
 import com.cloudinary.api.exceptions.NotFound;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zalo.modules.app.user.dto.response.UserPayload;
+import com.zalo.modules.admin.system.user.dto.response.UserPayload;
 import com.zalo.common.service.JwtService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;

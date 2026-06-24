@@ -17,15 +17,15 @@
         <div class="space-y-1 flex-1 overflow-y-auto no-scrollbar mt-2">
             <div v-for="(item, index) in currentMenus" :key="index" class="w-full">
 
-                <div v-if="item.children.length > 0">
+                <div v-if="countChildPage(item)">
                     <button @click="toggleSubMenu(item.code)" :class="[
                         isParentActive(item)
                             ? 'text-blue-600 dark:text-blue-400 font-semibold'
                             : [oaStyle.bg.hoverBlue, 'text-gray-700 dark:text-gray-300'],
                         'w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer justify-start'
                     ]">
-                        <div class="flex items-center justify-start flex-1 min-w-0">
-                            <i :class="[item.icon, 'text-base w-5 text-center shrink-0 mr-3']" />
+                        <div class="flex items-center gap-3 justify-start flex-1 min-w-0">
+                            <div v-html="item.icon" class="'text-base w-5 text-center shrink-0'"></div>
                             <span :class="[
                                 'whitespace-nowrap transition-all duration-300 ease-in-out block-text',
                                 sysStorage.showSidebar ? 'opacity-0 max-w-0 pointer-events-none' : 'opacity-100 max-w-37.5'
@@ -47,9 +47,10 @@
                                 isActive
                                     ? 'bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 font-semibold'
                                     : [oaStyle.bg.hoverBlue, 'text-gray-700 dark:text-gray-300'],
-                                'w-full text-left px-3 py-2 rounded-md text-sm transition-colors block whitespace-nowrap cursor-pointer'
+                                'flex gap-3 w-full text-left px-3 py-2 rounded-md text-sm transition-colors whitespace-nowrap cursor-pointer'
                             ]">
-                                {{ sub.code }}
+                                <div v-html="sub.icon" class="'text-base w-5 text-center shrink-0'"></div>
+                                <p>{{ sub.code }}</p>
                             </button>
                         </router-link>
                     </div>
@@ -83,6 +84,7 @@ import { oaStyle } from '@/assets/tailwindcss';
 import { useSystemStore } from '@/stores/system.storage';
 import { useAdminStructureStore } from '@/stores/Admin/structure.storage';
 import { StructureType } from '@/types/entities';
+import { MenuTypeEnum } from '@/types/enum';
 
 const route = useRoute();
 const openMenus = ref<string[]>([]);
@@ -116,6 +118,15 @@ const isParentActive = (item: StructureType): boolean => {
     if (!item.children) return false;
     return item.children.some(sub => route.path === sub.path);
 };
+
+const countChildPage = (list: StructureType) => {
+    if(list.children.length > 0) {
+        let count = 0 
+        list.children.forEach(i => i.menuType == MenuTypeEnum.PAGE && count++)
+
+        return count >= 2
+    }else return false
+}
 </script>
 
 <style scoped>

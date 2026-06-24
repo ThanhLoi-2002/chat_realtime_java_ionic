@@ -11,7 +11,7 @@ import com.zalo.modules.app.conversation.entities.Conversation;
 import com.zalo.modules.app.conversation.entities.MemberRole;
 import com.zalo.modules.app.media.dtos.requests.MediaRequest;
 import com.zalo.modules.app.message.dto.response.MessagePinResponse;
-import com.zalo.modules.app.user.dto.response.UserPayload;
+import com.zalo.modules.admin.system.user.dto.response.UserPayload;
 import com.zalo.modules.app.conversation.service.ConversationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

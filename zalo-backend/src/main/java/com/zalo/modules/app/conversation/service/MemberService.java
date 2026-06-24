@@ -1,11 +1,11 @@
 package com.zalo.modules.app.conversation.service;
 
 import com.zalo.modules.app.conversation.dto.respone.MemberResponse;
-import com.zalo.modules.app.user.dto.response.UserResponse;
+import com.zalo.modules.admin.system.user.dto.response.UserResponse;
 import com.zalo.modules.app.conversation.entities.ConversationMember;
-import com.zalo.modules.app.user.entities.User;
+import com.zalo.modules.admin.system.user.entities.User;
 import com.zalo.modules.app.conversation.entities.MemberRole;
-import com.zalo.modules.app.user.service.UserRepository;
+import com.zalo.modules.admin.system.user.service.UserRepository;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;

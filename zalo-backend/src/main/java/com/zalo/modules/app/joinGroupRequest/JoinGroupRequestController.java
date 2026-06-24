@@ -6,7 +6,7 @@ import com.zalo.modules.app.conversation.entities.MemberRole;
 import com.zalo.modules.app.joinGroupRequest.dto.request.JoinGroupDto;
 import com.zalo.modules.app.joinGroupRequest.dto.response.JoinGroupRequestResponse;
 import com.zalo.modules.app.joinGroupRequest.service.JoinGroupRequestService;
-import com.zalo.modules.app.user.dto.response.UserPayload;
+import com.zalo.modules.admin.system.user.dto.response.UserPayload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

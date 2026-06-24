@@ -46,15 +46,15 @@ export const adminRoutes: RouteRecordRaw = {
                     children: [
                         {
                             path: "",
-                            component: () => import('../views/Admin/System/Lang/LangPage.vue')
+                            component: () => import('../views/Admin/System/Lang/Lang.vue')
                         },
                         {
                             path: ":id",
-                            component: () => import('../views/Admin/System/Lang/EditLang.vue')
+                            component: () => import('../views/Admin/System/Lang/Edit.vue')
                         },
                         {
                             path: "add",
-                            component: () => import('../views/Admin/System/Lang/AddLang.vue')
+                            component: () => import('../views/Admin/System/Lang/Add.vue')
                         }
                     ]
                 },

@@ -2,7 +2,7 @@ package com.zalo.modules.app.message.dto.response;
 
 import com.zalo.common.base.BaseResponse;
 import com.zalo.modules.app.sticker.entity.StickerItem;
-import com.zalo.modules.app.user.dto.response.UserResponse;
+import com.zalo.modules.admin.system.user.dto.response.UserResponse;
 import com.zalo.modules.app.message.entity.Message;
 import com.zalo.modules.app.message.entity.MessageType;
 import com.zalo.modules.app.media.dtos.responses.MediaResponse;

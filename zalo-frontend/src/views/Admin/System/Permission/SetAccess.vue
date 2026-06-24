@@ -1,7 +1,8 @@
 <template>
 
-    <div class="py-4 my-4 rounded-lg">
-        <div :class="[oaStyle.border.primary, 'overflow-x-auto border rounded-sm m-2']">
+    <div class="rounded-lg mx-2">
+        <BackButton/>
+        <div :class="[oaStyle.border.primary, 'overflow-x-auto border rounded-sm my-2']">
             <table :class="[oaStyle.text.primary, 'w-full border-collapse text-left text-sm']">
                 <thead>
                     <tr :class="[oaStyle.bg.secondary, oaStyle.border.secondary, 'border-b']">
@@ -36,7 +37,7 @@
             </table>
         </div>
 
-        <div class="mt-4 mx-2">
+        <div class="mt-4">
             <button @click="handleSave"
                 class="inline-flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-medium text-sm rounded shadow-sm transition-colors cursor-pointer">
                 <i class="fas fa-save"></i>
@@ -47,6 +48,7 @@
 </template>
 <script setup lang="ts">
 import { oaStyle } from '@/assets/tailwindcss';
+import BackButton from '@/components/Shared/Button/BackButton.vue';
 import { useTranslate } from '@/composables/useTranslate';
 import { useAdminRoleStore } from '@/stores/Admin/role.storage';
 import { computed, onMounted, ref, watch } from 'vue';
@@ -57,7 +59,6 @@ const roleStor = useAdminRoleStore()
 const { t } = useTranslate()
 
 const {
-    controllerId,
     controllerCode,
     appType,
     moduleId
@@ -88,6 +89,8 @@ onMounted(async () => {
     if (roleStor.permissions.length == 0) {
         await roleStor.getPermissions()
     }
+
+    selectedPermissions.value = await roleStor.getAccess(features.value)
 })
 
 // Kiểm tra xem checkbox có được tích hay không
@@ -123,6 +126,7 @@ const togglePermission = (
 // Hàm xử lý khi bấm nút "Lưu"
 const handleSave = () => {
     console.log(selectedPermissions.value)
+    roleStor.saveSetPermission(selectedPermissions.value)
 };
 
 watch(

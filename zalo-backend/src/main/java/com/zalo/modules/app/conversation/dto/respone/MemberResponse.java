@@ -2,8 +2,8 @@ package com.zalo.modules.app.conversation.dto.respone;
 
 import com.zalo.modules.app.conversation.entities.ConversationMember;
 import com.zalo.modules.app.conversation.entities.MemberStatus;
-import com.zalo.modules.app.user.dto.response.UserResponse;
-import com.zalo.modules.app.user.entities.User;
+import com.zalo.modules.admin.system.user.dto.response.UserResponse;
+import com.zalo.modules.admin.system.user.entities.User;
 import com.zalo.modules.app.conversation.entities.MemberRole;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;

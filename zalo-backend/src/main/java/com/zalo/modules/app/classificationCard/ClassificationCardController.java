@@ -6,7 +6,7 @@ import com.zalo.modules.app.classificationCard.dto.request.ClassificationCardReq
 import com.zalo.modules.app.classificationCard.dto.request.PositionUpdateRequest;
 import com.zalo.modules.app.classificationCard.dto.response.ClassificationCardResponse;
 import com.zalo.modules.app.classificationCard.service.ClassificationCardService;
-import com.zalo.modules.app.user.dto.response.UserPayload;
+import com.zalo.modules.admin.system.user.dto.response.UserPayload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

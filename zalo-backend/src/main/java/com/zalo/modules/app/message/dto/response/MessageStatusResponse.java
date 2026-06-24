@@ -3,7 +3,7 @@ package com.zalo.modules.app.message.dto.response;
 import com.zalo.common.base.BaseResponse;
 import com.zalo.modules.app.message.entity.DeliveryStatus;
 import com.zalo.modules.app.message.entity.MessageStatus;
-import com.zalo.modules.app.user.dto.response.UserResponse;
+import com.zalo.modules.admin.system.user.dto.response.UserResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.BeanUtils;

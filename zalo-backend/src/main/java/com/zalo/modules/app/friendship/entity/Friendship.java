@@ -1,7 +1,7 @@
 package com.zalo.modules.app.friendship.entity;
 
 import com.zalo.common.base.BaseEntity;
-import com.zalo.modules.app.user.entities.User;
+import com.zalo.modules.admin.system.user.entities.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

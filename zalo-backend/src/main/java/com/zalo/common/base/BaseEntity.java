@@ -1,6 +1,6 @@
 package com.zalo.common.base;
 
-import com.zalo.modules.app.user.entities.User;
+import com.zalo.modules.admin.system.user.entities.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

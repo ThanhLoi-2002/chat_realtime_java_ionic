@@ -1,8 +1,8 @@
 package com.zalo.common.configuration.anotation.currentUser;
 
 import com.zalo.common.configuration.json.G;
-import com.zalo.modules.app.user.dto.response.UserPayload;
-import com.zalo.modules.app.user.service.UserService;
+import com.zalo.modules.admin.system.user.dto.response.UserPayload;
+import com.zalo.modules.admin.system.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;

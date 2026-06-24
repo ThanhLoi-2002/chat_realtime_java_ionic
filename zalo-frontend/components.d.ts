@@ -15,6 +15,7 @@ declare module 'vue' {
     AdminSidebar: typeof import('./src/components/Admin/Sidebar/AdminSidebar.vue')['default']
     AOHeader: typeof import('./src/components/OA/Header/AOHeader.vue')['default']
     AvatarModal: typeof import('./src/components/Shared/Avatar/AvatarModal.vue')['default']
+    BackButton: typeof import('./src/components/Shared/Button/BackButton.vue')['default']
     BaseButton: typeof import('./src/components/Shared/Button/BaseButton.vue')['default']
     CircleAvatar: typeof import('./src/components/Shared/Avatar/CircleAvatar.vue')['default']
     ClassificationCard: typeof import('./src/components/Shared/Classification/ClassificationCard.vue')['default']

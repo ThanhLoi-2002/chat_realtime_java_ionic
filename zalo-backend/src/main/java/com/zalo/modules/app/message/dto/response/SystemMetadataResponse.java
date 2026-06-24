@@ -2,7 +2,7 @@ package com.zalo.modules.app.message.dto.response;
 
 import com.zalo.common.entity.SystemMetadata;
 import com.zalo.modules.app.media.dtos.responses.MediaResponse;
-import com.zalo.modules.app.user.dto.response.UserResponse;
+import com.zalo.modules.admin.system.user.dto.response.UserResponse;
 import com.zalo.modules.app.message.entity.SystemMessageType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

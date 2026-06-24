@@ -2,7 +2,7 @@ package com.zalo.common.configuration;
 
 import com.zalo.common.configuration.anotation.ResponseMessage;
 import com.zalo.common.dto.ApiResponse;
-import com.zalo.modules.admin.lang.service.LangService;
+import com.zalo.modules.admin.system.lang.service.LangService;
 import com.zalo.common.util.LangUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

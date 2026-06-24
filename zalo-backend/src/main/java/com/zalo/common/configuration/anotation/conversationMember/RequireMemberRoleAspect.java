@@ -3,7 +3,7 @@ package com.zalo.common.configuration.anotation.conversationMember;
 import com.zalo.modules.app.conversation.entities.ConversationMember;
 import com.zalo.modules.app.conversation.entities.MemberRole;
 import com.zalo.modules.app.conversation.service.ConversationMemberRepository;
-import com.zalo.modules.app.user.dto.response.UserPayload;
+import com.zalo.modules.admin.system.user.dto.response.UserPayload;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;

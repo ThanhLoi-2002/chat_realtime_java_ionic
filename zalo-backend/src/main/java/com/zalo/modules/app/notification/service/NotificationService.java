@@ -1,8 +1,8 @@
 package com.zalo.modules.app.notification.service;
 
 import com.zalo.modules.app.notification.dto.request.SaveFcmTokenRequest;
-import com.zalo.modules.app.user.entities.User;
-import com.zalo.modules.app.user.service.UserRepository;
+import com.zalo.modules.admin.system.user.entities.User;
+import com.zalo.modules.admin.system.user.service.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

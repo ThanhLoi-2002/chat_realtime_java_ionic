@@ -2,7 +2,7 @@ package com.zalo.common.configuration.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zalo.common.service.JwtService;
-import com.zalo.modules.app.user.dto.response.UserPayload;
+import com.zalo.modules.admin.system.user.dto.response.UserPayload;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;

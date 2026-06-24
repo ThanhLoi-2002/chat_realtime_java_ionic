@@ -95,7 +95,7 @@
                             </div>
                         </div>
 
-                        <!-- <div>
+                        <div>
                             <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{
                                 t('path') }}</label>
                             <input v-model="form.path" type="text" required
@@ -106,7 +106,7 @@
                                 t('component') }}</label>
                             <input v-model="form.component" type="text"
                                 :class="[oaStyle.border.primary, 'w-full p-2 border rounded outline-none focus:border-blue-600/50']" />
-                        </div> -->
+                        </div>
 
                         <div>
                             <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{ t('icon')
@@ -129,14 +129,25 @@
                                 :class="[oaStyle.border.primary, 'w-full p-2 border rounded outline-none focus:border-blue-600/50']" />
                         </div>
 
-                        <div>
-                            <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{ t('status')
+                        <div class="flex justify-between">
+                            <div>
+                                <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{ t('status')
                                 }}</label>
-                            <div :class="[oaStyle.text.secondary, 'flex gap-4 mt-1 font-medium']">
-                                <label class="flex items-center gap-1 cursor-pointer"><input type="radio"
-                                        v-model="form.stt" :value="1"> {{ t('active') }}</label>
-                                <label class="flex items-center gap-1 cursor-pointer"><input type="radio"
-                                        v-model="form.stt" :value="-1"> {{ t('delete') }} </label>
+                                <div :class="[oaStyle.text.secondary, 'flex gap-4 mt-1 font-medium']">
+                                    <label class="flex items-center gap-1 cursor-pointer"><input type="radio"
+                                            v-model="form.stt" :value="1"> {{ t('active') }}</label>
+                                    <label class="flex items-center gap-1 cursor-pointer"><input type="radio"
+                                            v-model="form.stt" :value="-1"> {{ t('delete') }} </label>
+                                </div>
+                            </div>
+                            <div>
+                                <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{ t('type')
+                                }}</label>
+                                <div :class="[oaStyle.text.secondary, 'flex gap-4 mt-1 font-medium']">
+                                    <label v-for="type in menuType" :key="type"
+                                        class="flex items-center gap-1 cursor-pointer"><input type="radio" required
+                                            v-model="form.menuType" :value="type"> {{ t(type) }}</label>
+                                </div>
                             </div>
                         </div>
 
@@ -183,7 +194,7 @@ import { oaStyle } from '@/assets/tailwindcss.ts';
 import { useTranslate } from '@/composables/useTranslate.ts';
 import { StructureType } from '@/types/entities.ts';
 import { useAdminStructureStore } from '@/stores/Admin/structure.storage.ts';
-import { AppTypeEnum } from '@/types/enum.ts';
+import { AppTypeEnum, MenuTypeEnum } from '@/types/enum.ts';
 import { useStructure } from '@/composables/useStructure.ts';
 
 const allNodesFlat = ref<StructureType[]>([]);
@@ -195,9 +206,10 @@ const structureStor = useAdminStructureStore()
 const { findParent } = useStructure()
 
 const structureDefault: Omit<StructureType, 'id'> & { id?: number; } = {
-    id: undefined, pid: 1, code: '', icon: '', description: '', type: 0, sort: 0, stt: 1, appType: AppTypeEnum.OA, component: '', path: "", permissions: '', isMenu: false, children: []
+    id: undefined, pid: 1, code: '', icon: '', description: '', type: 0, sort: 0, stt: 1, appType: AppTypeEnum.OA, component: '', path: "", permissions: '', menuType: MenuTypeEnum.MENU, children: []
 }
 const form = ref<Omit<StructureType, 'id'> & { id?: number; }>(structureDefault);
+const menuType = Object.values(MenuTypeEnum)
 
 onMounted(async () => {
     await structureStor.getTree()

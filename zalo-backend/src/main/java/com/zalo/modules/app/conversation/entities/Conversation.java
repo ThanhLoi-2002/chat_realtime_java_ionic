@@ -4,7 +4,7 @@ import com.zalo.common.base.BaseEntity;
 import com.zalo.modules.app.groupSetting.entities.GroupSetting;
 import com.zalo.modules.app.media.entities.Media;
 import com.zalo.modules.app.message.entity.Message;
-import com.zalo.modules.app.user.entities.User;
+import com.zalo.modules.admin.system.user.entities.User;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

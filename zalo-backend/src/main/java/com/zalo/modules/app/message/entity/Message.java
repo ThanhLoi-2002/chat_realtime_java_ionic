@@ -4,7 +4,7 @@ import com.zalo.common.base.BaseEntity;
 import com.zalo.common.entity.SystemMetadata;
 import com.zalo.modules.app.message.dto.response.LinkPreviewResponse;
 import com.zalo.modules.app.sticker.entity.StickerItem;
-import com.zalo.modules.app.user.entities.User;
+import com.zalo.modules.admin.system.user.entities.User;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

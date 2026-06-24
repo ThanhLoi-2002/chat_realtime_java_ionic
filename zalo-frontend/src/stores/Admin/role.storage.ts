@@ -92,5 +92,34 @@ export const useAdminRoleStore = defineStore('adminRole', {
                 })
             }
         },
+        async saveSetPermission(payload: Record<string, number[]>) {
+            try {
+                const result: any = await roleApi.saveSetPermission(payload);
+
+                toast({
+                    color: "success",
+                    message: result.message
+                })
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+            }
+        },
+
+        async getAccess(payload: string[]) {
+            try {
+                const result: any = await roleApi.getAccess(payload);
+
+                return result.result
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return []
+            }
+        },
     }
 })

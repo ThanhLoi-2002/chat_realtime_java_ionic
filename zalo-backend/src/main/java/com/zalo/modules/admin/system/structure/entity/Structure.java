@@ -1,0 +1,54 @@
+package com.zalo.modules.admin.system.structure.entity;
+
+import com.zalo.common.base.BaseEntity;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+@EqualsAndHashCode(callSuper = true)
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Entity
+@Table(name = "structure")
+public class Structure extends BaseEntity {
+    @Column(name = "app_type")
+    @Enumerated(EnumType.STRING)
+    private AppType appType;
+
+    // ID của menu cha (Nếu là menu gốc cao nhất thì pid = 0 hoặc null)
+    @Column(name = "pid")
+    private Long pid = 0L;
+
+    // Đường dẫn router hoặc mã định danh (ví dụ: '/dashboard', 'sys001structure')
+    @Column(name = "code", length = 100)
+    private String code;
+
+    @Column(name = "menu_type")
+    @Enumerated(EnumType.STRING)
+    private MenuType menuType;
+
+    // Chuỗi lưu class icon (ví dụ: 'fas fa-home' hoặc nguyên thẻ '<i class="fas fa-home"></i>')
+    @Column(name = "icon")
+    private String icon;
+
+    // Tên hiển thị của menu trên giao diện (ví dụ: 'Tổng quan', 'Quản lý người dùng')
+    @Column(name = "description")
+    private String description;
+
+    // Loại menu (0: Root, 1: Group, 2: Module, 99: Page/Action)
+    @Column(name = "type")
+    private Integer type = 99;
+
+    // Thứ tự sắp xếp hiển thị giữa các menu đồng cấp
+    @Column(name = "sort")
+    private Integer sort = 0;
+
+    private String permissions;
+
+    private String component;
+
+    private String path;
+}

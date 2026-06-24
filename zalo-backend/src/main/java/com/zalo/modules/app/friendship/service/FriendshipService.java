@@ -2,7 +2,7 @@ package com.zalo.modules.app.friendship.service;
 
 import com.zalo.modules.app.friendship.dto.request.CreateFriendship;
 import com.zalo.modules.app.message.dto.request.CreateSystemMessageRequest;
-import com.zalo.modules.app.user.dto.response.UserResponse;
+import com.zalo.modules.admin.system.user.dto.response.UserResponse;
 import com.zalo.modules.app.conversation.entities.Conversation;
 import com.zalo.modules.app.friendship.entity.Friendship;
 import com.zalo.modules.app.conversation.entities.ConversationType;
@@ -10,7 +10,7 @@ import com.zalo.modules.app.friendship.entity.FriendStatus;
 import com.zalo.modules.app.message.entity.SystemMessageType;
 import com.zalo.modules.app.conversation.service.ConversationRepository;
 import com.zalo.modules.app.conversation.service.ConversationService;
-import com.zalo.modules.app.user.service.UserRepository;
+import com.zalo.modules.admin.system.user.service.UserRepository;
 import com.zalo.modules.app.message.service.SystemMessageService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

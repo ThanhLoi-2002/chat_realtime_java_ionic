@@ -1,7 +1,7 @@
 package com.zalo.modules.app.friendship.dto.response;
 
 import com.zalo.common.base.BaseResponse;
-import com.zalo.modules.app.user.dto.response.UserResponse;
+import com.zalo.modules.admin.system.user.dto.response.UserResponse;
 import com.zalo.modules.app.friendship.entity.Friendship;
 import com.zalo.modules.app.friendship.entity.FriendStatus;
 import lombok.AccessLevel;

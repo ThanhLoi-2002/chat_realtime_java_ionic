@@ -66,3 +66,9 @@ export enum AppTypeEnum {
     OA = "OA",
     ADMIN = "ADMIN"
 }
+
+export enum MenuTypeEnum {
+    MENU = "MENU",
+    PAGE = "PAGE",
+    SUB_PAGE = "SUB_PAGE"
+}

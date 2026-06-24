@@ -1,7 +1,7 @@
 package com.zalo.common.filter;
 
 import com.zalo.common.base.BaseFilter;
-import com.zalo.modules.admin.lang.entity.Lang;
+import com.zalo.modules.admin.system.lang.entity.Lang;
 import lombok.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;

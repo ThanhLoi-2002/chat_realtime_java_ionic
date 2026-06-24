@@ -4,7 +4,7 @@ import com.zalo.common.base.BaseResponse;
 import com.zalo.modules.app.groupSetting.entities.GroupSetting;
 import com.zalo.modules.app.media.dtos.responses.MediaResponse;
 import com.zalo.modules.app.message.dto.response.MessageResponse;
-import com.zalo.modules.app.user.dto.response.UserResponse;
+import com.zalo.modules.admin.system.user.dto.response.UserResponse;
 import com.zalo.modules.app.conversation.entities.Conversation;
 import com.zalo.modules.app.conversation.entities.ConversationType;
 import lombok.*;

@@ -1,5 +1,5 @@
 import { FileType, GroupSetting, LinkMetadataType } from "./common"
-import { AppTypeEnum, ConversationEnum, DeliveryStatusEnum, FriendshipStatusEnum, MemberRoleEnum, MessageEnum, ModuleEnum, ReactionEnum, ResourceEnum, SystemMetadataEnum } from "./enum"
+import { AppTypeEnum, ConversationEnum, DeliveryStatusEnum, FriendshipStatusEnum, MemberRoleEnum, MenuTypeEnum, MessageEnum, ModuleEnum, ReactionEnum, ResourceEnum, SystemMetadataEnum } from "./enum"
 
 export type BaseType = {
     id: number
@@ -171,6 +171,6 @@ export type StructureType = BaseType & {
     permissions: string;
     component: string;
     path: string;
-    isMenu: boolean;
+    menuType: MenuTypeEnum;
     children: StructureType[];
 }
