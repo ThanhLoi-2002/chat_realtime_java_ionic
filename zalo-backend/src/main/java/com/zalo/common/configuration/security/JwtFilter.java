@@ -10,6 +10,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -45,6 +47,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
             try {
                 UserPayload user = getOneByToken(authHeader);
+
+                // Tạo đối tượng Authentication của Spring Security, nhét "user" vào phần Principal
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(user, null, null); // Có thể truyền authorities vào tham số thứ 3 nếu muốn
+
+                // Đẩy vào kho lưu trữ bảo mật
+                SecurityContextHolder.getContext().setAuthentication(authentication);
 
                 request.setAttribute("currentUser", user);
 

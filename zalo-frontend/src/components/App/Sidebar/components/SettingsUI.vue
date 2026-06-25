@@ -70,11 +70,9 @@
 
             <LangDropdown />
 
-            <button @click="onLogout"
+            <button @click="logout"
                 class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition text-red-600 dark:text-red-400 cursor-pointer">
-                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M16 13v-2H7V8l-5 4 5 4v-3zM20 3h-8v2h8v14h-8v2h8a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2z" />
-                </svg>
+                <i class="fas fa-sign-out-alt"></i>
                 <span class="flex-1 text-left">{{ t("logout") }}</span>
             </button>
         </nav>
@@ -83,10 +81,8 @@
 <script setup lang="ts">
 import LangDropdown from '@/components/Shared/Dropdown/LangDropdown.vue';
 import ThemeToggle from '@/components/Shared/Toggle/ThemeToggle.vue';
-import { useConfirmStore } from '@/composables/useConfirm';
+import { useAuth } from '@/composables/useAuth';
 import { useTranslate } from '@/composables/useTranslate'
-import { useConversationStore } from '@/stores/App/conversation.storage';
-import { useMessageStore } from '@/stores/App/message.storage';
 import { useUserStore } from '@/stores/App/user.storage';
 import { SettingPageType } from '@/types/common';
 import { RANDOM_AVATAR } from '@/utils/constant'
@@ -100,10 +96,8 @@ const dismiss = inject<() => void>("modalDismiss")
 
 const { t } = useTranslate();
 const userStorage = useUserStore()
-const convStorage = useConversationStore()
-const messStorage = useMessageStore()
-const confirmStore = useConfirmStore();
 const isOALoading = ref(false)
+const { logout } = useAuth()
 
 const menuItems = computed(() => [
     {
@@ -119,18 +113,5 @@ const toggleOA = async () => {
     await userStorage.toggleOA()
 
     isOALoading.value = false
-}
-
-function onLogout() {
-    confirmStore.open({
-        title: t('logout'),
-        message: t('logout'),
-        onOk: () => {
-            userStorage.logout()
-            messStorage.resetPagination()
-            convStorage.reset()
-            dismiss?.()
-        }
-    });
 }
 </script>

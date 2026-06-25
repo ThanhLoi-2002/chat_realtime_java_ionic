@@ -8,6 +8,8 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -15,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.HandlerMapping;
 
 import java.util.Map;
+import java.util.Objects;
 
 @Aspect
 @Component
@@ -34,14 +37,10 @@ public class ConversationMemberAspect {
 
         HttpServletRequest request = attributes.getRequest();
 
-        UserPayload currentUser =
-                (UserPayload) request.getAttribute("currentUser");
+        Object principal = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getPrincipal();
 
-        if (currentUser == null) {
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED,
-                    "Unauthorized"
-            );
+        if (!(principal instanceof UserPayload currentUser)) {
+            throw new AccessDeniedException("User không hợp lệ!");
         }
 
         @SuppressWarnings("unchecked")

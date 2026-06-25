@@ -26,7 +26,16 @@ export const adminRoutes: RouteRecordRaw = {
                 },
                 {
                     path: ROUTE.ADMIN_DASHBOARD.USER_ROLE,
-                    component: () => import('../views/Admin/System/UserRole/UserRole.vue')
+                    children: [
+                        {
+                            path: "",
+                            component: () => import('../views/Admin/System/UserRole/UserRole.vue')
+                        },
+                        {
+                            path: ROUTE.ADMIN_DASHBOARD.USER_ROLE_EDIT,
+                            component: () => import('../views/Admin/System/UserRole/Edit.vue')
+                        },
+                    ]
                 },
                 {
                     path: ROUTE.ADMIN_DASHBOARD.PERMISSION,

@@ -1,4 +1,5 @@
 import { roleApi } from '@/api/Admin/role.api'
+import { SetUserRoleType, UserFilter } from '@/types/common'
 import { RoleType } from '@/types/entities'
 import { toast } from '@/utils/toast'
 import { defineStore } from 'pinia'
@@ -7,6 +8,7 @@ interface State {
     roles: RoleType[]
     permissions: PermissionTree[],
     isLoading: boolean
+    userRole: SetUserRoleType 
 }
 
 interface PermissionTree {
@@ -22,6 +24,7 @@ export const useAdminRoleStore = defineStore('adminRole', {
         roles: [],
         permissions: [],
         isLoading: false,
+        userRole: { id: 0, username: '', phone: '', roleIds: []}
     }),
     actions: {
         async add(data: Omit<RoleType, 'id' | 'module'>) {
@@ -119,6 +122,36 @@ export const useAdminRoleStore = defineStore('adminRole', {
                     message: e.message
                 })
                 return []
+            }
+        },
+
+        async getUsersRoles(options: UserFilter) {
+            try {
+                const result: any = await roleApi.getUsersRoles(options);
+                return result.result
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return []
+            }
+        },
+
+        setUserRole(data?: SetUserRoleType) {
+            this.userRole = data || { id: 0, username: '', phone: '', roleIds: []}
+        },
+
+        async assignRoles(payload: SetUserRoleType) {
+            try {
+                const result: any = await roleApi.assignRoles(payload);
+                return true
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return false
             }
         },
     }

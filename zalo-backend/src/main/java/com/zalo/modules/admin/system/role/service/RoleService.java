@@ -165,17 +165,16 @@ public class RoleService {
     }
 
     public void assignRoles(
-            Long userId,
             AssignRoleRequest req
     ) {
 
-        userRepo.findById(userId)
+        userRepo.findById(req.getId())
                 .orElseThrow(() ->
                         new ResponseStatusException(
                                 HttpStatus.NOT_FOUND,
                                 "userNotFound"));
 
-        userRoleRepo.deleteByUserId(userId);
+        userRoleRepo.deleteByUserId(req.getId());
 
         List<UserRole> entities =
                 req.getRoleIds()
@@ -185,7 +184,7 @@ public class RoleService {
 
                             UserRole ur = new UserRole();
 
-                            ur.setUserId(userId);
+                            ur.setUserId(req.getId());
                             ur.setRoleId(roleId);
 
                             return ur;

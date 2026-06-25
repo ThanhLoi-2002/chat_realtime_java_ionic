@@ -35,6 +35,7 @@ export const ROUTE = {
         STRUCTURE: "structure",
         ROLE: "role",
         USER_ROLE: "user-role",
+        USER_ROLE_EDIT: "edit",
         USER: "user",
         LANG: "lang",
         PERMISSION: 'permission',

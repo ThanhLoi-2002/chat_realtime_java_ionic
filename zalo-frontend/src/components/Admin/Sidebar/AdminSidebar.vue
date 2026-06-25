@@ -14,7 +14,7 @@
             ]">SVoucher</span>
         </div>
 
-        <div class="space-y-1 flex-1 overflow-y-auto no-scrollbar mt-2">
+        <div class="space-y-1 flex-1 overflow-y-auto no-scrollbar mt-2 mb-4">
             <div v-for="(item, index) in currentMenus" :key="index" class="w-full">
 
                 <div v-if="countChildPage(item)">
@@ -70,8 +70,14 @@
                         ]">{{ item.code }}</span>
                     </button>
                 </router-link>
-
             </div>
+
+            <button @click="logout"
+                class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition text-red-600 dark:text-red-400 cursor-pointer">
+                <i class="fas fa-sign-out-alt"></i>
+                <span class="flex-1 text-left">{{ t("logout") }}</span>
+            </button>
+            
         </div>
 
     </aside>
@@ -85,10 +91,14 @@ import { useSystemStore } from '@/stores/system.storage';
 import { useAdminStructureStore } from '@/stores/Admin/structure.storage';
 import { StructureType } from '@/types/entities';
 import { MenuTypeEnum } from '@/types/enum';
+import { useAuth } from '@/composables/useAuth';
+import { useTranslate } from '@/composables/useTranslate';
 
 const route = useRoute();
 const openMenus = ref<string[]>([]);
 const sysStorage = useSystemStore()
+const { logout } = useAuth()
+const { t } = useTranslate()
 
 const structureStore = useAdminStructureStore()
 
@@ -120,12 +130,12 @@ const isParentActive = (item: StructureType): boolean => {
 };
 
 const countChildPage = (list: StructureType) => {
-    if(list.children.length > 0) {
-        let count = 0 
+    if (list.children.length > 0) {
+        let count = 0
         list.children.forEach(i => i.menuType == MenuTypeEnum.PAGE && count++)
 
         return count >= 2
-    }else return false
+    } else return false
 }
 </script>
 
@@ -138,6 +148,6 @@ const countChildPage = (list: StructureType) => {
 
 /* Ẩn scrollbar xấu xí của hệ thống nếu menu quá dài */
 .no-scrollbar::-webkit-scrollbar {
-    width: 0px;
+    width: 1px;
 }
 </style>

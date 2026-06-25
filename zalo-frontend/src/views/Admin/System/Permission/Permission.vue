@@ -62,7 +62,7 @@ const controllers = ref<StructureType[]>([])
 const modules = ref<StructureType[]>([])
 
 const goTo = (code: string) => {
-    router.push(`/admin/system/permission/set-access?controllerCode=${code}&&moduleId=${selectedModule.value}&&appType=${selectedApp.value}`)
+    router.push(`/admin/system/permission/set-access?controllerCode=${code}&moduleId=${selectedModule.value}&appType=${selectedApp.value}`)
 }
 
 watch(

@@ -88,6 +88,12 @@ export type ConversationFilter = BaseFilter & {
   convIds?: number[]
 }
 
+export type UserFilter = BaseFilter & {
+  id?: number
+  username?: string
+  phone?: string
+}
+
 export type GetPresignedUrlType = {
   folder: string
   resourceType: ResourceEnum
@@ -142,18 +148,40 @@ export type TranslateMessageType = {
 }
 
 export interface SubMenu {
-    name: string;
-    href: string;
+  name: string;
+  href: string;
 }
 
 export interface Menu {
-    name: string;
-    icon: string;
-    href?: string;
-    items?: SubMenu[];
+  name: string;
+  icon: string;
+  href?: string;
+  items?: SubMenu[];
 }
 
 export type StructureSortType = {
   id: number
   sort: number
+}
+
+export type PageType = {
+  content: []
+  page: {
+    number: number
+    size: number
+    totalElements: number
+    totalPages: number
+  }
+}
+
+export type SetUserRoleType = {
+  id: number
+  username: string
+  phone: string
+  roleIds: string[]
+}
+
+export type SelectOptionType = {
+  label: string
+  value: string | number
 }

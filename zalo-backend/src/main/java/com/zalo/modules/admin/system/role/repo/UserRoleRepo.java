@@ -1,5 +1,6 @@
 package com.zalo.modules.admin.system.role.repo;
 
+import com.zalo.modules.admin.system.role.entity.Role;
 import com.zalo.modules.admin.system.role.entity.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,8 +26,9 @@ public interface UserRoleRepo
     List<String> getPermissions(Long userId);
 
     @Query("""
-        SELECT DISTINCT ur.roleId
+        SELECT r.name
         FROM UserRole ur
+        JOIN Role r ON ur.roleId = r.id
         WHERE ur.userId = :userId
     """)
     List<String> getRoles(Long userId);
