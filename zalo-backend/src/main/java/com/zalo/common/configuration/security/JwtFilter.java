@@ -55,8 +55,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 // Đẩy vào kho lưu trữ bảo mật
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                request.setAttribute("currentUser", user);
-
             } catch (Exception ignored) {
             }
         }

@@ -86,7 +86,7 @@ export const socketSubscribe = (destination: string, callback: (message: any) =>
   const originalOnConnect = stompClient.onConnect;
   stompClient.onConnect = (frame) => {
     if (originalOnConnect) originalOnConnect(frame);
-    console.log(`STOMP: Auto-subscribing to ${destination}`);
+    // console.log(`STOMP: Auto-subscribing to ${destination}`);
     stompClient.subscribe(destination, callback);
   };
 };

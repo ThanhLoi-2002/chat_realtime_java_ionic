@@ -1,6 +1,5 @@
 package com.zalo.modules.admin.system.structure.dto.response;
 
-import com.zalo.common.base.BaseResponse;
 import com.zalo.modules.admin.system.structure.entity.AppType;
 import com.zalo.modules.admin.system.structure.entity.MenuType;
 import com.zalo.modules.admin.system.structure.entity.Structure;
@@ -10,13 +9,13 @@ import org.springframework.beans.BeanUtils;
 
 import java.util.*;
 
-@EqualsAndHashCode(callSuper = true)
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PUBLIC)
-public class StructureResponse extends BaseResponse {
+public class StructureResponse {
+    Long id;
     AppType appType;
     Long pid;
     String code;
@@ -30,8 +29,7 @@ public class StructureResponse extends BaseResponse {
     MenuType menuType;
     List<StructureResponse> children = new ArrayList<>();
 
-    public StructureResponse(Structure e, String... relations) {
-        super(e, relations);
-        BeanUtils.copyProperties(e, this, "createdBy", "updatedBy");
+    public StructureResponse(Structure e) {
+        BeanUtils.copyProperties(e, this);
     }
 }

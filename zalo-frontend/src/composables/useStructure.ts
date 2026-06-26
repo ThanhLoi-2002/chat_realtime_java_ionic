@@ -14,7 +14,6 @@ export const useStructure = () => {
     const checkRouteActive = (path: string) => {
         const currentPath = route.path
         const menuPath = path
-        console.log(route.path, path)
 
         return currentPath === menuPath ||
             currentPath.startsWith(menuPath + '/')

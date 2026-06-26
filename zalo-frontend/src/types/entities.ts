@@ -28,6 +28,8 @@ export type UserType = BaseType & {
     isOa: number
     oaId: number
     ownerOaId: number
+    roles: string[]
+    permissions: string[]
 }
 
 export type ConversationType = BaseType & {

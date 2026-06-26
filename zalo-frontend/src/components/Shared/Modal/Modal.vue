@@ -95,8 +95,6 @@ watch(() => props.title, () => {
     } else {
         isShowBackButton.value = false
     }
-
-    console.log(props.title)
 })
 </script>
 

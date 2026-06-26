@@ -35,16 +35,16 @@ public class UserService {
     private final JwtService jwtService;
     private final MediaService cloudinaryService;
 
-    public UserPayload getOneByToken(String token) throws NotFound {
-        Claims claims = jwtService.extractAllClaims(token);
-
-        ObjectMapper mapper = new ObjectMapper();
-
-        return mapper.convertValue(
-                claims.get("payload"),
-                UserPayload.class
-        );
-    }
+//    public UserPayload getOneByToken(String token) throws NotFound {
+//        Claims claims = jwtService.extractAllClaims(token);
+//
+//        ObjectMapper mapper = new ObjectMapper();
+//
+//        return mapper.convertValue(
+//                claims.get("payload"),
+//                UserPayload.class
+//        );
+//    }
 
     public User findById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));

@@ -28,7 +28,7 @@ public class UserController {
         userResponse.roles = user.roles;
         userResponse.permissions = user.permissions;
 
-        return new UserResponse(u);
+        return userResponse;
     }
 
     @PostMapping("/upload-avatar")
