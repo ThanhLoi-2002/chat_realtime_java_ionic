@@ -1,0 +1,49 @@
+// router/dynamicRouter.ts
+import { StructureType } from '@/types/entities';
+import { RouteRecordRaw } from 'vue-router';
+
+// 1. Quét toàn bộ file .vue trong thư mục views
+// Hãy thay đổi đường dẫn '../../views/**/*.vue' cho khớp với vị trí đặt file của bạn
+const modules = import.meta.glob('../views/**/*.vue');
+
+/**
+ * Hàm đệ quy duyệt cây menu, lọc và chuyển đổi thành mảng phẳng các Route dạng Vue Router
+ */
+export function generateRoutesFromMenu(menuList: StructureType[]): RouteRecordRaw[] {
+  const routes: RouteRecordRaw[] = [];
+
+  function traverse(items: StructureType[]) {
+    for (const item of items) {
+      // Điều kiện lọc: component có giá trị và kết thúc bằng đuôi .vue
+      if (item.component && item.component.endsWith('.vue')) {
+        
+        // Chuẩn hóa đường dẫn tương đối tới file thực tế
+        // Ví dụ biến "Admin/System/User/User.vue" thành "../views/Admin/System/User/User.vue"
+        const componentPath = `../views/${item.component}`;
+
+        if (modules[componentPath]) {
+          routes.push({
+            path: item.path,
+            // name: item.code, // Hoặc kết hợp id để tránh trùng lặp name: `${item.code}_${item.id}`
+            component: modules[componentPath], // Lazy load component qua Vite glob
+            meta: {
+            //   title: item.code,
+            //   icon: item.icon,
+              permissions: item.permissions
+            }
+          });
+        } else {
+          console.warn(`[Router] Không tìm thấy file vật lý cho component: ${componentPath}`);
+        }
+      }
+
+      // Nếu có node con, tiếp tục đệ quy xuống dưới để tìm các node có đuôi .vue khác
+      if (item.children && item.children.length > 0) {
+        traverse(item.children);
+      }
+    }
+  }
+
+  traverse(menuList);
+  return routes;
+}

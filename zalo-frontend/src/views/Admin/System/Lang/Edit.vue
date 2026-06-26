@@ -7,7 +7,6 @@ import { useRoute, useRouter } from "vue-router";
 import { useForm } from "vee-validate"
 import { IonButton } from "@ionic/vue";
 import { useTranslate } from "@/composables/useTranslate";
-import { useDevice } from "@/composables/useDevice";
 import { oaStyle } from "@/assets/tailwindcss";
 
 type LangKey = keyof LangFormType
@@ -28,19 +27,19 @@ const { values, errors, handleSubmit, setValues, setFieldValue } = useForm<LangF
     },
     validateOnMount: false
 })
-const id = +route.params.id
+const { id } = route.query
 
 const labels: Record<string, string> = LANG_LABELS
 
 const onSubmit = handleSubmit((values) => {
-    langStore.update(values, id, () => router.push("/admin/system/lang"))
+    langStore.update(values, Number(id), () => router.push("/admin/system/lang"))
 },
     (errors) => {
         console.log("submit fail", errors)
     })
 
 onMounted(async () => {
-    const detail = await langStore.getDetail(id);
+    const detail = await langStore.getDetail(Number(id));
     if (detail) {
         setValues(detail)
     } else {

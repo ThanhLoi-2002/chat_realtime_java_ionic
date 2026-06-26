@@ -2,7 +2,7 @@ import { userApi } from '@/api/App/user.api'
 import router from '@/router'
 import { storage } from '@/services/storage.service.'
 import { UserType } from '@/types/entities'
-import { ACCESS_TOKEN, ROUTE } from '@/utils/constant'
+import { ACCESS_TOKEN, APP_ROUTE, ROUTE } from '@/utils/constant'
 import { deleteKey } from '@/utils/local'
 import { toast } from '@/utils/toast'
 import { defineStore } from 'pinia'
@@ -39,7 +39,7 @@ export const useUserStore = defineStore('user', {
                 await this.loadUserLocal()
 
                 this.isAuthLoading = false
-                isGoToChat && router.push(ROUTE.CHATS)
+                isGoToChat && router.push(APP_ROUTE.index)
             } catch (e) {
                 router.push(ROUTE.LOGIN)
                 deleteKey(ACCESS_TOKEN)

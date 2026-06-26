@@ -261,7 +261,7 @@ const saveName = async () => {
 
 const goToMessage = () => {
     convStorage.selectConversation(props.conversation)
-    router.push(ROUTE.CHATS)
+    router.push(ROUTE.APP.CHATS)
     dismiss?.()
 }
 

@@ -41,10 +41,10 @@
 
                     <div v-show="openMenus.includes(item.code) && !sysStorage.showSidebar"
                         class="mt-1 pl-8 space-y-1 overflow-hidden transition-all duration-300 ease-in-out">
-                        <router-link v-for="sub in item.children" :key="sub.code" :to="sub.path" v-slot="{ isActive }"
+                        <router-link v-for="sub in item.children" :key="sub.code" :to="sub.path" v-slot="{ }"
                             custom>
                             <button @click="$router.push(sub.path)" :class="[
-                                isActive
+                                $route.path.startsWith(item.path)
                                     ? 'bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 font-semibold'
                                     : [oaStyle.bg.hoverBlue, 'text-gray-700 dark:text-gray-300'],
                                 'flex gap-3 w-full text-left px-3 py-2 rounded-md text-sm transition-colors whitespace-nowrap cursor-pointer'
@@ -56,9 +56,9 @@
                     </div>
                 </div>
 
-                <router-link v-else :to="item.path || ''" v-slot="{ isActive, navigate }" custom>
+                <router-link v-else :to="item.path || ''" v-slot="{ navigate }" custom>
                     <button @click="navigate" :class="[
-                        isActive
+                        $route.path.startsWith(item.path)
                             ? 'bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 font-semibold'
                             : [oaStyle.bg.hoverBlue, 'text-gray-700 dark:text-gray-300'],
                         'w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer justify-start'
@@ -74,10 +74,13 @@
 
             <button @click="logout"
                 class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition text-red-600 dark:text-red-400 cursor-pointer">
-                <i class="fas fa-sign-out-alt"></i>
-                <span class="flex-1 text-left">{{ t("logout") }}</span>
+                <i class="fas fa-sign-out-alt shrink-0"></i>
+                <span :class="[
+                    sysStorage.showSidebar ? 'opacity-0 max-w-0 pointer-events-none' : 'opacity-100 max-w-37.5',
+                    'whitespace-nowrap transition-all duration-300 ease-in-out block-text'
+                    ]">{{ t("logout") }}</span>
             </button>
-            
+
         </div>
 
     </aside>
@@ -88,11 +91,11 @@ import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { oaStyle } from '@/assets/tailwindcss';
 import { useSystemStore } from '@/stores/system.storage';
-import { useAdminStructureStore } from '@/stores/Admin/structure.storage';
 import { StructureType } from '@/types/entities';
 import { MenuTypeEnum } from '@/types/enum';
 import { useAuth } from '@/composables/useAuth';
 import { useTranslate } from '@/composables/useTranslate';
+import { useMenuStore } from '@/stores/menu.storage';
 
 const route = useRoute();
 const openMenus = ref<string[]>([]);
@@ -100,7 +103,7 @@ const sysStorage = useSystemStore()
 const { logout } = useAuth()
 const { t } = useTranslate()
 
-const structureStore = useAdminStructureStore()
+const menuStor = useMenuStore()
 
 const currentMenus = computed(() => {
     const segments = route.path.split('/').filter(Boolean)
@@ -110,7 +113,7 @@ const currentMenus = computed(() => {
 
     const currentParent = segments[1] // system
 
-    return structureStore.menu?.children.find(
+    return menuStor.menuList.find(
         item => item.code === currentParent
     )?.children || []
 })

@@ -7,7 +7,7 @@
                     <i class="fa-solid fa-bars text-sm" />
                 </button>
 
-                <a href="/oa-dashboard/home">
+                <a :href="OA_ROUTE.home">
                     <div :class="[
                         oaStyle.text.secondary,
                         oaStyle.text.hover,
@@ -18,7 +18,7 @@
                     </div>
                 </a>
 
-                <a href="/chats">
+                <a :href="APP_ROUTE.index">
                     <div :class="[
                         oaStyle.text.secondary,
                         oaStyle.text.hover,
@@ -62,6 +62,7 @@ import { useTranslate } from '@/composables/useTranslate';
 import { useUserStore } from '@/stores/App/user.storage';
 import { useSystemStore } from '@/stores/system.storage';
 import { StructureType } from '@/types/entities';
+import { APP_ROUTE, OA_ROUTE } from '@/utils/constant';
 import { IonHeader } from '@ionic/vue';
 import { useRoute } from 'vue-router';
 

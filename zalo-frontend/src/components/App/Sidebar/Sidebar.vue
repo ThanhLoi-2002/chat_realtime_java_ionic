@@ -5,20 +5,19 @@
         bg-white dark:bg-gray-800 gap-2
         sticky top-0 h-screen">
 
-        <img :src="userStorage.user?.avatar?.url ?? RANDOM_AVATAR" :onClick="() => openModal()"
+        <img :src="userStorage.user?.avatar?.url ?? RANDOM_AVATAR" @click="openModal"
             class="size-10 rounded-full cursor-pointer" />
 
         <nav class="flex flex-col gap-2 flex-1">
-
-            <router-link v-for="item in visibleItems" :key="item.to" :to="item.to">
+            <div v-for="item in visibleItems" :key="item.to" @click="handleNavigation(item.to)" class="cursor-pointer">
                 <i :class="[
                     item.icon,
                     'p-4 rounded-lg dark:text-slate-300',
-                    route.path.startsWith(item.to)
+                    route.path.includes(item.to)
                         ? 'bg-gray-200 dark:bg-gray-600'
                         : 'hover:bg-gray-200 dark:hover:bg-gray-600'
                 ]" />
-            </router-link>
+            </div>
         </nav>
     </aside>
 
@@ -30,8 +29,8 @@
         bg-white dark:bg-gray-800 z-10
         pb-[env(safe-area-inset-bottom)]">
 
-        <router-link v-for="item in visibleItems" :key="item.to" :to="item.to"
-            class="flex flex-col items-center justify-center">
+        <div v-for="item in visibleItems" :key="item.to" @click="handleNavigation(item.to)"
+            class="flex flex-col items-center justify-center cursor-pointer">
 
             <i :class="[
                 item.icon,
@@ -40,9 +39,9 @@
                     ? 'text-blue-500'
                     : 'text-gray-400'
             ]" />
+        </div>
 
-        </router-link>
-        <img :src="userStorage.user?.avatar?.url ?? RANDOM_AVATAR" :onClick="() => openModal()"
+        <img :src="userStorage.user?.avatar?.url ?? RANDOM_AVATAR" @click="openModal"
             class="size-8 rounded-full cursor-pointer" />
     </nav>
 
@@ -58,7 +57,7 @@
 </template>
 
 <script setup lang="ts">
-import { ADMIN_ROUTE, OA_ROUTE, RANDOM_AVATAR, ROUTE } from '@/utils/constant';
+import { ADMIN_ROUTE, APP_ROUTE, OA_ROUTE, RANDOM_AVATAR, ROUTE } from '@/utils/constant';
 import { useRoute } from 'vue-router';
 import { useDevice } from '@/composables/useDevice';
 import { computed, defineAsyncComponent, ref } from 'vue';
@@ -67,6 +66,9 @@ import { SettingPageType } from '@/types/common';
 import { useUserStore } from '@/stores/App/user.storage.ts';
 import { useSystemStore } from '@/stores/system.storage.ts';
 import Modal from '@/components/Shared/Modal/Modal.vue';
+import { useMenuStore } from '@/stores/menu.storage.ts';
+import { AppTypeEnum } from '@/types/enum.ts';
+import router from '@/router/index.ts';
 
 const ProfileUI = defineAsyncComponent(() => import('./components/ProfileUI.vue'));
 const SettingsUI = defineAsyncComponent(() => import('./components/SettingsUI.vue'));
@@ -77,6 +79,7 @@ const route = useRoute()
 const { t } = useTranslate()
 
 const userStorage = useUserStore()
+const menuStor = useMenuStore()
 const pageModal = ref<SettingPageType>("setting")
 const modalRef = ref()
 
@@ -88,27 +91,46 @@ const pages = {
 const items = computed(() => [
     {
         icon: 'fa-solid fa-comment',
-        to: ROUTE.CHATS
+        to: APP_ROUTE.index
     },
     ...(userStorage.user?.isOa ? [{
         icon: 'fas fa-tachometer-alt',
-        to: OA_ROUTE.home(),
+        to: OA_ROUTE.home,
         hideOnMobile: true
     }] : []),
     ...(userStorage.user?.isOa ? [{
         icon: 'fas fa-street-view',
-        to: ADMIN_ROUTE.home(),
+        to: ADMIN_ROUTE.home,
         hideOnMobile: true
     }] : []),
     {
         icon: 'fa-solid fa-book',
-        to: ROUTE.FRIENDS,
+        to: APP_ROUTE.friend,
     },
 ])
 
 const visibleItems = computed(() =>
     items.value.filter(i => !(isMobile.value && i?.hideOnMobile))
 )
+
+async function handleNavigation(toPath: string) {
+    let targetApp = AppTypeEnum.APP; // Mặc định
+    if (toPath.startsWith(ROUTE.ADMIN_DASHBOARD.INDEX)) {
+        targetApp = AppTypeEnum.ADMIN;
+    } else if (toPath.startsWith(ROUTE.OA_DASHBOARD.INDEX)) {
+        targetApp = AppTypeEnum.OA;
+    }
+
+
+    if (targetApp == AppTypeEnum.APP) {
+        router.push(toPath);
+    } else {
+        // 1. Giải phóng cờ trạng thái nạp để hệ thống chịu tải lại
+        menuStor.resetLoadState();
+        // 3. Tiến hành xóa route cũ và nạp động route mới của App đích
+        await menuStor.switchApp(targetApp);
+    }
+}
 
 const goPage = (page: SettingPageType) => {
     pageModal.value = page

@@ -6,7 +6,7 @@
                     text-size="text-lg" icon-left="left-2.5" icon-right="right-2.5" pxContent="px-9" />
             </div>
 
-            <ion-button size="small" class="h-10" color="success" @click="router.push('/admin/system/lang/add')"><i
+            <ion-button v-if="getPagePath('add')" size="small" class="h-10" color="success" @click="router.push('lang/add')"><i
                     class="fa fa-plus"></i></ion-button>
         </div>
         <PaginationTable :data="langStore.languages" :columns="columns" />
@@ -18,6 +18,7 @@ import Search from "@/components/Shared/Search/Search.vue"
 import PaginationTable from "@/components/Shared/Table/PaginationTable.vue"
 import { useConfirmStore } from "@/composables/useConfirm"
 import { useDebounce } from "@/composables/useDebounce"
+import { useStructure } from "@/composables/useStructure"
 import { useTranslate } from "@/composables/useTranslate"
 import { useLangStore } from "@/stores/Admin/lang.storage"
 import { LangType } from "@/types/entities"
@@ -27,6 +28,7 @@ import { useRouter } from "vue-router"
 
 const router = useRouter()
 const langStore = useLangStore()
+const { getPagePath, getPermissionByCode } = useStructure()
 const confirmStore = useConfirmStore();
 const { t } = useTranslate()
 
@@ -77,28 +79,44 @@ const columns = computed(() => [
         header: "Action",
         cell: ({ row }: any) => {
             const data = row.original
+            const buttons = [] // Tạo mảng chứa các nút bấm hợp lệ
 
-            return h("div", { class: "flex justify-center gap-2" }, [
-                h(
-                    IonButton,
-                    {
-                        size: "small",
-                        color: "primary",
-                        onClick: () => router.push(`/admin/system/lang/${data.id}`)
-                    },
-                    () => t("edit")
-                ),
+            // 1. Kiểm tra quyền hiển thị nút Edit bằng cách lấy path theo code
+            // Thay 'sys001lang_edit' bằng chính xác CODE của menu Edit từ backend của bạn
+            const editPath = getPagePath('edit')
 
-                h(
-                    IonButton,
-                    {
-                        size: "small",
-                        color: "danger",
-                        onClick: () => openModal(data)
-                    },
-                    () => t("delete")
-                )
-            ])
+            if (editPath) {
+                // Nếu có path (tức là có quyền), push nút Edit vào mảng
+                buttons.push(
+                    h(
+                        IonButton,
+                        {
+                            size: "small",
+                            color: "primary",
+                            // Sử dụng chính editPath động tìm được từ menu thay vì hardcode chuỗi 'lang/edit'
+                            onClick: () => router.push(`${editPath}?id=${data.id}`)
+                        },
+                        () => t("edit")
+                    )
+                );
+            }
+
+            if (getPermissionByCode('delete')) {
+                buttons.push(
+                    h(
+                        IonButton,
+                        {
+                            size: "small",
+                            color: "danger",
+                            onClick: () => openModal(data)
+                        },
+                        () => t("delete")
+                    )
+                );
+            }
+
+            // Trả về container chứa mảng các button đã lọc quyền
+            return h("div", { class: "flex justify-center gap-2" }, buttons)
         }
     }
 ])

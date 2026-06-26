@@ -90,7 +90,23 @@ public class StructureService {
 
     public List<StructureResponse> getMenuByUser(Long userId, AppType appType, List<String> permissions, List<String> roles) {
         List<Structure> menus = structureRepository.findBySttAndAppTypeOrderBySortAsc(1, appType);
-        return buildTree(menus);
+
+        List<Structure> menusByPermissions = menus.stream()
+                .filter(menu -> {
+                    // Nếu menu không yêu cầu quyền cụ thể nào -> Cho phép hiển thị luôn
+                    if (menu.getPermissions() == null || menu.getPermissions().trim().isEmpty()) {
+                        return true;
+                    }
+
+                    // Cắt chuỗi quyền của menu ra thành mảng (ví dụ: "user:view,user:create")
+                    String[] requiredPerms = menu.getPermissions().split(",");
+
+                    // Kiểm tra xem danh sách quyền của User có chứa ít nhất 1 quyền mà Menu yêu cầu không
+                    return Arrays.stream(requiredPerms)
+                            .anyMatch(perm -> permissions.contains(perm.trim()));
+                })
+                .toList();
+        return buildTree(menusByPermissions);
     }
 
     public List<Structure> getModuleByAppType(AppType appType) {

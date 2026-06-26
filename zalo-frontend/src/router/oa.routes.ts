@@ -1,8 +1,10 @@
 import type { RouteRecordRaw } from 'vue-router'
 import { ROUTE } from '@/utils/constant'
+import { AppTypeEnum } from '@/types/enum.ts'
 
 export const oaRoutes: RouteRecordRaw = {
     path: ROUTE.OA_DASHBOARD.INDEX,
+    name: AppTypeEnum.OA,
     meta: { layout: "oa", requiresAuth: true },
     children: [
         {

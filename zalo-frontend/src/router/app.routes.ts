@@ -1,30 +1,36 @@
-import { ROUTE } from "@/utils/constant.ts";
+import { AppTypeEnum } from "@/types/enum.ts";
+import { APP_ROUTE, ROUTE } from "@/utils/constant.ts";
 import { RouteRecordRaw } from "vue-router";
 
 export const appRoutes: RouteRecordRaw[] = [
     {
         path: '/',
-        redirect: ROUTE.CHATS
+        redirect: APP_ROUTE.index
     },
     {
-        path: ROUTE.CHATS,
-        component: () => import('../views/App/Chat/ChatPage.vue'),
-        meta: { layout: "main", requiresAuth: true }
+        path: ROUTE.APP.INDEX,
+        name: AppTypeEnum.APP,
+        meta: { layout: "main", requiresAuth: true },
+        children: [
+            {
+                path: ROUTE.APP.CHATS,
+                component: () => import('../views/App/Chat/ChatPage.vue'),
+            },
+            {
+                path: ROUTE.APP.FRIENDS,
+                component: () => import('../views/App/Friend/FriendPage.vue'),
+            },
+        ]
     },
     {
-        path: `${ROUTE.JOIN_GROUP}/:code`,
+        path: `${ROUTE.APP.JOIN_GROUP}/:code`,
         component: () => import('../views/App/JoinGroup/JoinGroup.vue'),
         meta: { layout: "noLayout", requiresAuth: false }
     },
     {
-        path: `${ROUTE.SCAN}`,
+        path: `${ROUTE.APP.SCAN}`,
         component: () => import('../views/App/Scan/QrCodeScannerPage.vue'),
         meta: { layout: "noLayout", requiresAuth: false }
-    },
-    {
-        path: ROUTE.FRIENDS,
-        component: () => import('../views/App/Friend/FriendPage.vue'),
-        meta: { layout: "main", requiresAuth: true },
     },
 
     // -------------------- AUTH ROUTES --------------------
@@ -46,15 +52,19 @@ export const appRoutes: RouteRecordRaw[] = [
     },
 
     {
+        path: ROUTE.FORBIDDEN,
+        component: () => import('../views/App/Error/ForbiddenPage.vue'),
+        meta: { layout: "noLayout", requiresAuth: false }
+    },
+
+    {
         path: ROUTE.NOT_FOUND,
-        name: 'NotFound',
         component: () => import('../views/App/Error/NotFoundPage.vue'),
         meta: { layout: "noLayout", requiresAuth: false }
     },
 
     {
         path: '/:pathMatch(.*)*',
-        name: 'NotFoundAll',
         component: () => import('../views/App/Error/NotFoundPage.vue'),
         meta: { layout: "noLayout", requiresAuth: false }
     },

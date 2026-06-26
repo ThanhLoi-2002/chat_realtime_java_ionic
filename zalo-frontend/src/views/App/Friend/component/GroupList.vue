@@ -101,9 +101,9 @@ import GroupAvatar from '@/components/Shared/Avatar/GroupAvatar.vue'
 import { useTranslate } from '@/composables/useTranslate'
 import { useConversationStore } from '@/stores/App/conversation.storage'
 import { ConversationType } from '@/types/entities'
-import GroupProfile from '@/views/Chat/component/GroupProfile.vue'
 import Member from '@/views/App/Chat/Info/components/Member.vue'
 import { ref, computed, onMounted } from 'vue'
+import GroupProfile from '../../Chat/component/GroupProfile.vue'
 
 const { t } = useTranslate()
 const searchQuery = ref('')

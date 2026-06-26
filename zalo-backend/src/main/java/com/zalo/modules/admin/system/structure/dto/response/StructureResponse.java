@@ -27,6 +27,7 @@ public class StructureResponse {
     String component;
     String path;
     MenuType menuType;
+    int stt;
     List<StructureResponse> children = new ArrayList<>();
 
     public StructureResponse(Structure e) {

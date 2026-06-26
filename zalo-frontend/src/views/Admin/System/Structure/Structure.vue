@@ -362,7 +362,6 @@ const syncFlatList = () => {
         });
     };
     Object.keys(structureStor.tree).forEach((k) => rec(structureStor.tree[k]));
-    console.log(structureStor.tree, flat)
     allNodesFlat.value = flat;
 };
 

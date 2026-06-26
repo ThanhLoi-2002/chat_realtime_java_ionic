@@ -21,7 +21,7 @@
                 </router-link>
             </nav>
 
-            <a href="/chats">
+            <a :href="APP_ROUTE.index">
                 <div :class="[
                     oaStyle.text.secondary,
                     oaStyle.text.hover,
@@ -52,6 +52,7 @@ import { oaStyle } from '@/assets/tailwindcss';
 import CircleAvatar from '@/components/Shared/Avatar/CircleAvatar.vue';
 import { useTranslate } from '@/composables/useTranslate';
 import { useUserStore } from '@/stores/App/user.storage';
+import { APP_ROUTE } from '@/utils/constant';
 import { IonHeader } from '@ionic/vue';
 import { useRoute } from 'vue-router';
 

@@ -8,7 +8,6 @@ import { defineStore } from 'pinia'
 interface State {
     tree: Record<string, StructureType[]>
     trashes: StructureType[]
-    menu?: StructureType
     isLoading: boolean
 }
 
@@ -16,7 +15,6 @@ export const useAdminStructureStore = defineStore('adminStructure', {
     state: (): State => ({
         tree: {},
         trashes: [],
-        menu: undefined,
         isLoading: false,
     }),
     actions: {
@@ -46,7 +44,7 @@ export const useAdminStructureStore = defineStore('adminStructure', {
         async getMenuByUser(appType: AppTypeEnum) {
             try {
                 const result: any = await structureApi.getMenuByUser(appType);
-                this.menu = result.result[0]
+                return result.result
             } catch (e: any) {
                 toast({
                     color: "danger",
