@@ -93,6 +93,14 @@ const items = computed(() => [
         icon: 'fa-solid fa-comment',
         to: APP_ROUTE.index
     },
+    {
+        icon: 'fas fa-sticky-note',
+        to: APP_ROUTE.aiSticker,
+    },
+    {
+        icon: 'fa-solid fa-book',
+        to: APP_ROUTE.friend,
+    },
     ...(userStorage.user?.isOa ? [{
         icon: 'fas fa-tachometer-alt',
         to: OA_ROUTE.home,
@@ -103,10 +111,6 @@ const items = computed(() => [
         to: ADMIN_ROUTE.home,
         hideOnMobile: true
     }] : []),
-    {
-        icon: 'fa-solid fa-book',
-        to: APP_ROUTE.friend,
-    },
 ])
 
 const visibleItems = computed(() =>

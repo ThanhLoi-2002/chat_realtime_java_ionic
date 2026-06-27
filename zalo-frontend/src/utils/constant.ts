@@ -20,6 +20,7 @@ export const ROUTE = {
         INDEX: "/app",
         CHATS: "chats",
         FRIENDS: "friends",
+        AI_STICKER: "ai-sticker",
         JOIN_GROUP: "/g",
         SCAN: "/scan",
     },
@@ -49,6 +50,7 @@ export const ROUTE = {
 export const APP_ROUTE = {
     index: `${ROUTE.APP.INDEX}/${ROUTE.APP.CHATS}`,
     friend: `${ROUTE.APP.INDEX}/${ROUTE.APP.FRIENDS}`,
+    aiSticker: `${ROUTE.APP.INDEX}/${ROUTE.APP.AI_STICKER}`,
 }
 
 export const OA_ROUTE = {

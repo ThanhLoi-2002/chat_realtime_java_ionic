@@ -20,6 +20,10 @@ export const appRoutes: RouteRecordRaw[] = [
                 path: ROUTE.APP.FRIENDS,
                 component: () => import('../views/App/Friend/FriendPage.vue'),
             },
+            {
+                path: ROUTE.APP.AI_STICKER,
+                component: () => import('../views/App/AISticker/AISticker.vue'),
+            },
         ]
     },
     {
