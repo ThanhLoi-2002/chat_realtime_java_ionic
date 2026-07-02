@@ -1,5 +1,6 @@
 package com.zalo.common.configuration;
 
+import com.zalo.common.configuration.anotation.NoResponseBodyWrap;
 import com.zalo.common.configuration.anotation.ResponseMessage;
 import com.zalo.common.dto.ApiResponse;
 import com.zalo.modules.admin.system.lang.service.LangService;
@@ -21,6 +22,10 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
     public boolean supports(MethodParameter returnType, Class converterType) {
+        if (returnType.getMethodAnnotation(NoResponseBodyWrap.class) != null) {
+            return false;
+        }
+
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes != null) {
             HttpServletRequest request = attributes.getRequest();
@@ -43,7 +48,6 @@ public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
             ServerHttpRequest request,
             ServerHttpResponse response
     ) {
-
         // ❗ nếu đã là ApiResponse thì không wrap nữa
         if (body instanceof ApiResponse) {
             return body;

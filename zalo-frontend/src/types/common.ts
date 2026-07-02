@@ -185,3 +185,7 @@ export type SelectOptionType = {
   label: string
   value: string | number
 }
+
+export type PromtStickerType = {
+  prompt: string
+}

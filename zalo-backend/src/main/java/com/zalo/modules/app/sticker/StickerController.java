@@ -1,7 +1,10 @@
 package com.zalo.modules.app.sticker;
 
+import com.zalo.common.configuration.anotation.NoResponseBodyWrap;
 import com.zalo.common.configuration.anotation.conversationMember.CheckConversationMember;
 import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
+import com.zalo.common.configuration.json.G;
+import com.zalo.modules.app.sticker.dto.request.GenerateSticker;
 import com.zalo.modules.app.sticker.dto.response.StickerResponse;
 import com.zalo.modules.app.sticker.entity.StickerItem;
 import com.zalo.modules.app.sticker.service.StickerService;
@@ -36,5 +39,12 @@ public class StickerController {
     @CheckConversationMember
     public void sendSticker(@CurrentUser UserPayload user, @PathVariable Long conversationId, @RequestBody StickerItem sticker) {
         stickerService.sendSticker(conversationId, user.getId(), sticker);
+    }
+
+    @PostMapping("/generate-spritesheet")
+    @NoResponseBodyWrap
+    public Object generateSticker(@RequestBody GenerateSticker req) {
+        System.out.println(G.toJson(req));
+        return stickerService.generateSticker(req);
     }
 }

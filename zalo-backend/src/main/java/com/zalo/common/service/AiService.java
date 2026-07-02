@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
@@ -50,6 +52,23 @@ public class AiService {
                         .bodyValue(body),
                 responseType
         );
+    }
+
+    public ResponseEntity<byte[]> postForBinary(String uri, Object body) {
+        return webClient.post()
+                .uri(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(body)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, clientResponse ->
+                        clientResponse.bodyToMono(String.class)
+                                .flatMap(errorMsg -> Mono.error(new ResponseStatusException(
+                                        clientResponse.statusCode(),
+                                        "FastAPI Error: " + errorMsg
+                                )))
+                )
+                .toEntity(byte[].class) // Lấy toàn bộ body là byte[] và header
+                .block();
     }
 
     public <T, R> R put(

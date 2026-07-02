@@ -1,8 +1,10 @@
 package com.zalo.modules.app.sticker.service;
 
+import com.zalo.common.service.AiService;
 import com.zalo.common.service.ApiService;
 import com.zalo.modules.app.media.service.MinioService;
 import com.zalo.modules.app.message.service.MessageService;
+import com.zalo.modules.app.sticker.dto.request.GenerateSticker;
 import com.zalo.modules.app.sticker.entity.Sticker;
 import com.zalo.modules.app.sticker.entity.StickerItem;
 import io.minio.GetObjectArgs;
@@ -10,7 +12,10 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.util.UriComponentsBuilder;
 
 
@@ -35,6 +40,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class StickerService {
     ApiService apiService;
+    AiService aiService;
     StickerRepository stickerRepository;
     MessageService messageService;
     MinioService minioService;
@@ -226,5 +232,20 @@ public class StickerService {
 
     public void sendSticker(Long conversationId, Long senderId, StickerItem stickerItem) {
         messageService.sendSticker(conversationId, senderId, stickerItem);
+    }
+
+    public ResponseEntity<byte[]> generateSticker(GenerateSticker req) {
+        ResponseEntity<byte[]> response = aiService.postForBinary("/sticker/generate-spritesheet", req);
+
+        // 2. Trích xuất các header cần thiết từ FastAPI
+        String frameCount = response.getHeaders().getFirst("frame-count");
+        System.out.println("Frame count từ FastAPI: " + frameCount);
+
+        // Trả về cho Frontend với đúng Header và Content-Type
+        return ResponseEntity.ok()
+//                .headers(response.getHeaders()) // Giữ nguyên các header: X-Frame-Count, X-Total-Width
+                .header("frame-count", frameCount != null ? frameCount : "0")
+                .contentType(MediaType.IMAGE_PNG)
+                .body(response.getBody());
     }
 }

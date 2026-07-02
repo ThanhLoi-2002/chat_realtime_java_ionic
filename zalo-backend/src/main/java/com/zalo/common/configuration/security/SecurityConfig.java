@@ -43,21 +43,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
-
-                .authorizeHttpRequests(auth ->
-                                auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                        .requestMatchers("/api/auth/**").permitAll()
-//                        .requestMatchers("/api/**").permitAll()
-                                        .requestMatchers("/ws/**").permitAll()
-                                        .anyRequest().permitAll()
-                )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                // Chỉ cấu hình CORS một lần duy nhất tại đây
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        ;
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
+                        .anyRequest().permitAll()
+                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
@@ -87,6 +82,7 @@ public class SecurityConfig {
         configuration.setAllowedHeaders(List.of("*"));
 
         configuration.setAllowCredentials(true);
+        configuration.setExposedHeaders(List.of("*"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 

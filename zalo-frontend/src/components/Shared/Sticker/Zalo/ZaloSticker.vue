@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { StickerItemType } from "@/types/entities"
 import { STICKER_URL } from '@/utils/constant'
 
@@ -17,6 +17,7 @@ const props = defineProps<{
     stickerItem: StickerItemType
     size: number
     isHover: boolean
+    isUseDefaultUrl?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -115,6 +116,8 @@ onMounted(() => {
     }
 })
 
+watch(() => props.stickerItem.url, () => startAnimation())
+
 onUnmounted(() => {
     stopAnimation()
     if (observer) {
@@ -123,14 +126,15 @@ onUnmounted(() => {
 })
 
 const stickerStyle = computed(() => {
-    const bgImage = isLoaded.value ? `url(${STICKER_URL + props.stickerItem.url})` : 'none'
+    const url = props.isUseDefaultUrl ? props.stickerItem.url : STICKER_URL + props.stickerItem.url
+    const bgImage = isLoaded.value ? `url(${url})` : 'none'
     
     return {
         width: `${props.size}px`,
         height: `${props.size}px`,
         backgroundImage: bgImage,
         backgroundPosition: `${positionX.value}px 0px`,
-        backgroundRepeat: 'repeat-x',
+        backgroundRepeat: 'no-repeat',
         backgroundSize: `${props.stickerItem.frameCount * props.size}px ${props.size}px`
     }
 })

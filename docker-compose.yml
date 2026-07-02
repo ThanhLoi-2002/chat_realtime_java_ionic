@@ -38,3 +38,15 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
       CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama_local
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_storage:/root/.ollama
+    # Đoạn này quan trọng: Mở quyền cho Docker dùng GPU Nvidia dưới Windows (Nếu máy chỉ có CPU thì xóa cụm deploy này đi)
+
+volumes:
+  ollama_storage:

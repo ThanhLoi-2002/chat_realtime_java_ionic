@@ -23,4 +23,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
+    OPENAI_API_KEY: str
+    OLLAMA_API_URL: str
+
 settings = Settings()  # type: ignore
