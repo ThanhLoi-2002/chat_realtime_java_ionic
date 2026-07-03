@@ -12,6 +12,7 @@ import EmojiPicker from "@/components/Shared/Emoji/EmojiPicker.vue";
 import { normalizeText } from "@/utils/helper.ts";
 import { SendStickerType } from "@/types/common.ts";
 import { useConversationStore } from "@/stores/App/conversation.storage.ts";
+import { oaStyle } from "@/assets/tailwindcss.ts";
 
 const props = defineProps<{
     scrollToBottom: () => void
@@ -164,6 +165,7 @@ watch(keyword, () => {
 
 onMounted(async () => {
     await stickerStorage.getAll();
+    await stickerStorage.getUserAIStickers()
 
     if (stickerStorage.pointToStickerId) {
         const targetPack = stickerStorage.stickers.find(
@@ -178,7 +180,7 @@ onMounted(async () => {
         }
     }
 
-    if (stickerStorage.stickers.length > 0) {
+    if (stickerStorage.stickers.length > 0 && stickerStorage.recentStickers.length == 0) {
         activePack.value = stickerStorage.stickers[0];
     }
 });
@@ -186,15 +188,17 @@ onMounted(async () => {
 
 <template>
     <div ref="pickerRef"
-        class="absolute w-80 h-100 bottom-full left-4 mb-2 p-4 rounded-md overflow-hidden bg-gray-400 dark:bg-slate-800/50 backdrop-blur-2xl border border-slate-500/50 dark:border-white/10 shadow-2xl text-white flex flex-col">
+        :class="[
+            oaStyle.bg.secondary, oaStyle.border.secondary,
+            'absolute w-80 h-100 bottom-full left-4 mb-2 p-4 rounded-md overflow-hidden backdrop-blur-2xl border shadow-2xl text-white flex flex-col']">
 
-        <div class="flex gap-2 border-b border-gray-300 dark:border-slate-700 mb-2 pb-1 text-xs font-medium shrink-0">
+        <div :class="[oaStyle.border.secondary, 'flex gap-2 border-b mb-2 pb-1 text-xs font-medium shrink-0']">
             <button @click="activeTab = 'sticker'"
-                :class="['flex-1 py-1 text-center transition-all rounded-md cursor-pointer', activeTab === 'sticker' ? 'bg-blue-500 text-white font-semibold' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-slate-700/50']">
+                :class="['flex-1 py-1 text-center transition-all rounded-md cursor-pointer', activeTab === 'sticker' ? 'bg-blue-500 text-white font-semibold' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-slate-600/50']">
                 Sticker
             </button>
             <button @click="activeTab = 'emoji'"
-                :class="['flex-1 py-1 text-center transition-all rounded-md cursor-pointer', activeTab === 'emoji' ? 'bg-blue-500 text-white font-semibold' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-slate-700/50']">
+                :class="['flex-1 py-1 text-center transition-all rounded-md cursor-pointer', activeTab === 'emoji' ? 'bg-blue-500 text-white font-semibold' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-slate-600/50']">
                 Emoji
             </button>
         </div>
@@ -203,21 +207,29 @@ onMounted(async () => {
 
             <div class="py-1 shrink-0">
                 <input v-model="keyword" :placeholder="t('search')"
-                    class="w-full h-6 rounded-full dark:bg-slate-700/50 px-4 text-xs outline-none border border-white/5" />
+                    :class="[oaStyle.bg.secondary, oaStyle.border.secondary, oaStyle.text.secondary, 'w-full h-6 rounded-full px-4 text-xs outline-none border']" />
             </div>
 
             <div ref="scrollContainerRef" class="flex-1 overflow-y-auto pr-1 scroll-auto" @scroll="handleScrollSpy">
                 <div v-if="stickerStorage.recentStickers.length && !keyword" class="shrink-0">
-                    <div class="font-weight-400 text-sm mt-2" :id="`pack-section-recent`">
+                    <div :class="[oaStyle.text.secondary, 'font-weight-400 text-sm mt-2']" :id="`pack-section-recent`">
                         {{ t("recent") }}
                     </div>
                     <ZaloStickerGrid :stickers="stickerStorage.recentStickers" @select="handleSelectSticker"
                         @preview="previewSticker = $event" :sticker-size="60" />
                 </div>
 
+                <div v-if="stickerStorage.userAIStickers.length && !keyword" class="shrink-0">
+                    <div :class="[oaStyle.text.secondary, 'font-weight-400 text-sm mt-2']" :id="`pack-section-ai`">
+                        {{ t("AI sticker") }}
+                    </div>
+                    <ZaloStickerGrid :stickers="stickerStorage.userAIStickers" @select="handleSelectSticker"
+                        @preview="previewSticker = $event" :sticker-size="60" />
+                </div>
+
                 <div v-for="sticker in stickers" :key="sticker.stickerId" :id="`pack-section-${sticker.stickerId}`"
                     class="flex flex-col gap-1">
-                    <div class="font-weight-400 text-sm mt-2">{{ sticker.name }}</div>
+                    <div :class="[oaStyle.text.secondary, 'font-weight-400 text-sm mt-2']">{{ sticker.name }}</div>
                     <ZaloStickerGrid :stickers="sticker.items" @select="handleSelectSticker"
                         @preview="previewSticker = $event" :sticker-size="60" />
                 </div>

@@ -1,5 +1,6 @@
 package com.zalo.modules.app.media.service;
 
+import com.zalo.modules.app.media.dtos.requests.MinioPresignedRequest;
 import com.zalo.modules.app.media.dtos.responses.MinioUploadResponse;
 import io.minio.*;
 import io.minio.http.Method;
@@ -65,28 +66,18 @@ public class MinioService {
      * @param fileName Tên file (vd: "user_123.mp4")
      * @return Map chứa thông tin URL và metadata
      */
-    public Map<String, Object> generatePresignedUrl(String folder, String fileName) {
+    public String generatePresignedUrl(MinioPresignedRequest req) {
         try {
-            // Ghép folder và fileName thành object name trong Minio (vd: avatars/user_123.mp4)
-            String objectName = folder + "/" + fileName;
-
             // Tạo Presigned URL với phương thức PUT, hết hạn sau 5 phút (300 giây)
-            String url = minioClient.getPresignedObjectUrl(
+
+            return minioClient.getPresignedObjectUrl(
                     GetPresignedObjectUrlArgs.builder()
                             .method(Method.PUT) // Bắt buộc dùng PUT để upload
                             .bucket(bucket)
-                            .object(objectName)
+                            .object(req.objectName)
                             .expiry(5, TimeUnit.MINUTES) // Hạn 5 phút giống Cloudinary của bạn
                             .build()
             );
-
-            // Trả về cho Front-end tương tự cấu trúc bạn muốn
-            Map<String, Object> response = new HashMap<>();
-            response.put("uploadUrl", url);
-            response.put("objectName", objectName);
-            response.put("bucket", bucket);
-
-            return response;
 
         } catch (Exception e) {
             throw new RuntimeException("Không thể tạo Presigned URL: " + e.getMessage(), e);

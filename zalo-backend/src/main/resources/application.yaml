@@ -5,6 +5,8 @@ server:
 spring:
   application:
     name: zalo
+  codec:
+    max-in-memory-size: 10MB
 
   kafka:
     consumer:

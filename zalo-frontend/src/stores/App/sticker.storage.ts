@@ -1,5 +1,5 @@
 import { stickerApi } from '@/api/App/sticker.api'
-import { PromtStickerType, SendStickerType } from '@/types/common'
+import { PromtStickerType, SendStickerType, UserStickerRequestType } from '@/types/common'
 import { StickerItemType, StickerType } from '@/types/entities'
 import { STORAGE_KEY } from '@/utils/constant'
 import { getKey, setKey } from '@/utils/local'
@@ -9,6 +9,7 @@ import { defineStore } from 'pinia'
 interface State {
     stickers: StickerType[]
     recentStickers: StickerItemType[]
+    userAIStickers: StickerItemType[]
     isLoading: boolean
     openPicker: boolean
     pointToStickerId?: string
@@ -18,6 +19,7 @@ export const useStickerStore = defineStore('sticker', {
     state: (): State => ({
         stickers: [],
         recentStickers: [],
+        userAIStickers: [],
         isLoading: false,
         openPicker: false
     }),
@@ -28,6 +30,21 @@ export const useStickerStore = defineStore('sticker', {
                     const result: any = await stickerApi.getAll();
                     this.stickers = result.result
                     this.recentStickers = JSON.parse(getKey(STORAGE_KEY) || "[]")
+                } catch (e: any) {
+                    toast({
+                        color: "danger",
+                        message: e.message
+                    })
+                    return undefined
+                }
+            }
+        },
+
+        async getUserAIStickers() {
+            if (this.userAIStickers.length == 0) {
+                try {
+                    const result: any = await stickerApi.getUserAIStickers();
+                    this.userAIStickers = result.result
                 } catch (e: any) {
                     toast({
                         color: "danger",
@@ -60,8 +77,22 @@ export const useStickerStore = defineStore('sticker', {
                     color: "danger",
                     message: e.message
                 })
-                console.log(e)
+                console.error("generateSticker: ", e)
                 return undefined
+            }
+        },
+
+        async saveUserSticker(payload: UserStickerRequestType) {
+            try {
+                const result: any = await stickerApi.saveUserSticker(payload);
+                this.userAIStickers.push(result.result)
+                return true
+            } catch (e: any) {
+                toast({
+                    color: "danger",
+                    message: e.message
+                })
+                return false
             }
         },
 

@@ -5,7 +5,9 @@ import com.zalo.common.configuration.anotation.conversationMember.CheckConversat
 import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
 import com.zalo.common.configuration.json.G;
 import com.zalo.modules.app.sticker.dto.request.GenerateSticker;
+import com.zalo.modules.app.sticker.dto.request.UserStickerRequest;
 import com.zalo.modules.app.sticker.dto.response.StickerResponse;
+import com.zalo.modules.app.sticker.dto.response.UserStickerResponse;
 import com.zalo.modules.app.sticker.entity.StickerItem;
 import com.zalo.modules.app.sticker.service.StickerService;
 import com.zalo.modules.admin.system.user.dto.response.UserPayload;
@@ -44,7 +46,16 @@ public class StickerController {
     @PostMapping("/generate-spritesheet")
     @NoResponseBodyWrap
     public Object generateSticker(@RequestBody GenerateSticker req) {
-        System.out.println(G.toJson(req));
         return stickerService.generateSticker(req);
+    }
+
+    @PostMapping("/save-user-sticker")
+    public UserStickerResponse saveUserSticker(@CurrentUser UserPayload user, @RequestBody UserStickerRequest req) {
+        return new UserStickerResponse(stickerService.saveUserSticker(req, user.getId()));
+    }
+
+    @GetMapping("/user-ai-sticker")
+    public List<UserStickerResponse> getUserAISticker(@CurrentUser UserPayload user) {
+        return stickerService.getUserAISticker(user.getId()).stream().map(UserStickerResponse::new).toList();
     }
 }

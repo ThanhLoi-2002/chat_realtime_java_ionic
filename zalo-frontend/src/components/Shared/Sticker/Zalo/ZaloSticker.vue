@@ -5,13 +5,15 @@
          :style="stickerStyle"
          @click="emit('select', props.stickerItem)"
          @mouseenter="handleMouseEnter"
-         @mouseleave="handleMouseLeave" />
+         @mouseleave="handleMouseLeave" 
+         />
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { StickerItemType } from "@/types/entities"
 import { STICKER_URL } from '@/utils/constant'
+import { onLongPress } from '@vueuse/core';
 
 const props = defineProps<{
     stickerItem: StickerItemType
@@ -138,4 +140,17 @@ const stickerStyle = computed(() => {
         backgroundSize: `${props.stickerItem.frameCount * props.size}px ${props.size}px`
     }
 })
+
+// Cấu hình VueUse cho sự kiện nhấn giữ
+onLongPress(
+  stickerRef,
+  () => emit('preview', props.stickerItem),
+  {
+    delay: 500, // Thời gian tính bằng mili-giây (ví dụ: 800ms)
+    modifiers: {
+      prevent: true, // Ngăn chặn hành vi mặc định (ví dụ: bôi đen chữ)
+      stop: true     // Ngăn chặn sự kiện lan truyền (bubbling) lên cha
+    }
+  }
+);
 </script>

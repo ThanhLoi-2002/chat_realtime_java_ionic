@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import data from '@emoji-mart/data'
 import { Picker } from 'emoji-mart'
+import { oaStyle } from '@/assets/tailwindcss'
 
 const pickerRef = ref<HTMLElement | null>(null)
 const emit = defineEmits(['select'])
@@ -23,7 +24,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div ref="pickerRef" class="custom-mini-picker"></div>
+  <div ref="pickerRef" :class="[oaStyle.bg.secondary, 'custom-mini-picker']"></div>
 </template>
 
 <style scoped>

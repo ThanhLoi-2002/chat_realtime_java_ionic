@@ -7,7 +7,7 @@
             <div :class="[oaStyle.text.primary, 'text-lg font-medium tracking-wide']">✨ zSticker AI Studio</div>
             <button @click="mobileActiveTab = mobileActiveTab === 'history' ? 'create' : 'history'"
                 class="bg-purple-600 hover:bg-purple-700 text-xs font-semibold px-3 py-1.5 rounded-full transition">
-                {{ mobileActiveTab === 'history' ?  t('openGenerator') : t('photoLibrary') }}
+                {{ mobileActiveTab === 'history' ? t('openGenerator') : t('photoLibrary') }}
             </button>
         </header>
 
@@ -19,24 +19,19 @@
                     <div :class="[oaStyle.text.primary, 'font-medium text-lg']">{{ t('yourStickers') }}</div>
                 </div>
                 <span :class="[oaStyle.text.primary, oaStyle.bg.tertiary, 'text-xs px-2 py-0.5 rounded-md']">
-                    {{ createdStickers.length }} bộ
+                    {{ stickerStor.userAIStickers.length }} bộ
                 </span>
             </div>
 
             <div class="flex-1 p-4 overflow-y-auto grid grid-cols-3 gap-2 content-start custom-scrollbar">
-                <div v-for="sticker in createdStickers" :key="sticker.id" :class="[
+                <div v-for="sticker in stickerStor.userAIStickers" :key="sticker.id" :class="[
                     oaStyle.bg.secondary, oaStyle.border.secondary,
                     'group relative aspect-square border hover:border-purple-500 rounded-lg flex items-center justify-center cursor-pointer transition hover:scale-105'
                 ]" @click="sendStickerToChat(sticker.url)">
-                    <ZaloSticker :sticker-item="sticker" :is-hover="true" :size="80" :is-use-default-url="true" />
-
-                    <!-- <div
-                        class="absolute inset-0 bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 items-center justify-center transition hidden md:flex">
-                        <span class="text-xs font-semibold bg-purple-600 px-2 py-1 rounded-md">{{ t('send') }}</span>
-                    </div> -->
+                    <ZaloSticker :sticker-item="sticker" :is-hover="true" :size="80" />
                 </div>
 
-                <div v-if="createdStickers.length === 0"
+                <div v-if="stickerStor.userAIStickers.length === 0"
                     :class="[oaStyle.text.primary, 'col-span-3 text-center py-20 text-sm']">
                     <span class="text-3xl block mb-2">🎨</span>
                     Chưa có sticker nào.<br>Hãy tạo sticker đầu tiên!
@@ -105,7 +100,7 @@
                     <div class="">
                         <label :class="[oaStyle.text.secondary, 'block text-sm font-medium mb-2']">{{
                             t('description')
-                            }}</label>
+                        }}</label>
                         <textarea v-model="prompt"
                             :class="[oaStyle.border.secondary, 'w-full p-3 border rounded-lg focus:ring-1 focus:ring-blue-500 outline-none transition']"
                             rows="6" placeholder="Ví dụ: Một phi hành gia cưỡi ngựa trên sao Hỏa..."></textarea>
@@ -126,9 +121,10 @@
 import { oaStyle } from '@/assets/tailwindcss';
 import ZaloSticker from '@/components/Shared/Sticker/Zalo/ZaloSticker.vue';
 import { useTranslate } from '@/composables/useTranslate';
+import { useUploadMinio } from '@/composables/useUploadMinio';
 import { useStickerStore } from '@/stores/App/sticker.storage';
 import { StickerItemType } from '@/types/entities';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 // State management
 const prompt = ref<string>('');
@@ -138,13 +134,11 @@ const stickerStor = useStickerStore()
 const stickerItem = ref<StickerItemType | undefined>(undefined)
 const newFileName = ref<string>('')
 const newBlob = ref<Blob>()
+const { uploadFile } = useUploadMinio()
 
 const { t } = useTranslate()
 // Tab tích hợp riêng cho màn hình Mobile ('history': Xem kho ảnh | 'create': Trình tạo sticker)
 const mobileActiveTab = ref<'history' | 'create'>('create');
-
-// Mock data danh sách sticker user đã tạo trước đó (Thay bằng dữ liệu lấy từ DB Spring Boot của bạn)
-const createdStickers = ref<StickerItemType[]>([]);
 
 // Hàm xử lý click chọn sticker để đẩy thẳng vào ô chat chính qua WebSocket
 const sendStickerToChat = (url: string) => {
@@ -201,9 +195,35 @@ const regenerateSticker = async () => {
     }
 }
 
-const saveSticker = () => {
+const saveSticker = async () => {
     if (!stickerItem.value) return
 
-    createdStickers.value.push(stickerItem.value)
+    // Sử dụng:
+    const fileToUpload = convertBlobToFile(newBlob.value!, newFileName.value!);
+    const objectName = `/sticker-ai/${newFileName.value}`
+
+    const success = await uploadFile({
+        file: fileToUpload,
+        objectName
+    })
+
+    if (success) {
+        await stickerStor.saveUserSticker({
+            url: objectName, frameCount: stickerItem.value?.frameCount
+        })
+
+        stickerItem.value = undefined
+    }
 }
+
+const convertBlobToFile = (blob: Blob, fileName: string): File => {
+    return new File([blob], fileName, {
+        type: 'image/png',
+        lastModified: Date.now()
+    });
+};
+
+onMounted(() => {
+    stickerStor.getUserAIStickers()
+})
 </script>

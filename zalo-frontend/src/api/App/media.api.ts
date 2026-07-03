@@ -1,6 +1,5 @@
-import { GetPresignedUrlType, IResponse, PaginationType } from "@/types/common";
+import { GetPresignedUrlType, IResponse, MinioPresignedUrlType } from "@/types/common";
 import axios from "../axios";
-import type { LangType } from "@/types/entities";
 
 const getPresignedUrl = async (
     params: GetPresignedUrlType
@@ -14,7 +13,19 @@ const getPresignedUrls = async (
     return await axios.post<IResponse>(`/media/presigned-urls`, params);
 };
 
+const getMinioPresignedUrl = async (
+    params: MinioPresignedUrlType
+) => {
+    return await axios.get<IResponse>(`/media/minio-presigned-url`, { params });
+};
+
+const getMinioPresignedUrls = async (
+    params: MinioPresignedUrlType[]
+) => {
+    return await axios.post<IResponse>(`/media/minio-presigned-urls`, params);
+};
+
 
 export const mediaApi = {
-    getPresignedUrl, getPresignedUrls
+    getPresignedUrl, getPresignedUrls, getMinioPresignedUrl, getMinioPresignedUrls
 }

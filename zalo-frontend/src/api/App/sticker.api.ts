@@ -1,4 +1,4 @@
-import { IResponse, PromtStickerType, SendStickerType } from "@/types/common";
+import { IResponse, PromtStickerType, SendStickerType, UserStickerRequestType } from "@/types/common";
 import axios from "../axios";
 import axiosV2 from "../axiosV2";
 import { StickerItemType } from "@/types/entities";
@@ -7,8 +7,16 @@ const getAll = async () => {
     return await axios.get<IResponse>(`/stickers`);
 }
 
+const getUserAIStickers = async () => {
+    return await axios.get<IResponse>(`/stickers/user-ai-sticker`);
+}
+
 const sendSticker = async (payload: SendStickerType) => {
     return await axios.post<IResponse>(`/stickers/${payload.conversationId}`, payload.sticker);
+}
+
+const saveUserSticker = async (payload: UserStickerRequestType) => {
+    return await axios.post<IResponse>(`/stickers/save-user-sticker`, payload);
 }
 
 const generateSticker = async (payload: PromtStickerType) => {
@@ -38,5 +46,5 @@ const generateSticker = async (payload: PromtStickerType) => {
 }
 
 export const stickerApi = {
-    getAll, sendSticker, generateSticker
+    getAll, sendSticker, generateSticker, saveUserSticker, getUserAIStickers
 }

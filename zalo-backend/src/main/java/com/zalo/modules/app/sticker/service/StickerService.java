@@ -5,8 +5,10 @@ import com.zalo.common.service.ApiService;
 import com.zalo.modules.app.media.service.MinioService;
 import com.zalo.modules.app.message.service.MessageService;
 import com.zalo.modules.app.sticker.dto.request.GenerateSticker;
+import com.zalo.modules.app.sticker.dto.request.UserStickerRequest;
 import com.zalo.modules.app.sticker.entity.Sticker;
 import com.zalo.modules.app.sticker.entity.StickerItem;
+import com.zalo.modules.app.sticker.entity.UserSticker;
 import io.minio.GetObjectArgs;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -44,6 +46,7 @@ public class StickerService {
     StickerRepository stickerRepository;
     MessageService messageService;
     MinioService minioService;
+    UserStickerRepository userStickerRepository;
 
     static String STORAGE_DIR = "stickers/";
     static String PACKAGE_URL = "https://stickers.zaloapp.com/sticker";
@@ -51,6 +54,10 @@ public class StickerService {
 
     public List<Sticker> getAll() {
         return stickerRepository.findAllByStt(1);
+    }
+
+    public List<UserSticker> getUserAISticker(Long userId) {
+        return userStickerRepository.findByCuAndStt(userId, 1);
     }
 
     static String getSprite(String eid) {
@@ -247,5 +254,11 @@ public class StickerService {
                 .header("frame-count", frameCount != null ? frameCount : "0")
                 .contentType(MediaType.IMAGE_PNG)
                 .body(response.getBody());
+    }
+
+    public UserSticker saveUserSticker(UserStickerRequest req, Long userId) {
+        UserSticker userSticker = new UserSticker(req.getUrl(), req.getFrameCount());
+        userSticker.setCu(userId);
+        return userStickerRepository.save(userSticker);
     }
 }

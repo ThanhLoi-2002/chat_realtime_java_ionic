@@ -99,10 +99,19 @@ export type GetPresignedUrlType = {
   resourceType: ResourceEnum
 }
 
+export type MinioPresignedUrlType = {
+  objectName: string
+}
+
 export type UploadFileType = {
   folder: string
   file: File
   resourceType: ResourceEnum
+}
+
+export type MinioUploadFileType = {
+  objectName: string
+  file: File
 }
 
 export type UploadFileRequest = {
@@ -188,4 +197,9 @@ export type SelectOptionType = {
 
 export type PromtStickerType = {
   prompt: string
+}
+
+export type UserStickerRequestType = {
+  url: string
+  frameCount: number
 }
