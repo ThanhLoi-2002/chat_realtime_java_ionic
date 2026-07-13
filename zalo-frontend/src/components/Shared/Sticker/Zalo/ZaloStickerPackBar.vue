@@ -3,6 +3,7 @@ import { ref, watch, nextTick, onMounted, onUnmounted } from 'vue';
 import { StickerType } from '@/types/entities';
 import { STICKER_URL } from '@/utils/constant';
 import { oaStyle } from '@/assets/tailwindcss';
+import { useStickerStore } from '@/stores/App/sticker.storage';
 
 const props = defineProps<{
     packs: StickerType[]
@@ -17,6 +18,7 @@ const emit = defineEmits<{
 }>()
 
 const navScrollRef = ref<HTMLElement | null>(null);
+const stickerStor = useStickerStore()
 
 // --- QUẢN LÝ TRẠNG THÁI CUỘN SIÊU MƯỢT ---
 let isDown = false;
@@ -165,7 +167,7 @@ onUnmounted(() => {
                 @mousedown="handleMouseDown" @mouseleave="handleMouseLeaveOrUp" @mouseup="handleMouseLeaveOrUp"
                 @mousemove="handleMouseMove">
 
-                <button id="pack-btn-recent"
+                <button id="pack-btn-recent" v-if="stickerStor.recentStickers.length > 0"
                     class="w-9 h-9 p-1.5 rounded-md flex items-center justify-center cursor-pointer text-gray-500 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-slate-700/50 shrink-0 transition-colors"
                     :class="[!activePack ? 'bg-gray-300 dark:bg-slate-700/80 text-blue-500' : '']"
                     @click="onRecentClick">

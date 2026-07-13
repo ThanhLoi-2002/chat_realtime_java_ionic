@@ -16,39 +16,39 @@ import lombok.experimental.FieldDefaults;
 public class Structure extends BaseEntity {
     @Column(name = "app_type")
     @Enumerated(EnumType.STRING)
-    private AppType appType;
+    AppType appType;
 
     // ID của menu cha (Nếu là menu gốc cao nhất thì pid = 0 hoặc null)
     @Column(name = "pid")
-    private Long pid = 0L;
+    Long pid = 0L;
 
     // Đường dẫn router hoặc mã định danh (ví dụ: '/dashboard', 'sys001structure')
     @Column(name = "code", length = 100)
-    private String code;
+    String code;
 
     @Column(name = "menu_type")
     @Enumerated(EnumType.STRING)
-    private MenuType menuType;
+    MenuType menuType;
 
     // Chuỗi lưu class icon (ví dụ: 'fas fa-home' hoặc nguyên thẻ '<i class="fas fa-home"></i>')
     @Column(name = "icon")
-    private String icon;
+    String icon;
 
     // Tên hiển thị của menu trên giao diện (ví dụ: 'Tổng quan', 'Quản lý người dùng')
     @Column(name = "description")
-    private String description;
+    String description;
 
     // Loại menu (0: Root, 1: Group, 2: Module, 99: Page/Action)
     @Column(name = "type")
-    private Integer type = 99;
+    Integer type = 99;
 
     // Thứ tự sắp xếp hiển thị giữa các menu đồng cấp
     @Column(name = "sort")
-    private Integer sort = 0;
+    Integer sort = 0;
 
-    private String permissions;
+    String permissions;
 
-    private String component;
+    String component;
 
-    private String path;
+    String path;
 }

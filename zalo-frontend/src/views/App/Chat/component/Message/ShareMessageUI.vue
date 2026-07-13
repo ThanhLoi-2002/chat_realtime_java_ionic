@@ -100,7 +100,7 @@
                     <!-- Selected users list: cũng có scroll riêng; ẩn nếu rỗng -->
                     <div v-if="selectedConvs.length > 0" class="w-40">
                         <span class="dark:text-slate-400 text-sm">{{ t('selected') }} {{ selectedConvs.length
-                        }}/100</span>
+                            }}/100</span>
                         <div class="h-[85%] overflow-y-auto bg-white dark:bg-gray-900 rounded flex flex-col gap-2 mt-2">
                             <div v-for="conv in selectedConvs" :key="conv.id"
                                 class="flex items-center justify-between gap-2 py-1 cursor-pointer bg-blue-500 rounded-full px-2">
@@ -133,14 +133,15 @@
                         </div>
                         <div v-if="actionStore.shareMessage.contentType === MessageEnum.STICKER"
                             class="size-12 rounded overflow-hidden shrink-0">
-                            <ZaloSticker :sticker-item="actionStore.shareMessage.sticker" :is-hover="false" :size="65"/>
+                            <ZaloSticker :sticker-item="actionStore.shareMessage.sticker" :is-hover="false"
+                                :size="65" />
                         </div>
                         <div class="min-w-0">
                             <p class="text-xs text-gray-500 dark:text-gray-400 font-medium">
                                 {{ actionStore.shareMessage.contentType == MessageEnum.IMAGE ? t('shareImages') :
                                     actionStore.shareMessage.contentType == MessageEnum.FILE ? t('shareFiles') :
-                                    actionStore.shareMessage.contentType == MessageEnum.STICKER ? t('shareSticker') :
-                                        t('shareMessages') }}
+                                        actionStore.shareMessage.contentType == MessageEnum.STICKER ? t('shareSticker') :
+                                            t('shareMessages') }}
                             </p>
 
                             <FileContainer :media="actionStore.shareMessage.attachments[0]" :isShowAction="false"
@@ -205,7 +206,7 @@ import { useConversationStore } from '@/stores/App/conversation.storage.ts';
 import { useMessageStore } from '@/stores/App/message.storage.ts';
 import { useUserStore } from '@/stores/App/user.storage.ts';
 import { ShareMessagesType, ShareMessageType } from '@/types/common';
-import { ConversationType, MessageType } from '@/types/entities';
+import { ConversationType, MessageType, StickerItemType } from '@/types/entities';
 import { ConversationEnum, MessageEnum } from '@/types/enum';
 import { normalizeText } from '@/utils/helper';
 import { computed, inject, onMounted, ref } from 'vue';
@@ -213,6 +214,7 @@ import FileContainer from '../../Info/components/Storage/FileContainer.vue';
 import { useChatActionStore } from '@/composables/useChatAction';
 import ZaloSticker from '@/components/Shared/Sticker/Zalo/ZaloSticker.vue';
 import { useFriendshipStore } from '@/stores/App/friendship.storage.ts';
+import { useStickerStore } from '@/stores/App/sticker.storage.ts';
 
 // const props = defineProps<{
 //     message?: MessageType
@@ -245,6 +247,7 @@ const convs = ref<ConversationType[]>([
 
 const selectedConvs = ref<ConversationType[]>([
 ])
+const stickerStorage = useStickerStore();
 
 const shareNote = ref("");
 const isAttachDesc = ref(false)
@@ -343,7 +346,9 @@ const onShare = async () => {
     isLoading.value = true
 
     const convIds = selectedConvs.value.map(c => c.id);
+    const stickers: StickerItemType[] = []
 
+    //share nhiều message
     if (actionStore.shareMessages.length > 0) {
         const payload: ShareMessagesType = {
             conversationIds: convIds,
@@ -354,8 +359,15 @@ const onShare = async () => {
 
         console.log("Sharing to:", payload);
         await messStorage.shareMessages(payload)
+
+        actionStore.shareMessages.forEach(e => {
+            if (e.contentType == MessageEnum.STICKER) {
+                stickers.push(e.sticker)
+            }
+        })
     }
 
+    //share 1 message
     if (actionStore.shareMessage) {
         const payload: ShareMessageType = {
             conversationIds: convIds,
@@ -367,6 +379,16 @@ const onShare = async () => {
 
         console.log("Sharing to:", payload);
         await messStorage.shareMessage(payload)
+
+        if (actionStore.shareMessage.contentType == MessageEnum.STICKER) {
+            stickers.push(actionStore.shareMessage.sticker)
+        }
+    }
+
+    //lưu sticker vào recent
+    if (stickers.length > 0) {
+        console.log(stickers)
+        stickers.forEach(e => stickerStorage.addRecentSticker(e))
     }
 
     isLoading.value = false
