@@ -105,7 +105,6 @@ export const useStickerStore = defineStore('sticker', {
             ].slice(0, 24)
 
             setKey(STORAGE_KEY, this.recentStickers)
-            console.log('add sticker: ', sticker)
         },
 
         togglePicker(stickerId?: string) {

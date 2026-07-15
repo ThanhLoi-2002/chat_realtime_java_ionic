@@ -22,15 +22,19 @@
                         nhau để phân nhóm
                         con</span>
                     <button @click="toggleSortMode" :class="[
-                        'px-2.5 py-1 rounded text-xs font-medium transition shadow-sm cursor-pointer text-white',
+                        'px-2.5 py-1 rounded text-sm font-medium transition shadow-sm cursor-pointer text-white',
                         isSortMode
                             ? 'bg-green-600 hover:bg-green-700'
                             : 'bg-blue-600 hover:bg-blue-700'
                     ]">
-                        {{ isSortMode
-                            ? '💾 Lưu vị trí'
-                            : '🔄 Bật sắp xếp'
-                        }}
+                        <div class="flex items-center gap-1" v-if="isSortMode">
+                            <i class="fas fa-save"></i>
+                            <span>{{ t('save') }}</span>
+                        </div>
+                        <div class="flex items-center gap-1" v-else>
+                            <i class="fas fa-sync-alt"></i>
+                            <div>{{ t('sort') }}</div>
+                        </div>
                     </button>
                 </div>
 
@@ -70,7 +74,7 @@
                     <form @submit.prevent="submitForm" class="space-y-3.5">
                         <div>
                             <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{ t('PID')
-                                }}</label>
+                            }}</label>
                             <select v-model="form.pid" @change="onPidChange"
                                 :class="[oaStyle.border.primary, oaStyle.bg.primary, oaStyle.text.secondary, 'w-full p-2 border rounded outline-none']">
                                 <option v-for="opt in allNodesFlat" :key="opt.id" :value="opt.id">
@@ -110,7 +114,7 @@
 
                         <div>
                             <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{ t('icon')
-                                }}</label>
+                            }}</label>
                             <input v-model="form.icon" type="text"
                                 :class="[oaStyle.border.primary, 'w-full p-2 border rounded outline-none focus:border-blue-600/50']" />
                         </div>
@@ -132,7 +136,7 @@
                         <div class="flex justify-between">
                             <div>
                                 <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{ t('status')
-                                }}</label>
+                                    }}</label>
                                 <div :class="[oaStyle.text.secondary, 'flex gap-4 mt-1 font-medium']">
                                     <label class="flex items-center gap-1 cursor-pointer"><input type="radio"
                                             v-model="form.stt" :value="1"> {{ t('active') }}</label>
@@ -142,7 +146,7 @@
                             </div>
                             <div>
                                 <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{ t('type')
-                                }}</label>
+                                    }}</label>
                                 <div :class="[oaStyle.text.secondary, 'flex gap-4 mt-1 font-medium']">
                                     <label v-for="type in menuType" :key="type"
                                         class="flex items-center gap-1 cursor-pointer"><input type="radio" required

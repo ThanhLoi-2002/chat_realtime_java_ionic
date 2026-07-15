@@ -41,10 +41,10 @@
 
                     <div v-show="openMenus.includes(item.code) && !sysStorage.showSidebar"
                         class="mt-1 pl-8 space-y-1 overflow-hidden transition-all duration-300 ease-in-out">
-                        <router-link v-for="sub in item.children" :key="sub.code" :to="sub.path" v-slot="{ }"
-                            custom>
+                        <router-link v-for="sub in item.children" :key="sub.code" :to="sub.path" v-slot="{ }" custom>
                             <button @click="$router.push(sub.path)" :class="[
-                                $route.path.startsWith(item.path)
+                                // Logic kiểm tra ranh giới: Khớp chính xác hoặc là thư mục con
+                                ($route.path === item.path || $route.path.startsWith(item.path + '/'))
                                     ? 'bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 font-semibold'
                                     : [oaStyle.bg.hoverBlue, 'text-gray-700 dark:text-gray-300'],
                                 'flex gap-3 w-full text-left px-3 py-2 rounded-md text-sm transition-colors whitespace-nowrap cursor-pointer'
@@ -58,7 +58,8 @@
 
                 <router-link v-else :to="item.path || ''" v-slot="{ navigate }" custom>
                     <button @click="navigate" :class="[
-                        $route.path.startsWith(item.path)
+                        // Logic kiểm tra ranh giới: Khớp chính xác hoặc là thư mục con
+                        ($route.path === item.path || $route.path.startsWith(item.path + '/'))
                             ? 'bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 font-semibold'
                             : [oaStyle.bg.hoverBlue, 'text-gray-700 dark:text-gray-300'],
                         'w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer justify-start'
@@ -78,7 +79,7 @@
                 <span :class="[
                     sysStorage.showSidebar ? 'opacity-0 max-w-0 pointer-events-none' : 'opacity-100 max-w-37.5',
                     'whitespace-nowrap transition-all duration-300 ease-in-out block-text'
-                    ]">{{ t("logout") }}</span>
+                ]">{{ t("logout") }}</span>
             </button>
 
         </div>

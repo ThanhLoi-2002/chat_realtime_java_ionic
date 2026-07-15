@@ -173,8 +173,8 @@ export type StructureSortType = {
   sort: number
 }
 
-export type PageType = {
-  content: []
+export type PageType<T> = {
+  content: T[]
   page: {
     number: number
     size: number

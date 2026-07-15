@@ -1,3 +1,5 @@
+import { PageType } from "@/types/common"
+
 export const RANDOM_AVATAR = "https://i.pravatar.cc/150"
 export const LANG = "lang"
 export const THEME = "theme"
@@ -89,5 +91,15 @@ export const appLimit = {
     linksFirst: 4,
     links: 20
 }
+
+export const emptyPage: PageType<any> = {
+  content: [],
+  page: {
+    number: 0,
+    size: 0,
+    totalElements: 0,
+    totalPages: 0
+  }
+};
 
 export const STICKER_URL = import.meta.env.VITE_API_STICKER_URL

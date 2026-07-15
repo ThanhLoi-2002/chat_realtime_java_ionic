@@ -13,7 +13,7 @@ const LIMIT = 20
 const { t } = useTranslate()
 const roleStor = useAdminRoleStore()
 const search = ref("");
-const page = ref<PageType>()
+const page = ref<PageType<any>>()
 const router = useRouter()
 
 const columns = computed(() => [

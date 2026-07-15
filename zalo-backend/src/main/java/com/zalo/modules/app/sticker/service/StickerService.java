@@ -246,7 +246,6 @@ public class StickerService {
 
         // 2. Trích xuất các header cần thiết từ FastAPI
         String frameCount = response.getHeaders().getFirst("frame-count");
-        System.out.println("Frame count từ FastAPI: " + frameCount);
 
         // Trả về cho Frontend với đúng Header và Content-Type
         return ResponseEntity.ok()
