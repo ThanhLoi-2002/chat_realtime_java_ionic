@@ -5,108 +5,112 @@
         sysStorage.showSidebar ? 'w-20' : 'w-64',
         'border-r p-4 flex flex-col min-h-screen transition-all duration-300 ease-in-out relative select-none'
     ]">
-        <!-- <button @click="isCollapsed = !isCollapsed"
-            :class="[oaStyle.bg.secondary, oaStyle.bg.hover, oaStyle.text.primary]"
-            class="absolute -right-3 top-4 border border-slate-500/50 dark:border-slate-400/70 rounded-full p-1 shadow-md z-50 flex items-center justify-center size-6 cursor-pointer transition-transform active:scale-95">
-            <i :class="[isCollapsed ? 'fa-solid fa-chevron-right' : 'fa-solid fa-chevron-left', 'text-xs']" />
-        </button> -->
 
-        <div
-            :class="[oaStyle.text.primary, oaStyle.border.primary, 'flex items-center cursor-pointer px-2 pb-2 h-10 border-b overflow-hidden']">
-            <circle-avatar size="size-8 shrink-0" />
-            <span :class="[
-                'text-sm font-bold pl-3 transition-all duration-300 ease-in-out whitespace-nowrap block-text',
-                sysStorage.showSidebar ? 'opacity-0 max-w-0 pointer-events-none' : 'opacity-100 max-w-37.5'
-            ]">SVoucher</span>
-        </div>
+        <div class="space-y-1 flex-1 overflow-y-auto no-scrollbar mt-2 mb-4">
+            <div v-for="(item, index) in currentMenus" :key="index" class="w-full">
 
-        <div class="space-y-1 flex-1 overflow-y-auto no-scrollbar mt-2">
-            <div v-for="(item, index) in menuItems" :key="index" class="w-full">
-
-                <div v-if="item.items && item.items.length > 0">
-                    <button @click="toggleSubMenu(item.name)" :class="[
+                <div v-if="countChildPage(item)">
+                    <button @click="toggleSubMenu(item.code)" :class="[
                         isParentActive(item)
                             ? 'text-blue-600 dark:text-blue-400 font-semibold'
                             : [oaStyle.bg.hoverBlue, 'text-gray-700 dark:text-gray-300'],
                         'w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer justify-start'
                     ]">
-                        <div class="flex items-center justify-start flex-1 min-w-0">
-                            <i :class="[item.icon, 'text-base w-5 text-center shrink-0 mr-3']" />
+                        <div class="flex items-center gap-3 justify-start flex-1 min-w-0">
+                            <div v-html="item.icon" class="'text-base w-5 text-center shrink-0'"></div>
                             <span :class="[
                                 'whitespace-nowrap transition-all duration-300 ease-in-out block-text',
                                 sysStorage.showSidebar ? 'opacity-0 max-w-0 pointer-events-none' : 'opacity-100 max-w-37.5'
-                            ]">{{ item.name }}</span>
+                            ]">{{ item.code }}</span>
                         </div>
 
                         <i :class="[
-                            openMenus.includes(item.name) ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down',
+                            openMenus.includes(item.code) ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down',
                             'text-xs transition-all duration-300 text-gray-400 shrink-0',
                             sysStorage.showSidebar ? 'opacity-0 max-w-0 scale-0' : 'opacity-100 max-w-37.5'
                         ]" />
                     </button>
 
-                    <div v-show="openMenus.includes(item.name) && !sysStorage.showSidebar"
+                    <div v-show="openMenus.includes(item.code) && !sysStorage.showSidebar"
                         class="mt-1 pl-8 space-y-1 overflow-hidden transition-all duration-300 ease-in-out">
-                        <router-link v-for="sub in item.items" :key="sub.name" :to="sub.href" v-slot="{ isActive }"
-                            custom>
-                            <button @click="$router.push(sub.href)" :class="[
-                                isActive
+                        <router-link v-for="sub in item.children" :key="sub.code" :to="sub.path" v-slot="{ }" custom>
+                            <button @click="$router.push(sub.path)" :class="[
+                                // Logic kiểm tra ranh giới: Khớp chính xác hoặc là thư mục con
+                                ($route.path === item.path || $route.path.startsWith(item.path + '/'))
                                     ? 'bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 font-semibold'
                                     : [oaStyle.bg.hoverBlue, 'text-gray-700 dark:text-gray-300'],
-                                'w-full text-left px-3 py-2 rounded-md text-sm transition-colors block whitespace-nowrap cursor-pointer'
+                                'flex gap-3 w-full text-left px-3 py-2 rounded-md text-sm transition-colors whitespace-nowrap cursor-pointer'
                             ]">
-                                {{ sub.name }}
+                                <div v-html="sub.icon" class="'text-base w-5 text-center shrink-0'"></div>
+                                <p>{{ sub.code }}</p>
                             </button>
                         </router-link>
                     </div>
                 </div>
 
-                <router-link v-else :to="item.href || ''" v-slot="{ isActive }" custom>
-                    <button @click="item.href && $router.push(item.href)" :class="[
-                        isActive
+                <router-link v-else :to="item.path || ''" v-slot="{ navigate }" custom>
+                    <button @click="navigate" :class="[
+                        // Logic kiểm tra ranh giới: Khớp chính xác hoặc là thư mục con
+                        ($route.path === item.path || $route.path.startsWith(item.path + '/'))
                             ? 'bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 font-semibold'
                             : [oaStyle.bg.hoverBlue, 'text-gray-700 dark:text-gray-300'],
                         'w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer justify-start'
                     ]">
-                        <i :class="[item.icon, 'text-base w-5 text-center shrink-0 mr-3']" />
+                        <p v-html="item.icon" :class="['text-base w-5 text-center shrink-0 mr-3']"></p>
                         <span :class="[
                             'whitespace-nowrap transition-all duration-300 ease-in-out block-text',
                             sysStorage.showSidebar ? 'opacity-0 max-w-0 pointer-events-none' : 'opacity-100 max-w-37.5'
-                        ]">{{ item.name }}</span>
+                        ]">{{ item.code }}</span>
                     </button>
                 </router-link>
-
             </div>
+
+            <button @click="logout"
+                class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition text-red-600 dark:text-red-400 cursor-pointer">
+                <i class="fas fa-sign-out-alt shrink-0"></i>
+                <span :class="[
+                    sysStorage.showSidebar ? 'opacity-0 max-w-0 pointer-events-none' : 'opacity-100 max-w-37.5',
+                    'whitespace-nowrap transition-all duration-300 ease-in-out block-text'
+                ]">{{ t("logout") }}</span>
+            </button>
+
         </div>
+
 
     </aside>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { oaStyle } from '@/assets/tailwindcss';
-import { Menu } from '@/types/common';
 import { useSystemStore } from '@/stores/system.storage';
+import { useAuth } from '@/composables/useAuth';
+import { useTranslate } from '@/composables/useTranslate';
+import { useMenuStore } from '@/stores/menu.storage';
+import { StructureType } from '@/types/entities';
+import { MenuTypeEnum } from '@/types/enum';
 
 const route = useRoute();
 const openMenus = ref<string[]>([]);
 const sysStorage = useSystemStore()
+const { logout } = useAuth()
+const { t } = useTranslate()
+const menuStor = useMenuStore()
 
-const menuItems = ref<Menu[]>([
-    { name: 'Tổng quan', icon: 'fa-solid fa-house', href: '/oa/dashboard' },
-    { name: 'Người dùng', icon: 'fa-solid fa-user', href: '/oa/users' },
-    { name: 'Kịch bản tin nhắn', icon: 'fa-solid fa-folder', href: '/oa/scripts' },
-    {
-        name: 'Từ khóa',
-        icon: 'fa-solid fa-sliders',
-        items: [
-            { name: 'Từ khóa cơ bản', href: '/oa/keywords/basic' },
-            { name: 'Hỏi đáp AI', href: '/oa/keywords/ai' }
-        ]
-    },
-    { name: 'Tin nhắn chào mừng', icon: 'fa-solid fa-comment-dots', href: '/oa/welcome' },
-]);
+const currentMenus = computed(() => {
+    const segments = route.path.split('/').filter(Boolean)
+
+    // admin/system/user
+    // => ['admin','system','user']
+
+    const currentParent = segments[1] // system
+
+    return menuStor.menuList.find(
+        item => item.code === currentParent
+    )?.children || []
+})
+
 
 const toggleSubMenu = (menuName: string) => {
     const index = openMenus.value.indexOf(menuName);
@@ -117,10 +121,19 @@ const toggleSubMenu = (menuName: string) => {
     }
 };
 
-const isParentActive = (item: Menu): boolean => {
-    if (!item.items) return false;
-    return item.items.some(sub => route.path === sub.href);
+const isParentActive = (item: StructureType): boolean => {
+    if (!item.children) return false;
+    return item.children.some(sub => route.path === sub.path);
 };
+
+const countChildPage = (list: StructureType) => {
+    if (list.children.length > 0) {
+        let count = 0
+        list.children.forEach(i => i.menuType == MenuTypeEnum.PAGE && count++)
+
+        return count >= 2
+    } else return false
+}
 </script>
 
 <style scoped>

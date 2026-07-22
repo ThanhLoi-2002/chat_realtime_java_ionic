@@ -4,7 +4,7 @@
         <ion-content :scroll-y="false">
             <div :class="['flex h-full w-full overflow-hidden', oaStyle.bg.primary]">
                 <OASidebar />
-                <main class="flex-1 h-full overflow-auto py-2 px-4">
+                <main class="flex-1 h-full overflow-auto">
                     <router-view />
                 </main>
             </div>

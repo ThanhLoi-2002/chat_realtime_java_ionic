@@ -136,5 +136,11 @@ export const useStructure = () => {
         return userPermissions.includes(requiredPermission);
     }
 
-    return { getMenusByType, findParent, checkRouteActive, findCurrentMenuChildren, getPagePath, getPermissionByCode }
+    //Lấy route đầu tiên của menu
+    const buildFirstRoute = (node: StructureType) => {
+        console.log(node.children.length > 0 ? node.children[0].path : '')
+        return node.children.length > 0 ? node.children[0].path : ''
+    }
+
+    return { getMenusByType, findParent, checkRouteActive, findCurrentMenuChildren, getPagePath, getPermissionByCode, buildFirstRoute }
 }

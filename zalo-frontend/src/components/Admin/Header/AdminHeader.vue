@@ -70,13 +70,8 @@ import { useRoute } from 'vue-router';
 const route = useRoute();
 const userStorage = useUserStore()
 const sysStorage = useSystemStore()
-const { getMenusByType, checkRouteActive } = useStructure()
+const { getMenusByType, checkRouteActive, buildFirstRoute } = useStructure()
 
 const { t } = useTranslate()
-
-const buildFirstRoute = (node: StructureType) => {
-    console.log(node.children.length > 0 ? node.children[0].path : '')
-    return node.children.length > 0 ? node.children[0].path : ''
-}
 
 </script>

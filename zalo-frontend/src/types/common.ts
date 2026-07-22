@@ -1,4 +1,4 @@
-import { MediaType, MessageType, StickerItemType } from "./entities";
+import { MediaType, StickerItemType } from "./entities";
 import { ModuleEnum, MessageEnum, ResourceEnum } from "./enum";
 
 export type IResponse<T = any> = {
@@ -159,13 +159,6 @@ export type TranslateMessageType = {
 export interface SubMenu {
   name: string;
   href: string;
-}
-
-export interface Menu {
-  name: string;
-  icon: string;
-  href?: string;
-  items?: SubMenu[];
 }
 
 export type StructureSortType = {

@@ -34,6 +34,7 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       {
         path: '',
+        name: 'adminIndex',
         component: () => import('../views/Admin/Index.vue')
       },
     ]

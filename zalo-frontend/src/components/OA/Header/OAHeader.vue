@@ -11,7 +11,7 @@
 
             <nav class="flex space-x-6 text-sm font-medium mt-2">
                 <router-link v-for="item in getMenusByType(2)" :key="item.id" :to="item.path" custom>
-                    <div @click="$router.push(item.path)" :class="[
+                    <div v-if="item.children.length > 0" @click="$router.push(buildFirstRoute(item))" :class="[
                         'flex flex-col items-center cursor-pointer pb-2 border-b-2 transition-all',
                         checkRouteActive(item.path)
                             ? [oaStyle.text.active, oaStyle.border.active, 'font-semibold']
@@ -23,27 +23,29 @@
                 </router-link>
             </nav>
 
-            <a :href="ADMIN_ROUTE.home">
-                <div :class="[
-                    oaStyle.text.secondary,
-                    oaStyle.text.hover,
-                    'flex flex-col items-center cursor-pointer',
-                ]">
-                    <i class="fas fa-undo text-sm"></i>
-                    <p class="mt-1">{{ t('admin') }}</p>
-                </div>
-            </a>
+            <div class="flex gap-4">
+                <a :href="ADMIN_ROUTE.home">
+                    <div :class="[
+                        oaStyle.text.secondary,
+                        oaStyle.text.hover,
+                        'flex flex-col items-center cursor-pointer',
+                    ]">
+                        <i class="fas fa-undo text-sm"></i>
+                        <p class="mt-1">{{ t('admin') }}</p>
+                    </div>
+                </a>
 
-            <a :href="APP_ROUTE.index">
-                <div :class="[
-                    oaStyle.text.secondary,
-                    oaStyle.text.hover,
-                    'flex flex-col items-center cursor-pointer',
-                ]">
-                    <i class="fas fa-undo text-sm"></i>
-                    <p class="mt-1">{{ t('chat') }}</p>
-                </div>
-            </a>
+                <a :href="APP_ROUTE.index">
+                    <div :class="[
+                        oaStyle.text.secondary,
+                        oaStyle.text.hover,
+                        'flex flex-col items-center cursor-pointer',
+                    ]">
+                        <i class="fas fa-undo text-sm"></i>
+                        <p class="mt-1">{{ t('chat') }}</p>
+                    </div>
+                </a>
+            </div>
 
             <div class="flex items-center space-x-4">
                 <theme-toggle custom-class="p-2" />
@@ -74,7 +76,7 @@ import { useRoute } from 'vue-router';
 const route = useRoute();
 const userStorage = useUserStore()
 const sysStorage = useSystemStore()
-const { getMenusByType, checkRouteActive } = useStructure()
+const { getMenusByType, checkRouteActive, buildFirstRoute } = useStructure()
 
 interface MenuType {
     title: string

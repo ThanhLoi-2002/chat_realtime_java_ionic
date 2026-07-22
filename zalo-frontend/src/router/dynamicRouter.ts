@@ -5,6 +5,7 @@ import { RouteRecordRaw } from 'vue-router';
 // 1. Quét toàn bộ file .vue trong thư mục views
 // Hãy thay đổi đường dẫn '../../views/**/*.vue' cho khớp với vị trí đặt file của bạn
 const modules = import.meta.glob('../views/**/*.vue');
+// console.log('Danh sách modules Vite quét được:', Object.keys(modules));
 
 /**
  * Hàm đệ quy duyệt cây menu, lọc và chuyển đổi thành mảng phẳng các Route dạng Vue Router
