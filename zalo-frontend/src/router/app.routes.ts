@@ -1,5 +1,5 @@
 import { AppTypeEnum } from "@/types/enum.ts";
-import { APP_ROUTE, ROUTE } from "@/utils/constant.ts";
+import { ADMIN_ROUTE, APP_ROUTE, OA_ROUTE, ROUTE } from "@/utils/constant.ts";
 import { RouteRecordRaw } from "vue-router";
 
 export const appRoutes: RouteRecordRaw[] = [
@@ -8,9 +8,18 @@ export const appRoutes: RouteRecordRaw[] = [
         redirect: APP_ROUTE.index
     },
     {
+        path: ROUTE.OA_DASHBOARD.INDEX,
+        redirect: OA_ROUTE.home
+    },
+    // {
+    //     path: ROUTE.ADMIN_DASHBOARD.INDEX,
+    //     redirect: ADMIN_ROUTE.home
+    // },
+    {
         path: ROUTE.APP.INDEX,
         name: AppTypeEnum.APP,
-        meta: { layout: "main", requiresAuth: true },
+        component: () => import('../layouts/MainLayout.vue'),
+        meta: { requiresAuth: true },
         children: [
             {
                 path: ROUTE.APP.CHATS,
@@ -26,21 +35,11 @@ export const appRoutes: RouteRecordRaw[] = [
             },
         ]
     },
-    {
-        path: `${ROUTE.APP.JOIN_GROUP}/:code`,
-        component: () => import('../views/App/JoinGroup/JoinGroup.vue'),
-        meta: { layout: "noLayout", requiresAuth: false }
-    },
-    {
-        path: `${ROUTE.APP.SCAN}`,
-        component: () => import('../views/App/Scan/QrCodeScannerPage.vue'),
-        meta: { layout: "noLayout", requiresAuth: false }
-    },
 
     // -------------------- AUTH ROUTES --------------------
     {
         path: "",
-        meta: { layout: "auth" },
+        component: () => import('../layouts/AuthLayout.vue'),
         children: [
             {
                 path: ROUTE.LOGIN,
@@ -56,20 +55,32 @@ export const appRoutes: RouteRecordRaw[] = [
     },
 
     {
-        path: ROUTE.FORBIDDEN,
-        component: () => import('../views/App/Error/ForbiddenPage.vue'),
-        meta: { layout: "noLayout", requiresAuth: false }
-    },
-
-    {
-        path: ROUTE.NOT_FOUND,
-        component: () => import('../views/App/Error/NotFoundPage.vue'),
-        meta: { layout: "noLayout", requiresAuth: false }
-    },
-
-    {
-        path: '/:pathMatch(.*)*',
-        component: () => import('../views/App/Error/NotFoundPage.vue'),
-        meta: { layout: "noLayout", requiresAuth: false }
-    },
+        path: '',
+        component: () => import('../layouts/NoLayout.vue'),
+        meta: { requiresAuth: false },
+        children: [
+            {
+                path: `${ROUTE.APP.JOIN_GROUP}/:code`,
+                component: () => import('../views/App/JoinGroup/JoinGroup.vue'),
+                meta: { requiresAuth: false }
+            },
+            {
+                path: `${ROUTE.APP.SCAN}`,
+                component: () => import('../views/App/Scan/QrCodeScannerPage.vue'),
+                meta: { requiresAuth: false }
+            },
+            {
+                path: ROUTE.FORBIDDEN,
+                component: () => import('../views/App/Error/ForbiddenPage.vue')
+            },
+            {
+                path: ROUTE.NOT_FOUND,
+                component: () => import('../views/App/Error/NotFoundPage.vue')
+            },
+            {
+                path: ':pathMatch(.*)*',
+                component: () => import('../views/App/Error/NotFoundPage.vue')
+            }
+        ]
+    }
 ]

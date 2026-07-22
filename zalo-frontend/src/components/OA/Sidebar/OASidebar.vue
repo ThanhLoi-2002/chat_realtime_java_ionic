@@ -3,7 +3,7 @@
         oaStyle.border.primary,
         oaStyle.bg.primary,
         sysStorage.showSidebar ? 'w-20' : 'w-64',
-        'border-r p-4 hidden md:flex flex-col min-h-screen transition-all duration-300 ease-in-out relative select-none'
+        'border-r p-4 flex flex-col min-h-screen transition-all duration-300 ease-in-out relative select-none'
     ]">
         <!-- <button @click="isCollapsed = !isCollapsed"
             :class="[oaStyle.bg.secondary, oaStyle.bg.hover, oaStyle.text.primary]"

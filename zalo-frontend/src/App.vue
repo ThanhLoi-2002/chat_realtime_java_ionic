@@ -1,6 +1,6 @@
 <template>
   <ion-app>
-    <component :is="layouts[route.meta.layout] || 'div'">
+    <!-- <component :is="layouts[route.meta.layout] || 'div'"> -->
       <div class="loading-container" v-if="userStorage.isAuthLoading">
         <div class="text-center">
           <loading-spinner size="40px" />
@@ -8,7 +8,7 @@
         </div>
       </div>
       <router-view v-else />
-    </component>
+    <!-- </component> -->
 
     <confirm-modal v-model:showConfirm="confirmStore.show" :header="confirmStore.title" :message="confirmStore.message"
       :onOk="confirmStore.confirm" />
@@ -48,13 +48,13 @@ const { initPush } = usePushNotification()
 const { isMobile, logDeviceInfo, isSmartDevice } = useDevice()
 const confirmStore = useConfirmStore();
 
-const layouts: any = {
-  main: MainLayout,
-  auth: AuthLayout,
-  oa: OALayout,
-  admin: AdminLayout,
-  nolayout: NoLayout
-}
+// const layouts: any = {
+//   main: MainLayout,
+//   auth: AuthLayout,
+//   oa: OALayout,
+//   admin: AdminLayout,
+//   nolayout: NoLayout
+// }
 
 // logDeviceInfo()
 

@@ -47,7 +47,7 @@ import { IonContent, IonPage } from '@ionic/vue'
           <!-- RIGHT LOGIN -->
           <div class="w-full lg:w-1/2 flex items-center justify-center p-6
                    bg-white dark:bg-gray-800 transition-colors">
-            <slot />
+            <router-view />
 
           </div>
 

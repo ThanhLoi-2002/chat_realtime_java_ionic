@@ -7,7 +7,7 @@
         <sidebar />
 
         <main class="flex-1 overflow-auto">
-          <slot />
+          <router-view />
         </main>
 
       </div>

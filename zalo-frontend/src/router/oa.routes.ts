@@ -8,8 +8,8 @@ export const oaRoutes: RouteRecordRaw = {
     meta: { layout: "oa", requiresAuth: true },
     children: [
         {
-            path: ROUTE.OA_DASHBOARD.HOME,
-            component: () => import('../views/OA/Home/Home.vue')
+            path: ROUTE.OA_DASHBOARD.DASHBOARD,
+            component: () => import('../views/OA/Dashboard/Dashboard.vue')
         },
         {
             path: ROUTE.OA_DASHBOARD.CHATBOT,

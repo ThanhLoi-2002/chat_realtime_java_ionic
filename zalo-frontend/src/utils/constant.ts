@@ -27,22 +27,22 @@ export const ROUTE = {
         SCAN: "/scan",
     },
     OA_DASHBOARD: {
-        INDEX: "/oa-dashboard",
-        HOME: "home",
-        CHATBOT: "chatbot",
-        MANAGEMENT: "management"
+        INDEX: "/oa",
+        DASHBOARD: "dashboard",
+        // CHATBOT: "chatbot",
+        // MANAGEMENT: "management"
     },
     ADMIN_DASHBOARD: {
         INDEX: "/admin",
-        SYSTEM: 'system',
-        STRUCTURE: "structure",
-        ROLE: "role",
-        USER_ROLE: "user-role",
-        USER_ROLE_EDIT: "edit",
-        USER: "user",
-        LANG: "lang",
-        PERMISSION: 'permission',
-        SET_ACCESS: 'set-access'
+        // SYSTEM: 'system',
+        // STRUCTURE: "structure",
+        // ROLE: "role",
+        // USER_ROLE: "user-role",
+        // USER_ROLE_EDIT: "edit",
+        // USER: "user",
+        // LANG: "lang",
+        // PERMISSION: 'permission',
+        // SET_ACCESS: 'set-access'
     },
 
     NOT_FOUND: "/notFound",
@@ -56,17 +56,17 @@ export const APP_ROUTE = {
 }
 
 export const OA_ROUTE = {
-    home: `${ROUTE.OA_DASHBOARD.INDEX}/${ROUTE.OA_DASHBOARD.HOME}`,
-    chatbot: `${ROUTE.OA_DASHBOARD.INDEX}/${ROUTE.OA_DASHBOARD.CHATBOT}`,
-    management: `${ROUTE.OA_DASHBOARD.INDEX}/${ROUTE.OA_DASHBOARD.MANAGEMENT}`,
+    home: `${ROUTE.OA_DASHBOARD.INDEX}/${ROUTE.OA_DASHBOARD.DASHBOARD}`,
+    // chatbot: `${ROUTE.OA_DASHBOARD.INDEX}/${ROUTE.OA_DASHBOARD.CHATBOT}`,
+    // management: `${ROUTE.OA_DASHBOARD.INDEX}/${ROUTE.OA_DASHBOARD.MANAGEMENT}`,
 }
 
 export const ADMIN_ROUTE = {
     home: `${ROUTE.ADMIN_DASHBOARD.INDEX}`,
-    structure: `${ROUTE.ADMIN_DASHBOARD.INDEX}/${ROUTE.ADMIN_DASHBOARD.SYSTEM}/${ROUTE.ADMIN_DASHBOARD.STRUCTURE}`,
-    role: `${ROUTE.ADMIN_DASHBOARD.INDEX}/${ROUTE.ADMIN_DASHBOARD.SYSTEM}/${ROUTE.ADMIN_DASHBOARD.ROLE}`,
-    lang: `${ROUTE.ADMIN_DASHBOARD.INDEX}/${ROUTE.ADMIN_DASHBOARD.SYSTEM}/${ROUTE.ADMIN_DASHBOARD.LANG}`,
-    permission: `${ROUTE.ADMIN_DASHBOARD.INDEX}/${ROUTE.ADMIN_DASHBOARD.SYSTEM}/${ROUTE.ADMIN_DASHBOARD.PERMISSION}`,
+    // structure: `${ROUTE.ADMIN_DASHBOARD.INDEX}/${ROUTE.ADMIN_DASHBOARD.SYSTEM}/${ROUTE.ADMIN_DASHBOARD.STRUCTURE}`,
+    // role: `${ROUTE.ADMIN_DASHBOARD.INDEX}/${ROUTE.ADMIN_DASHBOARD.SYSTEM}/${ROUTE.ADMIN_DASHBOARD.ROLE}`,
+    // lang: `${ROUTE.ADMIN_DASHBOARD.INDEX}/${ROUTE.ADMIN_DASHBOARD.SYSTEM}/${ROUTE.ADMIN_DASHBOARD.LANG}`,
+    // permission: `${ROUTE.ADMIN_DASHBOARD.INDEX}/${ROUTE.ADMIN_DASHBOARD.SYSTEM}/${ROUTE.ADMIN_DASHBOARD.PERMISSION}`,
 }
 
 export const EMOJI_MAP = {

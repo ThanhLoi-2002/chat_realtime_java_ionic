@@ -15,20 +15,27 @@ const routes: Array<RouteRecordRaw> = [
   ...appRoutes,
 
   // -------------------- OA ROUTES --------------------
-  oaRoutes,
+  // oaRoutes,
+  {
+    path: ROUTE.OA_DASHBOARD.INDEX,
+    name: AppTypeEnum.OA,
+    component: () => import('../layouts/OALayout.vue'),
+    meta: { requiresAuth: true },
+    children: []
+  },
 
   // -------------------- ADMIN ROUTES --------------------
   // adminRoutes,
   {
     path: ROUTE.ADMIN_DASHBOARD.INDEX,
     name: AppTypeEnum.ADMIN,
-    meta: { layout: "admin", requiresAuth: true },
+    component: () => import('../layouts/AdminLayout.vue'),
+    meta: { requiresAuth: true },
     children: [
       {
         path: '',
         component: () => import('../views/Admin/Index.vue')
       },
-
     ]
   }
 ]

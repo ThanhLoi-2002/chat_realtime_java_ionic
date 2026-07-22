@@ -2,7 +2,7 @@
     <div class="d-flex flex-column min-vh-100">
 
         <main class="grow">
-            <slot />
+            <router-view />
         </main>
 
     </div>
