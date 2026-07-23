@@ -1,5 +1,6 @@
 package com.zalo.modules.admin.system.structure.service;
 
+import com.zalo.common.configuration.json.G;
 import com.zalo.modules.admin.system.structure.dto.request.StructureSortRequest;
 import com.zalo.modules.admin.system.structure.dto.response.StructureResponse;
 import com.zalo.modules.admin.system.structure.entity.AppType;
