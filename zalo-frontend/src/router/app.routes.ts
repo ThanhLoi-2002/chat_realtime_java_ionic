@@ -1,10 +1,10 @@
 import { AppTypeEnum } from "@/types/enum.ts";
-import { ADMIN_ROUTE, APP_ROUTE, OA_ROUTE, ROUTE } from "@/utils/constant.ts";
+import { APP_ROUTE, OA_ROUTE, ROUTE } from "@/utils/constant.ts";
 import { RouteRecordRaw } from "vue-router";
 
 export const appRoutes: RouteRecordRaw[] = [
     {
-        path: '/',
+        path: '',
         redirect: APP_ROUTE.index
     },
     {
@@ -38,18 +38,17 @@ export const appRoutes: RouteRecordRaw[] = [
 
     // -------------------- AUTH ROUTES --------------------
     {
-        path: "",
+        path: "/auth",
         component: () => import('../layouts/AuthLayout.vue'),
+        meta: { guestOnly: true },
         children: [
             {
-                path: ROUTE.LOGIN,
+                path: 'login',
                 component: () => import('../views/App/Auth/LoginPage.vue'),
-                meta: { guestOnly: true }
             },
             {
-                path: ROUTE.REGISTER,
+                path: 'register',
                 component: () => import('../views/App/Auth/RegisterPage.vue'),
-                meta: { guestOnly: true }
             }
         ]
     },

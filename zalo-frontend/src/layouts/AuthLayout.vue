@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { oaStyle } from "@/assets/tailwindcss";
 import ThemeToggle from "@/components/Shared/Toggle/ThemeToggle.vue";
 import { IonContent, IonPage } from '@ionic/vue'
 </script>
@@ -8,7 +9,7 @@ import { IonContent, IonPage } from '@ionic/vue'
 
     <ion-content>
       <!-- background toàn trang -->
-      <div class="bg-gray-100 dark:bg-gray-900 min-h-screen transition-colors duration-300">
+      <div :class="[oaStyle.bg.secondary, 'min-h-screen transition-colors duration-300']">
 
         <!-- toggle -->
         <div class="absolute top-4 right-4">
