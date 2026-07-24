@@ -21,20 +21,24 @@ import java.util.stream.Collectors;
 public class StructureService {
     StructureRepository structureRepository;
 
-    public Map<AppType, List<StructureResponse>> getMenuTree() {
+    public Map<AppType, StructureResponse> getMenuTree() {
         List<Structure> allMenus = structureRepository.findBySttOrderBySortAsc(1);
 
         return allMenus.stream()
                 .collect(Collectors.groupingBy(Structure::getAppType))
                 .entrySet()
                 .stream()
+                .map(entry -> Map.entry(entry.getKey(), buildTree(entry.getValue())))
+                .sorted(Comparator.comparing(entry -> entry.getValue().getSort()))
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
-                        entry -> buildTree(entry.getValue())
+                        Map.Entry::getValue,
+                        (a, b) -> a,
+                        LinkedHashMap::new
                 ));
     }
 
-    private List<StructureResponse> buildTree(List<Structure> menus) {
+    private StructureResponse buildTree(List<Structure> menus) {
 
         List<StructureResponse> nodes = menus.stream()
                 .map(StructureResponse::new)
@@ -68,11 +72,11 @@ public class StructureService {
             );
         }
 
-        roots.sort(
-                Comparator.comparing(StructureResponse::getSort)
-        );
+//        roots.sort(
+//                Comparator.comparing(StructureResponse::getSort)
+//        );
 
-        return roots;
+        return roots.get(0);
     }
 
     public List<Structure> getTrashMenu() {
@@ -89,7 +93,7 @@ public class StructureService {
         }
     }
 
-    public List<StructureResponse> getMenuByUser(Long userId, AppType appType, List<String> permissions, List<String> roles) {
+    public StructureResponse getMenuByUser(Long userId, AppType appType, List<String> permissions, List<String> roles) {
         List<Structure> menus = structureRepository.findBySttAndAppTypeOrderBySortAsc(1, appType);
 
         List<Structure> menusByPermissions = menus.stream()

@@ -37,15 +37,15 @@ export const useMenuStore = defineStore('menu', {
             removeRouteCallbacks = [];
 
             // 2. Fetch danh sách menu từ Server
-            const rawMenu: StructureType[] = await structureStor.getMenuByUser(appType);
+            const rawMenu: StructureType = await structureStor.getMenuByUser(appType);
             
-            if (!rawMenu || rawMenu.length === 0 || !rawMenu[0].children || rawMenu[0].children.length === 0) {
+            if (!rawMenu || rawMenu.children.length === 0) {
                 console.warn(`[Router] Menu của app ${appType} rỗng. Bỏ qua nạp route.`);
                 this.menuList = []; 
                 return; // Thoát sớm, cờ isLoaded vẫn là true nên Guard sẽ không gọi lại nữa
             }
 
-            this.menuList = rawMenu[0].children;
+            this.menuList = rawMenu.children;
 
             // 3. Phân tách cây và nạp route động
             const newRoutes = generateRoutesFromMenu(this.menuList);

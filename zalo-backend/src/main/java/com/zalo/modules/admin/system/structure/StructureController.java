@@ -27,7 +27,7 @@ public class StructureController {
 
     @GetMapping("/tree")
     @RequiresPermission(PermissionConstant.ADMIN.Structure.READ)
-    public Map<AppType, List<StructureResponse>> getTree() {
+    public Map<AppType, StructureResponse> getTree() {
         return structureService.getMenuTree();
     }
 
@@ -38,7 +38,7 @@ public class StructureController {
     }
 
     @GetMapping("/menu-by-user")
-    public List<StructureResponse> getMenuByUser(@CurrentUser UserPayload user, @RequestParam AppType appType) {
+    public StructureResponse getMenuByUser(@CurrentUser UserPayload user, @RequestParam AppType appType) {
         return structureService.getMenuByUser(user.getId(), appType, user.getPermissions(), user.getRoles());
     }
 

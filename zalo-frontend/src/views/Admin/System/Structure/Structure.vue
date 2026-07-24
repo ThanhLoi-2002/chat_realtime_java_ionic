@@ -39,7 +39,7 @@
                 </div>
 
                 <div :class="[oaStyle.bg.primary, 'p-4 flex-1 overflow-y-auto space-y-6']">
-                    <div v-for="(rootNodes, appKey) in structureStor.tree" :key="appKey"
+                    <div v-for="(rootNode, appKey) in structureStor.tree" :key="appKey"
                         :class="[oaStyle.border.primary, 'border rounded p-3']">
 
                         <div :class="[oaStyle.bg.primary, oaStyle.border.primary, oaStyle.text.active]"
@@ -48,7 +48,7 @@
                         </div>
 
                         <div class="pl-2">
-                            <TreeNode v-for="rootNode in rootNodes" :key="rootNode.id" :node="rootNode"
+                            <TreeNode :key="rootNode.id" :node="rootNode"
                                 :selected-id="selectedNode?.id" @select="selectNode" @add-child="addChildNode"
                                 :sortable="isSortMode"
                                 @drag-node="(dragId, dropId) => swapNode(appKey, dragId, dropId)" />
@@ -74,7 +74,7 @@
                     <form @submit.prevent="submitForm" class="space-y-3.5">
                         <div>
                             <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{ t('PID')
-                            }}</label>
+                                }}</label>
                             <select v-model="form.pid" @change="onPidChange"
                                 :class="[oaStyle.border.primary, oaStyle.bg.primary, oaStyle.text.secondary, 'w-full p-2 border rounded outline-none']">
                                 <option v-for="opt in allNodesFlat" :key="opt.id" :value="opt.id">
@@ -114,7 +114,7 @@
 
                         <div>
                             <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{ t('icon')
-                            }}</label>
+                                }}</label>
                             <input v-model="form.icon" type="text"
                                 :class="[oaStyle.border.primary, 'w-full p-2 border rounded outline-none focus:border-blue-600/50']" />
                         </div>
@@ -136,7 +136,7 @@
                         <div class="flex justify-between">
                             <div>
                                 <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{ t('status')
-                                    }}</label>
+                                }}</label>
                                 <div :class="[oaStyle.text.secondary, 'flex gap-4 mt-1 font-medium']">
                                     <label class="flex items-center gap-1 cursor-pointer"><input type="radio"
                                             v-model="form.stt" :value="1"> {{ t('active') }}</label>
@@ -146,7 +146,7 @@
                             </div>
                             <div>
                                 <label :class="[oaStyle.text.secondary, 'block text-xs font-bold mb-1']">{{ t('type')
-                                    }}</label>
+                                }}</label>
                                 <div :class="[oaStyle.text.secondary, 'flex gap-4 mt-1 font-medium']">
                                     <label v-for="type in menuType" :key="type"
                                         class="flex items-center gap-1 cursor-pointer"><input type="radio" required
@@ -307,9 +307,9 @@ const swapNode = (
     targetId: number
 ) => {
 
-    const roots = structureStor.tree[appKey];
+    const root = structureStor.tree[appKey];
 
-    if (!roots) return;
+    if (!root) return;
 
     const swapInLevel = (
         nodes: StructureType[]
@@ -353,16 +353,16 @@ const swapNode = (
         return false;
     };
 
-    swapInLevel(roots);
+    swapInLevel(root.children);
     syncFlatList();
 };
 
 const syncFlatList = () => {
     const flat: StructureType[] = [];
-    const rec = (nodes: StructureType[]) => {
-        nodes.forEach(n => {
+    const rec = (nodes: StructureType) => {
+        nodes.children.forEach(n => {
             flat.push(n);
-            if (n.children && n.children.length > 0) rec(n.children);
+            if (n.children && n.children.length > 0) rec(n);
         });
     };
     Object.keys(structureStor.tree).forEach((k) => rec(structureStor.tree[k]));
@@ -372,11 +372,11 @@ const syncFlatList = () => {
 const saveTreeOrder = () => {
     const updates: Array<{ id: number; pid: number; sort: number }> = [];
 
-    const flatTree = (nodes: StructureType[], parentId: number) => {
-        nodes.forEach((node, index) => {
+    const flatTree = (nodes: StructureType, parentId: number) => {
+        nodes.children.forEach((node, index) => {
             updates.push({ id: node.id, pid: parentId, sort: index });
             if (node.children && node.children.length > 0) {
-                flatTree(node.children, node.id);
+                flatTree(node, node.id);
             }
         });
     };

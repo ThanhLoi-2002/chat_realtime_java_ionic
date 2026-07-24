@@ -6,7 +6,7 @@ import { toast } from '@/utils/toast'
 import { defineStore } from 'pinia'
 
 interface State {
-    tree: Record<string, StructureType[]>
+    tree: Record<string, StructureType>
     trashes: StructureType[]
     isLoading: boolean
 }
@@ -21,6 +21,10 @@ export const useAdminStructureStore = defineStore('adminStructure', {
         async getTree() {
             try {
                 const result: any = await structureApi.getTree();
+                // const sorted = Object.fromEntries(
+                //     Object.entries(result.result).sort(([, a]: any, [, b]: any) => a.sort - b.sort)
+                // ) as Record<string, StructureType>;
+
                 this.tree = result.result
             } catch (e: any) {
                 toast({
