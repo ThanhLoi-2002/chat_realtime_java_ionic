@@ -48,7 +48,8 @@ const router = createRouter({
 
 // -------------------- GLOBAL GUARD --------------------
 router.beforeEach(async (to) => {
-  console.log(router.getRoutes())
+  // console.log(router.getRoutes())
+  console.log(JSON.stringify(router.options.routes, null, 2));
   const userStore = useUserStore()
   const menuStor = useMenuStore()
   const accessToken = getKey(ACCESS_TOKEN)

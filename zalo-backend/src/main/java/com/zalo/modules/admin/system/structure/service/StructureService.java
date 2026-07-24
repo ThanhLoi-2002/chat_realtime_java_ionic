@@ -40,43 +40,32 @@ public class StructureService {
 
     private StructureResponse buildTree(List<Structure> menus) {
 
-        List<StructureResponse> nodes = menus.stream()
+        Map<Long, StructureResponse> nodeMap = menus.stream()
                 .map(StructureResponse::new)
-                .toList();
-
-        Map<Long, StructureResponse> nodeMap = nodes.stream()
                 .collect(Collectors.toMap(
                         StructureResponse::getId,
                         node -> node
                 ));
 
-        List<StructureResponse> roots = new ArrayList<>();
+        StructureResponse root = null;
 
-        for (StructureResponse node : nodes) {
+        for (StructureResponse node : nodeMap.values()) {
             if (node.getPid() == null || node.getPid() == 0) {
-                roots.add(node);
+                root = node;
             } else {
+                // parent có tham chiếu với nodeMap
                 StructureResponse parent = nodeMap.get(node.getPid());
-
                 if (parent != null) {
                     parent.getChildren().add(node);
-                } else {
-                    roots.add(node);
                 }
             }
         }
 
-        for (StructureResponse node : nodes) {
-            node.getChildren().sort(
-                    Comparator.comparing(StructureResponse::getSort)
-            );
-        }
+        nodeMap.values().forEach(node ->
+                node.getChildren().sort(Comparator.comparing(StructureResponse::getSort))
+        );
 
-//        roots.sort(
-//                Comparator.comparing(StructureResponse::getSort)
-//        );
-
-        return roots.get(0);
+        return root;
     }
 
     public List<Structure> getTrashMenu() {
