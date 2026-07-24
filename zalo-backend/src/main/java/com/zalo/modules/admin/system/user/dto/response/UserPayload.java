@@ -19,8 +19,6 @@ public class UserPayload {
 //    File cover;
 
     int isOa;
-    Long oaId;
-    Long ownerOaId;
 
     List<String> roles;
     List<String> permissions;

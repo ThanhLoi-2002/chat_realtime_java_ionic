@@ -21,17 +21,13 @@ import java.util.concurrent.ThreadLocalRandom;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "user")
-public class User extends BaseEntity implements UserDetails {
+public class User extends BaseEntity {
     String username;
 
     @Column(nullable = false)
     String password;
     @Column(nullable = false, unique = true)
     String phone;
-
-    @Column(name = "oa_id", unique = true)
-    Long oaId;
-    Long ownerOaId;
 
     int isOa;
 
@@ -48,20 +44,4 @@ public class User extends BaseEntity implements UserDetails {
 
     @Column(columnDefinition = "TEXT")
     String fcmToken;    // Token dài do Firebase cấp
-
-//    List<String> roles;
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
-//        return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-    }
-
-    public void generateOaId() {
-        long timestamp = System.currentTimeMillis();
-        long randomNumber = ThreadLocalRandom.current().nextLong(100, 1000);
-
-        // Gán trực tiếp số Nguyên vào, không cần ép kiểu qua String nữa
-        this.oaId = timestamp * 1000 + randomNumber;
-    }
 }

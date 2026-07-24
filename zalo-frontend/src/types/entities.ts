@@ -26,8 +26,6 @@ export type UserType = BaseType & {
     avatar: FileType
     cover: FileType
     isOa: number
-    oaId: number
-    ownerOaId: number
     roles: string[]
     permissions: string[]
 }

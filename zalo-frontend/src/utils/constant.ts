@@ -28,6 +28,7 @@ export const ROUTE = {
     },
     OA_DASHBOARD: {
         INDEX: "/oa",
+        ACCOUNTS: "accounts",
         DASHBOARD: "dashboard",
         // CHATBOT: "chatbot",
         // MANAGEMENT: "management"
@@ -56,6 +57,7 @@ export const APP_ROUTE = {
 }
 
 export const OA_ROUTE = {
+    accounts: `${ROUTE.OA_DASHBOARD.INDEX}/${ROUTE.OA_DASHBOARD.ACCOUNTS}`,
     home: `${ROUTE.OA_DASHBOARD.INDEX}/${ROUTE.OA_DASHBOARD.DASHBOARD}`,
     // chatbot: `${ROUTE.OA_DASHBOARD.INDEX}/${ROUTE.OA_DASHBOARD.CHATBOT}`,
     // management: `${ROUTE.OA_DASHBOARD.INDEX}/${ROUTE.OA_DASHBOARD.MANAGEMENT}`,

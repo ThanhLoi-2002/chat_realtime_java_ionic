@@ -21,7 +21,12 @@ const routes: Array<RouteRecordRaw> = [
     name: AppTypeEnum.OA,
     component: () => import('../layouts/OALayout.vue'),
     meta: { requiresAuth: true },
-    children: []
+    children: [
+      {
+        path: ROUTE.OA_DASHBOARD.ACCOUNTS,
+        component: () => import('../views/OA/AccountList/AccountList.vue')
+      },
+    ]
   },
 
   // -------------------- ADMIN ROUTES --------------------

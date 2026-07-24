@@ -11,13 +11,13 @@ export const oaRoutes: RouteRecordRaw = {
             path: ROUTE.OA_DASHBOARD.DASHBOARD,
             component: () => import('../views/OA/Dashboard/Dashboard.vue')
         },
-        {
-            path: ROUTE.OA_DASHBOARD.CHATBOT,
-            component: () => import('../views/OA/Chatbot/Chatbot.vue')
-        },
-        {
-            path: ROUTE.OA_DASHBOARD.MANAGEMENT,
-            component: () => import('../views/OA/Management/Management.vue')
-        },
+        // {
+        //     path: ROUTE.OA_DASHBOARD.CHATBOT,
+        //     component: () => import('../views/OA/Chatbot/Chatbot.vue')
+        // },
+        // {
+        //     path: ROUTE.OA_DASHBOARD.MANAGEMENT,
+        //     component: () => import('../views/OA/Management/Management.vue')
+        // },
     ]
 }

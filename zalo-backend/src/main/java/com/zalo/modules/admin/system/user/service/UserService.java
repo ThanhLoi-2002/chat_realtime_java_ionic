@@ -129,8 +129,9 @@ public class UserService {
         }
 
         userExisted.get().setIsOa(1);
-        userExisted.get().generateOaId();
         userRepository.save(userExisted.get());
+
+        // tạo oa đầu tiên
 
         return userExisted.get();
     }
