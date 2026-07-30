@@ -59,6 +59,11 @@ export const appRoutes: RouteRecordRaw[] = [
         meta: { requiresAuth: false },
         children: [
             {
+                path: `${ROUTE.APP.REGISTER_OA}`,
+                component: () => import('../views/App/RegisterOa/RegisterOa.vue'),
+                meta: { requiresAuth: false }
+            },
+            {
                 path: `${ROUTE.APP.JOIN_GROUP}/:code`,
                 component: () => import('../views/App/JoinGroup/JoinGroup.vue'),
                 meta: { requiresAuth: false }

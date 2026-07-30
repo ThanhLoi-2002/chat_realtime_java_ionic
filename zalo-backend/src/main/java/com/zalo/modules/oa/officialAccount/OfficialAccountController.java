@@ -26,7 +26,7 @@ public class OfficialAccountController {
             @Valid @RequestBody CreateOaRequest request
     ) {
         OfficialAccount oa = officialAccountService.create(
-                user,
+                user.getId(),
                 request
         );
 
@@ -66,7 +66,18 @@ public class OfficialAccountController {
             @CurrentUser UserPayload user
     ) {
         return officialAccountService
-                .getMyOfficialAccounts(user)
+                .getMyOasActive(user)
+                .stream()
+                .map(OaResponse::new)
+                .toList();
+    }
+
+    @GetMapping()
+    public List<OaResponse> all(
+            @CurrentUser UserPayload user
+    ) {
+        return officialAccountService
+                .getMyOas(user)
                 .stream()
                 .map(OaResponse::new)
                 .toList();

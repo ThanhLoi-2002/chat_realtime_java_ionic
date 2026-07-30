@@ -72,3 +72,14 @@ export enum MenuTypeEnum {
     PAGE = "PAGE",
     SUB_PAGE = "SUB_PAGE"
 }
+
+export enum OaStatusEnum {
+    PENDING = "PENDING",
+    ACTIVE = "ACTIVE", 
+    DELETED = "DELETED"
+}
+
+export enum OaVerifiedEnum {
+    VERIFIED = "VERIFIED",
+    UNVERIFIED = "UNVERIFIED"
+}

@@ -1,6 +1,6 @@
 import { useDevice } from '@/composables/useDevice';
 import { useUserStore } from '@/stores/App/user.storage.ts';
-import { ACCESS_TOKEN, APP_ROUTE, ROUTE } from '@/utils/constant';
+import { ACCESS_TOKEN, APP_ROUTE, OA_ROUTE, ROUTE } from '@/utils/constant';
 import { getKey } from '@/utils/local';
 import { isPlatform } from '@ionic/vue';
 import { createRouter, createWebHistory } from '@ionic/vue-router';
@@ -22,11 +22,17 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../layouts/OALayout.vue'),
     meta: { requiresAuth: true },
     children: [
-      {
-        path: ROUTE.OA_DASHBOARD.ACCOUNTS,
-        component: () => import('../views/OA/AccountList/AccountList.vue')
-      },
+      // {
+      //   path: ROUTE.OA_DASHBOARD.ACCOUNTS,
+      //   component: () => import('../views/OA/AccountList/AccountList.vue')
+      // },
     ]
+  },
+
+  {
+    path: OA_ROUTE.accounts,
+    component: () => import('../views/OA/AccountList/AccountList.vue'),
+    meta: { requiresAuth: true },
   },
 
   // -------------------- ADMIN ROUTES --------------------

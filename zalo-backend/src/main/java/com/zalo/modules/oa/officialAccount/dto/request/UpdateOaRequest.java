@@ -1,6 +1,5 @@
 package com.zalo.modules.oa.officialAccount.dto.request;
 
-import com.zalo.common.entity.File;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -18,10 +17,10 @@ public class UpdateOaRequest {
 
     String description;
 
-    @NotBlank(message = "required")
+//    @NotBlank(message = "required")
     String category;
 
-    File avatar;
+    String avatar;
 
-    File cover;
+    String cover;
 }

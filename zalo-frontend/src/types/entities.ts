@@ -1,5 +1,5 @@
 import { FileType, GroupSetting, LinkMetadataType } from "./common"
-import { AppTypeEnum, ConversationEnum, DeliveryStatusEnum, FriendshipStatusEnum, MemberRoleEnum, MenuTypeEnum, MessageEnum, ModuleEnum, ReactionEnum, ResourceEnum, SystemMetadataEnum } from "./enum"
+import { AppTypeEnum, ConversationEnum, DeliveryStatusEnum, FriendshipStatusEnum, MemberRoleEnum, MenuTypeEnum, MessageEnum, ModuleEnum, OaStatusEnum, OaVerifiedEnum, ReactionEnum, ResourceEnum, SystemMetadataEnum } from "./enum"
 
 export type BaseType = {
     id: number
@@ -173,4 +173,24 @@ export type StructureType = BaseType & {
     path: string;
     menuType: MenuTypeEnum;
     children: StructureType[];
+}
+
+export type OaType = BaseType & {
+    code: string
+    username: string
+    name: string
+    phone: string
+    website: string
+    provine: string
+    district: string
+    address: string
+    showAddress: boolean
+    showCallButton: boolean
+    avatar: string
+    cover: string
+    description: string
+    category: string
+    workingHours: string
+    status: OaStatusEnum
+    verified: OaVerifiedEnum
 }

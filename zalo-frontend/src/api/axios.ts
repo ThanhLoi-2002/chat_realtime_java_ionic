@@ -82,13 +82,14 @@ instance.interceptors.response.use(
                 return instance(originalRequest);
 
             } catch (err) {
+                console.log(err)
                 isRefreshing = false;
                 queue = [];
 
                 deleteKey(ACCESS_TOKEN)
                 deleteKey(REFRESH_TOKEN)
 
-                window.location.href = '/'
+                // window.location.href = '/'
                 return Promise.reject(err);
             }
         }

@@ -18,7 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtService {
     public int tokenTime = 86400000; // millisecond 86400000
-    public int refreshTokenTime = tokenTime * 7;
+    public int refreshTokenTime = 86400000 * 7;
     private final RoleService roleService;
 
     private Key getKey() {

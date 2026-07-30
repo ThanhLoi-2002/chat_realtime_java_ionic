@@ -37,14 +37,14 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
 
         // 2. Kiểm tra nếu chưa được xác thực (chưa qua JwtFilter hoặc token lỗi)
         if (authentication == null || !authentication.isAuthenticated()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "expiredToken");
         }
 
         // 3. Lấy Principal ra (Nơi bạn đã nhét Object 'user' vào ở JwtFilter)
         Object principal = authentication.getPrincipal();
 
         if (!(principal instanceof UserPayload user)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid user principal type");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "expiredToken");
         }
 
         log.info("Lấy thành công user từ SecurityContextHolder: user={}", G.toJson(user));

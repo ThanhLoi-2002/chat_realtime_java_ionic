@@ -42,6 +42,7 @@ const props = defineProps<{
     title: string,
     goBack?: () => void
     isDisplayBackButton?: boolean
+    width?: string
 }>()
 
 const { t } = useTranslate()
@@ -98,12 +99,14 @@ watch(() => props.title, () => {
 })
 </script>
 
-<style>
+<style scoped>
 .custom-modal {
     --height: 85vh;
     /* 👈 chỉnh ở đây */
-    --width: 500px;
+    --width: v-bind('props.width ?? `500px`');
     --border-radius: 12px;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 /* Hoặc đơn giản hơn là ép div bọc slot */

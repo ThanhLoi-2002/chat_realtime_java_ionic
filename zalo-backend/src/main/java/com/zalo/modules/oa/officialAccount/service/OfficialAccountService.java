@@ -1,5 +1,6 @@
 package com.zalo.modules.oa.officialAccount.service;
 
+import com.zalo.common.service.CodeGeneratorService;
 import com.zalo.modules.admin.system.user.dto.response.UserPayload;
 import com.zalo.modules.admin.system.user.entities.User;
 import com.zalo.modules.admin.system.user.service.UserRepository;
@@ -22,29 +23,22 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class OfficialAccountService {
+
     private final OfficialAccountRepository officialAccountRepository;
-
     private final OfficialAccountMemberRepository memberRepository;
-
     private final UserRepository userRepository;
+    private final CodeGeneratorService codeGeneratorService;
 
     public OfficialAccount getById(Long oaId) {
-
         return officialAccountRepository
                 .findByIdAndStatus(oaId, OaStatus.ACTIVE)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.FORBIDDEN, "Official Account not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Official Account not found"));
     }
 
     private OfficialAccountMember getMember(Long oaId, Long userId) {
         return memberRepository
-                .findByOaIdAndUserIdAndStatus(
-                        oaId,
-                        userId,
-                        OaStatus.ACTIVE
-                )
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không thuộc OA này"));
+                .findByOaIdAndUserIdAndStatus(oaId, userId, OaMember.ACTIVE)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không thuộc OA này"));
     }
 
     public void checkMember(Long oaId, Long userId) {
@@ -52,37 +46,28 @@ public class OfficialAccountService {
     }
 
     private void checkOwner(Long oaId, Long userId) {
-
-        OfficialAccountMember member = getMember(oaId, userId);
-
-        if (!OaRole.OWNER.equals(member.getRole())) {
+        if (!isOwner(oaId, userId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Chỉ Owner được phép thực hiện");
         }
     }
 
-    private void checkAdmin(Long oaId,
-                            Long userId) {
-
-        OfficialAccountMember member = getMember(oaId, userId);
-
-        if (!OaRole.OWNER.equals(member.getRole())
-                && !OaRole.ADMIN.equals(member.getRole())) {
-
+    private void checkAdmin(Long oaId, Long userId) {
+        if (!isAdmin(oaId, userId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Không có quyền");
         }
     }
 
-    public OfficialAccount create(UserPayload currentUser, CreateOaRequest request) {
-
+    public OfficialAccount create(Long userId, CreateOaRequest request) {
         if (officialAccountRepository.existsByName(request.getName())) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tên OA đã tồn tại");
         }
 
-        User user = userRepository.findById(currentUser.getId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User không tồn tại"));
 
         OfficialAccount oa = OfficialAccount.builder()
                 .name(request.getName())
+                .code(codeGeneratorService.generate())
                 .avatar(request.getAvatar())
                 .cover(request.getCover())
                 .description(request.getDescription())
@@ -91,45 +76,30 @@ public class OfficialAccountService {
                 .verified(OaVerified.UNVERIFIED)
                 .build();
         oa.setCu(user.getId());
-
         oa = officialAccountRepository.save(oa);
 
-        OfficialAccountMember owner = OfficialAccountMember.builder()
+        memberRepository.save(OfficialAccountMember.builder()
                 .oaId(oa.getId())
                 .userId(user.getId())
                 .role(OaRole.OWNER)
                 .status(OaMember.ACTIVE)
                 .joinedAt(LocalDateTime.now())
-                .build();
-
-        memberRepository.save(owner);
-
-        /*
-            đánh dấu user đã có OA
-         */
+                .build());
 
         if (user.getIsOa() == 0) {
-
             user.setIsOa(1);
-
             userRepository.save(user);
         }
 
         return oa;
     }
 
-    public OfficialAccount update(UserPayload currentUser,
-                                  Long oaId,
-                                  UpdateOaRequest request) {
-
+    public OfficialAccount update(UserPayload currentUser, Long oaId, UpdateOaRequest request) {
         checkAdmin(oaId, currentUser.getId());
 
         OfficialAccount oa = getById(oaId);
 
-        if (officialAccountRepository.existsByNameAndIdNot(
-                request.getName(),
-                oaId
-        )) {
+        if (officialAccountRepository.existsByNameAndIdNot(request.getName(), oaId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tên OA đã tồn tại");
         }
 
@@ -142,40 +112,20 @@ public class OfficialAccountService {
         return officialAccountRepository.save(oa);
     }
 
-    public void delete(UserPayload currentUser,
-                       Long oaId) {
-
-        checkOwner(oaId, currentUser.getId());
+    public void delete(UserPayload currentUser, Long oaId) {
+        checkOwner(currentUser.getId(), oaId); // Hoặc checkOwner(oaId, currentUser.getId()) tùy theo thứ tự param cũ
 
         OfficialAccount oa = getById(oaId);
-
         oa.setStatus(OaStatus.DELETED);
-
         officialAccountRepository.save(oa);
 
-        List<OfficialAccountMember> members =
-                memberRepository.findAllByOaIdAndStatus(
-                        oaId,
-                        OaStatus.ACTIVE
-                );
-
-        for (OfficialAccountMember member : members) {
-
-            member.setStatus(OaMember.REMOVED);
-        }
-
+        List<OfficialAccountMember> members = memberRepository.findAllByOaIdAndStatus(oaId, OaStatus.ACTIVE);
+        members.forEach(member -> member.setStatus(OaMember.REMOVED));
         memberRepository.saveAll(members);
     }
 
-    public List<OfficialAccount> getMyOfficialAccounts(
-            UserPayload currentUser
-    ) {
-
-        List<OfficialAccountMember> members =
-                memberRepository.findAllByUserIdAndStatus(
-                        currentUser.getId(),
-                        OaStatus.ACTIVE
-                );
+    public List<OfficialAccount> getMyOasActive(UserPayload currentUser) {
+        List<OfficialAccountMember> members = memberRepository.findAllByUserIdAndStatus(currentUser.getId(), OaMember.ACTIVE);
 
         if (members.isEmpty()) {
             return Collections.emptyList();
@@ -185,50 +135,58 @@ public class OfficialAccountService {
                 .map(OfficialAccountMember::getOaId)
                 .toList();
 
-        return officialAccountRepository.findAllByIdInAndStatus(
-                ids,
-                OaStatus.ACTIVE
-        );
+        return officialAccountRepository.findAllByIdInAndStatus(ids, OaStatus.ACTIVE);
     }
 
-    public boolean hasPermission(Long oaId,
-                                 Long userId) {
+    public List<OfficialAccount> getMyOas(UserPayload currentUser) {
+        List<OfficialAccountMember> members = memberRepository.findAllByUserIdAndStatus(currentUser.getId(), OaMember.ACTIVE);
 
-        return memberRepository.existsByOaIdAndUserIdAndStatus(
-                oaId,
-                userId,
-                OaStatus.ACTIVE
-        );
+        if (members.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Long> ids = members.stream()
+                .map(OfficialAccountMember::getOaId)
+                .toList();
+
+        return officialAccountRepository.findAllById(ids);
     }
 
-    public boolean isOwner(Long oaId,
-                           Long userId) {
+    public boolean hasPermission(Long oaId, Long userId) {
+        return memberRepository.existsByOaIdAndUserIdAndStatus(oaId, userId, OaStatus.ACTIVE);
+    }
 
-        return memberRepository
-                .findByOaIdAndUserIdAndStatus(
-                        oaId,
-                        userId,
-                        OaStatus.ACTIVE
-                )
+    public boolean isOwner(Long oaId, Long userId) {
+        return memberRepository.findByOaIdAndUserIdAndStatus(oaId, userId, OaMember.ACTIVE)
                 .map(e -> OaRole.OWNER.equals(e.getRole()))
                 .orElse(false);
     }
 
-    public boolean isAdmin(Long oaId,
-                           Long userId) {
-
-        return memberRepository
-                .findByOaIdAndUserIdAndStatus(
-                        oaId,
-                        userId,
-                        OaStatus.ACTIVE
-                )
-                .map(e ->
-
-                        OaRole.OWNER.equals(e.getRole())
-                                || OaRole.ADMIN.equals(e.getRole())
-
-                )
+    public boolean isAdmin(Long oaId, Long userId) {
+        return memberRepository.findByOaIdAndUserIdAndStatus(oaId, userId, OaMember.ACTIVE)
+                .map(e -> OaRole.OWNER.equals(e.getRole()) || OaRole.ADMIN.equals(e.getRole()))
                 .orElse(false);
     }
+
+//    public User toggleOA(Long userId) {
+//        UserFilter filter = new UserFilter();
+//        filter.setId(userId);
+//        Optional<User> userExisted = findOne(filter);
+//
+//        if (userExisted.isEmpty()) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound");
+//        }
+//
+//        if(userExisted.get().getIsOa() == 1)
+//        {
+//            return userExisted.get();
+//        }
+//
+//        userExisted.get().setIsOa(1);
+//        userRepository.save(userExisted.get());
+//
+//        // tạo oa đầu tiên
+//
+//        return userExisted.get();
+//    }
 }

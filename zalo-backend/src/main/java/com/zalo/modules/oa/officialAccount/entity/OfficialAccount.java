@@ -1,8 +1,6 @@
 package com.zalo.modules.oa.officialAccount.entity;
 
 import com.zalo.common.base.BaseEntity;
-import com.zalo.common.covert.FileConverter;
-import com.zalo.common.entity.File;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.*;
@@ -25,13 +23,13 @@ public class OfficialAccount extends BaseEntity {
     String website;
     String address;
 
-    @Convert(converter = FileConverter.class)
-    @Column(columnDefinition = "LONGTEXT")
-    File avatar;
+//    @Convert(converter = FileConverter.class)
+//    @Column(columnDefinition = "LONGTEXT")
+    String avatar;
 
-    @Convert(converter = FileConverter.class)
-    @Column(columnDefinition = "LONGTEXT")
-    File cover;
+//    @Convert(converter = FileConverter.class)
+//    @Column(columnDefinition = "LONGTEXT")
+    String cover;
 
     @Column(columnDefinition = "TEXT")
     String description;

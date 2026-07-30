@@ -1,6 +1,8 @@
 package com.zalo.modules.app.auth.service;
 
 import com.cloudinary.api.exceptions.NotFound;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zalo.modules.admin.system.user.dto.response.UserPayload;
 import com.zalo.modules.app.auth.dto.request.LoginRequest;
 import com.zalo.modules.app.auth.dto.request.RegisterRequest;
 import com.zalo.modules.app.auth.dto.response.LoginResponse;
@@ -60,11 +62,17 @@ public class AuthService {
 
     public String newToken(String refreshToken) throws NotFound {
         Claims claims = jwtService.extractAllClaims(refreshToken);
-        Long userId = claims.get("id", Long.class);
 
-        User user = userRepository.findById(userId).orElseThrow(
+        ObjectMapper mapper = new ObjectMapper();
+
+        UserPayload user  = mapper.convertValue(
+                claims.get("payload"),
+                UserPayload.class
+        );
+
+        User u = userRepository.findById(user.getId()).orElseThrow(
                 () -> new NotFound("notFound")
         );
-        return jwtService.generateToken(user, jwtService.tokenTime);
+        return jwtService.generateToken(u, jwtService.tokenTime);
     }
 }

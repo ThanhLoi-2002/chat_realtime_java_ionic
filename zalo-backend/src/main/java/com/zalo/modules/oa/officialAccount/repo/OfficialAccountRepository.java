@@ -9,16 +9,11 @@ import java.util.Optional;
 
 public interface OfficialAccountRepository extends JpaRepository<OfficialAccount, Long> {
     Optional<OfficialAccount> findByIdAndStatus(Long id, OaStatus status);
-
-    List<OfficialAccount> findAllByStatus(int status);
+    Optional<OfficialAccount> findByCodeAndStatus(String code, OaStatus status);
 
     boolean existsByName(String name);
 
     boolean existsByNameAndIdNot(String name, Long id);
-
-    boolean existsByNameAndStatus(String name, int status);
-
-    boolean existsByNameAndStatusAndIdNot(String name, int status, Long id);
 
     List<OfficialAccount> findAllByIdInAndStatus(
             List<Long> ids,

@@ -1,7 +1,7 @@
 <template>
-    <div class="d-flex flex-column min-vh-100">
+    <div class="d-flex flex-column h-full">
 
-        <main class="grow">
+        <main class="h-full">
             <router-view />
         </main>
 

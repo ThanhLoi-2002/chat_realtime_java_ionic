@@ -1,7 +1,6 @@
 package com.zalo.modules.oa.officialAccount.dto.response;
 
 import com.zalo.common.base.BaseResponse;
-import com.zalo.common.entity.File;
 import com.zalo.modules.oa.officialAccount.entity.OaStatus;
 import com.zalo.modules.oa.officialAccount.entity.OaVerified;
 import com.zalo.modules.oa.officialAccount.entity.OfficialAccount;
@@ -17,14 +16,15 @@ import org.springframework.beans.BeanUtils;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class OaResponse extends BaseResponse {
     String name;
+    String code;
 
     String description;
 
     String category;
 
-    File avatar;
+    String avatar;
 
-    File cover;
+    String cover;
 
     OaVerified verified;
 

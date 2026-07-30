@@ -2,6 +2,7 @@ import { PageType } from "@/types/common"
 
 export const RANDOM_AVATAR = "https://i.pravatar.cc/150"
 export const LANG = "lang"
+export const OA_ID = "oa_id"
 export const THEME = "theme"
 export const ACCESS_TOKEN = "access_token"
 export const REFRESH_TOKEN = "refresh_token"
@@ -25,6 +26,7 @@ export const ROUTE = {
         AI_STICKER: "ai-sticker",
         JOIN_GROUP: "/g",
         SCAN: "/scan",
+        REGISTER_OA: '/register-oa'
     },
     OA_DASHBOARD: {
         INDEX: "/oa",
@@ -104,4 +106,4 @@ export const emptyPage: PageType<any> = {
   }
 };
 
-export const STICKER_URL = import.meta.env.VITE_API_STICKER_URL
+export const MINIO_URL = import.meta.env.VITE_API_MINIO_URL

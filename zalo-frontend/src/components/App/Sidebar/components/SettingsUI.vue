@@ -1,5 +1,5 @@
 <template>
-    <div class="dark:bg-slate-800">
+    <div class="dark:bg-slate-800 h-full">
         <!-- Header: cover + avatar + close -->
         <div class="relative">
             <div class="h-32">
@@ -33,7 +33,7 @@
         <nav class="px-4 py-4 space-y-2">
             <label class="flex items-center justify-between px-3 cursor-pointer">
                 <span class="text-gray-700 dark:text-gray-300">
-                    {{ t('acctiveOA') }}
+                    {{ t('activeOA') }}
                 </span>
 
                 <input type="checkbox" :checked="userStorage.user?.isOa === 1"
@@ -83,9 +83,10 @@ import LangDropdown from '@/components/Shared/Dropdown/LangDropdown.vue';
 import ThemeToggle from '@/components/Shared/Toggle/ThemeToggle.vue';
 import { useAuth } from '@/composables/useAuth';
 import { useTranslate } from '@/composables/useTranslate'
+import router from '@/router';
 import { useUserStore } from '@/stores/App/user.storage';
 import { SettingPageType } from '@/types/common';
-import { RANDOM_AVATAR } from '@/utils/constant'
+import { RANDOM_AVATAR, ROUTE } from '@/utils/constant'
 import { computed, inject, ref } from 'vue';
 
 const props = defineProps<{
@@ -96,7 +97,6 @@ const dismiss = inject<() => void>("modalDismiss")
 
 const { t } = useTranslate();
 const userStorage = useUserStore()
-const isOALoading = ref(false)
 const { logout } = useAuth()
 
 const menuItems = computed(() => [
@@ -108,10 +108,7 @@ const menuItems = computed(() => [
 ])
 
 const toggleOA = async () => {
-    isOALoading.value = true
-
-    await userStorage.toggleOA()
-
-    isOALoading.value = false
+    router.push(ROUTE.APP.REGISTER_OA)
+    dismiss?.()
 }
 </script>

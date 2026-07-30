@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, nextTick, onMounted, onUnmounted } from 'vue';
 import { StickerType } from '@/types/entities';
-import { STICKER_URL } from '@/utils/constant';
+import { MINIO_URL } from '@/utils/constant';
 import { oaStyle } from '@/assets/tailwindcss';
 import { useStickerStore } from '@/stores/App/sticker.storage';
 
@@ -187,7 +187,7 @@ onUnmounted(() => {
                         ? 'bg-gray-300 dark:bg-slate-700/80'
                         : 'hover:bg-gray-300/60 dark:hover:bg-slate-800/50'
                         " @click="onPackClick(pack)">
-                    <img :src="STICKER_URL + pack.iconUrl" class="w-full h-full object-contain pointer-events-none"
+                    <img :src="MINIO_URL + pack.iconUrl" class="w-full h-full object-contain pointer-events-none"
                         loading="lazy" />
                 </button>
             </div>

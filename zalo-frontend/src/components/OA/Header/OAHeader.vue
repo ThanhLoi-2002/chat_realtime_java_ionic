@@ -49,14 +49,9 @@
 
             <div class="flex items-center space-x-4">
                 <theme-toggle custom-class="p-2" />
-                <div
-                    :class="[oaStyle.border.primary, 'flex items-center space-x-2 px-2 cursor-pointer border-l-2 border-r-2']">
-                    <circle-avatar size="size-7" />
-                    <span class="text-sm font-medium hidden sm:inline">SVoucher</span>
-                    <i class="fas fa-chevron-down" />
-                </div>
+                <oa-dropdown/>
 
-                <circle-avatar size="size-7" :user="userStorage.user" />
+                <!-- <circle-avatar size="size-7" :user="userStorage.user" /> -->
             </div>
         </div>
     </ion-header>
@@ -71,18 +66,11 @@ import { useUserStore } from '@/stores/App/user.storage';
 import { useSystemStore } from '@/stores/system.storage';
 import { ADMIN_ROUTE, APP_ROUTE } from '@/utils/constant';
 import { IonHeader } from '@ionic/vue';
-import { useRoute } from 'vue-router';
+import OaDropdown from '../Dropdown/OaDropdown.vue';
 
-const route = useRoute();
 const userStorage = useUserStore()
 const sysStorage = useSystemStore()
 const { getMenusByType, checkRouteActive, buildFirstRoute } = useStructure()
-
-interface MenuType {
-    title: string
-    icon: string
-    to: string
-}
 
 const { t } = useTranslate()
 </script>

@@ -196,3 +196,14 @@ export type UserStickerRequestType = {
   url: string
   frameCount: number
 }
+
+export type OaRequestType = {
+  name: string
+  description: number
+  category: string
+  avatar: string
+  cover: string
+  province: number
+  district: number
+  address: string
+}

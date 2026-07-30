@@ -1,5 +1,6 @@
 package com.zalo.modules.oa.officialAccount.repo;
 
+import com.zalo.modules.oa.officialAccount.entity.OaMember;
 import com.zalo.modules.oa.officialAccount.entity.OaStatus;
 import com.zalo.modules.oa.officialAccount.entity.OfficialAccountMember;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OfficialAccountMemberRepository extends JpaRepository<OfficialAccountMember, Long> {
-    List<OfficialAccountMember> findAllByUserIdAndStatus(Long userId, OaStatus status);
+    List<OfficialAccountMember> findAllByUserIdAndStatus(Long userId, OaMember status);
 
     List<OfficialAccountMember> findAllByOaIdAndStatus(Long oaId, OaStatus status);
 
@@ -16,7 +17,7 @@ public interface OfficialAccountMemberRepository extends JpaRepository<OfficialA
 
     boolean existsByOaIdAndUserId(Long oaId, Long userId);
 
-    Optional<OfficialAccountMember> findByOaIdAndUserIdAndStatus(Long oaId, Long userId, OaStatus status);
+    Optional<OfficialAccountMember> findByOaIdAndUserIdAndStatus(Long oaId, Long userId, OaMember status);
 
     boolean existsByOaIdAndUserIdAndStatus(Long oaId, Long userId, OaStatus status);
 

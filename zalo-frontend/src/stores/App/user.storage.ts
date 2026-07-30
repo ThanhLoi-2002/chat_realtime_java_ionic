@@ -2,7 +2,7 @@ import { userApi } from '@/api/App/user.api'
 import router from '@/router'
 import { storage } from '@/services/storage.service.'
 import { UserType } from '@/types/entities'
-import { ACCESS_TOKEN, APP_ROUTE, ROUTE } from '@/utils/constant'
+import { ACCESS_TOKEN, APP_ROUTE, REFRESH_TOKEN, ROUTE } from '@/utils/constant'
 import { deleteKey } from '@/utils/local'
 import { toast } from '@/utils/toast'
 import { defineStore } from 'pinia'
@@ -43,6 +43,7 @@ export const useUserStore = defineStore('user', {
             } catch (e) {
                 router.push(ROUTE.LOGIN)
                 deleteKey(ACCESS_TOKEN)
+                deleteKey(REFRESH_TOKEN)
                 this.isAuthLoading = false
             }
         },
@@ -109,6 +110,7 @@ export const useUserStore = defineStore('user', {
             this.user = undefined
             await storage.remove('user');
             deleteKey(ACCESS_TOKEN)
+            deleteKey(REFRESH_TOKEN)
             router.push(ROUTE.LOGIN)
         }
     }

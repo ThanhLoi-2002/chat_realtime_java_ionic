@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { StickerItemType } from "@/types/entities"
-import { STICKER_URL } from '@/utils/constant'
+import { MINIO_URL } from '@/utils/constant'
 import { onLongPress } from '@vueuse/core';
 
 const props = defineProps<{
@@ -128,7 +128,7 @@ onUnmounted(() => {
 })
 
 const stickerStyle = computed(() => {
-    const url = props.isUseDefaultUrl ? props.stickerItem.url : STICKER_URL + props.stickerItem.url
+    const url = props.isUseDefaultUrl ? props.stickerItem.url : MINIO_URL + props.stickerItem.url
     const bgImage = isLoaded.value ? `url(${url})` : 'none'
     
     return {
