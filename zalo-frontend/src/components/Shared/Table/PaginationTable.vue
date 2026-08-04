@@ -9,6 +9,7 @@ import {
     FlexRender
 } from "@tanstack/vue-table"
 import { IonButton } from "@ionic/vue"
+import { oaStyle } from "@/assets/tailwindcss";
 
 const props = defineProps<{
     data: any[];
@@ -52,14 +53,15 @@ const table = useVueTable(tableOptions.value)
     <!-- SEARCH -->
     <!-- <input v-model="globalFilter" placeholder="Search..." class="border p-2 mb-3" /> -->
     <div class="w-full overflow-x-auto" :class="[props.height ?? 'max-h-[75vh]']">
-        <table class="w-full min-w-max border border-gray-200 dark:border-gray-700
-            bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
+        <table class="w-full border" :class="[oaStyle.bg.secondary, oaStyle.border.secondary, oaStyle.text.primary]">
 
             <thead class="sticky top-0 z-10">
                 <tr>
-                    <th v-for="header in table.getHeaderGroups()[0].headers" :key="header.id" class="border border-gray-200 dark:border-gray-700 cursor-pointer
+                    <th v-for="header in table.getHeaderGroups()[0].headers" :key="header.id" class="border cursor-pointer
                         bg-gray-100 dark:bg-gray-700
-                        hover:bg-gray-200 dark:hover:bg-gray-600 relative text-center py-2 pr-6" @click="header.column.toggleSorting()">
+                        hover:bg-gray-200 dark:hover:bg-gray-600 relative text-center py-2 pr-6" 
+                        :class="[oaStyle.border.secondary]"
+                        @click="header.column.toggleSorting()">
                         <div class="flex items-center justify-center gap-2">
                             <FlexRender :render="header.column.columnDef.header" :props="header.getContext()" />
 

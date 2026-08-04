@@ -1,23 +1,25 @@
 <script setup lang="ts">
 import { oaStyle } from '@/assets/tailwindcss'
+import { useTranslate } from '@/composables/useTranslate'
 import router from '@/router'
 import { useOaStore } from '@/stores/Oa/oa.storage'
 import { OaType } from '@/types/entities'
 import { OaStatusEnum, OaVerifiedEnum } from '@/types/enum'
-import { MINIO_URL, OA_ID, OA_ROUTE } from '@/utils/constant'
+import { MINIO_URL, OA_ID, OA_ROUTE, ROUTE } from '@/utils/constant'
 import { setKey } from '@/utils/local'
 import { onMounted, ref } from 'vue'
 
 const oaStor = useOaStore()
+const { t } = useTranslate()
 // Trạng thái tab đang chọn
 const activeTab = ref<string>('active')
 
 // Danh sách các tab
 const tabs = [
-    { key: 'all', label: 'Tất cả' },
-    { key: 'active', label: 'Đang hoạt động' },
-    { key: 'pending', label: 'Đang chờ duyệt' },
-    { key: 'locked', label: 'Đang bị khoá' },
+    { key: 'all', label: 'all' },
+    { key: 'active', label: 'active' },
+    { key: 'pending', label: 'pending' },
+    { key: 'locked', label: 'locked' },
 ]
 
 // Dữ liệu mẫu dựa trên hình ảnh
@@ -25,7 +27,7 @@ const accounts = ref<OaType[]>([])
 
 // Hàm xử lý khi bấm các nút
 const handleCreateOA = () => {
-    console.log('Tạo Official Account mới')
+    router.push(ROUTE.APP.REGISTER_OA)
 }
 
 const handleRevokeAdmin = (id: number) => {
@@ -45,7 +47,7 @@ onMounted(async () => {
 <template>
     <div :class="[oaStyle.text.primary, oaStyle.bg.primary, 'p-6 h-full']">
         <!-- Tiêu đề trang -->
-        <div :class="[oaStyle.text.primary, 'text-xl font-medium mb-6']">Quản lý Official Account</div>
+        <div :class="[oaStyle.text.primary, 'text-xl font-medium mb-6']">{{ t('oaManagement') }}</div>
 
         <!-- Thanh điều hướng tab và nút tạo mới -->
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
@@ -57,14 +59,14 @@ onMounted(async () => {
                         ? 'text-blue-400 border-b-2 border-blue-400'
                         : `${oaStyle.text.secondary} hover:text-gray-500`
                 ]">
-                    {{ tab.label }}
+                    {{ t(tab.label) }}
                 </button>
             </div>
 
             <!-- Nút Tạo Official Account mới -->
             <button @click="handleCreateOA"
                 class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded shadow-sm transition-colors flex items-center justify-center gap-1">
-                <span>Tạo Official Account mới</span>
+                <span>{{ t('createOA') }}</span>
             </button>
         </div>
 
@@ -77,17 +79,17 @@ onMounted(async () => {
                         <tr
                             :class="[oaStyle.bg.secondary, oaStyle.border.secondary, oaStyle.text.secondary, 'border-b text-xs font-medium uppercase tracking-wider']">
                             <th class="py-3 px-4 w-12 text-center">#</th>
-                            <th class="py-3 px-4">Avatar</th>
-                            <th class="py-3 px-4">Tên Official Account</th>
-                            <th class="py-3 px-4">Danh mục chính</th>
-                            <th class="py-3 px-4">Trạng thái</th>
-                            <th class="py-3 px-4">Người tạo</th>
-                            <th class="py-3 px-4 text-right">Thao tác</th>
+                            <th class="py-3 px-4">{{ t('avatar') }}</th>
+                            <th class="py-3 px-4">{{ t('oaName') }}</th>
+                            <th class="py-3 px-4">{{ t('oaCategory') }}</th>
+                            <th class="py-3 px-4">{{ t('status') }}</th>
+                            <th class="py-3 px-4">{{ t('cu') }}</th>
+                            <th class="py-3 px-4 text-right">{{ t('action') }}</th>
                         </tr>
                     </thead>
 
                     <!-- Nội dung bảng -->
-                    <tbody class="divide-y divide-gray-100 text-sm">
+                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                         <tr v-for="item in accounts" :key="item.id" :class="[oaStyle.bg.hover, 'transition-colors']">
                             <!-- Cột ID STT -->
                             <td :class="[oaStyle.text.secondary, 'py-4 px-4 text-center font-medium']">{{ item.id }}
@@ -95,7 +97,8 @@ onMounted(async () => {
 
                             <!-- Cột OA ID -->
                             <td :class="[oaStyle.text.secondary, 'py-4 px-4 font-mono text-xs max-w-45 break-all']">
-                                <img :src="`${MINIO_URL}/${item.avatar}`" alt="Avatar" class="w-10 h-10 rounded-full object-cover" />
+                                <img :src="`${MINIO_URL}/${item.avatar}`" alt="Avatar"
+                                    class="w-10 h-10 rounded-full object-cover" />
                             </td>
 
                             <!-- Cột Tên Official Account & Badge -->
@@ -135,7 +138,7 @@ onMounted(async () => {
                             <td class="py-4 px-4 text-right">
                                 <button @click="handleRevokeAdmin(item.id)"
                                     :class="[oaStyle.text.secondary, oaStyle.border.secondary, oaStyle.bg.hover1, 'border text-xs font-medium px-3 py-1.5 rounded transition-colors']">
-                                    Thôi làm Admin
+                                    {{ t('revokeAdmin') }}
                                 </button>
                             </td>
                         </tr>

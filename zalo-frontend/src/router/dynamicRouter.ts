@@ -1,5 +1,6 @@
 // router/dynamicRouter.ts
 import { StructureType } from '@/types/entities';
+import { MenuTypeEnum } from '@/types/enum';
 import { RouteRecordRaw } from 'vue-router';
 
 // 1. Quét toàn bộ file .vue trong thư mục views
@@ -17,7 +18,7 @@ const modules = import.meta.glob('../views/**/*.vue');
 //     for (const item of items) {
 //       // Điều kiện lọc: component có giá trị và kết thúc bằng đuôi .vue
 //       if (item.component && item.component.endsWith('.vue')) {
-        
+
 //         // Chuẩn hóa đường dẫn tương đối tới file thực tế
 //         // Ví dụ biến "Admin/System/User/User.vue" thành "../views/Admin/System/User/User.vue"
 //         const componentPath = `../views/${item.component}`;
@@ -49,6 +50,18 @@ const modules = import.meta.glob('../views/**/*.vue');
 //   return routes;
 // }
 
+export function generateRouteName(item: StructureType): string | undefined {
+  if (item.menuType != MenuTypeEnum.MENU)
+    return item.component
+      .replace(/\\/g, "/")
+      .replace(/\.vue$/i, "")
+      .replace(/^\/+/, "")      // bỏ / đầu
+      .replace(/\/+/g, "-")     // / -> -
+      .replace(/-+/g, "-")      // gộp --
+      .toLowerCase();
+  else return undefined
+}
+
 // mảng có phân cấp
 export function generateRoutesFromMenu(menuList: StructureType[]): RouteRecordRaw[] {
 
@@ -57,6 +70,7 @@ export function generateRoutesFromMenu(menuList: StructureType[]): RouteRecordRa
       .map(item => {
         const route: Partial<RouteRecordRaw> = {
           path: item.path,
+          name: generateRouteName(item),
           meta: {
             permissions: item.permissions
           }

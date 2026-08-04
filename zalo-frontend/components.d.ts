@@ -57,7 +57,7 @@ declare module 'vue' {
     MobileBackButton: typeof import('./src/components/Shared/Button/MobileBackButton.vue')['default']
     Modal: typeof import('./src/components/Shared/Modal/Modal.vue')['default']
     Modal2: typeof import('./src/components/Shared/Modal/Modal2.vue')['default']
-    OaDropdown: typeof import('./src/components/OA/Dropdown/OaDropdown.vue')['default']
+    OaDropdown: typeof import('./src/components/OA/Header/OaDropdown.vue')['default']
     OAHeader: typeof import('./src/components/OA/Header/OAHeader.vue')['default']
     OaInforMobile: typeof import('./src/components/Shared/VirtualMobile/OaInforMobile.vue')['default']
     OAPageHeader: typeof import('./src/components/OA/Header/OAPageHeader.vue')['default']

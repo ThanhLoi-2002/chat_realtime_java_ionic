@@ -5,7 +5,7 @@
                 {{ t('createBusinessOa') }}
             </div>
 
-            <button @click="back" class="w-10 cursor-pointer">
+            <button @click="goBack" class="w-10 cursor-pointer">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -16,13 +16,7 @@
 
                 <!-- 1. DANH MỤC HOẠT ĐỘNG -->
                 <ErrorSelect label="category" name="category" :defineField="defineField" :errors="errors"
-                    :schema="oaSchema" placeholder="Chọn danh mục phù hợp" :options="[
-                        { label: 'Giải trí', value: 'ENTERTAINMENT' },
-                        { label: 'Tin tức / Truyền thông', value: 'NEWS' },
-                        { label: 'Doanh nghiệp / Dịch vụ', value: 'BUSINESS' },
-                        { label: 'Mua sắm / Bán lẻ', value: 'SHOPPING' },
-                        { label: 'Khác', value: 'OTHER' }
-                    ]" direction="horizontal" />
+                    :schema="oaSchema" placeholder="Chọn danh mục phù hợp" :options="categories" direction="horizontal" />
 
                 <!-- 2. TÊN OFFICIAL ACCOUNT -->
                 <ErrorInput :errors="errors" name="name" label="oaName" :define-field="defineField" :schema="oaSchema"
@@ -94,7 +88,7 @@
 
                 <!-- NÚT HÀNH ĐỘNG -->
                 <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-800">
-                    <button type="button" @click="back"
+                    <button type="button" @click="goBack"
                         class="px-5 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm font-medium transition-colors">
                         {{ t('cancel') }}
                     </button>
@@ -134,10 +128,14 @@ import { oaSchema } from '@/schema/Oa/oa.schema'
 import { toast } from '@/utils/toast'
 import { toTypedSchema } from '@vee-validate/yup'
 import { useForm } from 'vee-validate'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useOaStore } from '@/stores/Oa/oa.storage'
 import { useUploadMinio } from '@/composables/useUploadMinio'
 import { OA_ROUTE } from '@/utils/constant'
+import { goBack } from '@/utils/helper'
+import { SelectOptionType } from '@/types/common'
+import { useOaCategoryStore } from '@/stores/Admin/oaCategory.storage'
+import { OaCategoryType } from '@/types/entities'
 
 const emit = defineEmits<{
     (e: 'submit', data: FormData): void
@@ -149,6 +147,8 @@ const { uploadFile } = useUploadMinio()
 const isLoading = ref(false)
 const avatarFile = ref<File | null>(null)
 const coverFile = ref<File | null>(null)
+const categories = ref<SelectOptionType[]>([])
+const categoryStor = useOaCategoryStore()
 
 const showCropper = ref(false)
 
@@ -244,5 +244,13 @@ const save = handleSubmit(async (values: any) => {
         console.log('Form bị chặn do lỗi validation:', errorContext.errors)
     })
 
-const back = () => router.push('/')
+onMounted(async () => {
+    const list = await categoryStor.getAll()
+
+    categories.value = list.map((i: OaCategoryType) => ({ label: i.name, value: i.code }))
+})
+
+watch(() => values.category, () => {
+    setFieldValue('categoryName', categories.value.find(i => i.value == values.category)?.label)
+})
 </script>

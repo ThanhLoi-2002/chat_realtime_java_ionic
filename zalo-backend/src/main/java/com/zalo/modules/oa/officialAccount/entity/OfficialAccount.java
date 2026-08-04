@@ -36,6 +36,7 @@ public class OfficialAccount extends BaseEntity {
 
     @Column(nullable = false, length = 100)
     String category; //Lĩnh vực hoạt động (Mua sắm, Dịch vụ,...)
+    String categoryName;
 
     @Enumerated(EnumType.STRING)
     OaStatus status;

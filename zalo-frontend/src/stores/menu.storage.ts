@@ -25,47 +25,51 @@ export const useMenuStore = defineStore('menu', {
     }),
 
     actions: {
-        async switchApp(appType: AppTypeEnum) {
-            console.log("switchApp: ", appType)
-            const structureStor = useAdminStructureStore()
-            
-            this.currentAppType = appType;
-            this.isLoaded = true; // <-- BẬT CỜ NGAY KHI BẮT ĐẦU HOẶC KẾT THÚC XỬ LÝ
+        async switchApp(appType: AppTypeEnum, isRefresh?: boolean) {
+            if (!this.isLoaded) {
+                console.log("switchApp: ", appType)
+                const structureStor = useAdminStructureStore()
 
-            // 1. Clear toàn bộ route của app cũ trước đó
-            removeRouteCallbacks.forEach(removeFn => removeFn());
-            removeRouteCallbacks = [];
+                this.currentAppType = appType;
+                this.isLoaded = true; // <-- BẬT CỜ NGAY KHI BẮT ĐẦU HOẶC KẾT THÚC XỬ LÝ
 
-            // 2. Fetch danh sách menu từ Server
-            const rawMenu: StructureType = await structureStor.getMenuByUser(appType);
-            
-            if (!rawMenu || rawMenu.children.length === 0) {
-                console.warn(`[Router] Menu của app ${appType} rỗng. Bỏ qua nạp route.`);
-                this.menuList = []; 
-                return; // Thoát sớm, cờ isLoaded vẫn là true nên Guard sẽ không gọi lại nữa
-            }
+                // 1. Clear toàn bộ route của app cũ trước đó
+                removeRouteCallbacks.forEach(removeFn => removeFn());
+                removeRouteCallbacks = [];
 
-            this.menuList = rawMenu.children;
+                // 2. Fetch danh sách menu từ Server
+                const rawMenu: StructureType = await structureStor.getMenuByUser(appType, 'switchApp');
 
-            // 3. Phân tách cây và nạp route động
-            const newRoutes = generateRoutesFromMenu(this.menuList);
-            const targetLayoutName = layoutMap[appType];
+                if (!rawMenu || rawMenu.children.length === 0) {
+                    console.warn(`[Router] Menu của app ${appType} rỗng. Bỏ qua nạp route.`);
+                    this.menuList = [];
+                    return; // Thoát sớm, cờ isLoaded vẫn là true nên Guard sẽ không gọi lại nữa
+                }
 
-            if (targetLayoutName) {
-                newRoutes.forEach(route => {
-                    const removeFn = router.addRoute(targetLayoutName, route);
-                    removeRouteCallbacks.push(removeFn);
-                });
-                console.log(`[Router] Đã nạp thành công các route vào layout: ${targetLayoutName}`);
-            }
+                this.menuList = rawMenu.children;
 
-            // 4. Điều hướng về trang chủ tương ứng của App
-            if (appType === AppTypeEnum.ADMIN) {
-                router.push(ROUTE.ADMIN_DASHBOARD.INDEX);
-            } else if (appType === AppTypeEnum.OA) {
-                router.push(ROUTE.OA_DASHBOARD.INDEX);
-            } else if (appType === AppTypeEnum.APP) {
-                router.push(ROUTE.APP.INDEX);
+                // 3. Phân tách cây và nạp route động
+                const newRoutes = generateRoutesFromMenu(this.menuList);
+                const targetLayoutName = layoutMap[appType];
+
+                if (targetLayoutName) {
+                    newRoutes.forEach(route => {
+                        const removeFn = router.addRoute(targetLayoutName, route);
+                        removeRouteCallbacks.push(removeFn);
+                    });
+                    console.log(`[Router] Đã nạp thành công các route vào layout: ${targetLayoutName}`, newRoutes);
+                }
+
+                if (!isRefresh) {
+                    // 4. Điều hướng về trang chủ tương ứng của App
+                    if (appType === AppTypeEnum.ADMIN) {
+                        router.push(ROUTE.ADMIN_DASHBOARD.INDEX);
+                    } else if (appType === AppTypeEnum.OA) {
+                        router.push(ROUTE.OA_DASHBOARD.INDEX);
+                    } else if (appType === AppTypeEnum.APP) {
+                        router.push(ROUTE.APP.INDEX);
+                    }
+                }
             }
         },
 

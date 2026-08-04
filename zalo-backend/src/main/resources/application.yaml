@@ -60,6 +60,8 @@ cloudinary:
   api-secret: ${CLOUDINARY_API_SECRET}
 
 logging:
+  level:
+    org.springframework.web.servlet.DispatcherServlet: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36}.%M(%line) : %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36}.%M(%line) : %msg%n"

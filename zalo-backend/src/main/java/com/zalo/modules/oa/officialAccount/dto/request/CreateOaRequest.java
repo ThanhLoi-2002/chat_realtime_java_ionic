@@ -19,6 +19,7 @@ public class CreateOaRequest {
 
 //    @NotBlank(message = "required")
     String category;
+    String categoryName;
 
     String avatar;
 

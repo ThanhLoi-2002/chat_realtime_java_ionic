@@ -9,14 +9,14 @@ import { IonContent, IonPage } from '@ionic/vue'
 
     <ion-content>
       <!-- background toàn trang -->
-      <div :class="[oaStyle.bg.secondary, 'min-h-screen transition-colors duration-300']">
+      <div :class="[oaStyle.bg.secondary, 'h-full transition-colors duration-300']">
 
         <!-- toggle -->
         <div class="absolute top-4 right-4">
           <theme-toggle />
         </div>
 
-        <div class="flex min-h-screen">
+        <div class="flex h-full">
 
           <!-- LEFT BRANDING -->
           <div class="hidden lg:flex lg:w-1/2 flex-col justify-center items-center 

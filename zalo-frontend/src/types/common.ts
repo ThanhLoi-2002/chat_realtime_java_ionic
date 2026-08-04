@@ -199,7 +199,7 @@ export type UserStickerRequestType = {
 
 export type OaRequestType = {
   name: string
-  description: number
+  description: string
   category: string
   avatar: string
   cover: string

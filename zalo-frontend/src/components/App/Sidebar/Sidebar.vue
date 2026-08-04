@@ -126,14 +126,16 @@ async function handleNavigation(toPath: string) {
     }
 
 
-    if (targetApp == AppTypeEnum.APP) {
-        router.push(toPath);
-    } else {
-        // 1. Giải phóng cờ trạng thái nạp để hệ thống chịu tải lại
-        menuStor.resetLoadState();
-        // 3. Tiến hành xóa route cũ và nạp động route mới của App đích
-        await menuStor.switchApp(targetApp);
-    }
+    // if (targetApp == AppTypeEnum.APP) {
+    //     router.push(toPath);
+    // } else {
+    //     // 1. Giải phóng cờ trạng thái nạp để hệ thống chịu tải lại
+    //     menuStor.resetLoadState();
+    //     // 3. Tiến hành xóa route cũ và nạp động route mới của App đích
+    //     await menuStor.switchApp(targetApp);
+    // }
+    menuStor.resetLoadState()
+    router.push(toPath);
 }
 
 const goPage = (page: SettingPageType) => {

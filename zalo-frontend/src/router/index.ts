@@ -1,12 +1,9 @@
-import { useDevice } from '@/composables/useDevice';
 import { useUserStore } from '@/stores/App/user.storage.ts';
 import { ACCESS_TOKEN, APP_ROUTE, OA_ROUTE, ROUTE } from '@/utils/constant';
 import { getKey } from '@/utils/local';
 import { isPlatform } from '@ionic/vue';
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 import { RouteRecordRaw } from 'vue-router';
-import { adminRoutes } from './admin.routes.ts';
-import { oaRoutes } from './oa.routes.ts';
 import { appRoutes } from './app.routes.ts';
 import { AppTypeEnum } from '@/types/enum.ts';
 import { useMenuStore } from '@/stores/menu.storage.ts';
@@ -22,10 +19,10 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../layouts/OALayout.vue'),
     meta: { requiresAuth: true },
     children: [
-      // {
-      //   path: ROUTE.OA_DASHBOARD.ACCOUNTS,
-      //   component: () => import('../views/OA/AccountList/AccountList.vue')
-      // },
+      {
+        path: 'dashboard',
+        component: () => import('../views/OA/Dashboard/Dashboard.vue')
+      },
     ]
   },
 
@@ -60,7 +57,7 @@ const router = createRouter({
 // -------------------- GLOBAL GUARD --------------------
 router.beforeEach(async (to) => {
   // console.log(router.getRoutes())
-  console.log(JSON.stringify(router.options.routes, null, 2));
+  // console.log(JSON.stringify(router.options.routes, null, 2));
   const userStore = useUserStore()
   const menuStor = useMenuStore()
   const accessToken = getKey(ACCESS_TOKEN)
@@ -95,7 +92,7 @@ router.beforeEach(async (to) => {
 
   // Nếu F5 làm trống Store menuList
   if (!menuStor.isLoaded && userStore.user) {
-    console.log("refresh")
+    // console.log("refresh")
     try {
       // 1. Phân tích URL hiện tại để nhận diện App tương ứng
       let currentApp = AppTypeEnum.ADMIN; // mặc định
@@ -103,7 +100,7 @@ router.beforeEach(async (to) => {
       if (to.path.startsWith(ROUTE.OA_DASHBOARD.INDEX)) currentApp = AppTypeEnum.OA;
 
       // 2. Kích hoạt nạp lại đúng layout và danh sách route con
-      await menuStor.switchApp(currentApp);
+      await menuStor.switchApp(currentApp, true);
 
       // 3. Đi tiếp
       return { ...to, replace: true };
@@ -113,29 +110,11 @@ router.beforeEach(async (to) => {
     }
   }
 
-  // // 3. Role check
-  // if (to.meta.role) {
-  //   const requiredRole = to.meta.role;
-
-  //   if (user.value?.role == RoleEnum.ADMIN && requiredRole == RoleEnum.USER) {
-  //     return { name: "admin-statistics" }
-  //   }
-  // }
-
-  // // 4. Safety: admin path but not admin
-  // if (to.path.startsWith("/dashboard") && user.value?.role !== RoleEnum.ADMIN) {
-  //   return { name: "home" };
-  // }
-
-  // // 5. Safety: user path but not user
-  // if (to.path == "/" && user.value?.role == RoleEnum.ADMIN) {
-  //   return { name: "admin-statistics" };
-  // }
   return true
 });
 
 router.onError((error) => {
-  console.log(error.message)
+  console.error("router lỗi: ", error.message)
 });
 
 export default router;

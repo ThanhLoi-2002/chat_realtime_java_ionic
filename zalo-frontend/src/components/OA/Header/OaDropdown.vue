@@ -19,7 +19,7 @@
             <div v-if="isOpen"
                 :class="[oaStyle.bg.secondary, oaStyle.border.secondary, 'absolute left-0 sm:left-auto sm:right-0 mt-2 w-64 border rounded-xl shadow-xl py-2 z-50 overflow-hidden']">
                 <div :class="[oaStyle.text.secondary, 'px-3 py-1.5 text-xs font-medium tracking-wider']">
-                    Chuyển tài khoản OA
+                    {{ t('switchOA') }}
                 </div>
 
                 <!-- Danh sách các OA -->
@@ -29,10 +29,10 @@
                         actived(oa.id) ? 'bg-slate-200 dark:bg-gray-700/50' : oaStyle.bg.hover
                     ]">
                         <div class="flex items-center space-x-2.5 min-w-0">
-                            <circle-avatar :src="oa.avatar" size="size-8" class="shrink-0" />
+                            <circle-avatar :src="`${MINIO_URL}/${oa.avatar}`" size="size-8" class="shrink-0" />
                             <div class="flex flex-col min-w-0">
                                 <span
-                                    :class="['text-sm truncate', actived(oa.id) ? 'font-bold text-blue-600' : 'font-medium text-gray-700']">
+                                    :class="['text-sm truncate', actived(oa.id) ? 'font-bold text-blue-600' : `font-medium ${oaStyle.text.secondary}`]">
                                     {{ oa.name }}
                                 </span>
                             </div>
@@ -58,6 +58,7 @@
 
 <script setup lang="ts">
 import { oaStyle } from '@/assets/tailwindcss'
+import { useTranslate } from '@/composables/useTranslate'
 import { useOaStore } from '@/stores/Oa/oa.storage'
 import { OaType } from '@/types/entities'
 import { MINIO_URL, OA_ID, OA_ROUTE } from '@/utils/constant'
@@ -65,6 +66,7 @@ import { setKey } from '@/utils/local'
 import { ref, onMounted, onUnmounted } from 'vue'
 
 const oaStor = useOaStore()
+const { t } = useTranslate()
 // State quản lý
 const isOpen = ref<boolean>(false)
 const dropdownRef = ref<HTMLElement | null>(null)

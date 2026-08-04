@@ -42,8 +42,8 @@ onMounted(() => {
         <div :class="[oaStyle.bg.primary, oaStyle.border.primary, 'border rounded-lg shadow p-6']">
             <form @submit="save">
                 <div class="space-y-5">
-                    <error-input :errors="errors" name="username" label="username" :define-field="defineField" :schema="userSchema"/>
-                    <error-input :errors="errors" name="phone" label="phone" :define-field="defineField" :schema="userSchema"/>
+                    <error-input :errors="errors" name="username" label="username" :define-field="defineField" :schema="userSchema" placeholder="username" direction="horizontal"/>
+                    <error-input :errors="errors" name="phone" label="phone" :define-field="defineField" :schema="userSchema" placeholder="phone" direction="horizontal"/>
                 </div>
 
                 <div class="mt-6">

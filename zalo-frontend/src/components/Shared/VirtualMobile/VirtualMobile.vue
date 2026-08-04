@@ -15,7 +15,7 @@
                 </div>
             </div>
 
-            <div>
+            <div class="h-full flex flex-col overflow-y-auto" style="scrollbar-width: none;">
                 <slot />
             </div>
 

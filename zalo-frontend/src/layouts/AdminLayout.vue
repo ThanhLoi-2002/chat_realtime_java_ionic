@@ -20,10 +20,17 @@ import AdminHeader from '@/components/Admin/Header/AdminHeader.vue';
 import { onMounted } from 'vue';
 import { useAdminStructureStore } from '@/stores/Admin/structure.storage';
 import { AppTypeEnum } from '@/types/enum';
+import { useMenuStore } from '@/stores/menu.storage';
 
 const structureStor = useAdminStructureStore()
+const menuStor = useMenuStore()
 
 onMounted(async () => {
-    await structureStor.getMenuByUser(AppTypeEnum.ADMIN)
+    menuStor.resetLoadState()
+
+    await Promise.allSettled([
+        await structureStor.getMenuByUser(AppTypeEnum.ADMIN),
+        await menuStor.switchApp(AppTypeEnum.ADMIN)
+    ])
 })
 </script>

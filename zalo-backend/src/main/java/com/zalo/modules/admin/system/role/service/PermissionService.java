@@ -40,7 +40,7 @@ public class PermissionService {
                         .toList();
 
                 modules.add(new ModulePermissionResponse(
-                        moduleClass.getSimpleName().toLowerCase(),
+                        moduleClass.getSimpleName().toLowerCase().replace("_", ""),
                         permissions
                 ));
             }

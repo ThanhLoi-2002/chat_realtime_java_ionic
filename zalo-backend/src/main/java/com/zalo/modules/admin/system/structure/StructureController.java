@@ -26,13 +26,13 @@ public class StructureController {
     StructureService structureService;
 
     @GetMapping("/tree")
-    @RequiresPermission(PermissionConstant.ADMIN.Structure.READ)
+    @RequiresPermission(PermissionConstant.ADMIN.STRUCTURE.READ)
     public Map<AppType, StructureResponse> getTree() {
         return structureService.getMenuTree();
     }
 
     @GetMapping("/trash")
-    @RequiresPermission(PermissionConstant.ADMIN.Structure.READ)
+    @RequiresPermission(PermissionConstant.ADMIN.STRUCTURE.READ)
     public List<StructureResponse> getTrash() {
         return structureService.getTrashMenu().stream().map(StructureResponse::new).toList();
     }
@@ -53,14 +53,14 @@ public class StructureController {
     }
 
     @PostMapping
-    @RequiresPermission(PermissionConstant.ADMIN.Structure.CREATE_UPDATE)
+    @RequiresPermission(PermissionConstant.ADMIN.STRUCTURE.CREATE_UPDATE)
     public StructureResponse createOrUpdate(@RequestBody Structure structure) {
         return new StructureResponse(structureService.saveOrUpdate(structure));
     }
 
     @PutMapping("/sort")
     @ResponseMessage("success")
-    @RequiresPermission(PermissionConstant.ADMIN.Structure.CREATE_UPDATE)
+    @RequiresPermission(PermissionConstant.ADMIN.STRUCTURE.CREATE_UPDATE)
     public void updateSort(@RequestBody List<StructureSortRequest> updates) {
         structureService.updateMenuOrder(updates);
     }

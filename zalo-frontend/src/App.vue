@@ -7,6 +7,7 @@
           <p>Loading....</p>
         </div>
       </div>
+      <!-- <router-view :key="$route.fullPath" v-else /> -->
       <router-view v-else />
     <!-- </component> -->
 

@@ -138,7 +138,7 @@ export const useStructure = () => {
 
     //Lấy route đầu tiên của menu
     const buildFirstRoute = (node: StructureType) => {
-        console.log(node.children.length > 0 ? node.children[0].path : '')
+        // console.log(node.children.length > 0 ? node.children[0].path : '')
         return node.children.length > 0 ? node.children[0].path : ''
     }
 

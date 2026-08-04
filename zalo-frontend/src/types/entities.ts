@@ -190,7 +190,14 @@ export type OaType = BaseType & {
     cover: string
     description: string
     category: string
+    categoryName: string
     workingHours: string
     status: OaStatusEnum
     verified: OaVerifiedEnum
+}
+
+export type OaCategoryType = BaseType & {
+    code: string
+    name: string
+    description: string
 }

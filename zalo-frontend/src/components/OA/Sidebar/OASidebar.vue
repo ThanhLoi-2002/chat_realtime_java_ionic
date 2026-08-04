@@ -3,7 +3,7 @@
         oaStyle.border.primary,
         oaStyle.bg.primary,
         sysStorage.showSidebar ? 'w-20' : 'w-64',
-        'border-r p-4 flex flex-col min-h-screen transition-all duration-300 ease-in-out relative select-none'
+        'border-r p-4 flex flex-col h-full transition-all duration-300 ease-in-out relative select-none'
     ]">
 
         <div class="space-y-1 flex-1 overflow-y-auto no-scrollbar mt-2 mb-4">

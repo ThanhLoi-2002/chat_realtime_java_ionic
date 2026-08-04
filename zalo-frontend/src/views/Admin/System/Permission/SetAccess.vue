@@ -69,7 +69,8 @@ const features = computed(() => {
 
     const permissionsByApp = roleStor.permissions.find(i => i.app == appType);
 
-    const permiss = permissionsByApp?.modules.find(i => i.module == controllerCode)
+    const permiss = permissionsByApp?.modules.find(i => i.module == controllerCode?.toString().toLocaleLowerCase())
+    console.log("permissionsByApp:",permissionsByApp?.modules)
 
     return permiss?.permissions ?? []
 })

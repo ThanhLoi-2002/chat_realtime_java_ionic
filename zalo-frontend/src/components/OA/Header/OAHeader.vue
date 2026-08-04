@@ -59,14 +59,13 @@
 
 <script setup lang="ts">
 import { oaStyle } from '@/assets/tailwindcss';
-import CircleAvatar from '@/components/Shared/Avatar/CircleAvatar.vue';
 import { useStructure } from '@/composables/useStructure';
 import { useTranslate } from '@/composables/useTranslate';
 import { useUserStore } from '@/stores/App/user.storage';
 import { useSystemStore } from '@/stores/system.storage';
 import { ADMIN_ROUTE, APP_ROUTE } from '@/utils/constant';
 import { IonHeader } from '@ionic/vue';
-import OaDropdown from '../Dropdown/OaDropdown.vue';
+import OaDropdown from './OaDropdown.vue';
 
 const userStorage = useUserStore()
 const sysStorage = useSystemStore()

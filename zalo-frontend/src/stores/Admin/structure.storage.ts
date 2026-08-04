@@ -45,7 +45,8 @@ export const useAdminStructureStore = defineStore('adminStructure', {
             }
         },
 
-        async getMenuByUser(appType: AppTypeEnum) {
+        async getMenuByUser(appType: AppTypeEnum, log?: string) {
+            console.log(log)
             try {
                 const result: any = await structureApi.getMenuByUser(appType);
                 return result.result

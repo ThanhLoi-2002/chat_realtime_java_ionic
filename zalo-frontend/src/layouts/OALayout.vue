@@ -24,9 +24,12 @@ import { getKey } from '@/utils/local';
 import { OA_ID, OA_ROUTE } from '@/utils/constant';
 import router from '@/router';
 import { useOaStore } from '@/stores/Oa/oa.storage';
+import { useMenuStore } from '@/stores/menu.storage';
 
 const structureStor = useAdminStructureStore()
 const oaStor = useOaStore()
+const menuStor = useMenuStore()
+
 onMounted(async () => {
     const oaId = getKey(OA_ID)
 
@@ -35,12 +38,12 @@ onMounted(async () => {
         return
     }
 
+    // menuStor.resetLoadState()
+
     await Promise.allSettled([
         await oaStor.getById(+oaId),
         await oaStor.getAllOasActive(),
-
-        await structureStor.getMenuByUser(AppTypeEnum.OA)
+        await menuStor.switchApp(AppTypeEnum.OA)
     ])
-
 })
 </script>

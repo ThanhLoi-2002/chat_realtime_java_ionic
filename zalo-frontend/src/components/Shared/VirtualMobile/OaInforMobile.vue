@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="h-full">
         <!-- Header App mô phỏng Zalo -->
         <div
             :class="[oaStyle.text.primary, oaStyle.bg.secondary, 'px-3 py-2 flex items-center justify-between text-xs font-medium']">
@@ -11,10 +11,9 @@
         </div>
 
         <!-- Màn hình nội dung bên trong máy ảo -->
-        <div :class="[oaStyle.bg.primary, 'flex-1 flex flex-col overflow-y-auto text-xs']"
-            style="scrollbar-width: none;">
+        <div :class="[oaStyle.bg.primary, 'flex-1 flex flex-col text-xs h-full']">
             <!-- Ảnh bìa hiển thị real-time -->
-            <div class="relative h-28">
+            <div class="relative h-28 w-full shrink-0">
                 <img v-if="oa?.cover" :src="oa.cover" alt="Cover Preview" class="w-full h-full object-center" />
             </div>
 
@@ -37,7 +36,7 @@
                             </i>
                         </div>
 
-                        <p :class="[oaStyle.text.secondary, 'text-[10px] mt-0.5 truncate']">{{ oa?.category || 'name' }}
+                        <p :class="[oaStyle.text.secondary, 'text-[10px] mt-0.5 truncate']">{{ oa?.categoryName || 'name' }}
                         </p>
                     </div>
                 </div>
@@ -66,9 +65,8 @@
 
             <!-- Phần giới thiệu real-time -->
             <div :class="[oaStyle.bg.secondary, oaStyle.border.secondary, 'p-3 border-b flex-1']">
-                <div :class="[oaStyle.text.primary, 'font-medium text-md mb-1']">Thông tin chi tiết</div>
-                <p :class="[oaStyle.text.secondary, 'leading-relaxed whitespace-pre-line']">{{ oa?.description ||
-                    "kashdkasdk" }}</p>
+                <div v-if="oa?.description" :class="[oaStyle.text.primary, 'font-medium text-md mb-1']">Thông tin chi tiết</div>
+                <p :class="[oaStyle.text.secondary, 'leading-relaxed whitespace-pre-line']">{{ oa?.description }}</p>
 
                 <div :class="[oaStyle.text.secondary, 'mt-3 space-y-1.5']">
                     <div v-if="oa?.showAddress" class="flex items-start space-x-2">
@@ -79,7 +77,7 @@
                         <i class="fas fa-phone"></i>
                         <span>{{ oa?.phone }}</span>
                     </div>
-                    <div class="flex items-center space-x-2">
+                    <div v-if="oa?.workingHours" class="flex items-center space-x-2">
                         <i class="fas fa-clock"></i>
                         <span>{{ oa?.workingHours }}</span>
                     </div>

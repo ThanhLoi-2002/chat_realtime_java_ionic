@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-md mx-auto bg-white min-h-screen flex flex-col font-sans text-slate-800 relative shadow-md">
+  <div class="max-w-md mx-auto bg-white h-full flex flex-col font-sans text-slate-800 relative shadow-md">
     
     <header class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
       <div class="flex items-center gap-3">

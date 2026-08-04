@@ -4,12 +4,16 @@ export const oaSchema = yup.object({
     category: yup
         .string()
         .required("required"),
+    categoryName: yup
+        .string()
+        .required("required"),
     name: yup
         .string()
         .required("required"),
     description: yup
         .string()
-        .required("required"),
+        .optional(),
+        // .required("required"),
     province: yup
         .number()
         .required("required"),

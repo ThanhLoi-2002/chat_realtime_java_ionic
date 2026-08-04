@@ -1,6 +1,6 @@
 <template>
     <div
-        class="min-h-screen bg-slate-100 dark:bg-slate-900 flex flex-col items-center justify-between font-sans text-slate-800 dark:text-slate-200 transition-colors duration-300">
+        class="h-full bg-slate-100 dark:bg-slate-900 flex flex-col items-center justify-between font-sans text-slate-800 dark:text-slate-200 transition-colors duration-300">
 
         <header class="w-full max-w-6xl flex justify-between items-center p-6">
             <div class="text-blue-600 dark:text-blue-400 font-bold text-2xl tracking-tight">Zalo</div>

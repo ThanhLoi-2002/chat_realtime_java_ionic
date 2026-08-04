@@ -6,14 +6,15 @@
             </span>
             {{ loadingLabel || "Loading" }}
         </span>
-        <span v-else class="flex gap-2">
+        <span v-else class="flex gap-1 items-center">
             <i :class="icon" v-if="icon" />
-            {{ label }}
+            {{ t(label ?? '') }}
         </span>
     </button>
 </template>
 
 <script setup lang="ts">
+import { useTranslate } from '@/composables/useTranslate.ts';
 import LoadingSpinner from '../Loading/LoadingSpinner.vue';
 
 // Định nghĩa các props cho button
@@ -27,4 +28,6 @@ const props = defineProps<{
     customClass?: string;
     onClick?: () => void
 }>();
+
+const { t } = useTranslate()
 </script>

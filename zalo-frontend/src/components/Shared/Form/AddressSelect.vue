@@ -4,8 +4,8 @@
                 class="text-red-500">*</span></label>
 
         <div class="flex-col w-full">
-            <!-- Hàng chọn Tỉnh/Thành phố & Quận/Huyện -->
-            <div class="grid grid-cols-2 space-y-4">
+            <!-- Hàng chọn Tỉnh/Thành phố & Quận/Huyện (Đổi space-y-4 thành gap-3 hoặc gap-4) -->
+            <div class="grid grid-cols-2 gap-3">
                 <div class="w-full">
                     <select :id="names[0]" :name="names[0]" v-model="province" v-bind="provinceAttrs" :class="[
                         oaStyle.bg.primary,
@@ -45,7 +45,7 @@
             </div>
 
             <!-- Ô nhập chi tiết (Số nhà, tên đường, phường/xã) -->
-            <div class="relative">
+            <div class="relative mt-4">
                 <textarea type="text" v-model="address" v-bind="addressAttrs" maxlength="100" rows="2"
                     placeholder="Ví dụ: 16 Đặng Tất, Phường Tân Định" :class="[
                         oaStyle.bg.primary,

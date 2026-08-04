@@ -72,6 +72,7 @@ public class OfficialAccountService {
                 .cover(request.getCover())
                 .description(request.getDescription())
                 .category(request.getCategory())
+                .categoryName(request.getCategory())
                 .status(OaStatus.ACTIVE)
                 .verified(OaVerified.UNVERIFIED)
                 .build();

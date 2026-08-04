@@ -21,6 +21,7 @@ public class OaResponse extends BaseResponse {
     String description;
 
     String category;
+    String categoryName;
 
     String avatar;
 

@@ -3,75 +3,70 @@
         oaStyle.border.primary,
         oaStyle.bg.primary,
         sysStorage.showSidebar ? 'w-20' : 'w-64',
-        'border-r p-4 hidden md:flex flex-col min-h-screen transition-all duration-300 ease-in-out relative select-none'
+        'border-r p-4 hidden md:flex flex-col h-full transition-all duration-300 ease-in-out relative select-none'
     ]">
-        <div
-            :class="[oaStyle.text.primary, oaStyle.border.primary, 'flex items-center cursor-pointer px-2 pb-2 h-10 border-b overflow-hidden']">
-            <circle-avatar size="size-8 shrink-0" />
-            <span :class="[
-                'text-sm font-bold pl-3 transition-all duration-300 ease-in-out whitespace-nowrap block-text',
-                sysStorage.showSidebar ? 'opacity-0 max-w-0 pointer-events-none' : 'opacity-100 max-w-37.5'
-            ]">SVoucher</span>
-        </div>
+        <div class="space-y-1 flex-1 flex flex-col overflow-y-auto no-scrollbar mt-2 mb-4">
+            <div class="flex-1">
+                <div v-for="(item, index) in currentMenus" :key="index" class="w-full">
 
-        <div class="space-y-1 flex-1 overflow-y-auto no-scrollbar mt-2 mb-4">
-            <div v-for="(item, index) in currentMenus" :key="index" class="w-full">
+                    <div v-if="countChildPage(item)">
+                        <button @click="toggleSubMenu(item.code)" :class="[
+                            isParentActive(item)
+                                ? 'text-blue-600 dark:text-blue-400 font-semibold'
+                                : [oaStyle.bg.hoverBlue, 'text-gray-700 dark:text-gray-300'],
+                            'w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer justify-start'
+                        ]">
+                            <div class="flex items-center gap-3 justify-start flex-1 min-w-0">
+                                <div v-html="item.icon" class="'text-base w-5 text-center shrink-0'"></div>
+                                <span :class="[
+                                    'whitespace-nowrap transition-all duration-300 ease-in-out block-text',
+                                    sysStorage.showSidebar ? 'opacity-0 max-w-0 pointer-events-none' : 'opacity-100 max-w-37.5'
+                                ]">{{ item.code }}</span>
+                            </div>
 
-                <div v-if="countChildPage(item)">
-                    <button @click="toggleSubMenu(item.code)" :class="[
-                        isParentActive(item)
-                            ? 'text-blue-600 dark:text-blue-400 font-semibold'
-                            : [oaStyle.bg.hoverBlue, 'text-gray-700 dark:text-gray-300'],
-                        'w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer justify-start'
-                    ]">
-                        <div class="flex items-center gap-3 justify-start flex-1 min-w-0">
-                            <div v-html="item.icon" class="'text-base w-5 text-center shrink-0'"></div>
+                            <i :class="[
+                                openMenus.includes(item.code) ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down',
+                                'text-xs transition-all duration-300 text-gray-400 shrink-0',
+                                sysStorage.showSidebar ? 'opacity-0 max-w-0 scale-0' : 'opacity-100 max-w-37.5'
+                            ]" />
+                        </button>
+
+                        <div v-show="openMenus.includes(item.code) && !sysStorage.showSidebar"
+                            class="mt-1 pl-8 space-y-1 overflow-hidden transition-all duration-300 ease-in-out">
+                            <router-link v-for="sub in item.children" :key="sub.code" :to="sub.path" v-slot="{ }"
+                                custom>
+                                <button @click="$router.push(sub.path)" :class="[
+                                    // Logic kiểm tra ranh giới: Khớp chính xác hoặc là thư mục con
+                                    ($route.path === item.path || $route.path.startsWith(item.path + '/'))
+                                        ? 'bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 font-semibold'
+                                        : [oaStyle.bg.hoverBlue, 'text-gray-700 dark:text-gray-300'],
+                                    'flex gap-3 w-full text-left px-3 py-2 rounded-md text-sm transition-colors whitespace-nowrap cursor-pointer'
+                                ]">
+                                    <div v-html="sub.icon" class="'text-base w-5 text-center shrink-0'"></div>
+                                    <p>{{ sub.code }}</p>
+                                </button>
+                            </router-link>
+                        </div>
+                    </div>
+
+                    <router-link v-else :to="item.path || ''" v-slot="{ navigate }" custom>
+                        <button @click="navigate" :class="[
+                            // Logic kiểm tra ranh giới: Khớp chính xác hoặc là thư mục con
+                            ($route.path === item.path || $route.path.startsWith(item.path + '/'))
+                                ? 'bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 font-semibold'
+                                : [oaStyle.bg.hoverBlue, 'text-gray-700 dark:text-gray-300'],
+                            'w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer justify-start'
+                        ]">
+                            <p v-html="item.icon" :class="['text-base w-5 text-center shrink-0 mr-3']"></p>
                             <span :class="[
                                 'whitespace-nowrap transition-all duration-300 ease-in-out block-text',
                                 sysStorage.showSidebar ? 'opacity-0 max-w-0 pointer-events-none' : 'opacity-100 max-w-37.5'
                             ]">{{ item.code }}</span>
-                        </div>
-
-                        <i :class="[
-                            openMenus.includes(item.code) ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down',
-                            'text-xs transition-all duration-300 text-gray-400 shrink-0',
-                            sysStorage.showSidebar ? 'opacity-0 max-w-0 scale-0' : 'opacity-100 max-w-37.5'
-                        ]" />
-                    </button>
-
-                    <div v-show="openMenus.includes(item.code) && !sysStorage.showSidebar"
-                        class="mt-1 pl-8 space-y-1 overflow-hidden transition-all duration-300 ease-in-out">
-                        <router-link v-for="sub in item.children" :key="sub.code" :to="sub.path" v-slot="{ }" custom>
-                            <button @click="$router.push(sub.path)" :class="[
-                                // Logic kiểm tra ranh giới: Khớp chính xác hoặc là thư mục con
-                                ($route.path === item.path || $route.path.startsWith(item.path + '/'))
-                                    ? 'bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 font-semibold'
-                                    : [oaStyle.bg.hoverBlue, 'text-gray-700 dark:text-gray-300'],
-                                'flex gap-3 w-full text-left px-3 py-2 rounded-md text-sm transition-colors whitespace-nowrap cursor-pointer'
-                            ]">
-                                <div v-html="sub.icon" class="'text-base w-5 text-center shrink-0'"></div>
-                                <p>{{ sub.code }}</p>
-                            </button>
-                        </router-link>
-                    </div>
+                        </button>
+                    </router-link>
                 </div>
-
-                <router-link v-else :to="item.path || ''" v-slot="{ navigate }" custom>
-                    <button @click="navigate" :class="[
-                        // Logic kiểm tra ranh giới: Khớp chính xác hoặc là thư mục con
-                        ($route.path === item.path || $route.path.startsWith(item.path + '/'))
-                            ? 'bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 font-semibold'
-                            : [oaStyle.bg.hoverBlue, 'text-gray-700 dark:text-gray-300'],
-                        'w-full flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer justify-start'
-                    ]">
-                        <p v-html="item.icon" :class="['text-base w-5 text-center shrink-0 mr-3']"></p>
-                        <span :class="[
-                            'whitespace-nowrap transition-all duration-300 ease-in-out block-text',
-                            sysStorage.showSidebar ? 'opacity-0 max-w-0 pointer-events-none' : 'opacity-100 max-w-37.5'
-                        ]">{{ item.code }}</span>
-                    </button>
-                </router-link>
             </div>
+
 
             <button @click="logout"
                 class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition text-red-600 dark:text-red-400 cursor-pointer">

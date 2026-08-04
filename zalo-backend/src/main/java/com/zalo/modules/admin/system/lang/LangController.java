@@ -25,13 +25,13 @@ public class LangController {
     private final LangService langService;
 
     @GetMapping
-    @RequiresPermission(PermissionConstant.ADMIN.Lang.READ)
+    @RequiresPermission(PermissionConstant.ADMIN.LANG.READ)
     public Page<LangResponse> getAll(@ModelAttribute LangFilter filter) {
         return langService.getAll(filter);
     }
 
     @GetMapping("/{id}")
-    @RequiresPermission(PermissionConstant.ADMIN.Lang.READ)
+    @RequiresPermission(PermissionConstant.ADMIN.LANG.READ)
     public LangResponse getById(@PathVariable Long id) {
         return langService.getById(id);
     }
@@ -43,14 +43,14 @@ public class LangController {
 
     @PostMapping
     @ResponseMessage("success")
-    @RequiresPermission(PermissionConstant.ADMIN.Lang.CREATE)
+    @RequiresPermission(PermissionConstant.ADMIN.LANG.CREATE)
     public LangResponse create(@RequestBody @Valid LangCreationRequest lang, @CurrentUser UserPayload user) {
         return langService.create(lang, user.getId());
     }
 
     @PutMapping("/{id}")
     @ResponseMessage("success")
-    @RequiresPermission(PermissionConstant.ADMIN.Lang.UPDATE)
+    @RequiresPermission(PermissionConstant.ADMIN.LANG.UPDATE)
     public LangResponse update(
             @PathVariable Long id,
             @RequestBody @Valid LangUpdateRequest lang, @CurrentUser UserPayload user
@@ -60,7 +60,7 @@ public class LangController {
 
     @DeleteMapping("/{id}")
     @ResponseMessage("success")
-    @RequiresPermission(PermissionConstant.ADMIN.Lang.DELETE)
+    @RequiresPermission(PermissionConstant.ADMIN.LANG.DELETE)
     public void delete(@PathVariable Long id) {
         langService.delete(id);
     }

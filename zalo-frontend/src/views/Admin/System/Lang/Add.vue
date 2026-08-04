@@ -38,7 +38,7 @@ const onSubmit = handleSubmit((values) => {
 </script>
 
 <template>
-    <div :class="[oaStyle.bg.primary, 'min-h-screen']">
+    <div :class="[oaStyle.bg.primary, 'h-full']">
         <back-button />
         <div :class="[oaStyle.bg.primary, oaStyle.border.primary, 'border rounded-lg shadow p-6']">
 
