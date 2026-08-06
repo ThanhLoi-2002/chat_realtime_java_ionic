@@ -1,5 +1,6 @@
 package com.zalo.modules.oa.officialAccount.service;
 
+import com.zalo.common.configuration.json.G;
 import com.zalo.common.service.CodeGeneratorService;
 import com.zalo.modules.admin.system.user.dto.response.UserPayload;
 import com.zalo.modules.admin.system.user.entities.User;
@@ -65,6 +66,15 @@ public class OfficialAccountService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User không tồn tại"));
 
+        OaDisplay display = OaDisplay.builder()
+                .showWebsite(false)
+                .showAddress(false)
+                .showDescription(true)
+                .showPhone(false)
+                .showWorkingHours(false)
+                .showCallButton(false)
+                .build();
+
         OfficialAccount oa = OfficialAccount.builder()
                 .name(request.getName())
                 .code(codeGeneratorService.generate())
@@ -72,7 +82,11 @@ public class OfficialAccountService {
                 .cover(request.getCover())
                 .description(request.getDescription())
                 .category(request.getCategory())
-                .categoryName(request.getCategory())
+                .categoryName(request.getCategoryName())
+                .address(request.getAddress())
+                .province(request.getProvince())
+                .district(request.getDistrict())
+                .display(display)
                 .status(OaStatus.ACTIVE)
                 .verified(OaVerified.UNVERIFIED)
                 .build();
@@ -168,26 +182,4 @@ public class OfficialAccountService {
                 .map(e -> OaRole.OWNER.equals(e.getRole()) || OaRole.ADMIN.equals(e.getRole()))
                 .orElse(false);
     }
-
-//    public User toggleOA(Long userId) {
-//        UserFilter filter = new UserFilter();
-//        filter.setId(userId);
-//        Optional<User> userExisted = findOne(filter);
-//
-//        if (userExisted.isEmpty()) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound");
-//        }
-//
-//        if(userExisted.get().getIsOa() == 1)
-//        {
-//            return userExisted.get();
-//        }
-//
-//        userExisted.get().setIsOa(1);
-//        userRepository.save(userExisted.get());
-//
-//        // tạo oa đầu tiên
-//
-//        return userExisted.get();
-//    }
 }

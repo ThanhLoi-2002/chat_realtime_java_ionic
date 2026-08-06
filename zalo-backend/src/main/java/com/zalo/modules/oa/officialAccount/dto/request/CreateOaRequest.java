@@ -16,12 +16,18 @@ public class CreateOaRequest {
     String name;
 
     String description;
-
-//    @NotBlank(message = "required")
     String category;
     String categoryName;
 
     String avatar;
 
     String cover;
+
+    String address;
+    int province;
+    int district;
+
+//    String startHour;
+//    String endHour;
+//    boolean isWholeDay;
 }

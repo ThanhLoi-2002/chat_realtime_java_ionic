@@ -33,20 +33,13 @@ import { useSystemStore } from './stores/system.storage.ts';
 import { Network } from '@capacitor/network';
 import { toast } from './utils/toast';
 import { usePushNotification } from './composables/usePushNotification';
-import { storage } from './services/storage.service.';
 import { useConfirmStore } from './composables/useConfirm';
-import MainLayout from './layouts/MainLayout.vue';
-import AuthLayout from './layouts/AuthLayout.vue';
-import NoLayout from './layouts/NoLayout.vue';
-import OALayout from './layouts/OALayout.vue'
-import AdminLayout from './layouts/AdminLayout.vue';
 
-const route: any = useRoute();
 const langStore = useLangStore()
 const userStorage = useUserStore()
 const systemStorage = useSystemStore()
 const { initPush } = usePushNotification()
-const { isMobile, logDeviceInfo, isSmartDevice } = useDevice()
+const { isMobile } = useDevice()
 const confirmStore = useConfirmStore();
 
 // const layouts: any = {

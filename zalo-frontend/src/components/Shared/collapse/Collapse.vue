@@ -1,9 +1,9 @@
 <template>
-    <section class="border-b border-gray-200 dark:border-slate-700">
+    <section :class="[oaStyle.border.secondary, 'border-b']">
         <div class="px-4 py-2 flex justify-between items-center cursor-pointer" @click="emit('update:isOpen', !isOpen)">
-            <span class="font-bold dark:text-white">{{ title }}</span>
+            <span :class="[oaStyle.text.primary, 'font-bold']">{{ title }}</span>
             <span :class="[isOpen ? 'rotate-180' : '', style.text.primary]" class="transition">
-                ▼
+                <i class="fas fa-sort-down"></i>
             </span>
         </div>
 
@@ -15,7 +15,7 @@
     </section>
 </template>
 <script setup lang="ts">
-import { style } from '@/assets/tailwindcss';
+import { oaStyle, style } from '@/assets/tailwindcss';
 
 const props = defineProps<{
     isOpen: boolean
@@ -26,24 +26,3 @@ const props = defineProps<{
 const emit = defineEmits(['update:isOpen'])
 
 </script>
-<style>
-.collapse-enter-active,
-.collapse-leave-active {
-    transition: all 0.5s ease;
-}
-
-.collapse-enter-from,
-.collapse-leave-to {
-    opacity: 0;
-    transform: translateY(-8px);
-    max-height: 0;
-}
-
-.collapse-enter-to,
-.collapse-leave-from {
-    opacity: 1;
-    transform: translateY(0);
-    max-height: 500px;
-    /* đủ lớn để chứa content */
-}
-</style>

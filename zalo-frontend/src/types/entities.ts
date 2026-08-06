@@ -177,23 +177,30 @@ export type StructureType = BaseType & {
 
 export type OaType = BaseType & {
     code: string
-    username: string
     name: string
     phone: string
-    website: string
-    provine: string
-    district: string
+    provine: number
+    district: number
     address: string
-    showAddress: boolean
-    showCallButton: boolean
     avatar: string
     cover: string
     description: string
     category: string
     categoryName: string
-    workingHours: string
+    website: string
+    startHour: string
+    endHour: string
+    isWholeDay: boolean
     status: OaStatusEnum
     verified: OaVerifiedEnum
+    display: {
+        showAddress: boolean
+        showCallButton: boolean
+        showDescription: boolean
+        showPhone: boolean
+        showWebsite: boolean
+        showWorkingHours: boolean
+    }
 }
 
 export type OaCategoryType = BaseType & {

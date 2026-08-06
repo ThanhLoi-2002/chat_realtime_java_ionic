@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.ColumnTransformer;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -17,7 +20,6 @@ import lombok.experimental.FieldDefaults;
 public class OfficialAccount extends BaseEntity {
 
     String code;
-    String username;
     String name;
     String phone;
     String website;
@@ -31,12 +33,22 @@ public class OfficialAccount extends BaseEntity {
 //    @Column(columnDefinition = "LONGTEXT")
     String cover;
 
+    int province;
+    int district;
+    String startHour;
+    String endHour;
+    boolean isWholeDay;
+
     @Column(columnDefinition = "TEXT")
     String description;
 
     @Column(nullable = false, length = 100)
     String category; //Lĩnh vực hoạt động (Mua sắm, Dịch vụ,...)
     String categoryName;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+//    @ColumnTransformer(write = "?")
+    OaDisplay display;
 
     @Enumerated(EnumType.STRING)
     OaStatus status;

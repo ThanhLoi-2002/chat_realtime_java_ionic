@@ -1,5 +1,6 @@
 package com.zalo.modules.oa.officialAccount.dto.request;
 
+import com.zalo.modules.oa.officialAccount.entity.OaDisplay;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -23,4 +24,12 @@ public class UpdateOaRequest {
     String avatar;
 
     String cover;
+
+    int province;
+    int district;
+
+    String startHour;
+    String endHour;
+    boolean isWholeDay;
+    OaDisplay display;
 }

@@ -1,6 +1,7 @@
 package com.zalo.modules.oa.officialAccount.dto.response;
 
 import com.zalo.common.base.BaseResponse;
+import com.zalo.modules.oa.officialAccount.entity.OaDisplay;
 import com.zalo.modules.oa.officialAccount.entity.OaStatus;
 import com.zalo.modules.oa.officialAccount.entity.OaVerified;
 import com.zalo.modules.oa.officialAccount.entity.OfficialAccount;
@@ -27,9 +28,17 @@ public class OaResponse extends BaseResponse {
 
     String cover;
 
+    int province;
+    int district;
+
+    String startHour;
+    String endHour;
+    boolean isWholeDay;
+
     OaVerified verified;
 
     OaStatus status;
+    OaDisplay display;
 
     public OaResponse (OfficialAccount e, String... relations) {
         super(e, relations);

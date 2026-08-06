@@ -6,6 +6,7 @@ import router from './router';
 
 import App from './App.vue';
 import './assets/tailwind.css'
+import './assets/animation.css'
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';

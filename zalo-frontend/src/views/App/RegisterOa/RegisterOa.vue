@@ -107,10 +107,6 @@
                 </VirtualMobile>
             </div>
         </form>
-
-        <!-- Gọi Modal Cắt ảnh -->
-        <ImageCropperModal v-model="showCropper" :imgSrc="values.cover" :aspect-ratio="16 / 9" title="changeCover"
-            @cropped="onCropperResult" />
     </div>
 </template>
 

@@ -14,7 +14,7 @@
         <div :class="[oaStyle.bg.primary, 'flex-1 flex flex-col text-xs h-full']">
             <!-- Ảnh bìa hiển thị real-time -->
             <div class="relative h-28 w-full shrink-0">
-                <img v-if="oa?.cover" :src="oa.cover" alt="Cover Preview" class="w-full h-full object-center" />
+                <img v-if="oa?.cover" :src="handlePickerUrl(oa.cover)" alt="Cover Preview" class="w-full h-full object-center" />
             </div>
 
             <!-- Thông tin profile OA -->
@@ -22,7 +22,7 @@
                 <!-- Ảnh đại diện chồng lên ảnh bìa -->
                 <div class="flex items-center gap-3 mt-3">
                     <div :class="[oaStyle.border.secondary, 'w-12 h-12 rounded-full border']">
-                        <img v-if="oa?.avatar" :src="oa?.avatar" alt="Avatar Preview"
+                        <img v-if="oa?.avatar" :src="handlePickerUrl(oa.avatar)" alt="Avatar Preview"
                             :class="[oaStyle.border.secondary, 'w-12 h-12 rounded-full border object-center shadow-sm']" />
                     </div>
 
@@ -36,7 +36,7 @@
                             </i>
                         </div>
 
-                        <p :class="[oaStyle.text.secondary, 'text-[10px] mt-0.5 truncate']">{{ oa?.categoryName || 'name' }}
+                        <p :class="[oaStyle.text.secondary, 'text-[10px] mt-0.5 truncate']">{{ oa?.categoryName }}
                         </p>
                     </div>
                 </div>
@@ -69,17 +69,17 @@
                 <p :class="[oaStyle.text.secondary, 'leading-relaxed whitespace-pre-line']">{{ oa?.description }}</p>
 
                 <div :class="[oaStyle.text.secondary, 'mt-3 space-y-1.5']">
-                    <div v-if="oa?.showAddress" class="flex items-start space-x-2">
+                    <div v-if="oa?.display?.showAddress" class="flex items-start space-x-2">
                         <i class="fas fa-map-marker-alt mt-0.5"></i>
                         <span>{{ oa?.address }}</span>
                     </div>
-                    <div v-if="oa?.showCallButton" class="flex items-center space-x-2">
+                    <div v-if="oa?.display?.showCallButton" class="flex items-center space-x-2">
                         <i class="fas fa-phone"></i>
                         <span>{{ oa?.phone }}</span>
                     </div>
-                    <div v-if="oa?.workingHours" class="flex items-center space-x-2">
+                    <div v-if="oa?.display?.showWorkingHours" class="flex items-center space-x-2">
                         <i class="fas fa-clock"></i>
-                        <span>{{ oa?.workingHours }}</span>
+                        <span>{{ oa?.isWholeDay ? 'Hoạt động 24/24' : `${oa?.startHour} - ${oa?.endHour}` }}</span>
                     </div>
                 </div>
             </div>
@@ -89,6 +89,7 @@
 </template>
 <script setup lang="ts">
 import { oaStyle } from '@/assets/tailwindcss';
+import { useImagePicker } from '@/composables/useImagePicker';
 import { OaType } from '@/types/entities';
 import { OaStatusEnum } from '@/types/enum';
 
@@ -96,4 +97,5 @@ const props = defineProps<{
     oa: OaType | undefined
 }>()
 
+const {handlePickerUrl} = useImagePicker()
 </script>
