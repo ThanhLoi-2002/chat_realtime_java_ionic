@@ -18,6 +18,7 @@ import org.springframework.beans.BeanUtils;
 public class OaResponse extends BaseResponse {
     String name;
     String code;
+    String phone;
 
     String description;
 
@@ -30,10 +31,11 @@ public class OaResponse extends BaseResponse {
 
     int province;
     int district;
+    String address;
 
     String startHour;
     String endHour;
-    boolean isWholeDay;
+    Boolean isWholeDay;
 
     OaVerified verified;
 

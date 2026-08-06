@@ -78,6 +78,7 @@ declare module 'vue' {
     Switch: typeof import('./src/components/Shared/Switch/Switch.vue')['default']
     ThemeToggle: typeof import('./src/components/Shared/Toggle/ThemeToggle.vue')['default']
     VirtualMobile: typeof import('./src/components/Shared/VirtualMobile/VirtualMobile.vue')['default']
+    WorkingHoursSelector: typeof import('./src/components/OA/Select/WorkingHoursSelector.vue')['default']
     ZaloSticker: typeof import('./src/components/Shared/Sticker/Zalo/ZaloSticker.vue')['default']
     ZaloStickerGrid: typeof import('./src/components/Shared/Sticker/Zalo/ZaloStickerGrid.vue')['default']
     ZaloStickerPackBar: typeof import('./src/components/Shared/Sticker/Zalo/ZaloStickerPackBar.vue')['default']

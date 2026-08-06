@@ -17,6 +17,7 @@ public class UpdateOaRequest {
     String name;
 
     String description;
+    String phone;
 
 //    @NotBlank(message = "required")
     String category;
@@ -27,9 +28,10 @@ public class UpdateOaRequest {
 
     int province;
     int district;
+    String address;
 
     String startHour;
     String endHour;
-    boolean isWholeDay;
+    Boolean isWholeDay;
     OaDisplay display;
 }

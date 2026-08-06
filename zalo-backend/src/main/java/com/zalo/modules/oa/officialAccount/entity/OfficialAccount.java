@@ -37,7 +37,9 @@ public class OfficialAccount extends BaseEntity {
     int district;
     String startHour;
     String endHour;
-    boolean isWholeDay;
+
+    @Column(name = "is_whole_day")
+    Boolean isWholeDay;
 
     @Column(columnDefinition = "TEXT")
     String description;

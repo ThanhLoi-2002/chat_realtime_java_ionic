@@ -48,10 +48,9 @@
             </div>
 
             <div class="flex items-center space-x-4">
+                <lang-dropdown/>
                 <theme-toggle custom-class="p-2" />
                 <oa-dropdown/>
-
-                <!-- <circle-avatar size="size-7" :user="userStorage.user" /> -->
             </div>
         </div>
     </ion-header>
@@ -66,6 +65,7 @@ import { useSystemStore } from '@/stores/system.storage';
 import { ADMIN_ROUTE, APP_ROUTE } from '@/utils/constant';
 import { IonHeader } from '@ionic/vue';
 import OaDropdown from './OaDropdown.vue';
+import LangDropdown from '@/components/Shared/Dropdown/LangDropdown.vue';
 
 const userStorage = useUserStore()
 const sysStorage = useSystemStore()

@@ -13,7 +13,7 @@ public interface OfficialAccountRepository extends JpaRepository<OfficialAccount
 
     boolean existsByName(String name);
 
-    boolean existsByNameAndIdNot(String name, Long id);
+    boolean existsByNameAndIdNotAndCuNot(String name, Long id, Long cu);
 
     List<OfficialAccount> findAllByIdInAndStatus(
             List<Long> ids,

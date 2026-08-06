@@ -1,6 +1,7 @@
 package com.zalo.modules.oa.officialAccount;
 
 import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
+import com.zalo.common.configuration.json.G;
 import com.zalo.modules.admin.system.user.dto.response.UserPayload;
 import com.zalo.modules.oa.officialAccount.dto.request.CreateOaRequest;
 import com.zalo.modules.oa.officialAccount.dto.request.UpdateOaRequest;
@@ -37,13 +38,13 @@ public class OfficialAccountController {
     public OaResponse update(
             @CurrentUser UserPayload user,
             @PathVariable Long id,
-            @Valid @RequestBody UpdateOaRequest request
+            @Valid @RequestBody UpdateOaRequest req
     ) {
-
+        System.out.println(G.toJson(req));
         OfficialAccount oa = officialAccountService.update(
                 user,
                 id,
-                request
+                req
         );
 
         return new OaResponse(oa);

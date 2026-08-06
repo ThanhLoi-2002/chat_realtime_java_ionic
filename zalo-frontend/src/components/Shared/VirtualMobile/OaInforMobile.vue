@@ -65,21 +65,21 @@
 
             <!-- Phần giới thiệu real-time -->
             <div :class="[oaStyle.bg.secondary, oaStyle.border.secondary, 'p-3 border-b flex-1']">
-                <div v-if="oa?.description" :class="[oaStyle.text.primary, 'font-medium text-md mb-1']">Thông tin chi tiết</div>
-                <p :class="[oaStyle.text.secondary, 'leading-relaxed whitespace-pre-line']">{{ oa?.description }}</p>
+                <div v-if="oa?.description && oa?.display.showDescription" :class="[oaStyle.text.primary, 'font-medium text-md mb-1']">Thông tin chi tiết</div>
+                <p v-if="oa?.display.showDescription" :class="[oaStyle.text.secondary, 'leading-relaxed whitespace-pre-line mb-2']">{{ oa?.description }}</p>
 
-                <div :class="[oaStyle.text.secondary, 'mt-3 space-y-1.5']">
+                <div :class="[oaStyle.text.secondary, 'space-y-2']">
                     <div v-if="oa?.display?.showAddress" class="flex items-start space-x-2">
                         <i class="fas fa-map-marker-alt mt-0.5"></i>
                         <span>{{ oa?.address }}</span>
                     </div>
-                    <div v-if="oa?.display?.showCallButton" class="flex items-center space-x-2">
+                    <div v-if="oa?.display?.showPhone" class="flex items-center space-x-2">
                         <i class="fas fa-phone"></i>
                         <span>{{ oa?.phone }}</span>
                     </div>
                     <div v-if="oa?.display?.showWorkingHours" class="flex items-center space-x-2">
                         <i class="fas fa-clock"></i>
-                        <span>{{ oa?.isWholeDay ? 'Hoạt động 24/24' : `${oa?.startHour} - ${oa?.endHour}` }}</span>
+                        <span>{{ oa?.isWholeDay ? 'Hoạt động 24/24' : oa?.startHour && oa?.endHour && `${oa?.startHour} - ${oa?.endHour}` }}</span>
                     </div>
                 </div>
             </div>

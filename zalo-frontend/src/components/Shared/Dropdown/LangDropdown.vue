@@ -18,9 +18,9 @@
             </div>
 
             <i :class="[
-                isOpen ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down',
-                'text-xs text-gray-400 transition-all duration-300 shrink-0',
-                isCollapsed ? 'opacity-0 max-w-0 scale-0' : 'opacity-100'
+                'fa-solid fa-chevron-down text-xs text-gray-400 transition-all duration-300 shrink-0 ml-2',
+                isCollapsed ? 'opacity-0 max-w-0 scale-0' : 'opacity-100',
+                { 'rotate-180': isOpen }
             ]" />
         </button>
 

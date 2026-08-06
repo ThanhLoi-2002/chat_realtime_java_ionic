@@ -11,6 +11,7 @@ import com.zalo.modules.oa.officialAccount.entity.*;
 import com.zalo.modules.oa.officialAccount.repo.OfficialAccountMemberRepository;
 import com.zalo.modules.oa.officialAccount.repo.OfficialAccountRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -109,20 +110,16 @@ public class OfficialAccountService {
         return oa;
     }
 
-    public OfficialAccount update(UserPayload currentUser, Long oaId, UpdateOaRequest request) {
+    public OfficialAccount update(UserPayload currentUser, Long oaId, UpdateOaRequest req) {
         checkAdmin(oaId, currentUser.getId());
 
         OfficialAccount oa = getById(oaId);
 
-        if (officialAccountRepository.existsByNameAndIdNot(request.getName(), oaId)) {
+        if (officialAccountRepository.existsByNameAndIdNotAndCuNot(req.getName(), oaId, currentUser.getId())) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tên OA đã tồn tại");
         }
 
-        oa.setName(request.getName());
-        oa.setAvatar(request.getAvatar());
-        oa.setCover(request.getCover());
-        oa.setDescription(request.getDescription());
-        oa.setCategory(request.getCategory());
+        BeanUtils.copyProperties(req, oa);
 
         return officialAccountRepository.save(oa);
     }

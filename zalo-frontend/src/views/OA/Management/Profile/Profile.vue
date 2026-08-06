@@ -16,7 +16,8 @@
 
             <!-- Accordion Box: Thông tin tài khoản -->
             <Collapse v-model:isOpen="sections.oaInfo" :title="t('accountInfo')" custom-class="p-6 space-y-6">
-                <AccountInfo v-model:oa="form"/>
+                <AccountInfo v-model:oa="form" @update:avatar-file="avatarFile = $event"
+                    @update:cover-file="coverFile = $event" />
             </Collapse>
 
             <!-- Accordion Box: Thiết lập hiển thị -->
@@ -35,21 +36,7 @@
 
             <!-- Accordion Box: Thông tin doanh nghiệp -->
             <Collapse v-model:isOpen="sections.branchs" :title="t('businessSetting')" custom-class="p-6 space-y-6">
-                <div class="flex items-center justify-between">
-                    <span :class="[oaStyle.text.primary, 'text-sm w-40']">Địa chỉ</span>
-                    <input type="text" v-model="form.address"
-                        :class="[oaStyle.border.secondary, oaStyle.text.secondary, 'flex-1 px-3 py-2 border rounded text-sm focus:outline-none']" />
-                </div>
-                <div class="flex items-center justify-between">
-                    <span :class="[oaStyle.text.primary, 'text-sm w-40']">Số điện thoại</span>
-                    <input type="text" v-model="form.phone"
-                        :class="[oaStyle.border.secondary, oaStyle.text.secondary, 'flex-1 px-3 py-2 border rounded text-sm focus:outline-none']" />
-                </div>
-                <div class="flex items-center justify-between">
-                    <span :class="[oaStyle.text.primary, 'text-sm w-40']">Giờ hoạt động</span>
-                    <input type="text" v-model="form.display.showWorkingHours"
-                        :class="[oaStyle.border.secondary, oaStyle.text.secondary, 'flex-1 px-3 py-2 border rounded text-sm focus:outline-none']" />
-                </div>
+
             </Collapse>
 
             <Collapse v-model:isOpen="sections.remarkable" :title="t('remarkable')" custom-class="p-6 space-y-6">
@@ -67,7 +54,7 @@
 
             <!-- Nút Chỉnh sửa -->
             <div class="flex justify-end pt-2">
-                <button
+                <button :disabled="isLoading" @click="update"
                     class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded shadow transition-colors">
                     {{ t('update') }}
                 </button>
@@ -88,9 +75,15 @@ import OaInforMobile from '@/components/Shared/VirtualMobile/OaInforMobile.vue';
 import VirtualMobile from '@/components/Shared/VirtualMobile/VirtualMobile.vue';
 import { useTranslate } from '@/composables/useTranslate';
 import { OaType } from '@/types/entities';
-import { computed, reactive, ref, watch } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import AccountInfo from './component/AccountInfo.vue';
 import { useOaStore } from '@/stores/Oa/oa.storage.ts';
+import { useUploadMinio } from '@/composables/useUploadMinio.ts';
+
+const avatarFile = ref<File | null>(null)
+const coverFile = ref<File | null>(null)
+const isLoading = ref(false)
+const { uploadFile } = useUploadMinio()
 
 const oaStor = useOaStore()
 // Trạng thái mở/đóng các accordion box
@@ -104,29 +97,50 @@ const sections = reactive({
     utilities: false
 });
 
-const newOa = computed<OaType>(() => ({
-    ...form,
-}));
-
 // Khai báo state liên kết dữ liệu 2 chiều từ Form sang máy ảo Preview
 const form = reactive<OaType>({
-  display: {
-    showDescription: false,
-    showAddress: false,
-    showPhone: false,
-    showWebsite: false,
-    showWorkingHours: false,
-    showCallButton: false,
-  },
+    display: {
+        showDescription: false,
+        showAddress: false,
+        showPhone: false,
+        showWebsite: false,
+        showWorkingHours: false,
+        showCallButton: false,
+    },
 } as OaType)
 
 const { t } = useTranslate()
 
 watch(
-  () => oaStor.oa,
-  (oa) => {
-    if (oa) Object.assign(form, oa)
-  },
-  { immediate: true }
+    () => oaStor.oa,
+    (oa) => {
+        if (oa) Object.assign(form, oa)
+    },
+    { immediate: true }
 )
+
+const update = async () => {
+    isLoading.value = true
+
+    if (avatarFile.value) {
+        const avatarObjectName = `/media/oaAvatar_${Date.now()}`
+        await uploadFile({
+            file: avatarFile.value,
+            objectName: avatarObjectName
+        })
+        form.avatar = avatarObjectName
+    }
+
+    if (coverFile.value) {
+        const coverObjectName = `/media/oaCover_${Date.now()}`
+        await uploadFile({
+            file: coverFile.value,
+            objectName: coverObjectName
+        })
+        form.cover = coverObjectName
+    }
+
+    await oaStor.update(form.id, form)
+    isLoading.value = false
+}
 </script>

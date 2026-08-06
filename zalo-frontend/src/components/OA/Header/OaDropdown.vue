@@ -2,13 +2,19 @@
     <div class="relative" ref="dropdownRef">
         <!-- Nút kích hoạt dropdown (Hiển thị OA hiện tại) -->
         <div @click="isOpen = !isOpen"
-            :class="[oaStyle.border.secondary, oaStyle.bg.hover, 'flex items-center space-x-2 px-3 py-1.5 cursor-pointer border-l border-r transition-colors select-none hover:rounded-md']">
-            <circle-avatar :src="`${MINIO_URL}/${oaStor.oa?.avatar}`" size="size-7" />
-            <div class="hidden sm:flex flex-col text-left max-w-30">
-                <span class="text-sm font-medium truncate">{{ oaStor.oa?.name }}</span>
+            :class="[oaStyle.border.secondary, oaStyle.bg.hover, 'flex items-center justify-between gap-2 px-3 py-2 cursor-pointer border-l border-r transition-colors select-none hover:rounded-md']">
+
+            <!-- Nhóm bên trái: Avatar và Tên (Dùng min-w-0 để flex item co lại đúng cách, tránh đè chữ) -->
+            <div class="flex items-center gap-2 min-w-0 flex-1">
+                <circle-avatar :src="`${MINIO_URL}/${oaStor.oa?.avatar}`" size="size-7" class="shrink-0" />
+                <div class="hidden sm:flex flex-col text-left min-w-0 flex-1">
+                    <span class="text-sm font-medium truncate">{{ oaStor.oa?.name }}</span>
+                </div>
             </div>
+
+            <!-- Mũi tên nằm bên phải -->
             <i
-                :class="['fas fa-chevron-down text-xs text-gray-500 transition-transform duration-200 ml-1', { 'rotate-180': isOpen }]" />
+                :class="['fas fa-chevron-down text-xs text-gray-500 transition-transform duration-200 shrink-0 ml-2', { 'rotate-180': isOpen }]" />
         </div>
 
         <!-- Menu danh sách OA xổ xuống -->

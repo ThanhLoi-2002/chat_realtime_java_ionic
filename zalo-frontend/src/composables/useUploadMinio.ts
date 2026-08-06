@@ -1,7 +1,6 @@
 import { mediaApi } from "@/api/App/media.api";
 import { GetPresignedUrlType, MinioUploadFileType, UploadFileRequest } from "@/types/common";
 import { MediaType } from "@/types/entities";
-import { ModuleEnum } from "@/types/enum";
 import { toast } from "@/utils/toast";
 import axios from "axios";
 import pLimit from 'p-limit';

@@ -70,10 +70,14 @@ export const useOaStore = defineStore('oa', {
                 return null
             }
         },
-        async update(id: number, data: OaRequestType) {
+        async update(id: number, data: OaType) {
             try {
                 const result: any = await oaApi.update(id, data);
                 this.oa = result.result
+                toast({
+                    color: "success",
+                    message: result.message
+                })
             } catch (e: any) {
                 toast({
                     color: "danger",

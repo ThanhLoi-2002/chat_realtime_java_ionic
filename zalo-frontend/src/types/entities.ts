@@ -179,7 +179,7 @@ export type OaType = BaseType & {
     code: string
     name: string
     phone: string
-    provine: number
+    province: number
     district: number
     address: string
     avatar: string

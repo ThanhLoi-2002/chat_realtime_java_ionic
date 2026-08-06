@@ -16,7 +16,8 @@
 
                 <!-- 1. DANH MỤC HOẠT ĐỘNG -->
                 <ErrorSelect label="category" name="category" :defineField="defineField" :errors="errors"
-                    :schema="oaSchema" placeholder="Chọn danh mục phù hợp" :options="categories" direction="horizontal" />
+                    :schema="oaSchema" placeholder="Chọn danh mục phù hợp" :options="categories"
+                    direction="horizontal" />
 
                 <!-- 2. TÊN OFFICIAL ACCOUNT -->
                 <ErrorInput :errors="errors" name="name" label="oaName" :define-field="defineField" :schema="oaSchema"
@@ -107,6 +108,10 @@
                 </VirtualMobile>
             </div>
         </form>
+
+        <!-- Gọi Modal Cắt ảnh -->
+        <ImageCropperModal v-model="showCropper" :imgSrc="values.cover" :aspect-ratio="16 / 9" title="changeCover"
+            @cropped="onCropperResult" />
     </div>
 </template>
 
@@ -150,7 +155,14 @@ const showCropper = ref(false)
 
 const { t } = useTranslate()
 const oa = computed<any>(() => ({
-    ...values,
+    ...values, display: {
+        showDescription: true,
+        showAddress: false,
+        showPhone: false,
+        showWebsite: false,
+        showWorkingHours: false,
+        showCallButton: false,
+    },
 }));
 
 // Thêm các ref để điều khiển DOM cho thẻ input file ẩn
@@ -201,7 +213,6 @@ const onCropperResult = ({ blob, croppedImageUrl }: any) => {
 
 const save = handleSubmit(async (values: any) => {
     isLoading.value = true
-    console.log('Thành công:', values)
 
     if (!avatarFile.value || !coverFile.value) return
     const avatarObjectName = `/media/oaAvatar_${Date.now()}`
