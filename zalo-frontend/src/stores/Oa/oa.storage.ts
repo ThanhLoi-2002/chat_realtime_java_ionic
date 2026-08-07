@@ -1,6 +1,9 @@
 import { oaApi } from '@/api/Oa/oa.api'
+import router from '@/router'
 import { OaRequestType } from '@/types/common'
 import { OaType } from '@/types/entities'
+import { OA_ID, ROUTE } from '@/utils/constant'
+import { deleteKey } from '@/utils/local'
 import { toast } from '@/utils/toast'
 import { defineStore } from 'pinia'
 
@@ -50,6 +53,8 @@ export const useOaStore = defineStore('oa', {
                     color: "danger",
                     message: e.message
                 })
+                deleteKey(OA_ID)
+                router.push(ROUTE.OA_DASHBOARD.ACCOUNTS)
                 return null
             }
         },

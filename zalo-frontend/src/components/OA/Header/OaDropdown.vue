@@ -6,7 +6,7 @@
 
             <!-- Nhóm bên trái: Avatar và Tên (Dùng min-w-0 để flex item co lại đúng cách, tránh đè chữ) -->
             <div class="flex items-center gap-2 min-w-0 flex-1">
-                <circle-avatar :src="`${MINIO_URL}/${oaStor.oa?.avatar}`" size="size-7" class="shrink-0" />
+                <circle-avatar :src="`${MINIO_URL}${oaStor.oa?.avatar}`" size="size-7" class="shrink-0" />
                 <div class="hidden sm:flex flex-col text-left min-w-0 flex-1">
                     <span class="text-sm font-medium truncate">{{ oaStor.oa?.name }}</span>
                 </div>

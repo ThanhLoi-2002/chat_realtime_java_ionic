@@ -30,7 +30,7 @@ onMounted(async () => {
 
     await Promise.allSettled([
         await structureStor.getMenuByUser(AppTypeEnum.ADMIN),
-        await menuStor.switchApp(AppTypeEnum.ADMIN)
+        await menuStor.switchApp(AppTypeEnum.ADMIN, true)
     ])
 })
 </script>

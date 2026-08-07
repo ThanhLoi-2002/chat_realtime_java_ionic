@@ -92,7 +92,7 @@ router.beforeEach(async (to) => {
 
   // Nếu F5 làm trống Store menuList
   if (!menuStor.isLoaded && userStore.user) {
-    // console.log("refresh")
+    console.log("refresh")
     try {
       // 1. Phân tích URL hiện tại để nhận diện App tương ứng
       let currentApp = AppTypeEnum.ADMIN; // mặc định
@@ -100,7 +100,7 @@ router.beforeEach(async (to) => {
       if (to.path.startsWith(ROUTE.OA_DASHBOARD.INDEX)) currentApp = AppTypeEnum.OA;
 
       // 2. Kích hoạt nạp lại đúng layout và danh sách route con
-      await menuStor.switchApp(currentApp, true);
+      await menuStor.switchApp(currentApp, false);
 
       // 3. Đi tiếp
       return { ...to, replace: true };

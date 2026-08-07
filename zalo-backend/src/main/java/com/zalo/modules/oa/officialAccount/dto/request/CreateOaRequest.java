@@ -26,8 +26,4 @@ public class CreateOaRequest {
     String address;
     int province;
     int district;
-
-//    String startHour;
-//    String endHour;
-//    boolean isWholeDay;
 }

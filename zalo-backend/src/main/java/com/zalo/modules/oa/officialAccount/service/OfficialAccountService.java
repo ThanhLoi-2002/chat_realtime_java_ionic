@@ -1,6 +1,5 @@
 package com.zalo.modules.oa.officialAccount.service;
 
-import com.zalo.common.configuration.json.G;
 import com.zalo.common.service.CodeGeneratorService;
 import com.zalo.modules.admin.system.user.dto.response.UserPayload;
 import com.zalo.modules.admin.system.user.entities.User;
@@ -88,7 +87,7 @@ public class OfficialAccountService {
                 .province(request.getProvince())
                 .district(request.getDistrict())
                 .display(display)
-                .status(OaStatus.ACTIVE)
+                .status(OaStatus.PENDING)
                 .verified(OaVerified.UNVERIFIED)
                 .build();
         oa.setCu(user.getId());

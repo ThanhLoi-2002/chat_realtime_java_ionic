@@ -69,6 +69,7 @@ export type BaseFilter = {
   page?: number
   limit?: number
   lastId?: number
+  search?: string
 }
 
 export type MessageFilter = BaseFilter & {

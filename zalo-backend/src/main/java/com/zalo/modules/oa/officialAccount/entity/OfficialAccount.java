@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -24,13 +23,8 @@ public class OfficialAccount extends BaseEntity {
     String phone;
     String website;
     String address;
-
-//    @Convert(converter = FileConverter.class)
-//    @Column(columnDefinition = "LONGTEXT")
     String avatar;
 
-//    @Convert(converter = FileConverter.class)
-//    @Column(columnDefinition = "LONGTEXT")
     String cover;
 
     int province;

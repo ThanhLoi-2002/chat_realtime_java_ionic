@@ -25,7 +25,7 @@ export const useMenuStore = defineStore('menu', {
     }),
 
     actions: {
-        async switchApp(appType: AppTypeEnum, isRefresh?: boolean) {
+        async switchApp(appType: AppTypeEnum, isReturnAppRoot?: boolean) {
             if (!this.isLoaded) {
                 console.log("switchApp: ", appType)
                 const structureStor = useAdminStructureStore()
@@ -38,7 +38,7 @@ export const useMenuStore = defineStore('menu', {
                 removeRouteCallbacks = [];
 
                 // 2. Fetch danh sách menu từ Server
-                const rawMenu: StructureType = await structureStor.getMenuByUser(appType, 'switchApp');
+                const rawMenu: StructureType = await structureStor.getMenuByUser(appType);
 
                 if (!rawMenu || rawMenu.children.length === 0) {
                     console.warn(`[Router] Menu của app ${appType} rỗng. Bỏ qua nạp route.`);
@@ -60,7 +60,7 @@ export const useMenuStore = defineStore('menu', {
                     console.log(`[Router] Đã nạp thành công các route vào layout: ${targetLayoutName}`, newRoutes);
                 }
 
-                if (!isRefresh) {
+                if (!isReturnAppRoot) {
                     // 4. Điều hướng về trang chủ tương ứng của App
                     if (appType === AppTypeEnum.ADMIN) {
                         router.push(ROUTE.ADMIN_DASHBOARD.INDEX);

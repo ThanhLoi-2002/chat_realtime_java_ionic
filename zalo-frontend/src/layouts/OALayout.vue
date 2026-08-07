@@ -43,7 +43,7 @@ onMounted(async () => {
     await Promise.allSettled([
         await oaStor.getById(+oaId),
         await oaStor.getAllOasActive(),
-        await menuStor.switchApp(AppTypeEnum.OA)
+        await menuStor.switchApp(AppTypeEnum.OA, true)
     ])
 })
 </script>
