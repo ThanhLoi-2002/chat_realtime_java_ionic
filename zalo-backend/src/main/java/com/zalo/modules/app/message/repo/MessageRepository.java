@@ -1,4 +1,4 @@
-package com.zalo.modules.app.message.service;
+package com.zalo.modules.app.message.repo;
 
 import com.zalo.modules.app.message.entity.Message;
 import com.zalo.modules.app.message.entity.MessageType;

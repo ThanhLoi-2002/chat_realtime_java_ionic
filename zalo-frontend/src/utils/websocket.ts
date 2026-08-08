@@ -6,7 +6,7 @@ import { ACCESS_TOKEN } from "./constant";
 export const stompClient: Client = new Client({
   webSocketFactory: () => {
     // Luôn sử dụng URL từ biến môi trường
-    return new SockJS(`${import.meta.env.VITE_API_URL}/api/ws`);
+    return new SockJS(`${import.meta.env.VITE_API_URL}/ws`);
   },
   reconnectDelay: 5000,
   heartbeatIncoming: 4000,

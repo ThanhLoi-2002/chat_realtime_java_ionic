@@ -11,7 +11,7 @@ import com.zalo.modules.app.message.entity.SystemMessageType;
 import com.zalo.modules.app.conversation.service.ConversationRepository;
 import com.zalo.modules.app.conversation.service.ConversationService;
 import com.zalo.modules.admin.system.user.service.UserRepository;
-import com.zalo.modules.app.message.service.SystemMessageService;
+import com.zalo.modules.app.message.repo.SystemMessageService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

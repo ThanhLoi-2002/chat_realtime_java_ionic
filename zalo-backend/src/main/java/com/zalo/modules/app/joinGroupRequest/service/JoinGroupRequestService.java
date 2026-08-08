@@ -14,7 +14,7 @@ import com.zalo.modules.app.joinGroupRequest.dto.response.JoinGroupRequestRespon
 import com.zalo.modules.app.joinGroupRequest.entity.JoinGroupRequest;
 import com.zalo.modules.app.message.dto.request.CreateSystemMessageRequest;
 import com.zalo.modules.app.message.entity.SystemMessageType;
-import com.zalo.modules.app.message.service.SystemMessageInterface;
+import com.zalo.modules.app.message.repo.SystemMessageInterface;
 import com.zalo.modules.admin.system.user.dto.response.UserResponse;
 import com.zalo.modules.admin.system.user.entities.User;
 import com.zalo.modules.admin.system.user.service.UserRepository;

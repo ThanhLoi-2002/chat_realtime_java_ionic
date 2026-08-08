@@ -6,7 +6,7 @@ import com.zalo.modules.app.conversation.service.ConversationRepository;
 import com.zalo.modules.app.groupSetting.entities.GroupSetting;
 import com.zalo.modules.app.message.dto.request.CreateSystemMessageRequest;
 import com.zalo.modules.app.message.entity.SystemMessageType;
-import com.zalo.modules.app.message.service.SystemMessageInterface;
+import com.zalo.modules.app.message.repo.SystemMessageInterface;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;

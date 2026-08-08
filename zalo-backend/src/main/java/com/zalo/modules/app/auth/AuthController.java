@@ -1,6 +1,7 @@
 package com.zalo.modules.app.auth;
 
 import com.cloudinary.api.exceptions.NotFound;
+import com.zalo.common.configuration.anotation.Public.Public;
 import com.zalo.modules.app.auth.dto.request.LoginRequest;
 import com.zalo.modules.app.auth.dto.request.RegisterRequest;
 import com.zalo.modules.app.auth.dto.response.LoginResponse;
@@ -17,6 +18,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Public
 public class AuthController {
     private final AuthService authService;
 

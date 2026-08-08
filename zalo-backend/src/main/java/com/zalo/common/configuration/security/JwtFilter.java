@@ -23,7 +23,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
 
-    public UserPayload getOneByToken(String token) throws NotFound {
+    private UserPayload getOneByToken(String token) throws NotFound {
         Claims claims = jwtService.extractAllClaims(token);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -45,8 +45,15 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (authHeader != null && !authHeader.isBlank()) {
 
+            String token = authHeader;
+
+            // Nếu chuỗi bắt đầu bằng "Bearer " (có phân biệt hoa thường hoặc không), hãy cắt nó đi
+            if (authHeader.startsWith("Bearer ") || authHeader.startsWith("bearer ")) {
+                token = authHeader.substring(7); // Cắt bỏ 7 ký tự đầu tiên ("Bearer ")
+            }
+
             try {
-                UserPayload user = getOneByToken(authHeader);
+                UserPayload user = getOneByToken(token);
 
                 // Tạo đối tượng Authentication của Spring Security, nhét "user" vào phần Principal
                 UsernamePasswordAuthenticationToken authentication =
@@ -55,7 +62,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 // Đẩy vào kho lưu trữ bảo mật
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                System.out.println("JWT Authentication failed: " + e.getMessage());
             }
         }
 

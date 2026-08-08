@@ -1,4 +1,4 @@
-package com.zalo.modules.app.message.service;
+package com.zalo.modules.app.message.repo;
 
 import com.zalo.common.service.WebsocketService;
 import com.zalo.modules.app.media.dtos.responses.MediaResponse;

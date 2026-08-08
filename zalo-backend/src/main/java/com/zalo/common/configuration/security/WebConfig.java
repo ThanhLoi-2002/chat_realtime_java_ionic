@@ -1,13 +1,14 @@
-package com.zalo.common.configuration.anotation.currentUser;
+package com.zalo.common.configuration.security;
 
-import com.zalo.common.configuration.anotation.Public.PublicEndpointInterceptor;
+import com.zalo.common.configuration.anotation.currentUser.CurrentUserArgumentResolver;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
 import java.util.List;
 
 @Configuration
@@ -15,7 +16,17 @@ import java.util.List;
 public class WebConfig implements WebMvcConfigurer {
 
     private final CurrentUserArgumentResolver currentUserArgumentResolver;
-    private final PublicEndpointInterceptor publicEndpointInterceptor;
+
+    @Override
+    public void configurePathMatch(PathMatchConfigurer configurer) {
+        // Tự động thêm tiền tố "/api" cho tất cả các Controller được đánh dấu @RestController
+        configurer.addPathPrefix("/api", c ->
+                // 1. Phải là RestController
+                c.isAnnotationPresent(RestController.class)
+                        // 2. VÀ KHÔNG PHẢI là các controller hệ thống của Swagger (thuộc package springdoc)
+                        && !c.getPackageName().startsWith("org.springdoc")
+        );
+    }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
@@ -28,11 +39,4 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:uploads/");
     }
-
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//        // Áp dụng Interceptor cho tất cả các routes
-//        registry.addInterceptor(publicEndpointInterceptor)
-//                .addPathPatterns("/**");
-//    }
 }

@@ -51,12 +51,23 @@ public class TranslateService {
     }
 
     public DetectLangResponse detectLanguage(DetectLangRequest text) {
-        return aiService.post(
-                "/translate/detect-language",
-                text,
-                new ParameterizedTypeReference<ApiResponse<DetectLangResponse>>() {
-                }
-        );
+        try {
+            DetectLangResponse apiResponse = aiService.post(
+                    "/translate/detect-language",
+                    text,
+                    new ParameterizedTypeReference<ApiResponse<DetectLangResponse>>() {
+                    }
+            );
+
+            return apiResponse;
+        } catch (Exception e) {
+            // Log lỗi ra để dễ debug
+            System.err.println("Detect language error: " + e.getMessage());
+
+            // Tùy chọn: Ném ra RuntimeException hoặc trả về một đối tượng rỗng/mặc định
+//            throw new RuntimeException("Không thể nhận diện ngôn ngữ lúc này: " + e.getMessage(), e);
+            return null;
+        }
     }
 
     public List<LanguageResponse> getLanguages(String lang) {

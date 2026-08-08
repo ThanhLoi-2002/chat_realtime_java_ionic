@@ -29,6 +29,7 @@ import com.zalo.modules.app.conversation.entities.ConversationMember;
 import com.zalo.modules.app.media.dtos.requests.MediaRequest;
 import com.zalo.modules.app.media.entities.MediaType;
 import com.zalo.modules.app.media.service.MediaInterface;
+import com.zalo.modules.app.message.repo.*;
 import com.zalo.modules.app.sticker.entity.StickerItem;
 import com.zalo.modules.admin.system.user.entities.User;
 import com.zalo.modules.admin.system.user.service.UserRepository;
@@ -247,7 +248,7 @@ public class MessageService {
             DetectLangResponse response = translateService.detectLanguage(detectLangRequest);
 
             // độ tin cậy >= 80% thì lưu vào db
-            if (response.getConfidence() >= 0.8) {
+            if (response != null && response.getConfidence() >= 0.8) {
                 messageResponse.setLang(response.getLanguage());
                 websocketService.updateMessage(messageResponse);
 
