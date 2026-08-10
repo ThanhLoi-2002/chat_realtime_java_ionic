@@ -27,7 +27,7 @@ export const useAuthStore = defineStore('auth', {
                 this.isLoading = false
 
                 const userStore = useUserStore()
-                userStore.getMe(true)
+                await userStore.getMe(true)
             } catch (e: any) {
                 toast({
                     color: 'danger',

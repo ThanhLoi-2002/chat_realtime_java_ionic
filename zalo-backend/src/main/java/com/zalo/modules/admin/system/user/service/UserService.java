@@ -4,6 +4,7 @@ import com.cloudinary.api.exceptions.NotFound;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zalo.common.filter.UserFilter;
 import com.zalo.common.entity.File;
+import com.zalo.modules.admin.system.role.service.RoleService;
 import com.zalo.modules.admin.system.user.dto.response.UserPayload;
 import com.zalo.modules.admin.system.user.entities.User;
 import com.zalo.modules.app.media.service.MediaService;
@@ -32,19 +33,7 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
     private final MediaService cloudinaryService;
-
-//    public UserPayload getOneByToken(String token) throws NotFound {
-//        Claims claims = jwtService.extractAllClaims(token);
-//
-//        ObjectMapper mapper = new ObjectMapper();
-//
-//        return mapper.convertValue(
-//                claims.get("payload"),
-//                UserPayload.class
-//        );
-//    }
 
     public User findById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));

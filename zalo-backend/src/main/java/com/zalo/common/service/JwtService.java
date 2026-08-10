@@ -3,6 +3,7 @@ package com.zalo.common.service;
 import com.zalo.modules.admin.system.role.service.RoleService;
 import com.zalo.modules.admin.system.user.dto.response.UserPayload;
 import com.zalo.modules.admin.system.user.entities.User;
+import com.zalo.modules.admin.system.user.service.UserRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class JwtService {
     public int tokenTime = 86400000; // millisecond 86400000
     public int refreshTokenTime = 86400000 * 7;
     private final RoleService roleService;
+    private final UserRepository userRepository;
 
     private Key getKey() {
         String SECRET = "mysecretkeymysecretkeymysecretkeymysecretkey";
@@ -27,18 +29,17 @@ public class JwtService {
     }
 
     public String generateToken(User user, int time) {
-
-        List<String> roles = roleService.getUserRoles(user.getId());
-        List<String> permissions = roleService.getUserPermissions(user.getId());
-        UserPayload userPayload = new UserPayload(user);
-        userPayload.setRoles(roles);
-        userPayload.setPermissions(permissions);
+//        List<String> roles = roleService.getUserRoles(user.getId());
+//        List<String> permissions = roleService.getUserPermissions(user.getId());
+//        UserPayload userPayload = new UserPayload(user);
+//        userPayload.setRoles(roles);
+//        userPayload.setPermissions(permissions);
 
         return Jwts.builder()
                 .setSubject(user.getId().toString())
 //                .claim("id", user.getId())
 //                .claim("phone", user.getPhone())
-                .claim("payload", userPayload)
+//                .claim("payload", userPayload)
                 .setIssuedAt(new Date())
                 .setExpiration(
                         new Date(System.currentTimeMillis() + time)
@@ -54,12 +55,32 @@ public class JwtService {
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-
         } catch (ExpiredJwtException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "expiredToken");
-
         } catch (JwtException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "invalidToken");
         }
+    }
+
+    public UserPayload getUserByToken(String token) {
+        Claims claims = extractAllClaims(token);
+        Long id = Long.valueOf(claims.getSubject());
+
+//        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "notFound"));
+        List<String> roles = roleService.getUserRoles(id);
+        List<String> permissions = roleService.getUserPermissions(id);
+        UserPayload userPayload = new UserPayload();
+        userPayload.setId(id);
+        userPayload.setRoles(roles);
+        userPayload.setPermissions(permissions);
+
+//        ObjectMapper mapper = new ObjectMapper();
+//
+//        return mapper.convertValue(
+//                claims.get("payload"),
+//                UserPayload.class
+//        );
+
+        return userPayload;
     }
 }

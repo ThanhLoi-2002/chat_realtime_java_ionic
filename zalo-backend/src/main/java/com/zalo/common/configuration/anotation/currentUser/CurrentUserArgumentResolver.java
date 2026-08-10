@@ -36,7 +36,7 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         // 2. Kiểm tra nếu chưa được xác thực (chưa qua JwtFilter hoặc token lỗi)
-        if (authentication == null || !authentication.isAuthenticated()) {
+        if (authentication == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "expiredToken");
         }
 

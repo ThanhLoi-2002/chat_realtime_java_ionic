@@ -61,14 +61,16 @@ public class AuthService {
     }
 
     public String newToken(String refreshToken) throws NotFound {
-        Claims claims = jwtService.extractAllClaims(refreshToken);
+//        Claims claims = jwtService.extractAllClaims(refreshToken);
+//
+//        ObjectMapper mapper = new ObjectMapper();
+//
+//        UserPayload user  = mapper.convertValue(
+//                claims.get("payload"),
+//                UserPayload.class
+//        );
 
-        ObjectMapper mapper = new ObjectMapper();
-
-        UserPayload user  = mapper.convertValue(
-                claims.get("payload"),
-                UserPayload.class
-        );
+        UserPayload user = jwtService.getUserByToken(refreshToken);
 
         User u = userRepository.findById(user.getId()).orElseThrow(
                 () -> new NotFound("notFound")

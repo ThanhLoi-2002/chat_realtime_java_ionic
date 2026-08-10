@@ -331,8 +331,8 @@ const scrollMore = () => {
             // Kiểm tra xem message cuối cùng đã là message mới nhất chưa
             // Nếu conversationStorage.conversation?.lastMessage?.id > lastMessage.id → còn tin mới hơn
             const newestId = conversationStorage.conversation?.lastMessage?.id ?? 0
-
-            if (newestId > lastMessage.id) {
+            // console.log(newestId, lastMessage.id)
+            if (newestId > lastMessage.id && messageStorage.hasMore) {
                 const options: MessageFilter = {
                     conversationId: conversationStorage.conversation!.id,
                     firstId: lastMessage.id,

@@ -4,16 +4,19 @@ import com.cloudinary.api.exceptions.NotFound;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zalo.modules.admin.system.user.dto.response.UserPayload;
 import com.zalo.common.service.JwtService;
+import com.zalo.modules.admin.system.user.service.UserService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 
@@ -22,17 +25,6 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-
-    private UserPayload getOneByToken(String token) throws NotFound {
-        Claims claims = jwtService.extractAllClaims(token);
-
-        ObjectMapper mapper = new ObjectMapper();
-
-        return mapper.convertValue(
-                claims.get("payload"),
-                UserPayload.class
-        );
-    }
 
     @Override
     protected void doFilterInternal(
@@ -53,7 +45,7 @@ public class JwtFilter extends OncePerRequestFilter {
             }
 
             try {
-                UserPayload user = getOneByToken(token);
+                UserPayload user = jwtService.getUserByToken(token);
 
                 // Tạo đối tượng Authentication của Spring Security, nhét "user" vào phần Principal
                 UsernamePasswordAuthenticationToken authentication =
@@ -62,8 +54,30 @@ public class JwtFilter extends OncePerRequestFilter {
                 // Đẩy vào kho lưu trữ bảo mật
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
+            } catch (ResponseStatusException e) {
+                System.out.println("JWT Authentication failed ResponseStatusException: " + e.getReason());
+
+                // 1. Set mã lỗi HTTP (ví dụ: 401 hoặc 404 dựa theo e.getStatusCode())
+                response.setStatus(e.getStatusCode().value());
+
+                // 2. Định nghĩa kiểu trả về là JSON
+                response.setContentType("application/json;charset=UTF-8");
+
+                // 3. Ghi trực tiếp thông điệp lỗi vào Body của response
+                response.getWriter().write("{\"status\":" + e.getStatusCode().value() + ",\"message\":\"" + e.getReason() + "\"}");
+
+                // 4. Lệnh "return" cực kỳ quan trọng để chặn request không đi tiếp vào controller
+                return;
+
             } catch (Exception e) {
-                System.out.println("JWT Authentication failed: " + e.getMessage());
+                System.out.println("JWT Authentication failed General Exception: " + e.getMessage());
+
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"status\":401,\"message\":\"unauthorized\"}");
+
+                // Chặn request đi tiếp
+                return;
             }
         }
 

@@ -40,14 +40,14 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
             String token = authHeaders.get(0).replace("Bearer ", "");
 
             // 🔥 decode JWT
-            Claims claims = jwtService.extractAllClaims(token);
+            UserPayload userPayload = jwtService.getUserByToken(token);
 
-            ObjectMapper mapper = new ObjectMapper();
-
-            UserPayload userPayload = mapper.convertValue(
-                    claims.get("payload"),
-                    UserPayload.class
-            );
+//            ObjectMapper mapper = new ObjectMapper();
+//
+//            UserPayload userPayload = mapper.convertValue(
+//                    claims.get("payload"),
+//                    UserPayload.class
+//            );
 
             Long userId = userPayload.getId();
 

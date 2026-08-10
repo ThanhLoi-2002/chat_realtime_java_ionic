@@ -1,5 +1,6 @@
 package com.zalo.modules.admin.system.lang;
 
+import com.zalo.common.configuration.anotation.Public.Public;
 import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
 import com.zalo.common.configuration.anotation.ResponseMessage;
 import com.zalo.common.configuration.anotation.permission.RequiresPermission;
@@ -37,6 +38,7 @@ public class LangController {
     }
 
     @GetMapping("/getByLang/{lang}")
+    @Public
     public Map<String, String> getByLang(@PathVariable String lang) {
         return langService.getByLang(lang);
     }

@@ -115,7 +115,7 @@ export const useMessageStore = defineStore('message', {
                 if (totalElements <= size) this.hasMore = false
                 else this.hasMore = true
 
-                content.forEach((m: MessageType) => {
+                newMessages.forEach((m: MessageType) => {
                     this.addImage(m)
                     this.addFile(m)
                     this.addLink(m)
@@ -379,7 +379,17 @@ export const useMessageStore = defineStore('message', {
             this.messages = this.messages.sort((a, b) => {
                 const t1 = new Date(b.ct || 0).getTime()
                 const t2 = new Date(a.ct || 0).getTime()
-                return t2 - t1
+                
+                // Nếu thời gian khác nhau, sắp xếp theo thời gian giảm dần
+                if (t1 !== t2) {
+                    return t2 - t1;
+                }
+
+                // Nếu thời gian giống nhau, sắp xếp theo id tăng dần
+                // (Giả sử id là số hoặc chuỗi có thể so sánh bằng phép toán trừ/so sánh lớn nhỏ)
+                const idA = a.id || 0;
+                const idB = b.id || 0;
+                return idA - idB; // Nếu id là chuỗi (string), dùng idA.localeCompare(idB)
             })
         },
 
