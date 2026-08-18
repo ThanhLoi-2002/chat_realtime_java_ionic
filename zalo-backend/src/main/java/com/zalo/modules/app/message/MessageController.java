@@ -3,6 +3,7 @@ package com.zalo.modules.app.message;
 import com.zalo.common.configuration.anotation.conversationMember.CheckConversationMember;
 import com.zalo.common.configuration.anotation.currentUser.CurrentUser;
 import com.zalo.common.filter.MessageFilter;
+import com.zalo.common.service.kafka.KafkaProducerService;
 import com.zalo.modules.app.message.dto.request.AddReactionRequest;
 import com.zalo.modules.app.message.dto.request.CreateMessageRequest;
 import com.zalo.modules.app.message.dto.request.ShareMessageRequest;
@@ -25,6 +26,7 @@ import java.util.List;
 @RequestMapping("/conversations/{conversationId}/messages")
 public class MessageController {
     private final MessageService messageService;
+    private final KafkaProducerService kafkaService;
 
     @GetMapping("/preview-link")
     public LinkPreviewResponse getLinkPreview(@RequestParam("link") String link) {
@@ -34,7 +36,10 @@ public class MessageController {
     @PostMapping
     @CheckConversationMember
     public void send(@PathVariable Long conversationId, @CurrentUser UserPayload user, @RequestBody CreateMessageRequest dto) throws IOException {
-        messageService.sendMessage(conversationId, user.getId(), dto);
+//        messageService.sendMessage(conversationId, user.getId(), dto);
+        dto.setSenderId(user.getId());
+        dto.setConversationId(conversationId);
+        kafkaService.sendMessage(dto);
     }
 
     @PostMapping("/share")

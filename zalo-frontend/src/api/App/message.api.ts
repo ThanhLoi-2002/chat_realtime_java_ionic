@@ -7,6 +7,10 @@ import { ReactionEnum } from "@/types/enum";
 const sendMessage = async (data: SendMessageType) => {
     const { conversationId, ...rest } = data
 
+    // for (let i = 0; i < 99; i++) {
+    //     await axios.post<IResponse<MessageType>>(`/conversations/${conversationId}/messages`, rest)
+    // }
+
     return await axios.post<IResponse<MessageType>>(`/conversations/${conversationId}/messages`, rest);
 }
 

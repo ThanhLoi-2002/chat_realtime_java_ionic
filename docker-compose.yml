@@ -61,17 +61,26 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
       KAFKA_LOG_DIRS: "/tmp/kraft-combined-logs"
       CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
+    networks:
+      - kafka-net
 
-  ollama:
-    image: ollama/ollama:latest
-    container_name: ollama_local
-    restart: unless-stopped
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
     ports:
-      - "11434:11434"
-    volumes:
-      - ollama_storage:/root/.ollama
+      - "8090:8080" # Lưu ý: nếu Spring Boot của bạn cũng chạy port 8080, hãy đổi thành "8090:8080"
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: "local-kraft-cluster"
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:29092"
+    networks:
+      - kafka-net
 
 volumes:
   postgres_data:
   pgadmin_data:
-  ollama_storage:
+
+networks:
+  kafka-net:
+    driver: bridge

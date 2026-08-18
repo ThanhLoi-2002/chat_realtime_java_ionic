@@ -1,7 +1,6 @@
 package com.zalo.modules.app.auth.service;
 
 import com.cloudinary.api.exceptions.NotFound;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zalo.modules.admin.system.user.dto.response.UserPayload;
 import com.zalo.modules.app.auth.dto.request.LoginRequest;
 import com.zalo.modules.app.auth.dto.request.RegisterRequest;
@@ -10,7 +9,6 @@ import com.zalo.modules.admin.system.user.entities.User;
 import com.zalo.modules.admin.system.user.service.UserRepository;
 import com.zalo.modules.admin.system.user.service.UserService;
 import com.zalo.common.service.JwtService;
-import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;

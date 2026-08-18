@@ -19,4 +19,6 @@ public class CreateMessageRequest {
     Long replyToId;
     List<MediaRequest> attachments;
     LinkPreviewResponse linkMetadata;
+    Long senderId;
+    Long conversationId;
 }

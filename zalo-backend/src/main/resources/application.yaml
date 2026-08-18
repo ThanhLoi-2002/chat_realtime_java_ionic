@@ -9,23 +9,19 @@ spring:
     max-in-memory-size: 10MB
 
   kafka:
-    consumer:
-      group-id: notification-consumers
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      auto-offset-reset: earliest
-      enable-auto-commit: false # Tự quản lý commit để đảm bảo không mất tin nhắn nếu sập nguồn
-
-      # TỐI ƯU CONSUMER:
-      max-poll-records: 1000     # Mỗi lần pull dữ liệu từ Kafka, lấy hẳn 1000 tin nhắn về xử lý 1 lượt.
-      properties:
-        fetch.min.bytes: 1048576 # 1MB - Thắt nút cổ chai: Chỉ kéo về khi Kafka gom đủ 1MB dữ liệu.
-        fetch.max.wait.ms: 500   # Nếu quá 500ms không đủ 1MB thì vẫn kéo về.
-
-    # Chuyển đổi cơ chế lắng nghe từ từng cái sang dạng BATCH
+    bootstrap-servers: localhost:9092
     listener:
-      type: batch
-      ack-mode: manual_immediate # Commit ngay sau khi xử lý xong lô dữ liệu
+      ack-mode: manual_immediate
+    producer:
+        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+        value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+        group-id: chat-service-group # Nên đồng bộ trùng với groupId trong @KafkaListener của bạn
+        auto-offset-reset: earliest
+        key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+        properties:
+          spring.json.trusted.packages: "*"
 
   ai:
     openai:
