@@ -61,6 +61,7 @@ public class SecurityConfig {
 
                                 // 2. Mặc định tất cả các route còn lại đều phải check qua Custom AuthorizationManager
                                 .anyRequest().access((authentication, context) -> {
+                                    assert context != null;
                                     HttpServletRequest request = context.getRequest();
                                     boolean isPublic = false;
 
@@ -99,22 +100,17 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of(
-                "http://localhost:8100",
-                "http://127.0.0.1:8100",
-                "http://10.0.111.38:8100",
-                "http://10.0.2.2:8100",
-                "https://chat-realtime-java-ionic.vercel.app/"
-        ));
+        // Dùng allowedOriginPatterns thay cho allowedOrigins để bypass lỗi của Spring
+        configuration.setAllowedOriginPatterns(List.of("*"));
+//        configuration.setAllowedOrigins(List.of(
+//                "http://localhost:8100",
+//                "http://127.0.0.1:8100",
+//                "http://10.0.111.38:8100",
+//                "http://10.0.2.2:8100",
+//                "https://chat-realtime-java-ionic.vercel.app/"
+//        ));
 
-        configuration.setAllowedMethods(List.of(
-                "GET",
-                "POST",
-                "PUT",
-                "PATCH",
-                "DELETE",
-                "OPTIONS"
-        ));
+        configuration.setAllowedMethods(List.of("*"));
 
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

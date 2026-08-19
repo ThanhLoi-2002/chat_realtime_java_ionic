@@ -4,10 +4,10 @@ import com.zalo.modules.admin.system.user.dto.response.UserPayload;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import java.util.List;
+
+import java.util.Arrays;
 import java.util.Objects;
 
 @Aspect
@@ -24,8 +24,13 @@ public class PermissionAspect {
         }
 
         // Tiến hành check quyền từ currentUser tương tự như trên...
-        String requiredPermission = requiresPermission.value();
-        if (currentUser.getPermissions() == null || !currentUser.getPermissions().contains(requiredPermission)) {
+        String[] requiredPermissions = requiresPermission.value();
+
+        // Kiểm tra xem user có ÍT NHẤT MỘT trong các quyền yêu cầu hay không
+        boolean hasPermission = Arrays.stream(requiredPermissions)
+                .anyMatch(currentUser.getPermissions()::contains);
+        System.out.println("các quyền: " + Arrays.toString(requiredPermissions) + " " + hasPermission);
+        if (!hasPermission) {
             throw new AccessDeniedException("accessDenied");
         }
     }

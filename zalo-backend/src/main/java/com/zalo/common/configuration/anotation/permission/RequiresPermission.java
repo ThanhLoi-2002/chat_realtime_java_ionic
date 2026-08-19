@@ -6,5 +6,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME) // Tồn tại khi chạy ứng dụng để Reflection đọc được
 @Documented
 public @interface RequiresPermission {
-    String value(); // Nơi truyền mã quyền, ví dụ: "user:write"
+    String[] value(); // Nơi truyền mã quyền, ví dụ: "user:write"
 }

@@ -39,6 +39,12 @@ public class KafkaConsumer {
 
         } catch (Exception e) {
             log.error("Lỗi khi xử lý tin nhắn từ Kafka: {}. Lỗi: {}", payload, e.getMessage(), e);
+
+            // Xác nhận bỏ qua nếu lỗi
+            if (e instanceof com.fasterxml.jackson.core.JsonProcessingException) {
+                acknowledgment.acknowledge();
+            }
+
             // Trong thực tế, nếu lỗi, bạn có thể quyết định không gọi ack()
             // hoặc đẩy message này sang Dead Letter Queue (DLQ) để tránh kẹt hàng đợi.
         }
