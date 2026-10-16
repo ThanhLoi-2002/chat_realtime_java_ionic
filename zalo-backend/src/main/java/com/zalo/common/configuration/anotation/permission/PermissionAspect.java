@@ -29,7 +29,7 @@ public class PermissionAspect {
         // Kiểm tra xem user có ÍT NHẤT MỘT trong các quyền yêu cầu hay không
         boolean hasPermission = Arrays.stream(requiredPermissions)
                 .anyMatch(currentUser.getPermissions()::contains);
-        System.out.println("các quyền: " + Arrays.toString(requiredPermissions) + " " + hasPermission);
+//        System.out.println("các quyền: " + Arrays.toString(requiredPermissions) + " " + hasPermission);
         if (!hasPermission) {
             throw new AccessDeniedException("accessDenied");
         }

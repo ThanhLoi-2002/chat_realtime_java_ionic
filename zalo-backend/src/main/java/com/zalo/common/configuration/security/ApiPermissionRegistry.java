@@ -1,20 +1,12 @@
 package com.zalo.common.configuration.security;
 
-import com.zalo.common.configuration.anotation.permission.RequiresPermission;
-import com.zalo.common.configuration.json.G;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 @Component
 public class ApiPermissionRegistry implements ApplicationListener<ContextRefreshedEvent> {

@@ -58,9 +58,12 @@ cloudinary:
 logging:
   level:
     org.springframework.web.servlet.DispatcherServlet: DEBUG
+    org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener: OFF # Thêm dòng này để ẩn report auto-config
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36}.%M(%line) : %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36}.%M(%line) : %msg%n"
+#    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36}.%M(%line) : %msg%n"
+#    file: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36}.%M(%line) : %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} : %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} : %msg%n"
 
 kafka:
   url: "localhost:9092"
@@ -70,3 +73,10 @@ minio:
   access-key: ${MINIO_ACCESS_KEY}
   secret-key: ${MINIO_SECRET_KEY}
   bucket: ${MINIO_BUCKET}
+
+#Bank Info
+bank:
+  bank-id: ${BANK_ID}
+  account-no: ${ACCOUNT_NO}
+  account-name: ${ACCOUNT_NAME}
+  template: ${TEMPLATE}
