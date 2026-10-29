@@ -76,10 +76,32 @@ export enum MenuTypeEnum {
 export enum OaStatusEnum {
     PENDING = "PENDING",
     ACTIVE = "ACTIVE", 
-    DELETED = "DELETED"
+    DELETED = "DELETED",
+    OaStatusEnum = "OaStatusEnum"
 }
 
 export enum OaVerifiedEnum {
     VERIFIED = "VERIFIED",
     UNVERIFIED = "UNVERIFIED"
+}
+
+export enum SubscriptionCategoryEnum {
+    BUSINESS = "BUSINESS"
+}
+
+export enum TargetTypeEnum {
+    USER = "USER"
+}
+
+export enum BillingCycleEnum {
+    MONTHLY = "MONTHLY",
+    // QUARTERLY = "QUARTERLY",
+    YEARLY = "YEARLY",
+    // LIFETIME = "LIFETIME"
+}
+
+export enum SubScriptionPackageLevelEnum {
+    LITE = "LITE",
+    PRO = "PRO",
+    MAX = "MAX"
 }

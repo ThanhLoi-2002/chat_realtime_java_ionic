@@ -1,5 +1,5 @@
 import { MediaType, StickerItemType } from "./entities";
-import { ModuleEnum, MessageEnum, ResourceEnum } from "./enum";
+import { ModuleEnum, MessageEnum, ResourceEnum, TargetTypeEnum, SubscriptionCategoryEnum } from "./enum";
 
 export type IResponse<T = any> = {
   // status: boolean;
@@ -70,6 +70,7 @@ export type BaseFilter = {
   limit?: number
   lastId?: number
   search?: string
+  stt?: number
 }
 
 export type MessageFilter = BaseFilter & {
@@ -207,4 +208,11 @@ export type OaRequestType = {
   province: number
   district: number
   address: string
+}
+
+export type SubScriptionPackageFilter = BaseFilter & {
+  id?: number
+  name?: string
+  category?: SubscriptionCategoryEnum
+  targetType?: TargetTypeEnum
 }

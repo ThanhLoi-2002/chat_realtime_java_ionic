@@ -1,7 +1,7 @@
 <template>
     <div :class="[
         'flex gap-2',
-        direction === 'vertical' ? 'flex-col' : 'justify-between items-start'
+        direction === 'vertical' ? 'flex-col' : 'justify-between items-center'
     ]">
         <label :class="[oaStyle.text.primary, direction === 'vertical' ? 'w-full' : 'w-1/3']">
             {{ t(label) }}

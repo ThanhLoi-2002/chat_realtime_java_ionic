@@ -18,8 +18,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 @ControllerAdvice
 @RequiredArgsConstructor
 public class ApiResponseAdvice implements ResponseBodyAdvice<Object> {
-    private final LangService langService;
-
     @Override
     public boolean supports(MethodParameter returnType, Class converterType) {
         if (returnType.getMethodAnnotation(NoResponseBodyWrap.class) != null) {

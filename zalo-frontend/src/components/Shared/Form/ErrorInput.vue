@@ -20,7 +20,7 @@
                 ]" />
 
             <!-- Textarea -->
-            <textarea v-else :id="name" :name="name" v-model="value" v-bind="attrs" rows="4" :placeholder="placeholder"
+            <textarea v-else :id="name" :name="name" v-model="value" v-bind="attrs" rows="4" :placeholder="t(placeholder || '')"
                 :class="[
                     oaStyle.bg.primary,
                     errors[name] ? 'border-red-500' : `${oaStyle.border.primary} focus:ring-blue-400 focus:ring-1`,

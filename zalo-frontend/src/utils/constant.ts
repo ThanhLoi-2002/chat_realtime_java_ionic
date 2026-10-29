@@ -26,7 +26,9 @@ export const ROUTE = {
         AI_STICKER: "ai-sticker",
         JOIN_GROUP: "/g",
         SCAN: "/scan",
-        REGISTER_OA: '/register-oa'
+        REGISTER_OA: '/register-oa',
+        UPGRADE_BUSINESS: "/upgrade-business",
+        QR_CODE_CHECKOUT: "/qr-code-checkout"
     },
     OA_DASHBOARD: {
         INDEX: "/oa",
@@ -45,6 +47,8 @@ export const APP_ROUTE = {
     index: `${ROUTE.APP.INDEX}/${ROUTE.APP.CHATS}`,
     friend: `${ROUTE.APP.INDEX}/${ROUTE.APP.FRIENDS}`,
     aiSticker: `${ROUTE.APP.INDEX}/${ROUTE.APP.AI_STICKER}`,
+    upgradeBusiness: `${ROUTE.APP.INDEX}/${ROUTE.APP.UPGRADE_BUSINESS}`,
+    QrcodeCheckout: `${ROUTE.APP.INDEX}/${ROUTE.APP.QR_CODE_CHECKOUT}`,
 }
 
 export const OA_ROUTE = {
@@ -76,7 +80,8 @@ export const appLimit = {
     filesFirst: 4,
     files: 20,
     linksFirst: 4,
-    links: 20
+    links: 20,
+    comLimit: 20
 }
 
 export const emptyPage: PageType<any> = {

@@ -18,19 +18,20 @@ import { oaStyle } from '@/assets/tailwindcss';
 import AdminSidebar from '@/components/Admin/Sidebar/AdminSidebar.vue';
 import AdminHeader from '@/components/Admin/Header/AdminHeader.vue';
 import { onMounted } from 'vue';
-import { useAdminStructureStore } from '@/stores/Admin/structure.storage';
+// import { useAdminStructureStore } from '@/stores/Admin/structure.storage';
 import { AppTypeEnum } from '@/types/enum';
 import { useMenuStore } from '@/stores/menu.storage';
 
-const structureStor = useAdminStructureStore()
+// const structureStor = useAdminStructureStore()
 const menuStor = useMenuStore()
 
 onMounted(async () => {
     menuStor.resetLoadState()
 
-    await Promise.allSettled([
-        await structureStor.getMenuByUser(AppTypeEnum.ADMIN),
-        await menuStor.switchApp(AppTypeEnum.ADMIN, true)
-    ])
+    // await Promise.allSettled([
+    //     await structureStor.getMenuByUser(AppTypeEnum.ADMIN),
+    //     await menuStor.switchApp(AppTypeEnum.ADMIN, true)
+    // ])
+    // await menuStor.switchApp(AppTypeEnum.ADMIN, true)
 })
 </script>

@@ -74,6 +74,16 @@ export const appRoutes: RouteRecordRaw[] = [
                 meta: { requiresAuth: false }
             },
             {
+                path: `${ROUTE.APP.UPGRADE_BUSINESS}`,
+                component: () => import('../views/App/UpdateBusinessAccount/BussinessSubscriptionPackage.vue'),
+                meta: { requiresAuth: true }
+            },
+            {
+                path: `${ROUTE.APP.QR_CODE_CHECKOUT}`,
+                component: () => import('../views/App/Payment/QrCodeCheckout.vue'),
+                meta: { requiresAuth: true }
+            },
+            {
                 path: ROUTE.FORBIDDEN,
                 component: () => import('../views/App/Error/ForbiddenPage.vue')
             },

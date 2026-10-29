@@ -36,5 +36,12 @@ public final class PermissionConstant {
             public static final String UPDATE = "user:update";
             public static final String DELETE = "user:delete";
         }
+
+        public static final class SubscriptionPackage {
+            public static final String READ = "subscriptionPackage:read";
+            public static final String CREATE = "subscriptionPackage:create";
+            public static final String UPDATE = "subscriptionPackage:update";
+            public static final String DELETE = "subscriptionPackage:delete";
+        }
     }
 }

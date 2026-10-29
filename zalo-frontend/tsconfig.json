@@ -5,6 +5,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
+    "forceConsistentCasingInFileNames": true, //import theo tên file mới, tránh trường hợp sửa tên file từ hoa sang thường nhưng import vẫn là viết hoa
     "strict": true,
     "jsx": "preserve",
     "resolveJsonModule": true,

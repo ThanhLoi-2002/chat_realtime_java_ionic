@@ -1,8 +1,8 @@
 <template>
-    <ion-header :class="[oaStyle.bg.primary, oaStyle.border.primary, oaStyle.text.primary, 'border-b']">
+    <ion-header :class="[oaStyle.bg.primary, oaStyle.border.primary, oaStyle.text.primary, 'border-b shadow-none!']">
         <div class="flex items-center justify-between px-6 h-16">
             <div :class="[oaStyle.border.primary, 'flex items-center justify-between w-58 pr-4 border-r']">
-                <button @click="sysStorage.toggleSidebar()"
+                <button @click="handleToggleSidebar"
                     :class="[oaStyle.bg.hover, oaStyle.text.secondary, 'p-1.5 rounded cursor-pointer flex items-center justify-center']">
                     <i class="fa-solid fa-bars text-sm" />
                 </button>
@@ -30,7 +30,7 @@
                 </a>
             </div>
 
-            <div class="flex-1 px-4">
+            <div class="flex-1 px-4 overflow-auto">
                 <nav class="flex space-x-6 text-sm font-medium mt-2">
                     <router-link v-for="item in getMenusByType(2)" :key="item.code" :to="item.path" custom>
                         <div v-if="item.children.length > 0" @click="$router.push(buildFirstRoute(item))" :class="[
@@ -47,6 +47,7 @@
             </div>
 
             <div class="flex items-center space-x-4">
+                <lang-dropdown/>
                 <theme-toggle custom-class="p-2" />
                 <circle-avatar size="size-7" :user="userStorage.user" />
             </div>
@@ -57,6 +58,7 @@
 <script setup lang="ts">
 import { oaStyle } from '@/assets/tailwindcss';
 import CircleAvatar from '@/components/Shared/Avatar/CircleAvatar.vue';
+import LangDropdown from '@/components/Shared/Dropdown/LangDropdown.vue';
 import { useStructure } from '@/composables/useStructure';
 import { useTranslate } from '@/composables/useTranslate';
 import { useUserStore } from '@/stores/App/user.storage';
@@ -73,5 +75,15 @@ const sysStorage = useSystemStore()
 const { getMenusByType, checkRouteActive, buildFirstRoute } = useStructure()
 
 const { t } = useTranslate()
+
+const handleToggleSidebar = () => {
+    // Nếu màn hình nhỏ hơn 768px (breakpoint md của Tailwind) thì bật Drawer mobile
+    if (window.innerWidth < 768) {
+        sysStorage.showSidebarDrawer = !sysStorage.showSidebarDrawer;
+    } else {
+        // Trên desktop thì gọi hàm thu gọn/mở rộng sidebar sẵn có
+        sysStorage.toggleSidebar();
+    }
+};
 
 </script>

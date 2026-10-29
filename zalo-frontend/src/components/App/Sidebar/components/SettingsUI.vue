@@ -36,8 +36,8 @@
                     {{ t('activeOA') }}
                 </span>
 
-                <input type="checkbox" :checked="userStorage.user?.isOa === 1"
-                    @change="toggleOA" class="sr-only peer" :disabled="userStorage.user?.isOa === 1">
+                <input type="checkbox" :checked="userStorage.user?.isOa === 1" @change="toggleOA" class="sr-only peer"
+                    :disabled="userStorage.user?.isOa === 1">
 
                 <div class="relative w-10 h-5 bg-gray-300 rounded-full
                dark:bg-gray-600
@@ -105,10 +105,20 @@ const menuItems = computed(() => [
         icon: "fa fa-user",
         onClick: () => props.goPage('profile')
     },
+    {
+        title: t("upgradeBusinessAccount"),
+        icon: "fa fa-user",
+        onClick: () => redirectPage(ROUTE.APP.UPGRADE_BUSINESS)
+    },
 ])
 
 const toggleOA = async () => {
     router.push(ROUTE.APP.REGISTER_OA)
+    dismiss?.()
+}
+
+const redirectPage = (url: string) => {
+    router.push(url)
     dismiss?.()
 }
 </script>

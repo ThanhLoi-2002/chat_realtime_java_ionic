@@ -1,7 +1,7 @@
 package com.zalo.modules.webhook.sepay;
 
 import com.zalo.common.configuration.anotation.Public.Public;
-import com.zalo.modules.webhook.sepay.dto.request.SepayWebhookRequest;
+import com.zalo.modules.webhook.sepay.dto.request.SePayWebhookRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +17,7 @@ public class SepayWebhookController {
 
     @PostMapping("/sepay")
     @Public
-    public SepayWebhookRequest handleSepayWebhook(@RequestBody SepayWebhookRequest payload) {
+    public SePayWebhookRequest handleSepayWebhook(@RequestBody SePayWebhookRequest payload) {
         // In ra console toàn bộ thông tin nhận được để test
         log.info("================== NHẬN WEBHOOK TỪ SEPAY ==================");
         log.info("Ngân hàng: {}", payload.getGateway());

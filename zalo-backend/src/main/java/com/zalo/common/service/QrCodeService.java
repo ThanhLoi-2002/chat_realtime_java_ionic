@@ -20,9 +20,9 @@ public class QrCodeService {
     public String template;
 
     public String createQrCodeLink(Long amount, String orderCode) {
-        // muốn download thì thêm &download=true
+        // muốn download thì thêm &download=true, showinfo=true
         return String.format(
-                "https://qr.sepay.vn/img?bank=%s&acc=%s&holder=%s&template=%s&amount=%.0f&des=%s&showinfo=true&fullacc=true",
+                "https://qr.sepay.vn/img?bank=%s&acc=%s&holder=%s&template=%s&amount=%.0f&des=%s&fullacc=true",
                 bankId, accountNo, accountName, template, amount.floatValue(), orderCode
         );
     }

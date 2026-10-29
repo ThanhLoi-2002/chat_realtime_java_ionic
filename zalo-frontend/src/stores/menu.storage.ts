@@ -27,7 +27,7 @@ export const useMenuStore = defineStore('menu', {
     actions: {
         async switchApp(appType: AppTypeEnum, isReturnAppRoot?: boolean) {
             if (!this.isLoaded) {
-                console.log("switchApp: ", appType)
+                console.log("switchApp: ", appType, isReturnAppRoot)
                 const structureStor = useAdminStructureStore()
 
                 this.currentAppType = appType;

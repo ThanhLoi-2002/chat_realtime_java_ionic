@@ -7,6 +7,7 @@ interface State {
     networkStatus: boolean
     isOpenPins: boolean
     showSidebar: boolean
+    showSidebarDrawer: boolean
 }
 
 export const useSystemStore = defineStore('system', {
@@ -15,7 +16,8 @@ export const useSystemStore = defineStore('system', {
         isDarkMode: false,
         networkStatus: false,
         isOpenPins: false,
-        showSidebar: false
+        showSidebar: false,
+        showSidebarDrawer: false
     }),
     actions: {
         setShowBottomMenu(value: boolean) {
@@ -26,6 +28,9 @@ export const useSystemStore = defineStore('system', {
         },
         setIsOpenPins(value: boolean) {
             this.isOpenPins = value
+        },
+        setShowSidebarDrawer() {
+            this.isShowBottomMenu = !this.isShowBottomMenu
         },
         async checkNetworkStatus() {
             const status = await Network.getStatus();

@@ -1,5 +1,5 @@
 import { FileType, GroupSetting, LinkMetadataType } from "./common"
-import { AppTypeEnum, ConversationEnum, DeliveryStatusEnum, FriendshipStatusEnum, MemberRoleEnum, MenuTypeEnum, MessageEnum, ModuleEnum, OaStatusEnum, OaVerifiedEnum, ReactionEnum, ResourceEnum, SystemMetadataEnum } from "./enum"
+import { AppTypeEnum, BillingCycleEnum, ConversationEnum, DeliveryStatusEnum, FriendshipStatusEnum, MemberRoleEnum, MenuTypeEnum, MessageEnum, ModuleEnum, OaStatusEnum, OaVerifiedEnum, ReactionEnum, ResourceEnum, SubscriptionCategoryEnum, SubScriptionPackageLevelEnum, SystemMetadataEnum, TargetTypeEnum } from "./enum"
 
 export type BaseType = {
     id: number
@@ -207,4 +207,37 @@ export type OaCategoryType = BaseType & {
     code: string
     name: string
     description: string
+}
+
+export type SubscriptionPackageType = BaseType & {
+    name: string
+    code: string
+    price: number
+    description: string
+
+    category: SubscriptionCategoryEnum
+    targetType: TargetTypeEnum
+    billingCycle: BillingCycleEnum
+
+    monthlyPrice?: number;      // Giá quy đổi /tháng (VD: 200,000đ)
+
+    // Các thông số hiển thị tiết kiệm
+    savingsPercentage?: number;   // Phần trăm tiết kiệm (VD: 20%)
+    savingsAmount?: number;     // Số tiền tiết kiệm (VD: 600,000đ)
+    compareId?: number
+    features: FeatureDTO[]
+    gifts: GiftDTO[]
+    level: SubScriptionPackageLevelEnum
+}
+
+export type FeatureDTO = {
+    text: string
+    tag?: string
+    subtext?: string
+}
+
+export type GiftDTO = {
+    title: string
+    note?: string
+    icon: string
 }

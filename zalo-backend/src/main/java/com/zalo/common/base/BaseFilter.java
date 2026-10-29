@@ -16,6 +16,7 @@ public abstract class BaseFilter {
     private String sort = "id";     // field mặc định sort
     private String order = "asc";   // asc / desc
     private String search;          // tìm kiếm chung (full-text-like trên nhiều field)
+    protected Integer stt;
 
     // Các field filter cụ thể sẽ được thêm ở class con
 

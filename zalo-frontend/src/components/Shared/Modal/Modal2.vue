@@ -1,25 +1,45 @@
 <!-- components/BaseModal.vue -->
 <template>
     <Transition name="modal-fade">
-        <div v-if="modelValue" class="fixed inset-0 z-50 flex items-center justify-center">
-            <!-- Backdrop (Lớp nền mờ tối): Bấm vào đây để đóng modal -->
-            <div :class="[oaStyle.bg.primary, 'fixed inset-0 transition-opacity']" @click="closeOnBackdrop && close()">
-            </div>
+        <div
+            v-if="modelValue"
+            class="fixed inset-0 z-50 flex items-center justify-center"
+        >
+            <!-- Backdrop -->
+            <div
+                class="fixed inset-0 bg-black/50 transition-opacity"
+                @click="closeOnBackdrop && close()"
+            ></div>
 
-            <!-- Khung chứa nội dung Modal -->
-            <div :class="[oaStyle.bg.secondary, maxW ?? 'max-w-xl', 'relative z-10 w-full rounded-lg p-6 mx-6 shadow-xl']">
-                <!-- Header -->
-                <div class="flex items-center justify-between pb-3 border-b">
-                    <div :class="[oaStyle.text.primary, 'text-lg font-medium']">
+            <!-- Modal -->
+            <div
+                :class="[
+                    style.bg.secondary,
+                    maxW ?? 'max-w-xl',
+                    'relative z-10 mx-6 flex max-h-[90vh] w-full flex-col rounded-lg p-6 shadow-xl'
+                ]"
+            >
+                <!-- Header: luôn hiển thị -->
+                <div
+                    :class="[
+                        style.border.secondary,
+                        'flex shrink-0 items-center justify-between border-b pb-3'
+                    ]"
+                >
+                    <div :class="[style.text.primary, 'text-lg font-medium']">
                         {{ t(title) }}
                     </div>
-                    <button @click="close" :class="[oaStyle.text.primary, 'focus:outline-none']">
-                        <i class="fas fa-close"/>
+
+                    <button
+                        @click="close"
+                        :class="[style.text.primary, 'focus:outline-none']"
+                    >
+                        <i class="fas fa-close"></i>
                     </button>
                 </div>
 
-                <!-- Body (Nội dung động truyền vào) -->
-                <div class="py-4">
+                <!-- Body: có thanh cuộn riêng -->
+                <div class="min-h-0 flex-1 overflow-y-auto py-4 pr-3">
                     <slot></slot>
                 </div>
             </div>
@@ -28,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { oaStyle } from '@/assets/tailwindcss'
+import { style } from '@/assets/tailwindcss'
 import { useTranslate } from '@/composables/useTranslate';
 import { onMounted, onUnmounted } from 'vue'
 
